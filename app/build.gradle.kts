@@ -108,8 +108,8 @@ android {
 
 dependencies {
 
-//    implementation(project(":data"))
-//    implementation(project(":domain"))
+    implementation(project(":data"))
+    implementation(project(":domain"))
 
     implementation(libs.kotlin.reflect)
     implementation(libs.core.ktx)
@@ -134,9 +134,6 @@ dependencies {
 
     // Navigation
     implementation(libs.navigation.compose)
-//    implementation(libs.navigation.fragment)
-//    implementation(libs.navigation.fragment.compose)
-//    implementation(libs.navigation.ui.ktx)
 
     // Koin Dependency Injection
     implementation(libs.koin.core)
