@@ -65,7 +65,7 @@ sealed class Route(val routeName: String, val isInitialRoute: Boolean = false) {
     data object ProfileScreen : Route("ProfileScreen")
     data object AttendanceScreen : Route("AttendanceScreen")
     data object LiveAttendanceScreen : Route("LiveAttendanceScreen")
-    data object MemberScreen : Route("MemberScreen")
+    data object MembersScreen : Route("MembersScreen")
     data object MemberEditScreen : Route("MemberEditScreen")
     data object MembersAttendancesScreen : Route("MembersAttendancesScreen")
 

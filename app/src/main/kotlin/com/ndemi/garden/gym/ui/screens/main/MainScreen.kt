@@ -8,10 +8,12 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationHost
 import com.ndemi.garden.gym.ui.theme.AppTheme
+import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.BottomNavigationWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
@@ -28,14 +30,17 @@ fun MainScreen() {
             ToolBarWidget(stringResource(id = R.string.app_name))
         },
         bottomBar = {
-            BottomNavigationWidget(navController)
+            BottomNavigationWidget(
+                navController,
+                viewModel.getBottomNavigationItems()
+            )
         },
-        floatingActionButton = {},
     ) { innerPadding ->
         Column(
             modifier =
-                Modifier
-                    .padding(innerPadding).background(color = AppTheme.colors.backgroundScreen),
+            Modifier
+                .padding(innerPadding)
+                .background(color = AppTheme.colors.backgroundScreen),
             verticalArrangement = Arrangement.spacedBy(padding_screen),
         ) {
             NavigationHost(
@@ -43,5 +48,16 @@ fun MainScreen() {
                 navigationService = viewModel.getNavigationService(),
             )
         }
+    }
+}
+
+@Preview(
+    showBackground = true,
+    showSystemUi = true
+)
+@Composable
+fun MainScreenPreview(){
+    AppThemeComposable {
+        MainScreen()
     }
 }

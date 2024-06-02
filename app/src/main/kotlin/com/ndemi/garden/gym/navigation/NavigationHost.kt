@@ -8,8 +8,8 @@ import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreen
 import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreen
 import com.ndemi.garden.gym.ui.screens.login.LoginScreen
 import com.ndemi.garden.gym.ui.screens.main.MainScreen
-import com.ndemi.garden.gym.ui.screens.member.MemberScreen
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreen
+import com.ndemi.garden.gym.ui.screens.members.MembersScreen
 import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreen
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreen
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreen
@@ -31,7 +31,7 @@ fun NavigationHost(
         composable(route = Route.ProfileScreen.routeName) { ProfileScreen() }
         composable(route = Route.AttendanceScreen.routeName) { AttendanceScreen() }
         composable(route = Route.LiveAttendanceScreen.routeName) { LiveAttendanceScreen() }
-        composable(route = Route.MemberScreen.routeName) { MemberScreen() }
+        composable(route = Route.MembersScreen.routeName) { MembersScreen() }
         composable(route = Route.MemberEditScreen.routeName) { MemberEditScreen() }
         composable(route = Route.MembersAttendancesScreen.routeName) { MembersAttendancesScreen() }
     }

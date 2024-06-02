@@ -6,12 +6,13 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -23,20 +24,17 @@ import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.theme.AppTheme
 
 @Composable
-fun BottomNavigationWidget(navHostController: NavHostController) {
+fun BottomNavigationWidget(
+    navHostController: NavHostController,
+    navBottomItems: List<BottomNavItem> = listOf()
+) {
     BottomNavigation(
         backgroundColor = AppTheme.colors.highLight,
     ) {
-        val tabList =
-            listOf(
-                BottomNavItem.LoginScreen,
-                BottomNavItem.RegisterScreen,
-                BottomNavItem.ResetPasswordScreen,
-            )
         val navStackBackEntry by navHostController.currentBackStackEntryAsState()
         val currentDestination = navStackBackEntry?.destination
 
-        tabList.forEach { item ->
+        navBottomItems.forEach { item ->
             val isCurrentSelection = currentDestination?.hierarchy?.any { it.route == item.route } == true
             val selectedColor =
                 if (isCurrentSelection) AppTheme.colors.textPrimary else AppTheme.colors.backgroundScreen
@@ -61,8 +59,8 @@ fun BottomNavigationWidget(navHostController: NavHostController) {
                     )
                 },
                 label = {
-                    Text(
-                        item.label,
+                    TextSmall(
+                        text = item.label,
                         color = selectedColor,
                     )
                 },
@@ -72,12 +70,35 @@ fun BottomNavigationWidget(navHostController: NavHostController) {
 }
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
-    data object LoginScreen :
-        BottomNavItem(Route.LoginScreen.routeName, Icons.Default.CheckCircle, "Login")
+    data object LoginScreen : BottomNavItem(
+        Route.LoginScreen.routeName, Icons.Default.CheckCircle, "Login"
+    )
 
-    data object RegisterScreen :
-        BottomNavItem(Route.RegisterScreen.routeName, Icons.Default.Email, "Register")
+    data object RegisterScreen : BottomNavItem(
+        Route.RegisterScreen.routeName, Icons.Default.Email, "Register"
+    )
 
-    data object ResetPasswordScreen :
-        BottomNavItem(Route.ResetPasswordScreen.routeName, Icons.Default.Create, "Reset Password")
+    data object ResetPasswordScreen : BottomNavItem(
+        Route.ResetPasswordScreen.routeName, Icons.Default.Create, "Reset"
+    )
+
+    data object ProfileScreen : BottomNavItem(
+        Route.ProfileScreen.routeName, Icons.Default.AccountCircle, "Profile"
+    )
+
+    data object AttendanceScreen : BottomNavItem(
+        Route.AttendanceScreen.routeName, Icons.Default.Favorite, "Attendance"
+    )
+
+    data object LiveAttendanceScreen : BottomNavItem(
+        Route.LiveAttendanceScreen.routeName, Icons.Default.Check, "Live view"
+    )
+
+    data object MembersScreen : BottomNavItem(
+        Route.MembersScreen.routeName, Icons.Default.Star, "Members"
+    )
+
+    data object MembersAttendancesScreen : BottomNavItem(
+        Route.MembersAttendancesScreen.routeName, Icons.Default.DateRange, "Attendances"
+    )
 }
