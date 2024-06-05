@@ -2,16 +2,22 @@ package com.ndemi.garden.gym.di
 
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel
 import com.ndemi.garden.gym.ui.screens.main.MainScreenViewModel
+import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel
+import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModule =
     module {
 
-        viewModel { MainScreenViewModel(get()) }
+        viewModel { MainScreenViewModel(get(), get()) }
 
-        viewModel { LoginScreenViewModel(get()) }
+        viewModel { LoginScreenViewModel(get(), get(), get()) }
 
-        viewModel { RegisterScreenViewModel(get()) }
+        viewModel { ProfileScreenViewModel(get(), get(), get()) }
+
+        viewModel { RegisterScreenViewModel(get(), get(), get()) }
+
+        viewModel { ResetPasswordScreenViewModel(get()) }
     }

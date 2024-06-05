@@ -30,7 +30,7 @@ val applicationModule =
 
         single<AnalyticsRepository> { AnalyticsRepositoryImp(Firebase.analytics, get()) }
 
-        single<NavigationService> { NavigationServiceImp(get()) }
+        single<NavigationService> { NavigationServiceImp(get(), get()) }
 
         single<SharedPreferences> {
             androidApplication().getSharedPreferences(

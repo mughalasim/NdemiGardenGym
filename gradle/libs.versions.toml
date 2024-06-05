@@ -47,7 +47,8 @@ compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compi
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-database = { module = "com.google.firebase:firebase-database" }
-firestore-database = { module = "com.google.firebase:firebase-firestore" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 foundation-android = { module = "androidx.compose.foundation:foundation-android", version.ref = "compose" }

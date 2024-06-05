@@ -3,7 +3,6 @@ package com.ndemi.garden.gym.ui.widgets
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Check
@@ -101,4 +100,24 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: 
     data object MembersAttendancesScreen : BottomNavItem(
         Route.MembersAttendancesScreen.routeName, Icons.Default.DateRange, "Attendances"
     )
+
+    companion object{
+        fun getMemberBottomItems() = listOf(
+            ProfileScreen,
+            AttendanceScreen,
+            LiveAttendanceScreen,
+        )
+
+        fun getLoginBottomItems() = listOf(
+            LoginScreen,
+            RegisterScreen,
+            ResetPasswordScreen,
+        )
+
+        fun getAdminBottomItems() = listOf(
+            ProfileScreen,
+            MembersScreen,
+            MembersAttendancesScreen,
+        )
+    }
 }

@@ -7,3 +7,4 @@ val padding_screen_small = 8.dp
 val border_radius = 10.dp
 val line_thickness_small = 1.dp
 val line_thickness_medium = 3.dp
+val icon_image_size = 20.dp

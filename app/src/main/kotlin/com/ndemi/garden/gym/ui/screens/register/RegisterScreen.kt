@@ -12,13 +12,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.ndemi.garden.gym.ui.UiError
-import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.InPutType
+import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditPasswordTextWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextLarge
-import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.InPutType
-import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.koin.androidx.compose.koinViewModel
 
@@ -29,11 +29,13 @@ fun RegisterScreen(
     val uiState = viewModel.uiStateFlow.collectAsState(
         initial = UiState.Waiting
     )
+    if (uiState.value is UiState.Success){
+        viewModel.navigateLogInSuccess()
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(padding_screen)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -41,12 +43,13 @@ fun RegisterScreen(
         if (uiState.value is UiState.Error){
             val message = (uiState.value as UiState.Error).message
             WarningWidget(message)
-            Spacer(modifier = Modifier.padding(padding_screen))
+            Spacer(modifier = Modifier.padding(padding_screen_small))
         }
 
+        Spacer(modifier = Modifier.padding(padding_screen_small))
         TextLarge(text = "Register")
 
-        Spacer(modifier = Modifier.padding(padding_screen))
+        Spacer(modifier = Modifier.padding(padding_screen_small))
         EditTextWidget(
             hint = "First name",
             isError = (uiState.value as? UiState.Error)?.uiError == UiError.FIRST_NAME_INVALID
@@ -54,7 +57,7 @@ fun RegisterScreen(
             viewModel.setString(it, InPutType.FIRST_NAME )
         }
 
-        Spacer(modifier = Modifier.padding(padding_screen))
+        Spacer(modifier = Modifier.padding(padding_screen_small))
         EditTextWidget(
             hint = "Last Name",
             isError = (uiState.value as? UiState.Error)?.uiError == UiError.LAST_NAME_INVALID
@@ -62,7 +65,7 @@ fun RegisterScreen(
             viewModel.setString(it, InPutType.LAST_NAME )
         }
 
-        Spacer(modifier = Modifier.padding(padding_screen))
+        Spacer(modifier = Modifier.padding(padding_screen_small))
         EditTextWidget(
             hint = "Email",
             isError = (uiState.value as? UiState.Error)?.uiError == UiError.EMAIL_INVALID
@@ -70,7 +73,7 @@ fun RegisterScreen(
             viewModel.setString(it, InPutType.EMAIL )
         }
 
-        Spacer(modifier = Modifier.padding(padding_screen))
+        Spacer(modifier = Modifier.padding(padding_screen_small))
         EditPasswordTextWidget(
             hint = "Password",
             isError = (uiState.value as? UiState.Error)?.uiError == UiError.PASSWORD_INVALID
@@ -78,7 +81,7 @@ fun RegisterScreen(
             viewModel.setString(it, InPutType.PASSWORD )
         }
 
-        Spacer(modifier = Modifier.padding(padding_screen))
+        Spacer(modifier = Modifier.padding(padding_screen_small))
         EditPasswordTextWidget(
             hint = "Confirm password",
             isError = (uiState.value as? UiState.Error)?.uiError == UiError.PASSWORD_CONFIRM_INVALID
@@ -87,12 +90,13 @@ fun RegisterScreen(
             viewModel.setString(it, InPutType.CONFIRM_PASSWORD )
         }
 
-        Spacer(modifier = Modifier.padding(padding_screen))
+        Spacer(modifier = Modifier.padding(padding_screen_small))
         ButtonWidget(
             title = "Register",
-            isEnabled = uiState.value is UiState.Ready
+            isEnabled = uiState.value is UiState.Ready,
+            isLoading = uiState.value is UiState.Loading
         ) {
-
+            viewModel.onRegisterTapped()
         }
     }
 }

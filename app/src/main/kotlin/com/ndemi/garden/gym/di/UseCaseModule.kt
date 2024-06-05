@@ -1,5 +1,6 @@
 package com.ndemi.garden.gym.di
 
+import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.DataUseCase
 import cv.domain.usecase.SettingsUseCase
 import org.koin.dsl.module
@@ -10,4 +11,6 @@ val useCaseModule =
         single { DataUseCase(get(), get(), get()) }
 
         single { SettingsUseCase(get(), get()) }
+
+        single { AuthUseCase(get()) }
     }

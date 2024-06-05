@@ -7,7 +7,7 @@ import cv.domain.repositories.AppLoggerRepository
 
 class AnalyticsRepositoryImp(
     private val firebaseAnalytics: FirebaseAnalytics,
-    private val appLoggerRepository: AppLoggerRepository
+    private val logger: AppLoggerRepository
 ) : AnalyticsRepository {
     override fun logEvent(
         eventName: String,
@@ -18,6 +18,6 @@ class AnalyticsRepositoryImp(
             bundle.putString(param.first, param.second)
         }
         firebaseAnalytics.logEvent(eventName, bundle)
-        appLoggerRepository.log(bundle.toString())
+        logger.log(bundle.toString())
     }
 }

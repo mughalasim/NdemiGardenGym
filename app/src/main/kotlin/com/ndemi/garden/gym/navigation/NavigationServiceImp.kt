@@ -5,16 +5,18 @@ import cv.domain.Variables.EVENT_NAME_NAVIGATE
 import cv.domain.Variables.PARAM_SCREEN_NAME
 import cv.domain.repositories.AnalyticsRepository
 import com.ndemi.garden.gym.ui.utils.toRoute
+import cv.domain.usecase.AuthUseCase
 
 class NavigationServiceImp(
     private val analyticsRepository: AnalyticsRepository,
+    private val authUseCase: AuthUseCase,
 ) : NavigationService {
     private lateinit var navController: NavController
     private lateinit var initialRoute: Route
 
     override fun setNavController(navController: NavController) {
         this.navController = navController
-        val initialRoute = Route.getInitialRoute()
+        val initialRoute = Route.getInitialRoute(authUseCase.isAuthenticated())
         this.initialRoute = initialRoute
     }
 
@@ -50,15 +52,13 @@ class NavigationServiceImp(
         )
     }
 
-    override fun getCurrentRoute(): Route = navController.currentDestination?.route?.toRoute() ?: Route.LoginScreen
+    override fun getCurrentRoute(): Route = navController.currentDestination?.route?.toRoute() ?:
+    Route.getInitialRoute(authUseCase.isAuthenticated())
 
     override fun getInitialRoute(): Route = initialRoute
 }
 
 sealed class Route(val routeName: String, val isInitialRoute: Boolean = false) {
-
-    data object MainScreen : Route("MainScreen")
-
     data object LoginScreen : Route("LoginScreen")
     data object ResetPasswordScreen : Route("ResetPasswordScreen")
     data object RegisterScreen : Route("RegisterScreen")
@@ -70,10 +70,10 @@ sealed class Route(val routeName: String, val isInitialRoute: Boolean = false) {
     data object MembersAttendancesScreen : Route("MembersAttendancesScreen")
 
     companion object {
-        fun getInitialRoute(): Route =
+        fun getInitialRoute(isAuthenticated: Boolean): Route =
             Route::class.sealedSubclasses
                 .firstOrNull { it.objectInstance?.isInitialRoute == true }
                 ?.objectInstance
-                ?: LoginScreen
+                ?: if (isAuthenticated) ProfileScreen else LoginScreen
     }
 }

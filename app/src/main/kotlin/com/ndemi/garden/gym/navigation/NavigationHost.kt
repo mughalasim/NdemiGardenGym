@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreen
 import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreen
 import com.ndemi.garden.gym.ui.screens.login.LoginScreen
-import com.ndemi.garden.gym.ui.screens.main.MainScreen
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreen
 import com.ndemi.garden.gym.ui.screens.members.MembersScreen
 import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreen
@@ -24,7 +23,6 @@ fun NavigationHost(
         navController = navController,
         startDestination = navigationService.getInitialRoute().routeName,
     ) {
-        composable(route = Route.MainScreen.routeName) { MainScreen() }
         composable(route = Route.LoginScreen.routeName) { LoginScreen() }
         composable(route = Route.ResetPasswordScreen.routeName) { ResetPasswordScreen() }
         composable(route = Route.RegisterScreen.routeName) { RegisterScreen() }

@@ -40,8 +40,9 @@ dependencies {
     api(libs.logging.interceptor)
 
     api(platform(libs.firebase.bom))
+    api(libs.firebase.auth)
     api(libs.firebase.database)
-    api(libs.firestore.database)
+    api(libs.firebase.firestore)
     api(libs.firebase.analytics)
     api(libs.firebase.crashlytics)
 
