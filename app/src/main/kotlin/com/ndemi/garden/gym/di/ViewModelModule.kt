@@ -1,5 +1,6 @@
 package com.ndemi.garden.gym.di
 
+import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel
 import com.ndemi.garden.gym.ui.screens.main.MainScreenViewModel
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel
@@ -15,9 +16,11 @@ val viewModelModule =
 
         viewModel { LoginScreenViewModel(get(), get(), get()) }
 
-        viewModel { ProfileScreenViewModel(get(), get(), get()) }
+        viewModel { ProfileScreenViewModel(get(), get(), get(), get()) }
 
-        viewModel { RegisterScreenViewModel(get(), get(), get()) }
+        viewModel { AttendanceScreenViewModel(get(), get(), get()) }
+
+        viewModel { RegisterScreenViewModel(get(), get(), get(), get()) }
 
         viewModel { ResetPasswordScreenViewModel(get()) }
     }

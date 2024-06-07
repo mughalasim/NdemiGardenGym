@@ -1,4 +1,76 @@
 package com.ndemi.garden.gym.ui.screens.attendance
 
-class AttendanceScreenViewModel {
+import androidx.compose.runtime.Immutable
+import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.navigation.NavigationService
+import com.ndemi.garden.gym.ui.UiError
+import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.Action
+import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
+import com.ndemi.garden.gym.ui.screens.base.BaseAction
+import com.ndemi.garden.gym.ui.screens.base.BaseState
+import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
+import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
+import cv.domain.DomainError
+import cv.domain.DomainResult
+import cv.domain.entities.AttendanceEntity
+import cv.domain.usecase.MemberUseCase
+import kotlinx.coroutines.launch
+import org.joda.time.DateTime
+
+class AttendanceScreenViewModel (
+    private val errorCodeConverter: ErrorCodeConverter,
+    private val membersUseCase: MemberUseCase,
+    private val navigationService: NavigationService,
+) : BaseViewModel<UiState, Action>(UiState.Loading) {
+
+    fun getAttendances(selectedDate: DateTime) {
+        sendAction(Action.SetLoading)
+        viewModelScope.launch {
+            membersUseCase.getMemberAttendances(year = selectedDate.year, month = selectedDate.monthOfYear).also { result ->
+                when(result){
+                    is DomainResult.Error ->
+                        sendAction(Action.ShowDomainError(result.error, errorCodeConverter))
+                    is DomainResult.Success ->
+                        sendAction(Action.Success(result.data))
+                }
+            }
+        }
+    }
+
+
+    @Immutable
+    sealed interface UiState : BaseState {
+        data object Loading : UiState
+
+        data class Error(val message: String) : UiState
+
+        data class Success(val attendances: List<AttendanceEntity>) : UiState
+
+    }
+
+    sealed interface Action : BaseAction<UiState> {
+        data object SetLoading : Action {
+            override fun reduce(state: UiState): UiState = UiState.Loading
+        }
+
+        data class ShowUiError(
+            val uiError: UiError,
+            val errorCodeConverter: ErrorCodeConverter,
+        ) : Action {
+            override fun reduce(state: UiState): UiState =
+                UiState.Error(errorCodeConverter.getMessage(uiError))
+        }
+
+        data class ShowDomainError(
+            val domainError: DomainError,
+            val errorCodeConverter: ErrorCodeConverter,
+        ) : Action {
+            override fun reduce(state: UiState): UiState =
+                UiState.Error(errorCodeConverter.getMessage(domainError))
+        }
+
+        data class Success(val attendances: List<AttendanceEntity>) : Action {
+            override fun reduce(state: UiState): UiState = UiState.Success(attendances)
+        }
+    }
 }

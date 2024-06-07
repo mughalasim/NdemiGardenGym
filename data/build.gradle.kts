@@ -49,6 +49,9 @@ dependencies {
     // android x keep annotation
     implementation(libs.annotation.jvm)
 
+    // Joda time
+    api(libs.android.joda)
+
     // Testing -------------------------------------------------------------------------------------
     testImplementation(libs.junit)
 }

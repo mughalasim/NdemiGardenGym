@@ -2,12 +2,15 @@ package com.ndemi.garden.gym.ui.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import dev.b3nedikt.restring.Restring
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.Route
+import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatMonthYear
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatYearMonthDay
+import dev.b3nedikt.restring.Restring
 import org.joda.time.DateTime
+import org.joda.time.Hours
+import org.joda.time.Minutes
 import org.joda.time.Months
 import org.joda.time.Years
 import org.joda.time.format.DateTimeFormat
@@ -66,11 +69,47 @@ fun DateTime.toYearMonthDuration(startDateString: String): String {
     )
 }
 
+@Composable
+fun DateTime.toHoursMinutesDuration(startDate: DateTime): String {
+    val context = LocalContext.current.resources
+
+    val hours = Hours.hoursBetween(
+        startDate.toInstant(),
+        this.toInstant()
+    ).hours
+    val minutes = Minutes.minutesBetween(
+        startDate.toInstant(),
+        this.toInstant()
+    ).minutes % MINUTES_IN_HOUR
+
+    val hoursString = String.format(context.getQuantityString(R.plurals.plural_hours, hours), hours)
+    val minutesString = String.format(context.getQuantityString(R.plurals.plural_minutes, minutes), minutes)
+    val noDifference = context.getString(R.string.txt_no_difference)
+
+    return (if (hours > 0) hoursString else "") +
+            (if (hours > 0 && minutes > 0) " " else "") +
+            (if (minutes > 0) minutesString else "") +
+            (if (hours < 1 && minutes < 1) noDifference else "")
+
+}
+
 object DateConstants {
     val formatYearMonthDay: DateTimeFormatter =
-        DateTimeFormat.forPattern("yyyy-MM-dd").withLocale(
-            Restring.locale,
-        )
-    val formatMonthYear: DateTimeFormatter = DateTimeFormat.forPattern("MMM yyyy").withLocale(Restring.locale)
+        DateTimeFormat.forPattern("yyyy-MM-dd").withLocale(Restring.locale)
+
+    val formatDayMonthYear: DateTimeFormatter =
+        DateTimeFormat.forPattern("dd-MM-yyyy").withLocale(Restring.locale)
+
+
+    val formatDateDay: DateTimeFormatter =
+        DateTimeFormat.forPattern("d EEEE").withLocale(Restring.locale)
+
+    val formatTime: DateTimeFormatter =
+        DateTimeFormat.shortTime().withLocale(Restring.locale)
+
+    val formatMonthYear: DateTimeFormatter =
+        DateTimeFormat.forPattern("MMMM yyyy").withLocale(Restring.locale)
+
     const val MONTHS = 12
+    const val MINUTES_IN_HOUR = 60
 }

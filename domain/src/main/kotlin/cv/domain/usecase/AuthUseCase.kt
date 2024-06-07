@@ -1,6 +1,5 @@
 package cv.domain.usecase
 
-import cv.domain.entities.MemberEntity
 import cv.domain.repositories.AuthRepository
 
 class AuthUseCase(
@@ -14,11 +13,8 @@ class AuthUseCase(
 
     fun logOut() = authRepository.logOut()
 
-    fun getMember(callback: (String) -> Unit) =
-        authRepository.getMember(callback)
-
-    fun register(memberEntity: MemberEntity, password: String, callback: (String) -> Unit) =
-        authRepository.register(memberEntity, password, callback)
+    fun register(email: String, password: String, callback: (String) -> Unit) =
+        authRepository.register(email, password, callback)
 
     fun login(email: String, password: String, callback: (String) -> Unit) =
         authRepository.login(email, password, callback)

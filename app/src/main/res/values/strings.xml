@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">Ndemi Garden Gym</string>
 
+    <string name="txt_no_difference">No difference</string>
+
     <!-- Error messages-->
     <string name="error_internet_connection">Please check your internet connection</string>
     <string name="error_server">There seems to be an error with the server, please contact your administrator</string>
     <string name="error_unauthorised">You are not authorised to access this data</string>
+    <string name="error_no_data">No records found</string>
     <string name="error_unknown">An unknown error has occurred, please try again later</string>
     <string name="error_invalid_link">Invalid Link Url</string>
     <string name="error_email">Invalid email address</string>
@@ -19,8 +22,16 @@
         <item quantity="one">%d year</item>
         <item quantity="other">%d years</item>
     </plurals>
+    <plurals name="plural_hours">
+        <item quantity="one">%d hr</item>
+        <item quantity="other">%d hrs</item>
+    </plurals>
     <plurals name="plural_month">
         <item quantity="one">%d month</item>
         <item quantity="other">%d months</item>
+    </plurals>
+    <plurals name="plural_minutes">
+        <item quantity="one">%d min</item>
+        <item quantity="other">%d mins</item>
     </plurals>
 </resources>

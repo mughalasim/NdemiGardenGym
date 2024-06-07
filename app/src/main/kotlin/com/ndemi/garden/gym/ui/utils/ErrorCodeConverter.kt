@@ -1,9 +1,9 @@
 package com.ndemi.garden.gym.ui.utils
 
 import android.app.Application
-import cv.domain.DomainError
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.UiError
+import cv.domain.DomainError
 
 interface ErrorCodeConverter{
     fun getMessage(domainError: DomainError): String
@@ -19,6 +19,7 @@ class ErrorCodeConverterImp (
             DomainError.SERVER -> application.resources.getString(R.string.error_server)
             DomainError.NETWORK -> application.resources.getString(R.string.error_internet_connection)
             DomainError.UNAUTHORISED -> application.resources.getString(R.string.error_unauthorised)
+            DomainError.NO_DATA -> application.resources.getString(R.string.error_no_data)
         }
 
     override fun getMessage(uiError: UiError): String =

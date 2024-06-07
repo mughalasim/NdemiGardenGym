@@ -1,13 +1,15 @@
 package cv.domain.entities
 
+import java.util.Date
+
 data class MemberEntity(
     val id: String,
     val firstName: String,
     val lastName: String,
     val email: String,
-    val registrationDate: String,
-    val renewalFutureDate: String? = null,
-    val activeNowDate: String? = null,
+    val registrationDate: Date,
+    val renewalFutureDate: Date? = null,
+    val activeNowDate: Date? = null,
 )
 
 fun getMockMemberEntity() = MemberEntity(
@@ -15,5 +17,5 @@ fun getMockMemberEntity() = MemberEntity(
     firstName = "Asim",
     lastName = "Mughal",
     email = "asim@test.com",
-    registrationDate = "12/12/2023"
+    registrationDate = Date()
 )

@@ -11,7 +11,7 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.usecase.AuthUseCase
 
 class LoginScreenViewModel(
-    private val errorCodeConverter: ErrorCodeConverter,
+    private val converter: ErrorCodeConverter,
     private val authUseCase: AuthUseCase,
     private val navigationService: NavigationService,
 ) :BaseViewModel<LoginScreenViewModel.UiState, LoginScreenViewModel.Action>(UiState.Waiting) {
@@ -30,9 +30,9 @@ class LoginScreenViewModel(
 
     private fun validateInput(){
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            sendAction(Action.ShowError(UiError.EMAIL_INVALID, errorCodeConverter))
+            sendAction(Action.ShowError(converter.getMessage(UiError.EMAIL_INVALID), InputType.EMAIL))
         } else if (password.isEmpty()){
-            sendAction(Action.ShowError(UiError.PASSWORD_INVALID, errorCodeConverter))
+            sendAction(Action.ShowError(converter.getMessage(UiError.PASSWORD_INVALID), InputType.PASSWORD))
         } else {
             sendAction(Action.SetReady)
         }
@@ -42,7 +42,7 @@ class LoginScreenViewModel(
         sendAction(Action.SetLoading)
         authUseCase.login(email, password){
             if (it.isEmpty()){
-                sendAction(Action.ShowError(UiError.INVALID_LOGIN_CREDENTIALS, errorCodeConverter))
+                sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_LOGIN_CREDENTIALS)))
             } else {
                 sendAction(Action.Success(it))
             }
@@ -62,12 +62,16 @@ class LoginScreenViewModel(
 
         data object Loading : UiState
 
-        data class Error(val uiError: UiError, val message: String) : UiState
+        data class Error(val message: String, val inputType: InputType) : UiState
 
-        data class Success(
-            val userId: String,
-        ) : UiState
+        data class Success(val userId: String, ) : UiState
 
+    }
+
+    enum class InputType {
+        NONE,
+        EMAIL,
+        PASSWORD
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -79,12 +83,8 @@ class LoginScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowError(
-            val uiError: UiError,
-            val errorCodeConverter: ErrorCodeConverter,
-        ) : Action {
-            override fun reduce(state: UiState): UiState =
-                UiState.Error(uiError, errorCodeConverter.getMessage(uiError))
+        data class ShowError(val message: String, val inputType: InputType = InputType.NONE) : Action {
+            override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
 
         data class Success(val userId: String) : Action {

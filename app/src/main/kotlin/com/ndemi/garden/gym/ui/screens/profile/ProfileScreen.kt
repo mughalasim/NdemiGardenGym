@@ -1,34 +1,80 @@
 package com.ndemi.garden.gym.ui.screens.profile
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextLarge
 import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.TextSmall
+import com.ndemi.garden.gym.ui.widgets.WarningWidget
+import cv.domain.entities.MemberEntity
 import cv.domain.entities.getMockMemberEntity
+import org.joda.time.DateTime
+import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProfileScreen(
-    // viewModel: ProfileScreenViewModel = koinViewModel<ProfileScreenViewModel>()
+     viewModel: ProfileScreenViewModel = koinViewModel<ProfileScreenViewModel>()
 ) {
-//    val uiState = viewModel.uiStateFlow.collectAsState(
-//        initial = UiState.Loading
-//    )
+    val uiState = viewModel.uiStateFlow.collectAsState(
+        initial = UiState.Loading
+    )
+    val isRefreshing = (uiState.value is UiState.Loading)
+    val pullRefreshState = rememberPullRefreshState(isRefreshing, {
+        viewModel.getMember()
+    })
 
-    val memberEntity = getMockMemberEntity()
+    LaunchedEffect(true) {
+        viewModel.getMember()
+    }
+
+    Box (modifier = Modifier
+        .pullRefresh(pullRefreshState)
+        .fillMaxSize()
+    ){
+        when (val state = uiState.value){
+            is UiState.Error -> WarningWidget(title = state.message)
+            is UiState.Loading -> Unit
+            is UiState.Success ->
+                ProfileScreenItems(memberEntity = state.memberEntity){
+                    viewModel.onLogOutTapped()
+                }
+        }
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+        )
+    }
+}
+
+@Composable
+fun ProfileScreenItems(
+    memberEntity: MemberEntity,
+    logOutCallBack: () -> Unit,
+){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,7 +129,7 @@ fun ProfileScreen(
         ) {
             TextSmall(text = "Registration Date:")
             Spacer(modifier = Modifier.padding(padding_screen_small))
-            TextRegular(text = memberEntity.registrationDate)
+            TextRegular(text = DateTime(memberEntity.registrationDate).toString(formatDayMonthYear))
         }
 
         Row(
@@ -96,7 +142,7 @@ fun ProfileScreen(
             TextSmall(text = "Membership renewal Date:")
             Spacer(modifier = Modifier.padding(padding_screen_small))
             memberEntity.renewalFutureDate?.let {
-                TextRegular(text = it)
+                TextRegular(text = DateTime(it).toString(formatDayMonthYear))
             } ?: run {
                 TextRegular(text = "Not Paid")
             }
@@ -104,7 +150,7 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.padding(padding_screen_small))
         ButtonWidget(title = "LogOut", isEnabled = true) {
-//            viewModel.onLogOutTapped()
+            logOutCallBack.invoke()
         }
     }
 }
@@ -113,6 +159,6 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenPreview() {
     AppThemeComposable {
-        ProfileScreen()
+        ProfileScreenItems(getMockMemberEntity()){}
     }
 }

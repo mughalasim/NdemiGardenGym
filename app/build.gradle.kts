@@ -151,8 +151,6 @@ dependencies {
     implementation(libs.applocale)
     implementation(libs.appcompat)
 
-    // Joda time
-    api(libs.android.joda)
 
     // TESTING -------------------------------------------------------------------------------------
     testImplementation(libs.junit)

@@ -6,10 +6,9 @@ import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
-import cv.domain.entities.ResponseEntity
 
 class ResetPasswordScreenViewModel(
-    private val errorCodeConverter: ErrorCodeConverter,
+    private val converter: ErrorCodeConverter,
 ) : BaseViewModel<ResetPasswordScreenViewModel.UiState, ResetPasswordScreenViewModel.Action>(UiState.Waiting) {
     private var email: String = ""
 
@@ -21,7 +20,10 @@ class ResetPasswordScreenViewModel(
 
     private fun validateInput(){
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            sendAction(Action.ShowError(UiError.EMAIL_INVALID, errorCodeConverter))
+            sendAction(Action.ShowError(
+                converter.getMessage(UiError.EMAIL_INVALID),
+                InputType.EMAIL)
+            )
         } else {
             sendAction(Action.SetReady)
         }
@@ -29,6 +31,7 @@ class ResetPasswordScreenViewModel(
 
     fun onResetPasswordTapped() {
         sendAction(Action.SetLoading)
+        TODO("Not yet implemented")
     }
 
 
@@ -40,12 +43,15 @@ class ResetPasswordScreenViewModel(
 
         data object Loading : UiState
 
-        data class Error(val uiError: UiError, val message: String) : UiState
+        data class Error(val message: String, val inputType: InputType) : UiState
 
-        data class DataReceived(
-            val responseEntity: ResponseEntity,
-        ) : UiState
+        data class Success(val message: String) : UiState
 
+    }
+
+    enum class InputType {
+        NONE,
+        EMAIL
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -57,16 +63,12 @@ class ResetPasswordScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowError(
-            val uiError: UiError,
-            val errorCodeConverter: ErrorCodeConverter,
-        ) : Action {
-            override fun reduce(state: UiState): UiState =
-                UiState.Error(uiError, errorCodeConverter.getMessage(uiError))
+        data class ShowError(val message: String, val inputType: InputType = InputType.NONE) : Action {
+            override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
 
-        data class DataReceived(val responseEntity: ResponseEntity) : Action {
-            override fun reduce(state: UiState): UiState = UiState.DataReceived(responseEntity)
+        data class Success(val message: String) : Action {
+            override fun reduce(state: UiState): UiState = UiState.Success(message)
         }
     }
 }

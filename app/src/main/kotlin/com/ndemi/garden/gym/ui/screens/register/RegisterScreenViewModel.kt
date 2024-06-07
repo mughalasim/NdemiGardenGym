@@ -1,6 +1,7 @@
 package com.ndemi.garden.gym.ui.screens.register
 
 import androidx.compose.runtime.Immutable
+import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.UiError
@@ -8,12 +9,17 @@ import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
+import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.usecase.AuthUseCase
+import cv.domain.usecase.MemberUseCase
+import kotlinx.coroutines.launch
+import org.joda.time.DateTime
 
 class RegisterScreenViewModel(
-    private val errorCodeConverter: ErrorCodeConverter,
+    private val converter: ErrorCodeConverter,
     private val authUseCase: AuthUseCase,
+    private val memberUseCase: MemberUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<RegisterScreenViewModel.UiState, RegisterScreenViewModel.Action>(UiState.Waiting) {
     private var email: String = ""
@@ -22,37 +28,68 @@ class RegisterScreenViewModel(
     private var firstName: String = ""
     private var lastName: String = ""
 
-    fun setString(value: String, inPutType: InPutType) {
+    fun setString(value: String, inPutType: InputType) {
         when (inPutType) {
-            InPutType.FIRST_NAME -> this.firstName = value
-            InPutType.LAST_NAME -> this.lastName = value
-            InPutType.EMAIL -> this.email = value
-            InPutType.PASSWORD -> this.password = value
-            InPutType.CONFIRM_PASSWORD -> this.confirmPassword = value
+            InputType.FIRST_NAME -> this.firstName = value
+            InputType.LAST_NAME -> this.lastName = value
+            InputType.EMAIL -> this.email = value
+            InputType.PASSWORD -> this.password = value
+            InputType.CONFIRM_PASSWORD -> this.confirmPassword = value
+            InputType.NONE -> Unit
         }
         validateInput()
     }
 
     private fun validateInput() {
         if (firstName.isEmpty()) {
-            sendAction(Action.ShowError(UiError.FIRST_NAME_INVALID, errorCodeConverter))
+            sendAction(
+                Action.ShowError(
+                    converter.getMessage(UiError.FIRST_NAME_INVALID),
+                    InputType.FIRST_NAME
+                )
+            )
 
         } else if (lastName.isEmpty()) {
-            sendAction(Action.ShowError(UiError.LAST_NAME_INVALID, errorCodeConverter))
+            sendAction(
+                Action.ShowError(
+                    converter.getMessage(UiError.LAST_NAME_INVALID),
+                    InputType.LAST_NAME
+                )
+            )
 
         } else if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email)
                 .matches()
         ) {
-            sendAction(Action.ShowError(UiError.EMAIL_INVALID, errorCodeConverter))
+            sendAction(
+                Action.ShowError(
+                    converter.getMessage(UiError.EMAIL_INVALID),
+                    InputType.EMAIL
+                )
+            )
 
         } else if (password.isEmpty()) {
-            sendAction(Action.ShowError(UiError.PASSWORD_INVALID, errorCodeConverter))
+            sendAction(
+                Action.ShowError(
+                    converter.getMessage(UiError.PASSWORD_INVALID),
+                    InputType.PASSWORD
+                )
+            )
 
         } else if (confirmPassword.isEmpty()) {
-            sendAction(Action.ShowError(UiError.PASSWORD_CONFIRM_INVALID, errorCodeConverter))
+            sendAction(
+                Action.ShowError(
+                    converter.getMessage(UiError.PASSWORD_CONFIRM_INVALID),
+                    InputType.CONFIRM_PASSWORD
+                )
+            )
 
         } else if (password != confirmPassword) {
-            sendAction(Action.ShowError(UiError.PASSWORD_MATCH_INVALID, errorCodeConverter))
+            sendAction(
+                Action.ShowError(
+                    converter.getMessage(UiError.PASSWORD_MATCH_INVALID),
+                    InputType.CONFIRM_PASSWORD
+                )
+            )
 
         } else {
             sendAction(Action.SetReady)
@@ -61,11 +98,29 @@ class RegisterScreenViewModel(
 
     fun onRegisterTapped() {
         sendAction(Action.SetLoading)
-        authUseCase.register(MemberEntity("", firstName, lastName, email, email), password){
-            if (it.isEmpty()){
-                sendAction(Action.ShowError(UiError.REGISTRATION_FAILED, errorCodeConverter))
+        authUseCase.register(email, password) {
+            if (it.isEmpty()) {
+                sendAction(Action.ShowError(converter.getMessage(UiError.REGISTRATION_FAILED)))
             } else {
-                sendAction(Action.Success(it))
+                updateMember(it)
+            }
+        }
+    }
+
+    private fun updateMember(memberId: String){
+        sendAction(Action.SetLoading)
+        viewModelScope.launch {
+            memberUseCase.updateMember(MemberEntity(
+                id = memberId,
+                firstName = firstName,
+                lastName = lastName,
+                email = email,
+                registrationDate = DateTime.now().toDate()
+            )).also {result ->
+                when(result){
+                    is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(UiError.REGISTRATION_FAILED)))
+                    is DomainResult.Success -> sendAction(Action.Success)
+                }
             }
         }
     }
@@ -83,15 +138,14 @@ class RegisterScreenViewModel(
 
         data object Loading : UiState
 
-        data class Error(val uiError: UiError, val message: String) : UiState
+        data class Error(val message: String, val inputType: InputType) : UiState
 
-        data class Success(
-            val userId: String,
-        ) : UiState
+        data object Success : UiState
 
     }
 
-    enum class InPutType {
+    enum class InputType {
+        NONE,
         FIRST_NAME,
         LAST_NAME,
         EMAIL,
@@ -109,15 +163,15 @@ class RegisterScreenViewModel(
         }
 
         data class ShowError(
-            val uiError: UiError,
-            val errorCodeConverter: ErrorCodeConverter,
+            val message: String,
+            val inputType: InputType = InputType.NONE
         ) : Action {
             override fun reduce(state: UiState): UiState =
-                UiState.Error(uiError, errorCodeConverter.getMessage(uiError))
+                UiState.Error(message, inputType)
         }
 
-        data class Success(val userId: String) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Success(userId)
+        data object Success : Action {
+            override fun reduce(state: UiState): UiState = UiState.Success
         }
     }
 }
