@@ -5,6 +5,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
+import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatMonthYear
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatYearMonthDay
 import dev.b3nedikt.restring.Restring
@@ -15,6 +16,7 @@ import org.joda.time.Months
 import org.joda.time.Years
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
+import java.util.Date
 
 fun String.toMonthYearString(): String {
     val date = DateTime.parse(this, formatYearMonthDay)
@@ -48,6 +50,12 @@ fun String.toYearMonthDuration(endDateString: String): String {
             (if (years > 0 && months > 0) " " else "") +
             if (months > 0) String.format(context.getQuantityString(R.plurals.plural_month, months), months) else ""
     )
+}
+
+fun Date?.getPaidStatusString(): String {
+    return this?.let {
+        DateTime(it).toString(formatDayMonthYear)
+    }?: run{ "Not Paid" }
 }
 
 @Composable

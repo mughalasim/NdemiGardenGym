@@ -15,6 +15,10 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,11 +27,14 @@ import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
+import com.ndemi.garden.gym.ui.utils.getPaidStatusString
+import com.ndemi.garden.gym.ui.widgets.AttendanceWidget
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextLarge
 import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.TextSmall
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
+import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.getMockMemberEntity
 import org.joda.time.DateTime
@@ -58,7 +65,7 @@ fun ProfileScreen(
             is UiState.Error -> WarningWidget(title = state.message)
             is UiState.Loading -> Unit
             is UiState.Success ->
-                ProfileScreenItems(memberEntity = state.memberEntity){
+                ProfileListScreen(memberEntity = state.memberEntity){
                     viewModel.onLogOutTapped()
                 }
         }
@@ -71,7 +78,7 @@ fun ProfileScreen(
 }
 
 @Composable
-fun ProfileScreenItems(
+fun ProfileListScreen(
     memberEntity: MemberEntity,
     logOutCallBack: () -> Unit,
 ){
@@ -141,11 +148,25 @@ fun ProfileScreenItems(
         ) {
             TextSmall(text = "Membership renewal Date:")
             Spacer(modifier = Modifier.padding(padding_screen_small))
-            memberEntity.renewalFutureDate?.let {
-                TextRegular(text = DateTime(it).toString(formatDayMonthYear))
-            } ?: run {
-                TextRegular(text = "Not Paid")
-            }
+            TextRegular(text = memberEntity.renewalFutureDate.getPaidStatusString())
+        }
+
+        var sessionStarted by remember { mutableStateOf(true) }
+        var sessionStartTime by remember { mutableStateOf(DateTime.now()) }
+
+        Spacer(modifier = Modifier.padding(padding_screen_small))
+        ButtonWidget(title = if(sessionStarted) "End Session" else "Start Session", isEnabled = true) {
+            sessionStarted = !sessionStarted
+            sessionStartTime = DateTime.now()
+        }
+
+        if (sessionStarted){
+            Spacer(modifier = Modifier.padding(padding_screen_small))
+            AttendanceWidget(attendanceEntity = AttendanceEntity(
+                memberId = "",
+                startDate = sessionStartTime.toDate(),
+                endDate = sessionStartTime.toDate()
+            ))
         }
 
         Spacer(modifier = Modifier.padding(padding_screen_small))
@@ -159,6 +180,6 @@ fun ProfileScreenItems(
 @Composable
 fun ProfileScreenPreview() {
     AppThemeComposable {
-        ProfileScreenItems(getMockMemberEntity()){}
+        ProfileListScreen(getMockMemberEntity()){}
     }
 }

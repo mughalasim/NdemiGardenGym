@@ -50,15 +50,10 @@ class MemberRepositoryImp(
             CompletableDeferred()
         val collection = database.collection(PATH_USER)
         if (isLive) collection.where(Filter.notEqualTo("activeNowDate", null))
-        collection.document().get()
+        collection.get()
             .addOnSuccessListener { document ->
-                val response = document.toObject<List<MemberModel>>()
-                response?.let { entities ->
-                    completable.complete(DomainResult.Success(entities.map { it.toMemberEntity() }))
-                } ?: run {
-                    completable.complete(DomainResult.Error(DomainError.NO_DATA))
-                }
-
+                val response = document.toObjects<MemberModel>()
+                completable.complete(DomainResult.Success(response.map { it.toMemberEntity() }))
             }.addOnFailureListener {
                 completable.complete(DomainResult.Error(DomainError.UNAUTHORISED))
             }
@@ -86,12 +81,11 @@ class MemberRepositoryImp(
             return DomainResult.Error(DomainError.UNAUTHORISED)
         }
         val collection = database.collection(PATH_ATTENDANCE)
-//            .document("$year-$month")
             .document(year.toString()).collection(month.toString())
 
-//        if (isMembersAttendances) {
-//            collection.where(Filter.equalTo("memberId", memberId))
-//        }
+        if (isMembersAttendances) {
+            collection.where(Filter.equalTo("memberId", memberId))
+        }
 
         val completable: CompletableDeferred<DomainResult<List<AttendanceEntity>>> =
             CompletableDeferred()

@@ -17,5 +17,6 @@ fun getMockMemberEntity() = MemberEntity(
     firstName = "Asim",
     lastName = "Mughal",
     email = "asim@test.com",
-    registrationDate = Date()
+    registrationDate = Date(),
+    renewalFutureDate = Date()
 )

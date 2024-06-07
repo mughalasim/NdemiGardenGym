@@ -43,7 +43,6 @@ class ProfileScreenViewModel (
         navigationService.open(Route.LoginScreen, true)
     }
 
-
     @Immutable
     sealed interface UiState : BaseState {
         data object Loading : UiState
