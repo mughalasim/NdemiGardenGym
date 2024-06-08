@@ -93,7 +93,9 @@ fun AttendanceScreen(
                         Spacer(modifier = Modifier.padding(padding_screen_small))
                         TextRegular(text = "No Attendances for the selected month")
                     } else {
-                        AttendanceItemsScreen(attendances = state.attendances,)
+                        AttendanceItemsScreen(attendances = state.attendances){
+                            viewModel.deleteAttendance(it)
+                        }
                     }
                 }
             }
@@ -124,6 +126,7 @@ fun AttendanceScreen(
 @Composable
 fun AttendanceItemsScreen(
     attendances: List<AttendanceEntity>,
+    onDeleteAttendance: (AttendanceEntity)->Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -131,7 +134,7 @@ fun AttendanceItemsScreen(
     ) {
         Spacer(modifier = Modifier.padding(padding_screen_small))
         repeat(attendances.size) {
-            AttendanceWidget(attendanceEntity = attendances[it])
+            AttendanceWidget(attendanceEntity = attendances[it], onDeleteAttendance = onDeleteAttendance)
         }
     }
 }

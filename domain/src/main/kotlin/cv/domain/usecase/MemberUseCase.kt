@@ -1,5 +1,6 @@
 package cv.domain.usecase
 
+import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.MemberEntity
 import cv.domain.repositories.MemberRepository
 import java.util.Date
@@ -22,4 +23,6 @@ class MemberUseCase(
     suspend fun addAttendance(startDate: Date, endDate: Date) = memberRepository.addAttendance(startDate, endDate)
 
     suspend fun updateMember(memberEntity: MemberEntity) = memberRepository.updateMember(memberEntity)
+
+    suspend fun deleteAttendance(attendanceEntity: AttendanceEntity) = memberRepository.deleteAttendance(attendanceEntity)
 }

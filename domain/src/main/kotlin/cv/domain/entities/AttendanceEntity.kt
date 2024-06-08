@@ -6,7 +6,9 @@ data class AttendanceEntity(
     val memberId: String,
     val startDate: Date,
     val endDate: Date,
-)
+){
+    fun getAttendanceId(): String = "$memberId-$startDate"
+}
 
 fun getMockAttendanceEntity(
     startDate: Date = Date(),

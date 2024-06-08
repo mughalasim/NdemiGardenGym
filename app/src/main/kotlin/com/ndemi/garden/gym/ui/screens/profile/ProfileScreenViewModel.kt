@@ -47,6 +47,10 @@ class ProfileScreenViewModel(
                         sendAction(Action.ShowError(errorCodeConverter.getMessage(result.error)))
 
                     is DomainResult.Success -> {
+                        if(result.data.activeNowDate != null){
+                            _sessionStartTime.value = DateTime(result.data.activeNowDate)
+                            sharedPrefsUseCase.setStartedSession(_sessionStartTime.value.toString())
+                        }
                         memberEntity = result.data
                         sendAction(Action.Success(result.data))
                     }

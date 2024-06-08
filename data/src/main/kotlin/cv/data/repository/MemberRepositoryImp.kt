@@ -161,20 +161,44 @@ class MemberRepositoryImp(
             return DomainResult.Error(DomainError.INVALID_SESSION_TIME)
         }
 
-        val collection = database.collection(PATH_ATTENDANCE)
-            .document(startDateTime.year.toString())
-            .collection(startDateTime.monthOfYear.toString()).document()
-
         val attendanceEntity = AttendanceEntity(
             memberId = memberId,
             startDate = startDate,
             endDate = endDate
         )
+        val collection = database
+            .collection(PATH_ATTENDANCE)
+            .document(startDateTime.year.toString())
+            .collection(startDateTime.monthOfYear.toString())
+            .document(attendanceEntity.getAttendanceId())
 
         val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
         collection.set(attendanceEntity)
             .addOnSuccessListener {
                 logger.log("Attendance Added")
+                completable.complete(DomainResult.Success(Unit))
+
+            }.addOnFailureListener {
+                logger.log("Exception: $it")
+                completable.complete(DomainResult.Error(it.toDomainError()))
+            }
+
+        return completable.await()
+    }
+
+    override suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit> {
+        val startDateTime = DateTime(DateTime(attendanceEntity.startDate))
+
+        val collection = database
+            .collection(PATH_ATTENDANCE)
+            .document(startDateTime.year.toString())
+            .collection(startDateTime.monthOfYear.toString())
+            .document(attendanceEntity.getAttendanceId())
+
+        val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
+        collection.delete()
+            .addOnSuccessListener {
+                logger.log("Attendance Deleted")
                 completable.complete(DomainResult.Success(Unit))
 
             }.addOnFailureListener {

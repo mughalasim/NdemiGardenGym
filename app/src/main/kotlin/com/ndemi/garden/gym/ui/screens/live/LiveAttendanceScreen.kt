@@ -68,7 +68,7 @@ fun LiveAttendanceScreen (
                 is UiState.Success ->
                     if (state.members.isEmpty()){
                         Spacer(modifier = Modifier.padding(padding_screen_small))
-                        TextRegular(text = "Oh no! No ones in, why don't you be the first")
+                        TextRegular(text = "Oh no! No one's in, why don't you be the first")
                     } else {
                         LiveAttendanceListScreen(members = state.members)
                     }

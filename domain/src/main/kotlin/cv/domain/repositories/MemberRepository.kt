@@ -18,4 +18,6 @@ interface MemberRepository {
             DomainResult<List<AttendanceEntity>>
 
     suspend fun addAttendance(startDate: Date, endDate: Date): DomainResult<Unit>
+
+    suspend fun deleteAttendance (attendanceEntity: AttendanceEntity): DomainResult<Unit>
 }

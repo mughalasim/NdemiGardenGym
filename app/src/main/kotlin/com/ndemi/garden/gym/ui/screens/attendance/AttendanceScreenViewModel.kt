@@ -23,7 +23,10 @@ class AttendanceScreenViewModel (
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
 
+    private lateinit var selectedDate: DateTime
+
     fun getAttendances(selectedDate: DateTime) {
+        this.selectedDate = selectedDate
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             membersUseCase.getMemberAttendances(year = selectedDate.year, month = selectedDate.monthOfYear).also { result ->
@@ -32,6 +35,18 @@ class AttendanceScreenViewModel (
                         sendAction(Action.ShowDomainError(result.error, errorCodeConverter))
                     is DomainResult.Success ->
                         sendAction(Action.Success(result.data))
+                }
+            }
+        }
+    }
+
+    fun deleteAttendance(attendanceEntity: AttendanceEntity) {
+        sendAction(Action.SetLoading)
+        viewModelScope.launch {
+            membersUseCase.deleteAttendance(attendanceEntity).also{result ->
+                when(result){
+                    is DomainResult.Error -> sendAction(Action.ShowDomainError(result.error, errorCodeConverter))
+                    is DomainResult.Success -> getAttendances(selectedDate)
                 }
             }
         }
