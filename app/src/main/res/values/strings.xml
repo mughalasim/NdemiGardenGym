@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Ndemi Garden Gym</string>
 
-    <string name="txt_no_difference">No difference</string>
+    <string name="txt_no_difference">Now</string>
 
     <!-- Error messages-->
     <string name="error_internet_connection">Please check your internet connection</string>

@@ -10,7 +10,11 @@ data class MemberEntity(
     val registrationDate: Date,
     val renewalFutureDate: Date? = null,
     val activeNowDate: Date? = null,
-)
+){
+    fun hasPaidMembership(): Boolean = renewalFutureDate != null
+
+    fun isActiveNow(): Boolean = activeNowDate != null
+}
 
 fun getMockMemberEntity() = MemberEntity(
     id= "1234567890",
@@ -18,5 +22,6 @@ fun getMockMemberEntity() = MemberEntity(
     lastName = "Mughal",
     email = "asim@test.com",
     registrationDate = Date(),
-    renewalFutureDate = Date()
+    renewalFutureDate = Date(),
+    activeNowDate = Date(),
 )

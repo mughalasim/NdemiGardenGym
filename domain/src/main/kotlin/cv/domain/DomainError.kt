@@ -1,9 +1,15 @@
 package cv.domain
 
 enum class DomainError {
+    USER_DISABLED,
     UNKNOWN,
     SERVER,
     NETWORK,
     NO_DATA,
+    INVALID_ARGUMENT,
+    INVALID_CREDENTIALS,
     UNAUTHORISED,
+    EMAIL_ALREADY_EXISTS,
+    PASSWORD_TOO_SHORT,
+    INVALID_SESSION_TIME,
 }

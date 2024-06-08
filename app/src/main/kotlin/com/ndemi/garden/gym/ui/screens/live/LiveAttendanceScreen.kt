@@ -40,11 +40,11 @@ fun LiveAttendanceScreen (
     )
     val isRefreshing = (uiState.value is UiState.Loading)
     val pullRefreshState = rememberPullRefreshState(isRefreshing, {
-        viewModel.getMembers()
+        viewModel.getLiveMembers()
     })
 
     LaunchedEffect(true) {
-        viewModel.getMembers()
+        viewModel.getLiveMembers()
     }
 
     Box (modifier = Modifier
@@ -53,11 +53,12 @@ fun LiveAttendanceScreen (
     ){
         Column(
             modifier = Modifier
-                .padding(padding_screen),
+                .padding(padding_screen)
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextLarge(text = "Who is in the Gym today?")
+            TextLarge(text = "Who's in the Gym today?")
 
             Spacer(modifier = Modifier.padding(padding_screen_small))
 
@@ -86,7 +87,6 @@ fun LiveAttendanceListScreen(members: List<MemberEntity>) {
         modifier = Modifier
             .verticalScroll(rememberScrollState())
     ) {
-        Spacer(modifier = Modifier.padding(padding_screen_small))
         repeat(members.size) {
             MemberWidget(memberEntity = members[it])
         }

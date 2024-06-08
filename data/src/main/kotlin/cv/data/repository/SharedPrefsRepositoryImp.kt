@@ -1,11 +1,11 @@
 package cv.data.repository
 
 import android.content.SharedPreferences
-import cv.domain.repositories.SettingsRepository
+import cv.domain.repositories.SharedPrefsRepository
 
-class SettingsRepositoryImp(
+class SharedPrefsRepositoryImp(
     private val sharedPreferences: SharedPreferences,
-) : SettingsRepository {
+) : SharedPrefsRepository {
     override fun setBool(settingName: String, value: Boolean) {
         sharedPreferences.edit().putBoolean(settingName, value).apply()
     }

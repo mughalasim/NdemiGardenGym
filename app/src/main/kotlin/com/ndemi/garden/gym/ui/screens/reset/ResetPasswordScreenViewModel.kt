@@ -5,11 +5,16 @@ import com.ndemi.garden.gym.ui.UiError
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
+import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.Action
+import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
+import cv.domain.DomainResult
+import cv.domain.usecase.AuthUseCase
 
 class ResetPasswordScreenViewModel(
     private val converter: ErrorCodeConverter,
-) : BaseViewModel<ResetPasswordScreenViewModel.UiState, ResetPasswordScreenViewModel.Action>(UiState.Waiting) {
+    private val authUseCase: AuthUseCase,
+) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     private var email: String = ""
 
     fun setEmail(email: String) {
@@ -31,7 +36,12 @@ class ResetPasswordScreenViewModel(
 
     fun onResetPasswordTapped() {
         sendAction(Action.SetLoading)
-        TODO("Not yet implemented")
+        authUseCase.resetPasswordForEmail(email){
+            when(it){
+                is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
+                is DomainResult.Success -> sendAction(Action.Success)
+            }
+        }
     }
 
 
@@ -45,7 +55,7 @@ class ResetPasswordScreenViewModel(
 
         data class Error(val message: String, val inputType: InputType) : UiState
 
-        data class Success(val message: String) : UiState
+        data object Success : UiState
 
     }
 
@@ -67,8 +77,8 @@ class ResetPasswordScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
 
-        data class Success(val message: String) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Success(message)
+        data object Success : Action {
+            override fun reduce(state: UiState): UiState = UiState.Success
         }
     }
 }

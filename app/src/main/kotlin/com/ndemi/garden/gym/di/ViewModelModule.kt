@@ -17,7 +17,7 @@ val viewModelModule =
 
         viewModel { LoginScreenViewModel(get(), get(), get()) }
 
-        viewModel { ProfileScreenViewModel(get(), get(), get(), get()) }
+        viewModel { ProfileScreenViewModel(get(), get(), get(), get(), get()) }
 
         viewModel { AttendanceScreenViewModel(get(), get(), get()) }
 
@@ -25,5 +25,5 @@ val viewModelModule =
 
         viewModel { RegisterScreenViewModel(get(), get(), get(), get()) }
 
-        viewModel { ResetPasswordScreenViewModel(get()) }
+        viewModel { ResetPasswordScreenViewModel(get(), get()) }
     }

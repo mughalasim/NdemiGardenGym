@@ -17,7 +17,8 @@ import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.line_thickness_small
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
-import com.ndemi.garden.gym.ui.utils.getPaidStatusString
+import com.ndemi.garden.gym.ui.utils.toHoursMinutesDuration
+import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.getMockMemberEntity
 import org.joda.time.DateTime
@@ -26,6 +27,7 @@ import org.joda.time.DateTime
 fun MemberWidget(
     modifier: Modifier = Modifier,
     memberEntity: MemberEntity,
+    showDetails: Boolean = false,
 ) {
     Column(
         modifier =
@@ -43,17 +45,27 @@ fun MemberWidget(
         TextRegular(
             text = memberEntity.firstName + " " + memberEntity.lastName,
         )
-        Spacer(modifier = Modifier.padding(top = padding_screen_small))
-        TextSmall(
-            text =  "Email: " + memberEntity.email,
-        )
-        TextSmall(
-            text =  "Member since: " + DateTime(memberEntity.registrationDate).toString(formatDayMonthYear),
-        )
-        Spacer(modifier = Modifier.padding(top = padding_screen_small))
-        TextRegular(
-            text =  "Membership renewal: " + memberEntity.renewalFutureDate.getPaidStatusString(),
-        )
+        if (memberEntity.isActiveNow()){
+            TextRegular(
+                text = "Session length: " + DateTime.now().toHoursMinutesDuration(
+                    startDate = DateTime(memberEntity.activeNowDate)
+                ),
+            )
+        }
+
+        if (showDetails){
+            Spacer(modifier = Modifier.padding(top = padding_screen_small))
+            TextSmall(
+                text =  "Email: " + memberEntity.email,
+            )
+            TextSmall(
+                text =  "Member since: " + DateTime(memberEntity.registrationDate).toString(formatDayMonthYear),
+            )
+            Spacer(modifier = Modifier.padding(top = padding_screen_small))
+            TextRegular(
+                text =  "Membership renewal: " + memberEntity.renewalFutureDate.toMembershipStatusString(),
+            )
+        }
     }
 }
 

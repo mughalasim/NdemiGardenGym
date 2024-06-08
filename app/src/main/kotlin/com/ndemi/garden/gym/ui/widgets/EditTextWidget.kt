@@ -1,6 +1,7 @@
 package com.ndemi.garden.gym.ui.widgets
 
 import android.content.res.Configuration
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
@@ -9,6 +10,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.runtime.Composable
@@ -44,6 +46,14 @@ fun EditTextWidget(
         onValueChange = {
             text = it
             onValueChanged(text)
+        },
+        trailingIcon = {
+            Icon(
+                Icons.Default.Clear,
+                tint = AppTheme.colors.highLight,
+                contentDescription = "Clear text",
+                modifier = Modifier.clickable { text = "" }
+            )
         },
         label = { Text(hint)},
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),

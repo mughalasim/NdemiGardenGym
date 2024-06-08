@@ -1,6 +1,6 @@
 package cv.domain.repositories
 
-interface SettingsRepository {
+interface SharedPrefsRepository {
     fun setBool(settingName: String, value: Boolean)
 
     fun getBool(settingName: String): Boolean

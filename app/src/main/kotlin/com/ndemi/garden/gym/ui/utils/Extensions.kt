@@ -51,8 +51,8 @@ fun String.toYearMonthDuration(endDateString: String): String {
             if (months > 0) String.format(context.getQuantityString(R.plurals.plural_month, months), months) else ""
     )
 }
-
-fun Date?.getPaidStatusString(): String {
+@Composable
+fun Date?.toMembershipStatusString(): String {
     return this?.let {
         DateTime(it).toString(formatDayMonthYear)
     }?: run{ "Not Paid" }

@@ -2,15 +2,15 @@ package cv.data.repository
 
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import cv.data.retrofit.toDomainError
+import cv.domain.DomainError
+import cv.domain.DomainResult
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.AuthRepository
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
 
 class AuthRepositoryImp(
     private val logger: AppLoggerRepository,
 ) : AuthRepository {
-    private val backgroundExecutor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 
     override fun isAuthenticated() = Firebase.auth.currentUser != null
 
@@ -18,37 +18,41 @@ class AuthRepositoryImp(
 
     override fun logOut() = Firebase.auth.signOut()
 
-    override fun register(email: String, password: String, callback: (String) -> Unit) {
+    override fun register(email: String, password: String, callback: (DomainResult<String>) -> Unit) {
         Firebase.auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(backgroundExecutor) { task ->
-                logger.log(task.isSuccessful.toString())
-                if (task.isSuccessful) {
-                    Firebase.auth.currentUser?.let {
-                        logger.log("New member ID registered: ${it.uid}")
-                        callback.invoke(it.uid)
-                    } ?: {
-                        callback.invoke("")
-                    }
-                } else {
-                    callback.invoke("")
+            .addOnSuccessListener { result ->
+                result.user?.let {
+                    callback.invoke(DomainResult.Success(it.uid))
+                } ?: run{
+                    callback.invoke(DomainResult.Error(DomainError.NO_DATA))
                 }
+            }.addOnFailureListener {
+                logger.log("Exception: $it")
+                callback.invoke(DomainResult.Error(it.toDomainError()))
             }
     }
 
-    override fun login(email: String, password: String, callback: (String) -> Unit) {
+    override fun login(email: String, password: String, callback: (DomainResult<Unit>) -> Unit) {
         Firebase.auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(backgroundExecutor) { task ->
-                logger.log(task.isSuccessful.toString())
-                if (task.isSuccessful) {
-                    Firebase.auth.currentUser?.let {
-                        logger.log(it.uid)
-                        callback.invoke(it.uid)
-                    } ?: {
-                        callback.invoke("")
-                    }
-                } else {
-                    callback.invoke("")
+            .addOnSuccessListener { result ->
+                result.user?.let {
+                    callback.invoke(DomainResult.Success(Unit))
+                } ?: run{
+                    callback.invoke(DomainResult.Error(DomainError.NO_DATA))
                 }
+            }.addOnFailureListener {
+                logger.log("Exception: $it")
+                callback.invoke(DomainResult.Error(it.toDomainError()))
+            }
+    }
+
+    override fun resetPasswordForEmail(email: String, callback: (DomainResult<Unit>) -> Unit){
+        Firebase.auth.sendPasswordResetEmail(email)
+            .addOnSuccessListener {
+                callback.invoke(DomainResult.Success(Unit))
+            }.addOnFailureListener {
+                logger.log("Exception: $it")
+                callback.invoke(DomainResult.Error(it.toDomainError()))
             }
     }
 }

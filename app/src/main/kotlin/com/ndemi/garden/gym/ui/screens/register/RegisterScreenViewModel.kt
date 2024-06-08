@@ -8,6 +8,8 @@ import com.ndemi.garden.gym.ui.UiError
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
+import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.Action
+import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
@@ -21,7 +23,7 @@ class RegisterScreenViewModel(
     private val authUseCase: AuthUseCase,
     private val memberUseCase: MemberUseCase,
     private val navigationService: NavigationService,
-) : BaseViewModel<RegisterScreenViewModel.UiState, RegisterScreenViewModel.Action>(UiState.Waiting) {
+) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     private var email: String = ""
     private var password: String = ""
     private var confirmPassword: String = ""
@@ -99,10 +101,9 @@ class RegisterScreenViewModel(
     fun onRegisterTapped() {
         sendAction(Action.SetLoading)
         authUseCase.register(email, password) {
-            if (it.isEmpty()) {
-                sendAction(Action.ShowError(converter.getMessage(UiError.REGISTRATION_FAILED)))
-            } else {
-                updateMember(it)
+            when(it){
+                is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
+                is DomainResult.Success -> updateMember(it.data)
             }
         }
     }
@@ -118,7 +119,8 @@ class RegisterScreenViewModel(
                 registrationDate = DateTime.now().toDate()
             )).also {result ->
                 when(result){
-                    is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(UiError.REGISTRATION_FAILED)))
+                    is DomainResult.Error ->
+                        sendAction(Action.ShowError(converter.getMessage(UiError.REGISTRATION_FAILED)))
                     is DomainResult.Success -> sendAction(Action.Success)
                 }
             }

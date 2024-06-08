@@ -1,5 +1,6 @@
 package com.ndemi.garden.gym.ui.screens.reset
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,8 +10,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiState
@@ -29,6 +35,8 @@ fun ResetPasswordScreen(
     val uiState = viewModel.uiStateFlow.collectAsState(
         initial = UiState.Waiting
     )
+    var email by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -36,6 +44,14 @@ fun ResetPasswordScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        if (uiState.value is UiState.Success){
+           Toast.makeText(
+               LocalContext.current,
+               "Email has been sent to $email",
+               Toast.LENGTH_LONG
+           ).show()
+        }
+
         if (uiState.value is UiState.Error){
             val message = (uiState.value as UiState.Error).message
             WarningWidget(message)
@@ -50,6 +66,7 @@ fun ResetPasswordScreen(
             hint = "Email",
             isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL
         ){
+            email = it
             viewModel.setEmail(it)
         }
 

@@ -24,10 +24,10 @@ class LiveAttendanceScreenViewModel (
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
 
-    fun getMembers() {
+    fun getLiveMembers() {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            memberUseCase.getAllLiveMembers().also { result ->
+            memberUseCase.getLiveMembers().also { result ->
                 when(result){
                     is DomainResult.Error ->
                         sendAction(Action.ShowDomainError(result.error, errorCodeConverter))

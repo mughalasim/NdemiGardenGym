@@ -8,6 +8,7 @@ import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
+import cv.domain.DomainResult
 import cv.domain.usecase.AuthUseCase
 
 class LoginScreenViewModel(
@@ -41,10 +42,12 @@ class LoginScreenViewModel(
     fun onLoginTapped() {
         sendAction(Action.SetLoading)
         authUseCase.login(email, password){
-            if (it.isEmpty()){
-                sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_LOGIN_CREDENTIALS)))
-            } else {
-                sendAction(Action.Success(it))
+            when(it){
+                is DomainResult.Success ->
+                    sendAction(Action.Success)
+
+                is DomainResult.Error ->
+                    sendAction(Action.ShowError(converter.getMessage(it.error)))
             }
         }
     }
@@ -64,7 +67,7 @@ class LoginScreenViewModel(
 
         data class Error(val message: String, val inputType: InputType) : UiState
 
-        data class Success(val userId: String, ) : UiState
+        data object Success : UiState
 
     }
 
@@ -87,8 +90,8 @@ class LoginScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
 
-        data class Success(val userId: String) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Success(userId)
+        data object Success : Action {
+            override fun reduce(state: UiState): UiState = UiState.Success
         }
     }
 }
