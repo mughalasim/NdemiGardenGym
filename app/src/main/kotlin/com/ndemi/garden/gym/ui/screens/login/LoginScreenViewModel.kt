@@ -31,9 +31,9 @@ class LoginScreenViewModel(
 
     private fun validateInput(){
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            sendAction(Action.ShowError(converter.getMessage(UiError.EMAIL_INVALID), InputType.EMAIL))
+            sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_EMAIL), InputType.EMAIL))
         } else if (password.isEmpty()){
-            sendAction(Action.ShowError(converter.getMessage(UiError.PASSWORD_INVALID), InputType.PASSWORD))
+            sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_PASSWORD), InputType.PASSWORD))
         } else {
             sendAction(Action.SetReady)
         }

@@ -12,6 +12,8 @@ data class AttendanceModel(
     val endDate: Timestamp = Timestamp(Date()),
 ) {
 
+    fun getAttendanceId(): String = "$memberId-$startDate"
+
     fun toAttendanceEntity() = AttendanceEntity(
         memberId = memberId,
         startDate = startDate.toDate(),

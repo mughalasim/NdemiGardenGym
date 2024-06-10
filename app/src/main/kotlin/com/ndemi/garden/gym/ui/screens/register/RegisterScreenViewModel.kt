@@ -46,7 +46,7 @@ class RegisterScreenViewModel(
         if (firstName.isEmpty()) {
             sendAction(
                 Action.ShowError(
-                    converter.getMessage(UiError.FIRST_NAME_INVALID),
+                    converter.getMessage(UiError.INVALID_FIRST_NAME),
                     InputType.FIRST_NAME
                 )
             )
@@ -54,7 +54,7 @@ class RegisterScreenViewModel(
         } else if (lastName.isEmpty()) {
             sendAction(
                 Action.ShowError(
-                    converter.getMessage(UiError.LAST_NAME_INVALID),
+                    converter.getMessage(UiError.INVALID_LAST_NAME),
                     InputType.LAST_NAME
                 )
             )
@@ -64,7 +64,7 @@ class RegisterScreenViewModel(
         ) {
             sendAction(
                 Action.ShowError(
-                    converter.getMessage(UiError.EMAIL_INVALID),
+                    converter.getMessage(UiError.INVALID_EMAIL),
                     InputType.EMAIL
                 )
             )
@@ -72,7 +72,7 @@ class RegisterScreenViewModel(
         } else if (password.isEmpty()) {
             sendAction(
                 Action.ShowError(
-                    converter.getMessage(UiError.PASSWORD_INVALID),
+                    converter.getMessage(UiError.INVALID_PASSWORD),
                     InputType.PASSWORD
                 )
             )
@@ -80,7 +80,7 @@ class RegisterScreenViewModel(
         } else if (confirmPassword.isEmpty()) {
             sendAction(
                 Action.ShowError(
-                    converter.getMessage(UiError.PASSWORD_CONFIRM_INVALID),
+                    converter.getMessage(UiError.INVALID_PASSWORD_CONFIRM),
                     InputType.CONFIRM_PASSWORD
                 )
             )
@@ -88,7 +88,7 @@ class RegisterScreenViewModel(
         } else if (password != confirmPassword) {
             sendAction(
                 Action.ShowError(
-                    converter.getMessage(UiError.PASSWORD_MATCH_INVALID),
+                    converter.getMessage(UiError.INVALID_PASSWORD_MATCH),
                     InputType.CONFIRM_PASSWORD
                 )
             )

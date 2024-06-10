@@ -16,6 +16,13 @@
     <string name="error_password_match">Your password and confirm password do not match</string>
     <string name="error_first_name">First name cannot be empty</string>
     <string name="error_last_name">Last name cannot be empty</string>
+    <string name="error_invalid_credentials">Credentials are invalid</string>
+    <string name="error_registration_failed">Registration failed</string>
+    <string name="error_invalid_info">Information supplied is invalid</string>
+    <string name="error_email_already_exists">The supplied email already exists</string>
+    <string name="error_password_length">Password must be at least 6 characters in length</string>
+    <string name="error_account_disabled">Your account has been disabled, please contact admin</string>
+    <string name="error_workout_session_length">Cannot update your workout session as it is either too short or longer than a day</string>
 
     <!-- Plurals-->
     <plurals name="plural_year">

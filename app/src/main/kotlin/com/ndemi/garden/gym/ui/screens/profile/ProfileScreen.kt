@@ -237,9 +237,9 @@ fun ProfileListScreen(
         }
 
         Spacer(modifier = Modifier.padding(padding_screen_small))
-        ButtonWidget(title = "LogOut", isEnabled = sessionStartTime == null) {
-            onLogOut.invoke()
-        }
+//        ButtonWidget(title = "LogOut", isEnabled = sessionStartTime == null) {
+//            onLogOut.invoke()
+//        }
     }
 }
 

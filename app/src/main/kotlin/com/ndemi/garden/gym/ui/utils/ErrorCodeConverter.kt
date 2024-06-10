@@ -27,24 +27,24 @@ class ErrorCodeConverterImp (
             DomainError.NETWORK -> application.resources.getString(R.string.error_internet_connection)
             DomainError.UNAUTHORISED -> application.resources.getString(R.string.error_unauthorised)
             DomainError.NO_DATA -> application.resources.getString(R.string.error_no_data)
-            DomainError.INVALID_ARGUMENT -> "Data supplied is invalid"
-            DomainError.EMAIL_ALREADY_EXISTS -> "This email already exists"
-            DomainError.PASSWORD_TOO_SHORT -> "Password must be at least 6 characters in length"
-            DomainError.INVALID_CREDENTIALS -> "The supplied credentials are incorrect, malformed or have expired."
-            DomainError.USER_DISABLED -> "Your account has been disabled, please contact admin"
-            DomainError.INVALID_SESSION_TIME -> "Your workout session must be between 5 minutes and 24 hours"
+            DomainError.INVALID_ARGUMENT -> application.resources.getString(R.string.error_invalid_info)
+            DomainError.EMAIL_ALREADY_EXISTS -> application.resources.getString(R.string.error_email_already_exists)
+            DomainError.INVALID_PASSWORD_LENGTH -> application.resources.getString(R.string.error_password_length)
+            DomainError.INVALID_LOGIN_CREDENTIALS -> application.resources.getString(R.string.error_invalid_credentials)
+            DomainError.USER_DISABLED -> application.resources.getString(R.string.error_account_disabled)
+            DomainError.INVALID_SESSION_TIME -> application.resources.getString(R.string.error_workout_session_length)
         }
     }
 
     override fun getMessage(uiError: UiError): String =
         when (uiError) {
-            UiError.EMAIL_INVALID -> application.resources.getString(R.string.error_email)
-            UiError.PASSWORD_INVALID -> application.resources.getString(R.string.error_password)
-            UiError.PASSWORD_CONFIRM_INVALID -> application.resources.getString(R.string.error_password_confirm)
-            UiError.PASSWORD_MATCH_INVALID -> application.resources.getString(R.string.error_password_match)
-            UiError.FIRST_NAME_INVALID -> application.resources.getString(R.string.error_first_name)
-            UiError.LAST_NAME_INVALID -> application.resources.getString(R.string.error_last_name)
-            UiError.INVALID_LOGIN_CREDENTIALS -> "Credentials are invalid"
-            UiError.REGISTRATION_FAILED -> "Registration failed"
+            UiError.INVALID_EMAIL -> application.resources.getString(R.string.error_email)
+            UiError.INVALID_PASSWORD -> application.resources.getString(R.string.error_password)
+            UiError.INVALID_PASSWORD_CONFIRM -> application.resources.getString(R.string.error_password_confirm)
+            UiError.INVALID_PASSWORD_MATCH -> application.resources.getString(R.string.error_password_match)
+            UiError.INVALID_FIRST_NAME -> application.resources.getString(R.string.error_first_name)
+            UiError.INVALID_LAST_NAME -> application.resources.getString(R.string.error_last_name)
+            UiError.INVALID_LOGIN_CREDENTIALS -> application.resources.getString(R.string.error_invalid_credentials)
+            UiError.REGISTRATION_FAILED -> application.resources.getString(R.string.error_registration_failed)
         }
 }

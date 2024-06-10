@@ -27,9 +27,9 @@ fun ApiError.toDomainError(): DomainError =
 
 fun Exception.toDomainError(): DomainError{
     return when(this){
-        is FirebaseAuthWeakPasswordException -> DomainError.PASSWORD_TOO_SHORT
-        is FirebaseAuthInvalidCredentialsException -> DomainError.INVALID_CREDENTIALS
-        is FirebaseAuthEmailException -> DomainError.INVALID_CREDENTIALS
+        is FirebaseAuthWeakPasswordException -> DomainError.INVALID_PASSWORD_LENGTH
+        is FirebaseAuthInvalidCredentialsException -> DomainError.INVALID_LOGIN_CREDENTIALS
+        is FirebaseAuthEmailException -> DomainError.INVALID_LOGIN_CREDENTIALS
         is FirebaseAuthInvalidUserException -> DomainError.USER_DISABLED
         is FirebaseAuthException -> DomainError.UNKNOWN
         is FirebaseFirestoreException -> {

@@ -1,7 +1,5 @@
 package com.ndemi.garden.gym.navigation
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -24,8 +22,6 @@ fun NavigationHost(
     NavHost(
         navController = navController,
         startDestination = navigationService.getInitialRoute().routeName,
-        enterTransition = { EnterTransition.None},
-        exitTransition = { ExitTransition.None}
     ) {
         composable(route = Route.LoginScreen.routeName) { LoginScreen() }
         composable(route = Route.ResetPasswordScreen.routeName) { ResetPasswordScreen() }

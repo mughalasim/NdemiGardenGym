@@ -1,5 +1,6 @@
 package cv.data.repository
 
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ktx.firestore
@@ -102,7 +103,9 @@ class MemberRepositoryImp(
 
     override suspend fun updateMember(memberEntity: MemberEntity): DomainResult<Boolean> {
         val completable: CompletableDeferred<DomainResult<Boolean>> = CompletableDeferred()
-        database.collection(PATH_USER).document(memberEntity.id).set(memberEntity)
+        val memberModel = memberEntity.toMemberModel()
+
+        database.collection(PATH_USER).document(memberModel.id).set(memberModel)
             .addOnSuccessListener {
                 completable.complete(DomainResult.Success(true))
             }
@@ -161,19 +164,19 @@ class MemberRepositoryImp(
             return DomainResult.Error(DomainError.INVALID_SESSION_TIME)
         }
 
-        val attendanceEntity = AttendanceEntity(
+        val attendanceModel = AttendanceModel(
             memberId = memberId,
-            startDate = startDate,
-            endDate = endDate
+            startDate = Timestamp(startDate),
+            endDate = Timestamp(endDate)
         )
         val collection = database
             .collection(PATH_ATTENDANCE)
             .document(startDateTime.year.toString())
             .collection(startDateTime.monthOfYear.toString())
-            .document(attendanceEntity.getAttendanceId())
+            .document(attendanceModel.getAttendanceId())
 
         val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
-        collection.set(attendanceEntity)
+        collection.set(attendanceModel)
             .addOnSuccessListener {
                 logger.log("Attendance Added")
                 completable.complete(DomainResult.Success(Unit))
@@ -187,13 +190,14 @@ class MemberRepositoryImp(
     }
 
     override suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit> {
-        val startDateTime = DateTime(DateTime(attendanceEntity.startDate))
+        val attendanceModel = attendanceEntity.toAttendanceModel()
+        val startDateTime = DateTime(attendanceEntity.startDate)
 
         val collection = database
             .collection(PATH_ATTENDANCE)
             .document(startDateTime.year.toString())
             .collection(startDateTime.monthOfYear.toString())
-            .document(attendanceEntity.getAttendanceId())
+            .document(attendanceModel.getAttendanceId())
 
         val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
         collection.delete()
@@ -208,5 +212,21 @@ class MemberRepositoryImp(
 
         return completable.await()
     }
+
+    private fun AttendanceEntity.toAttendanceModel() = AttendanceModel(
+        memberId = memberId,
+        startDate = Timestamp(startDate),
+        endDate = Timestamp(endDate)
+    )
+
+    private fun MemberEntity.toMemberModel() = MemberModel(
+        id = id,
+        firstName = firstName,
+        lastName = lastName,
+        email = email,
+        activeNowDate = activeNowDate?.let { Timestamp(it) }?: run { null },
+        renewalFutureDate = renewalFutureDate?.let { Timestamp(it) }?: run { null },
+        registrationDate = Timestamp(registrationDate),
+    )
 
 }

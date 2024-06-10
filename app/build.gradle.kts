@@ -19,6 +19,7 @@ keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 android {
     val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
     val appName = libs.findVersion("appName").get().toString()
+    val versionNameString = libs.findVersion("appVersionName").get().toString()
 
     namespace = libs.findVersion("appNamespaceId").get().toString()
     compileSdk = libs.findVersion("compileSdk").get().toString().toInt()
@@ -28,7 +29,7 @@ android {
         minSdk = libs.findVersion("minSdk").get().toString().toInt()
         targetSdk = libs.findVersion("compileSdk").get().toString().toInt()
         versionCode = libs.findVersion("appVersionCode").get().toString().toInt()
-        versionName = libs.findVersion("appVersionName").get().toString()
+        versionName = versionNameString
         buildConfigField(
             "String",
             "API_BASE_URL",
@@ -87,7 +88,7 @@ android {
     productFlavors {
         create("App") {
             dimension = "version"
-            setProperty("archivesBaseName", appName)
+            setProperty("archivesBaseName", "$appName ($versionNameString)")
         }
     }
 

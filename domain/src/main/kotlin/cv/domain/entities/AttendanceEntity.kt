@@ -2,13 +2,11 @@ package cv.domain.entities
 
 import java.util.Date
 
-data class AttendanceEntity(
+data class AttendanceEntity (
     val memberId: String,
     val startDate: Date,
     val endDate: Date,
-){
-    fun getAttendanceId(): String = "$memberId-$startDate"
-}
+)
 
 fun getMockAttendanceEntity(
     startDate: Date = Date(),

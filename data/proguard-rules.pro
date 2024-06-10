@@ -40,5 +40,8 @@
 -keep class kotlinx.coroutines.** { *; }
 
 # Custom CallAdapter.Factory
--keep class cv.data.retrofit.ApiResultAdapterFactory { *; }
+-keep class cv.data.retrofit.ApiAdapterFactory { *; }
 -keep class **.ApiResult { *; }
+
+-keep class cv.data.models.** { *; }
+

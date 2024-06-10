@@ -1,8 +1,8 @@
 [versions]
 appName = "Ndemi Garden Gym"
 appNamespaceId = "com.ndemi.garden.gym"
-appVersionCode = "1"
-appVersionName = "1.0"
+appVersionCode = "2"
+appVersionName = "2.0"
 compileSdk = "34"
 minSdk = "24"
 firebaseBom = "33.1.0"

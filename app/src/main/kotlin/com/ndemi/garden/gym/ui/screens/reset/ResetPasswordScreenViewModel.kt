@@ -26,7 +26,7 @@ class ResetPasswordScreenViewModel(
     private fun validateInput(){
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             sendAction(Action.ShowError(
-                converter.getMessage(UiError.EMAIL_INVALID),
+                converter.getMessage(UiError.INVALID_EMAIL),
                 InputType.EMAIL)
             )
         } else {
