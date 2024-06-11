@@ -1,11 +1,12 @@
 package com.ndemi.garden.gym.navigation
 
 import androidx.navigation.NavController
+import com.ndemi.garden.gym.ui.utils.toRoute
 import cv.domain.Variables.EVENT_NAME_NAVIGATE
 import cv.domain.Variables.PARAM_SCREEN_NAME
 import cv.domain.repositories.AnalyticsRepository
-import com.ndemi.garden.gym.ui.utils.toRoute
 import cv.domain.usecase.AuthUseCase
+import kotlinx.serialization.Serializable
 
 class NavigationServiceImp(
     private val analyticsRepository: AnalyticsRepository,
@@ -42,6 +43,28 @@ class NavigationServiceImp(
         )
     }
 
+    override fun openWithArgs(
+        dataClass: Route,
+        removeCurrentFromStack: Boolean,
+    ) {
+        if (dataClass == getCurrentRoute()) {
+            return
+        }
+        navController.navigate(dataClass) {
+            if (removeCurrentFromStack) {
+                popUpTo(getCurrentRoute().routeName) {
+                    inclusive = true
+                }
+            }
+        }
+        analyticsRepository.logEvent(
+            EVENT_NAME_NAVIGATE,
+            listOf(
+                Pair(PARAM_SCREEN_NAME, dataClass.javaClass.simpleName),
+            ),
+        )
+    }
+
     override fun popBack() {
         navController.popBackStack()
         analyticsRepository.logEvent(
@@ -58,16 +81,35 @@ class NavigationServiceImp(
     override fun getInitialRoute(): Route = initialRoute
 }
 
+@Serializable
 sealed class Route(val routeName: String, val isInitialRoute: Boolean = false) {
-    data object LoginScreen : Route("LoginScreen")
-    data object ResetPasswordScreen : Route("ResetPasswordScreen")
-    data object RegisterScreen : Route("RegisterScreen")
-    data object ProfileScreen : Route("ProfileScreen")
-    data object AttendanceScreen : Route("AttendanceScreen")
-    data object LiveAttendanceScreen : Route("LiveAttendanceScreen")
-    data object MembersScreen : Route("MembersScreen")
-    data object MemberEditScreen : Route("MemberEditScreen")
-    data object MembersAttendancesScreen : Route("MembersAttendancesScreen")
+    data object LoginScreen
+        : Route("LoginScreen")
+
+    data object ResetPasswordScreen
+        : Route("ResetPasswordScreen")
+
+    data object RegisterScreen
+        : Route("RegisterScreen")
+
+    data object ProfileScreen
+        : Route("ProfileScreen")
+
+    data object AttendanceScreen
+        : Route("AttendanceScreen")
+
+    data object LiveAttendanceScreen
+        : Route("LiveAttendanceScreen")
+
+    data object MembersScreen
+        : Route("MembersScreen")
+
+    data object MembersAttendancesScreen
+        : Route("MembersAttendancesScreen")
+
+    @Serializable
+    data class MemberEditScreen(val memberId: String)
+        : Route("MemberEditScreen")
 
     companion object {
         fun getInitialRoute(isAuthenticated: Boolean): Route =

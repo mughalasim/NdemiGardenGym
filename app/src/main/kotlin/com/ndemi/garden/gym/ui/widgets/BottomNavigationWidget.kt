@@ -1,26 +1,30 @@
 package com.ndemi.garden.gym.ui.widgets
 
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.theme.AppTheme
+import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 
 @Composable
 fun BottomNavigationWidget(
@@ -28,7 +32,7 @@ fun BottomNavigationWidget(
     navBottomItems: List<BottomNavItem> = listOf()
 ) {
     BottomNavigation(
-        backgroundColor = AppTheme.colors.highLight,
+        backgroundColor = AppTheme.colors.backgroundScreen,
     ) {
         val navStackBackEntry by navHostController.currentBackStackEntryAsState()
         val currentDestination = navStackBackEntry?.destination
@@ -36,7 +40,7 @@ fun BottomNavigationWidget(
         navBottomItems.forEach { item ->
             val isCurrentSelection = currentDestination?.hierarchy?.any { it.route == item.route } == true
             val selectedColor =
-                if (isCurrentSelection) AppTheme.colors.textPrimary else AppTheme.colors.backgroundScreen
+                if (isCurrentSelection) AppTheme.colors.highLight else AppTheme.colors.backgroundButtonDisabled
             BottomNavigationItem(
                 selected = isCurrentSelection,
                 onClick = {
@@ -90,11 +94,11 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: 
     )
 
     data object LiveAttendanceScreen : BottomNavItem(
-        Route.LiveAttendanceScreen.routeName, Icons.Default.Check, "Live view"
+        Route.LiveAttendanceScreen.routeName, Icons.Default.Info, "Live view"
     )
 
     data object MembersScreen : BottomNavItem(
-        Route.MembersScreen.routeName, Icons.Default.Star, "Members"
+        Route.MembersScreen.routeName, Icons.Default.Info, "Members"
     )
 
     data object MembersAttendancesScreen : BottomNavItem(
@@ -117,7 +121,57 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: 
         fun getAdminBottomItems() = listOf(
             ProfileScreen,
             MembersScreen,
-            MembersAttendancesScreen,
+//            MembersAttendancesScreen,
         )
+    }
+}
+
+@Preview(
+    showBackground = false,
+    showSystemUi = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
+@Composable
+fun BottomNavigationWidgetPreviewNight(){
+    AppThemeComposable {
+        Column {
+            BottomNavigationWidget(
+                navHostController = rememberNavController(),
+                BottomNavItem.getLoginBottomItems()
+            )
+            BottomNavigationWidget(
+                navHostController = rememberNavController(),
+                BottomNavItem.getMemberBottomItems()
+            )
+            BottomNavigationWidget(
+                navHostController = rememberNavController(),
+                BottomNavItem.getAdminBottomItems()
+            )
+        }
+    }
+}
+
+@Preview(
+    showBackground = false,
+    showSystemUi = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+)
+@Composable
+fun BottomNavigationWidgetPreview(){
+    AppThemeComposable {
+        Column {
+            BottomNavigationWidget(
+                navHostController = rememberNavController(),
+                BottomNavItem.getLoginBottomItems()
+            )
+            BottomNavigationWidget(
+                navHostController = rememberNavController(),
+                BottomNavItem.getMemberBottomItems()
+            )
+            BottomNavigationWidget(
+                navHostController = rememberNavController(),
+                BottomNavItem.getAdminBottomItems()
+            )
+        }
     }
 }

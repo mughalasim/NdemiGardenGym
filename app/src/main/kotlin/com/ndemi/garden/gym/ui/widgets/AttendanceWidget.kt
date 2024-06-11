@@ -89,7 +89,7 @@ fun AttendanceWidget(
                 text = endDate.toHoursMinutesDuration(startDate),
             )
 
-            if (showDialog)
+            if (showDialog){
                 AlertDialog(
                     backgroundColor = AppTheme.colors.backgroundButtonDisabled,
                     title = { TextSmall(text = "Are you sure") },
@@ -106,6 +106,7 @@ fun AttendanceWidget(
                             showDialog = !showDialog
                         }
                     })
+            }
         }
     }
 }

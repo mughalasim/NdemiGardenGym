@@ -46,5 +46,6 @@ class ErrorCodeConverterImp (
             UiError.INVALID_LAST_NAME -> application.resources.getString(R.string.error_last_name)
             UiError.INVALID_LOGIN_CREDENTIALS -> application.resources.getString(R.string.error_invalid_credentials)
             UiError.REGISTRATION_FAILED -> application.resources.getString(R.string.error_registration_failed)
+            UiError.INVALID_APARTMENT_NUMBER -> application.resources.getString(R.string.error_apartment_number)
         }
 }

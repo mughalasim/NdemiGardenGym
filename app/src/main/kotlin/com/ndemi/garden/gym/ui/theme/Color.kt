@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 val Red = Color(0xFFC90C0C)
 
 @Suppress("detekt.MagicNumber")
-val Yellow = Color(0xFFF1B252)
+val Yellow = Color(0xFFB69547)
 
 @Suppress("detekt.MagicNumber")
 val LightGreen = Color(0xFFA0E294)

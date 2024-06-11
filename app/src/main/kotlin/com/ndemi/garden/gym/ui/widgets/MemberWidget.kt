@@ -2,22 +2,33 @@ package com.ndemi.garden.gym.ui.widgets
 
 import android.content.res.Configuration
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
+import com.ndemi.garden.gym.ui.theme.icon_image_size_large
 import com.ndemi.garden.gym.ui.theme.line_thickness_small
+import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
-import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
-import com.ndemi.garden.gym.ui.utils.toHoursMinutesDuration
+import com.ndemi.garden.gym.ui.utils.toDaysDuration
+import com.ndemi.garden.gym.ui.utils.toHoursMinutesSecondsDuration
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.getMockMemberEntity
@@ -28,6 +39,7 @@ fun MemberWidget(
     modifier: Modifier = Modifier,
     memberEntity: MemberEntity,
     showDetails: Boolean = false,
+    onMemberTapped: (memberEntity: MemberEntity) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -40,31 +52,66 @@ fun MemberWidget(
                 color = AppTheme.colors.backgroundChip,
                 shape = RoundedCornerShape(border_radius),
             )
-            .padding(padding_screen_small),
+            .padding(padding_screen)
+            .clickable { if (showDetails) onMemberTapped.invoke(memberEntity) },
     ) {
-        TextRegular(
-            text = memberEntity.firstName + " " + memberEntity.lastName,
-        )
-        if (memberEntity.isActiveNow()){
-            TextRegular(
-                text = "Session length: " + DateTime.now().toHoursMinutesDuration(
-                    startDate = DateTime(memberEntity.activeNowDate)
-                ),
-            )
-        }
+        Row {
+            Column(modifier = Modifier.weight(8f)) {
+                TextLarge(
+                    text = memberEntity.getFullName() + " (" + DateTime.now()
+                        .toHoursMinutesSecondsDuration(
+                            startDate = DateTime(memberEntity.activeNowDate)
+                        ) + ")",
+                )
+            }
+            if (showDetails) {
+                Column(modifier = Modifier.weight(1f)) {
 
-        if (showDetails){
-            Spacer(modifier = Modifier.padding(top = padding_screen_small))
-            TextSmall(
-                text =  "Email: " + memberEntity.email,
-            )
-            TextSmall(
-                text =  "Member since: " + DateTime(memberEntity.registrationDate).toString(formatDayMonthYear),
+                    if (memberEntity.isActiveNow()) {
+                        Icon(
+                            modifier = Modifier
+                                .width(icon_image_size_large)
+                                .height(icon_image_size_large),
+                            imageVector = Icons.Rounded.CheckCircle,
+                            contentDescription = null,
+                            tint = Color.Green,
+                        )
+                    } else if (!memberEntity.hasPaidMembership()) {
+                        Icon(
+                            modifier = Modifier
+                                .width(icon_image_size_large)
+                                .height(icon_image_size_large),
+                            imageVector = Icons.Rounded.Clear,
+                            contentDescription = null,
+                            tint = AppTheme.colors.backgroundError,
+                        )
+                    }
+
+                }
+            }
+        }
+        if (showDetails) {
+            TextRegular(
+                text = "Email: " + memberEntity.email,
             )
             Spacer(modifier = Modifier.padding(top = padding_screen_small))
             TextRegular(
-                text =  "Membership renewal: " + memberEntity.renewalFutureDate.toMembershipStatusString(),
+                color = AppTheme.colors.highLight,
+                text = memberEntity.getResidentialStatus(),
             )
+            Spacer(modifier = Modifier.padding(top = padding_screen_small))
+            TextRegular(
+                text = "Membership due date: "
+                        + memberEntity.renewalFutureDate.toMembershipStatusString(),
+            )
+            if (memberEntity.hasPaidMembership()) {
+                Spacer(modifier = Modifier.padding(top = padding_screen_small))
+                TextRegular(
+                    color = AppTheme.colors.highLight,
+                    text = "Payment due in: "
+                            + DateTime(memberEntity.renewalFutureDate).toDaysDuration(),
+                )
+            }
         }
     }
 }
@@ -77,7 +124,10 @@ fun MemberWidget(
 @Composable
 fun MemberWidgetPreviewNight() {
     AppThemeComposable {
-        MemberWidget(memberEntity = getMockMemberEntity())
+        Column {
+            MemberWidget(memberEntity = getMockMemberEntity(), showDetails = true)
+            MemberWidget(memberEntity = getMockMemberEntity(), showDetails = false)
+        }
     }
 }
 
@@ -89,6 +139,9 @@ fun MemberWidgetPreviewNight() {
 @Composable
 fun MemberWidgetPreview() {
     AppThemeComposable {
-        MemberWidget(memberEntity = getMockMemberEntity())
+        Column {
+            MemberWidget(memberEntity = getMockMemberEntity(), showDetails = true)
+            MemberWidget(memberEntity = getMockMemberEntity(), showDetails = false)
+        }
     }
 }

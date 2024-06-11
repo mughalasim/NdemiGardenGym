@@ -1,6 +1,7 @@
 package com.ndemi.garden.gym.ui.screens.register
 
 import androidx.compose.runtime.Immutable
+import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
@@ -11,6 +12,7 @@ import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
+import com.ndemi.garden.gym.ui.utils.isValidApartmentNumber
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.usecase.AuthUseCase
@@ -29,12 +31,14 @@ class RegisterScreenViewModel(
     private var confirmPassword: String = ""
     private var firstName: String = ""
     private var lastName: String = ""
+    private var apartmentNumber: String = ""
 
     fun setString(value: String, inPutType: InputType) {
         when (inPutType) {
             InputType.FIRST_NAME -> this.firstName = value
             InputType.LAST_NAME -> this.lastName = value
             InputType.EMAIL -> this.email = value
+            InputType.APARTMENT_NUMBER -> this.apartmentNumber = value
             InputType.PASSWORD -> this.password = value
             InputType.CONFIRM_PASSWORD -> this.confirmPassword = value
             InputType.NONE -> Unit
@@ -43,7 +47,7 @@ class RegisterScreenViewModel(
     }
 
     private fun validateInput() {
-        if (firstName.isEmpty()) {
+        if (firstName.isEmpty() || firstName.isDigitsOnly()) {
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiError.INVALID_FIRST_NAME),
@@ -51,7 +55,7 @@ class RegisterScreenViewModel(
                 )
             )
 
-        } else if (lastName.isEmpty()) {
+        } else if (lastName.isEmpty() || lastName.isDigitsOnly()) {
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiError.INVALID_LAST_NAME),
@@ -93,6 +97,14 @@ class RegisterScreenViewModel(
                 )
             )
 
+        } else if (apartmentNumber.isNotEmpty() && !apartmentNumber.isValidApartmentNumber()) {
+            sendAction(
+                Action.ShowError(
+                    converter.getMessage(UiError.INVALID_APARTMENT_NUMBER),
+                    InputType.APARTMENT_NUMBER
+                )
+            )
+
         } else {
             sendAction(Action.SetReady)
         }
@@ -113,10 +125,11 @@ class RegisterScreenViewModel(
         viewModelScope.launch {
             memberUseCase.updateMember(MemberEntity(
                 id = memberId,
-                firstName = firstName,
-                lastName = lastName,
-                email = email,
-                registrationDate = DateTime.now().toDate()
+                firstName = firstName.replaceFirstChar(Char::uppercase).trim(),
+                lastName = lastName.replaceFirstChar(Char::uppercase).trim(),
+                email = email.trim(),
+                registrationDate = DateTime.now().toDate(),
+                apartmentNumber = apartmentNumber
             )).also {result ->
                 when(result){
                     is DomainResult.Error ->
@@ -151,6 +164,7 @@ class RegisterScreenViewModel(
         FIRST_NAME,
         LAST_NAME,
         EMAIL,
+        APARTMENT_NUMBER,
         PASSWORD,
         CONFIRM_PASSWORD
     }

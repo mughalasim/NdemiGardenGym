@@ -3,6 +3,7 @@ package cv.data.models
 import androidx.annotation.Keep
 import com.google.firebase.Timestamp
 import cv.domain.entities.MemberEntity
+import org.joda.time.DateTime
 import java.util.Date
 
 @Keep
@@ -14,14 +15,27 @@ data class MemberModel(
     val registrationDate: Timestamp = Timestamp(Date()),
     val renewalFutureDate: Timestamp? = null,
     val activeNowDate: Timestamp? = null,
+    val apartmentNumber: String? = null
 ) {
-    fun toMemberEntity() = MemberEntity(
-        id = id,
-        firstName = firstName,
-        lastName = lastName,
-        email = email,
-        registrationDate = registrationDate.toDate(),
-        renewalFutureDate = renewalFutureDate?.toDate() ?: run { null },
-        activeNowDate = activeNowDate?.toDate() ?: run {null},
-    )
+    fun toMemberEntity(): MemberEntity {
+
+        return MemberEntity(
+            id = id,
+            firstName = firstName,
+            lastName = lastName,
+            email = email,
+            registrationDate = registrationDate.toDate(),
+            renewalFutureDate = isAfterNow(renewalFutureDate),
+            activeNowDate = activeNowDate?.toDate() ?: run { null },
+            apartmentNumber = apartmentNumber
+        )
+    }
+
+    private fun isAfterNow(timestamp: Timestamp?): Date? {
+        if (timestamp == null) return null
+        val dateTimeStamp = timestamp.toDate()
+        if (DateTime(dateTimeStamp).isBefore(DateTime.now())) return null
+        return dateTimeStamp
+    }
+
 }

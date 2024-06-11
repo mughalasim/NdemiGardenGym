@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Ndemi Garden Gym</string>
 
-    <string name="txt_no_difference">Now</string>
+    <string name="txt_now">Now</string>
+    <string name="txt_not_active">Not active</string>
+    <string name="txt_today">Today</string>
 
     <!-- Error messages-->
     <string name="error_internet_connection">Please check your internet connection</string>
@@ -23,11 +25,16 @@
     <string name="error_password_length">Password must be at least 6 characters in length</string>
     <string name="error_account_disabled">Your account has been disabled, please contact admin</string>
     <string name="error_workout_session_length">Cannot update your workout session as it is either too short or longer than a day</string>
+    <string name="error_apartment_number">Apartment number is invalid, Leave blank if not a resident</string>
 
     <!-- Plurals-->
     <plurals name="plural_year">
         <item quantity="one">%d year</item>
         <item quantity="other">%d years</item>
+    </plurals>
+    <plurals name="plural_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
     </plurals>
     <plurals name="plural_hours">
         <item quantity="one">%d hr</item>

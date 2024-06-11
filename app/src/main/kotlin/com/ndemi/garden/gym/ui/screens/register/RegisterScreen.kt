@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
@@ -67,9 +68,18 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.padding(padding_screen_small))
         EditTextWidget(
             hint = "Email",
-            isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL
+            isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL,
+            keyboardType = KeyboardType.Email
         ){
             viewModel.setString(it, InputType.EMAIL )
+        }
+
+        Spacer(modifier = Modifier.padding(padding_screen_small))
+        EditTextWidget(
+            hint = "Apartment number",
+            isError = (uiState.value as? UiState.Error)?.inputType == InputType.APARTMENT_NUMBER
+        ){
+            viewModel.setString(it, InputType.APARTMENT_NUMBER )
         }
 
         Spacer(modifier = Modifier.padding(padding_screen_small))

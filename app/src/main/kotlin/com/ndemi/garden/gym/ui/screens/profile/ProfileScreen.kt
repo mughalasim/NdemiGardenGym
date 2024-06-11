@@ -102,8 +102,8 @@ fun ProfileListScreen(
     message: String = "",
     sessionStartTime: DateTime? = null,
     onSessionStarted: () -> Unit = {},
-    onSessionCompleted: (DateTime, DateTime) -> Unit,
-    onLogOut: () -> Unit,
+    onSessionCompleted: (DateTime, DateTime) -> Unit = { _,_ -> },
+    onLogOut: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -132,9 +132,11 @@ fun ProfileListScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                TextSmall(text = "First name:")
+                TextSmall(
+                    color = AppTheme.colors.highLight,
+                    text = "Name:")
                 Spacer(modifier = Modifier.padding(padding_screen_small))
-                TextRegular(text = memberEntity.firstName)
+                TextRegular(text = memberEntity.getFullName())
             }
 
             Row(
@@ -144,19 +146,9 @@ fun ProfileListScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                TextSmall(text = "Last name:")
-                Spacer(modifier = Modifier.padding(padding_screen_small))
-                TextRegular(text = memberEntity.lastName)
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding_screen_small),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                TextSmall(text = "Email:")
+                TextSmall(
+                    color = AppTheme.colors.highLight,
+                    text = "Email:")
                 Spacer(modifier = Modifier.padding(padding_screen_small))
                 TextRegular(text = memberEntity.email)
             }
@@ -168,7 +160,23 @@ fun ProfileListScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                TextSmall(text = "Registration Date:")
+                TextSmall(
+                    color = AppTheme.colors.highLight,
+                    text = "Residence:")
+                Spacer(modifier = Modifier.padding(padding_screen_small))
+                TextRegular(text = memberEntity.getResidentialStatus())
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = padding_screen_small),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                TextSmall(
+                    color = AppTheme.colors.highLight,
+                    text = "Registration date:")
                 Spacer(modifier = Modifier.padding(padding_screen_small))
                 TextRegular(
                     text = DateTime(memberEntity.registrationDate).toString(
@@ -184,7 +192,9 @@ fun ProfileListScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                TextSmall(text = "Membership renewal Date:")
+                TextSmall(
+                    color = AppTheme.colors.highLight,
+                    text = "Membership due date:")
                 Spacer(modifier = Modifier.padding(padding_screen_small))
                 TextRegular(text = memberEntity.renewalFutureDate.toMembershipStatusString())
             }
@@ -237,9 +247,9 @@ fun ProfileListScreen(
         }
 
         Spacer(modifier = Modifier.padding(padding_screen_small))
-//        ButtonWidget(title = "LogOut", isEnabled = sessionStartTime == null) {
-//            onLogOut.invoke()
-//        }
+        ButtonWidget(title = "LogOut", isEnabled = sessionStartTime == null) {
+            onLogOut.invoke()
+        }
     }
 }
 
@@ -248,12 +258,7 @@ fun ProfileListScreen(
 fun ProfileScreenPreview() {
     AppThemeComposable {
         ProfileListScreen(
-            getMockMemberEntity(),
-            "",
-            null,
-            {},
-            { _, _ -> },
-            {}
+            memberEntity = getMockMemberEntity(),
         )
     }
 }

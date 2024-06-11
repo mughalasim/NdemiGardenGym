@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreen
 import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreen
 import com.ndemi.garden.gym.ui.screens.login.LoginScreen
@@ -30,7 +31,10 @@ fun NavigationHost(
         composable(route = Route.AttendanceScreen.routeName) { AttendanceScreen() }
         composable(route = Route.LiveAttendanceScreen.routeName) { LiveAttendanceScreen() }
         composable(route = Route.MembersScreen.routeName) { MembersScreen() }
-        composable(route = Route.MemberEditScreen.routeName) { MemberEditScreen() }
+        composable<Route.MemberEditScreen> {
+            val args = it.toRoute<Route.MemberEditScreen>()
+            MemberEditScreen(args.memberId)
+        }
         composable(route = Route.MembersAttendancesScreen.routeName) { MembersAttendancesScreen() }
     }
 }

@@ -8,7 +8,7 @@ import java.util.Date
 interface MemberRepository {
     suspend fun getMember(): DomainResult<MemberEntity>
 
-    suspend fun getMember(memberId: String): DomainResult<MemberEntity>
+    suspend fun getMemberById(memberId: String): DomainResult<MemberEntity>
 
     suspend fun getAllMembers(isLive: Boolean): DomainResult<List<MemberEntity>>
 

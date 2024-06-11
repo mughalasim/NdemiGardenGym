@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiState
@@ -64,7 +65,8 @@ fun ResetPasswordScreen(
         Spacer(modifier = Modifier.padding(padding_screen_small))
         EditTextWidget(
             hint = "Email",
-            isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL
+            isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL,
+            keyboardType = KeyboardType.Email
         ){
             email = it
             viewModel.setEmail(it)

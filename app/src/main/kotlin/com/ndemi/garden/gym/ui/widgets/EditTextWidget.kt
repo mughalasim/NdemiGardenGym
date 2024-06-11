@@ -7,7 +7,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -34,6 +33,7 @@ fun EditTextWidget(
     hint: String = "Hint",
     isError: Boolean = false,
     isEnabled: Boolean = true,
+    keyboardType: KeyboardType = KeyboardType.Text,
     onValueChanged: (String) -> Unit = {},
 ) {
     var text by remember { mutableStateOf(textInput) }
@@ -55,8 +55,8 @@ fun EditTextWidget(
                 modifier = Modifier.clickable { text = "" }
             )
         },
-        label = { Text(hint)},
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        label = { TextSmall(text = hint) },
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = AppTheme.colors.highLight,
             focusedLabelColor = AppTheme.colors.highLight,
@@ -87,7 +87,7 @@ fun EditPasswordTextWidget(
             password = it
             onValueChanged(password)
         },
-        label = { Text(hint) },
+        label = { TextSmall(text = hint) },
         singleLine = true,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),

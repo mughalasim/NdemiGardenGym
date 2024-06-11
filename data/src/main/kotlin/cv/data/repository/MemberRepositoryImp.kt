@@ -54,9 +54,9 @@ class MemberRepositoryImp(
         return completable.await()
     }
 
-    override suspend fun getMember(memeberId: String): DomainResult<MemberEntity> {
+    override suspend fun getMemberById(memberId: String): DomainResult<MemberEntity> {
         val completable: CompletableDeferred<DomainResult<MemberEntity>> = CompletableDeferred()
-        database.collection(PATH_USER).document(memeberId).get()
+        database.collection(PATH_USER).document(memberId).get()
             .addOnSuccessListener { document ->
                 logger.log("Data received: $document")
                 val response = document.toObject<MemberModel>()
@@ -89,7 +89,7 @@ class MemberRepositoryImp(
                     )
                 } else {
                     completable.complete(DomainResult.Success(
-                        response.map { it.toMemberEntity() })
+                        response.filter { it.id != Firebase.auth.currentUser?.uid }.map { it.toMemberEntity() })
                     )
                 }
 
@@ -227,6 +227,7 @@ class MemberRepositoryImp(
         activeNowDate = activeNowDate?.let { Timestamp(it) }?: run { null },
         renewalFutureDate = renewalFutureDate?.let { Timestamp(it) }?: run { null },
         registrationDate = Timestamp(registrationDate),
+        apartmentNumber = apartmentNumber
     )
 
 }

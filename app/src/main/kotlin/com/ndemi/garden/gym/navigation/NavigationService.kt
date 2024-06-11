@@ -10,6 +10,11 @@ interface NavigationService {
         removeCurrentFromStack: Boolean = false,
     )
 
+    fun openWithArgs(
+        dataClass: Route,
+        removeCurrentFromStack: Boolean = false,
+    )
+
     fun popBack()
 
     fun getCurrentRoute(): Route

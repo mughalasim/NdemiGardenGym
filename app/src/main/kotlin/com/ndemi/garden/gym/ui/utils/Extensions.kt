@@ -5,27 +5,25 @@ import androidx.compose.ui.platform.LocalContext
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
+import com.ndemi.garden.gym.ui.utils.DateConstants.SECONDS_IN_HOUR
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
-import com.ndemi.garden.gym.ui.utils.DateConstants.formatMonthYear
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatYearMonthDay
 import dev.b3nedikt.restring.Restring
 import org.joda.time.DateTime
+import org.joda.time.Days
 import org.joda.time.Hours
 import org.joda.time.Minutes
-import org.joda.time.Months
-import org.joda.time.Years
+import org.joda.time.Seconds
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import java.util.Date
 
-fun String.toMonthYearString(): String {
-    val date = DateTime.parse(this, formatYearMonthDay)
-    return date.toString(formatMonthYear)
-}
-
 fun String.toYearMonthDayDate(): DateTime {
     return DateTime.parse(this, formatYearMonthDay)
 }
+
+fun String.isValidApartmentNumber(): Boolean =
+    this.matches(Regex("^[A-Da-d](?:[1-9][0-4][0-4][0-4]?|1404)\$"))
 
 fun String.toRoute(): Route =
     Route::class.sealedSubclasses
@@ -34,24 +32,6 @@ fun String.toRoute(): Route =
         ?: Route.LoginScreen
 
 @Composable
-fun String.toYearMonthDuration(endDateString: String): String {
-    val context = LocalContext.current.resources
-    val startDate = this.toYearMonthDayDate()
-    val endDate = endDateString.toYearMonthDayDate()
-
-    val years = Years.yearsBetween(startDate.withTime(0, 0, 0, 0), endDate.withTime(0, 0, 0, 0)).years
-    val months =
-        Months.monthsBetween(
-            startDate.withTime(0, 0, 0, 0),
-            endDate.withTime(0, 0, 0, 0),
-        ).months % DateConstants.MONTHS
-    return (
-        (if (years > 0) String.format(context.getQuantityString(R.plurals.plural_year, years), years) else "") +
-            (if (years > 0 && months > 0) " " else "") +
-            if (months > 0) String.format(context.getQuantityString(R.plurals.plural_month, months), months) else ""
-    )
-}
-@Composable
 fun Date?.toMembershipStatusString(): String {
     return this?.let {
         DateTime(it).toString(formatDayMonthYear)
@@ -59,22 +39,32 @@ fun Date?.toMembershipStatusString(): String {
 }
 
 @Composable
-fun DateTime.toYearMonthDuration(startDateString: String): String {
+fun DateTime.toHoursMinutesSecondsDuration(startDate: DateTime): String {
     val context = LocalContext.current.resources
-    val startDate = startDateString.toYearMonthDayDate()
-    val endDate = this
 
-    val years = Years.yearsBetween(startDate.withTime(0, 0, 0, 0), endDate.withTime(0, 0, 0, 0)).years
-    val months =
-        Months.monthsBetween(
-            startDate.withTime(0, 0, 0, 0),
-            endDate.withTime(0, 0, 0, 0),
-        ).months % DateConstants.MONTHS
-    return (
-        (if (years > 0) String.format(context.getQuantityString(R.plurals.plural_year, years), years) else "") +
-            (if (years > 0 && months > 0) " " else "") +
-            if (months > 0) String.format(context.getQuantityString(R.plurals.plural_month, months), months) else ""
-    )
+    val hours = Hours.hoursBetween(
+        startDate.toInstant(),
+        this.toInstant()
+    ).hours
+    val minutes = Minutes.minutesBetween(
+        startDate.toInstant(),
+        this.toInstant()
+    ).minutes % MINUTES_IN_HOUR
+    val seconds = Seconds.secondsBetween(
+        startDate.toInstant(),
+        this.toInstant()
+    ).seconds % SECONDS_IN_HOUR
+
+    val hoursString = String.format(context.getQuantityString(R.plurals.plural_hours, hours), hours)
+    val minutesString = String.format(context.getQuantityString(R.plurals.plural_minutes, minutes), minutes)
+    val nowString = context.getString(R.string.txt_now)
+    val notActiveString = context.getString(R.string.txt_not_active)
+
+    return (if (hours > 0) hoursString else "") +
+            (if (hours > 0 && minutes > 0) " " else "") +
+            (if (minutes > 0) minutesString else "") +
+            (if (seconds > 0 && minutes < 1) nowString else notActiveString)
+
 }
 
 @Composable
@@ -92,12 +82,28 @@ fun DateTime.toHoursMinutesDuration(startDate: DateTime): String {
 
     val hoursString = String.format(context.getQuantityString(R.plurals.plural_hours, hours), hours)
     val minutesString = String.format(context.getQuantityString(R.plurals.plural_minutes, minutes), minutes)
-    val noDifference = context.getString(R.string.txt_no_difference)
+    val nowString = context.getString(R.string.txt_now)
 
     return (if (hours > 0) hoursString else "") +
             (if (hours > 0 && minutes > 0) " " else "") +
             (if (minutes > 0) minutesString else "") +
-            (if (hours < 1 && minutes < 1) noDifference else "")
+            (if (hours < 1 && minutes < 1) nowString else "")
+
+}
+
+@Composable
+fun DateTime.toDaysDuration(): String {
+    val context = LocalContext.current.resources
+
+    val days = Days.daysBetween(
+        DateTime.now().toInstant(),
+        this.toInstant()
+    ).days
+
+    val daysString = String.format(context.getQuantityString(R.plurals.plural_days, days), days)
+
+    return (if (days > 0) daysString else "") +
+            (if (days == 1) context.getString(R.string.txt_today) else "")
 
 }
 
@@ -106,7 +112,7 @@ object DateConstants {
         DateTimeFormat.forPattern("yyyy-MM-dd").withLocale(Restring.locale)
 
     val formatDayMonthYear: DateTimeFormatter =
-        DateTimeFormat.forPattern("dd-MM-yyyy").withLocale(Restring.locale)
+        DateTimeFormat.forPattern("dd-MMMM-yyyy").withLocale(Restring.locale)
 
 
     val formatDateDay: DateTimeFormatter =
@@ -120,4 +126,5 @@ object DateConstants {
 
     const val MONTHS = 12
     const val MINUTES_IN_HOUR = 60
+    const val SECONDS_IN_HOUR = 3600
 }

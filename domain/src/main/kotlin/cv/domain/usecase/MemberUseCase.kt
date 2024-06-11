@@ -10,7 +10,7 @@ class MemberUseCase(
 ) {
     suspend fun getMember() = memberRepository.getMember()
 
-    suspend fun getMember(memberId: String) = memberRepository.getMember(memberId)
+    suspend fun getMemberById(memberId: String) = memberRepository.getMemberById(memberId)
 
     suspend fun getAllMembers() = memberRepository.getAllMembers(false)
 
