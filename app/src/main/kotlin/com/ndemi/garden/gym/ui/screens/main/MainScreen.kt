@@ -3,6 +3,7 @@ package com.ndemi.garden.gym.ui.screens.main
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -54,6 +55,7 @@ fun MainScreen(
             modifier =
             Modifier
                 .padding(innerPadding)
+                .fillMaxSize()
                 .background(color = AppTheme.colors.backgroundScreen),
             verticalArrangement = Arrangement.spacedBy(padding_screen),
         ) {

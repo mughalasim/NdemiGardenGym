@@ -35,7 +35,7 @@ import cv.domain.entities.getMockMemberEntity
 import org.joda.time.DateTime
 
 @Composable
-fun MemberWidget(
+fun MemberStatusWidget(
     modifier: Modifier = Modifier,
     memberEntity: MemberEntity,
     showDetails: Boolean = false,
@@ -125,8 +125,8 @@ fun MemberWidget(
 fun MemberWidgetPreviewNight() {
     AppThemeComposable {
         Column {
-            MemberWidget(memberEntity = getMockMemberEntity(), showDetails = true)
-            MemberWidget(memberEntity = getMockMemberEntity(), showDetails = false)
+            MemberStatusWidget(memberEntity = getMockMemberEntity(), showDetails = true)
+            MemberStatusWidget(memberEntity = getMockMemberEntity(), showDetails = false)
         }
     }
 }
@@ -140,8 +140,8 @@ fun MemberWidgetPreviewNight() {
 fun MemberWidgetPreview() {
     AppThemeComposable {
         Column {
-            MemberWidget(memberEntity = getMockMemberEntity(), showDetails = true)
-            MemberWidget(memberEntity = getMockMemberEntity(), showDetails = false)
+            MemberStatusWidget(memberEntity = getMockMemberEntity(), showDetails = true)
+            MemberStatusWidget(memberEntity = getMockMemberEntity(), showDetails = false)
         }
     }
 }

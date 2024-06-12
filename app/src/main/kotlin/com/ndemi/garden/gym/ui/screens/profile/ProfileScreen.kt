@@ -4,12 +4,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -28,13 +29,13 @@ import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.line_thickness_small
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
-import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
-import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
+import com.ndemi.garden.gym.ui.widgets.MemberInfoWidget
 import com.ndemi.garden.gym.ui.widgets.TextLarge
 import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.TextSmall
+import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.getMockMemberEntity
@@ -46,52 +47,44 @@ import org.koin.androidx.compose.koinViewModel
 fun ProfileScreen(
     viewModel: ProfileScreenViewModel = koinViewModel<ProfileScreenViewModel>()
 ) {
-    val uiState = viewModel.uiStateFlow.collectAsState(
-        initial = UiState.Loading
-    )
+    val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
     val isRefreshing = (uiState.value is UiState.Loading)
     val pullRefreshState = rememberPullRefreshState(isRefreshing, {
         viewModel.getMember()
     })
     val sessionStartTime = viewModel.sessionStartTime.observeAsState().value
 
-    LaunchedEffect(true) {
-        viewModel.getMember()
-    }
+    LaunchedEffect(true) { viewModel.getMember() }
 
-    Box(
-        modifier = Modifier
-            .pullRefresh(pullRefreshState)
-            .fillMaxSize()
-    ) {
+    Column {
+        ToolBarWidget(title = "Profile")
 
-        PullRefreshIndicator(
-            refreshing = isRefreshing,
-            state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter),
-        )
+        if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
-        if (uiState.value is UiState.Error) {
-            val message = (uiState.value as UiState.Error).message
-            WarningWidget(message)
-            Spacer(modifier = Modifier.padding(padding_screen_small))
-        }
-
-        when (val state = uiState.value) {
-            is UiState.Success ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState)
+                .verticalScroll(rememberScrollState())
+        ) {
+            if (uiState.value is UiState.Success) {
                 ProfileListScreen(
-                    memberEntity = state.memberEntity,
-                    message = state.message,
+                    memberEntity = (uiState.value as UiState.Success).memberEntity,
+                    message = (uiState.value as UiState.Success).message,
                     sessionStartTime = sessionStartTime,
-                    onSessionStarted = viewModel::setStartedSession
-                    ,
+                    onSessionStarted = viewModel::setStartedSession,
                     onSessionCompleted = { startDate, endDate ->
                         viewModel.setAttendance(startDate, endDate)
                     },
                     onLogOut = viewModel::onLogOutTapped
                 )
-
-            else -> Unit
+            }
+            PullRefreshIndicator(
+                backgroundColor = AppTheme.colors.highLight,
+                refreshing = isRefreshing,
+                modifier = Modifier.align(Alignment.TopCenter),
+                state = pullRefreshState,
+            )
         }
     }
 }
@@ -112,94 +105,7 @@ fun ProfileListScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        TextLarge(text = "Profile")
-
-        Column(
-            modifier = Modifier
-                .padding(top = padding_screen)
-                .fillMaxWidth()
-                .border(
-                    width = line_thickness_small,
-                    color = AppTheme.colors.backgroundChip,
-                    shape = RoundedCornerShape(border_radius),
-                )
-                .padding(padding_screen_small),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = "Name:")
-                Spacer(modifier = Modifier.padding(padding_screen_small))
-                TextRegular(text = memberEntity.getFullName())
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding_screen_small),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = "Email:")
-                Spacer(modifier = Modifier.padding(padding_screen_small))
-                TextRegular(text = memberEntity.email)
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding_screen_small),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = "Residence:")
-                Spacer(modifier = Modifier.padding(padding_screen_small))
-                TextRegular(text = memberEntity.getResidentialStatus())
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding_screen_small),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = "Registration date:")
-                Spacer(modifier = Modifier.padding(padding_screen_small))
-                TextRegular(
-                    text = DateTime(memberEntity.registrationDate).toString(
-                        formatDayMonthYear
-                    )
-                )
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding_screen_small),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = "Membership due date:")
-                Spacer(modifier = Modifier.padding(padding_screen_small))
-                TextRegular(text = memberEntity.renewalFutureDate.toMembershipStatusString())
-            }
-
-        }
+        MemberInfoWidget(memberEntity)
 
         if (memberEntity.hasPaidMembership()){
             Column(

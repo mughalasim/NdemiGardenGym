@@ -1,6 +1,5 @@
 package com.ndemi.garden.gym.ui.screens.members
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,12 +17,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel.UiState
+import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
-import com.ndemi.garden.gym.ui.widgets.MemberWidget
-import com.ndemi.garden.gym.ui.widgets.TextLarge
+import com.ndemi.garden.gym.ui.widgets.MemberStatusWidget
 import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.getMockMemberEntity
@@ -34,46 +35,39 @@ import org.koin.androidx.compose.koinViewModel
 fun MembersScreen (
     viewModel: MembersScreenViewModel = koinViewModel<MembersScreenViewModel>()
 ) {
-    val uiState = viewModel.uiStateFlow.collectAsState(
-        initial = MembersScreenViewModel.UiState.Loading
-    )
-    val isRefreshing = (uiState.value is MembersScreenViewModel.UiState.Loading)
+    val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
+    val isRefreshing = (uiState.value is UiState.Loading)
     val pullRefreshState = rememberPullRefreshState(isRefreshing, {
         viewModel.getMembers()
     })
 
-    LaunchedEffect(true) {
-        viewModel.getMembers()
-    }
+    LaunchedEffect(true) { viewModel.getMembers() }
 
-    Box (modifier = Modifier
-        .pullRefresh(pullRefreshState)
-        .fillMaxSize()
-    ){
-        Column(
-            modifier = Modifier
-                .padding(padding_screen)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TextLarge(text = "Members")
+    Column {
+        ToolBarWidget(title = "Members")
 
-            Spacer(modifier = Modifier.padding(padding_screen_small))
+        if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
-            when (val state = uiState.value){
-                is MembersScreenViewModel.UiState.Error -> WarningWidget(title = state.message)
-                is MembersScreenViewModel.UiState.Loading -> Unit
-                is MembersScreenViewModel.UiState.Success ->
-                    if (state.members.isEmpty()){
-                        Spacer(modifier = Modifier.padding(padding_screen_small))
-                        TextRegular(text = "No registered members")
-                    } else {
-                        MembersListScreen(members = state.members, onMemberTapped = viewModel::onMemberTapped)
-                    }
+        Box (modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState)
+            .verticalScroll(rememberScrollState())
+        ){
+            if (uiState.value is UiState.Success) {
+                if ((uiState.value as UiState.Success).members.isEmpty()){
+                    Spacer(modifier = Modifier.padding(padding_screen_small))
+                    TextRegular(text = "No registered members")
+                } else {
+                    MembersListScreen(
+                        members = (uiState.value as UiState.Success).members,
+                        onMemberTapped = viewModel::onMemberTapped
+                    )
+                }
             }
             PullRefreshIndicator(
+                backgroundColor = AppTheme.colors.highLight,
                 refreshing = isRefreshing,
+                modifier = Modifier.align(Alignment.TopCenter),
                 state = pullRefreshState,
             )
         }
@@ -87,10 +81,10 @@ fun MembersListScreen(
 ) {
     Column(
         modifier = Modifier
-            .verticalScroll(rememberScrollState())
+            .padding(padding_screen)
     ) {
         repeat(members.size) {
-            MemberWidget(
+            MemberStatusWidget(
                 memberEntity = members[it],
                 showDetails = true,
                 onMemberTapped = onMemberTapped

@@ -1,5 +1,6 @@
 package com.ndemi.garden.gym.ui.widgets
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -23,11 +24,11 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,9 +36,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.ndemi.garden.gym.ui.theme.AppTheme
+import com.ndemi.garden.gym.ui.theme.AppThemeComposable
+import com.ndemi.garden.gym.ui.theme.border_radius
+import com.ndemi.garden.gym.ui.theme.icon_image_size_large
+import com.ndemi.garden.gym.ui.theme.padding_screen
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -69,7 +74,7 @@ fun MonthPicker(
     }
 
     var year by remember {
-        mutableStateOf(currentYear)
+        mutableIntStateOf(currentYear)
     }
 
     val interactionSource = remember {
@@ -77,17 +82,11 @@ fun MonthPicker(
     }
 
     if (visible) {
-
         AlertDialog(
-            backgroundColor = Color.White,
-            shape = RoundedCornerShape(10),
-            title = {
-
-            },
+            backgroundColor = AppTheme.colors.backgroundButtonDisabled,
+            shape = RoundedCornerShape(border_radius),
             text = {
-
                 Column {
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
@@ -96,7 +95,7 @@ fun MonthPicker(
 
                         Icon(
                             modifier = Modifier
-                                .size(35.dp)
+                                .size(icon_image_size_large)
                                 .rotate(90f)
                                 .clickable(
                                     indication = null,
@@ -105,20 +104,19 @@ fun MonthPicker(
                                         year--
                                     }
                                 ),
+                            tint = AppTheme.colors.highLight,
                             imageVector = Icons.Rounded.KeyboardArrowDown,
                             contentDescription = null
                         )
 
-                        Text(
-                            modifier = Modifier.padding(horizontal = 20.dp),
+                        TextRegular(
+                            modifier = Modifier.padding(horizontal = padding_screen),
                             text = year.toString(),
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
                         )
 
                         Icon(
                             modifier = Modifier
-                                .size(35.dp)
+                                .size(icon_image_size_large)
                                 .rotate(-90f)
                                 .clickable(
                                     indication = null,
@@ -127,24 +125,22 @@ fun MonthPicker(
                                         year++
                                     }
                                 ),
+                            tint = AppTheme.colors.highLight,
                             imageVector = Icons.Rounded.KeyboardArrowDown,
                             contentDescription = null
                         )
-
                     }
-
 
                     Card(
                         modifier = Modifier
-                            .padding(top = 30.dp)
+                            .padding(top = padding_screen)
                             .fillMaxWidth(),
+                        backgroundColor = AppTheme.colors.backgroundButtonDisabled,
                         elevation = 0.dp
                     ) {
-
                         FlowRow(
-                            modifier = Modifier.fillMaxWidth()
+                            horizontalArrangement = Arrangement.Center
                         ) {
-
                             months.forEach {
                                 Box(
                                     modifier = Modifier
@@ -152,12 +148,7 @@ fun MonthPicker(
                                         .clickable(
                                             indication = null,
                                             interactionSource = interactionSource,
-                                            onClick = {
-                                                month = it
-                                            }
-                                        )
-                                        .background(
-                                            color = Color.Transparent
+                                            onClick = { month = it }
                                         ),
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -167,45 +158,43 @@ fun MonthPicker(
                                         animationSpec = tween(
                                             durationMillis = 500,
                                             easing = LinearOutSlowInEasing
-                                        )
+                                        ), label = ""
                                     )
 
                                     Box(
                                         modifier = Modifier
                                             .size(animatedSize)
                                             .background(
-                                                color = if (month == it) Color.Blue else Color.Transparent,
-                                                shape = CircleShape
+                                                color = if (month == it) {
+                                                    AppTheme.colors.backgroundScreen
+                                                } else {
+                                                    Color.Transparent
+                                                },
+                                                shape = RoundedCornerShape(border_radius)
                                             )
                                     )
 
-                                    Text(
+                                    TextSmall(
                                         text = it,
-                                        color = if (month == it) Color.White else Color.Black,
-                                        fontWeight = FontWeight.Medium
+                                        color =
+                                        if (month == it) AppTheme.colors.textPrimary else AppTheme.colors.highLight,
                                     )
-
                                 }
                             }
-
                         }
-
                     }
-
                 }
-
             },
             buttons = {
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(end = 20.dp, bottom = 30.dp),
+                        .padding(end = padding_screen, bottom = padding_screen),
                     horizontalArrangement = Arrangement.End
                 ) {
 
                     OutlinedButton(
-                        modifier = Modifier.padding(end = 20.dp),
+                        modifier = Modifier.padding(end = padding_screen),
                         onClick = {
                             cancelClicked()
                         },
@@ -213,46 +202,61 @@ fun MonthPicker(
                         border = BorderStroke(1.dp, color = Color.Transparent),
                         colors = ButtonDefaults.outlinedButtonColors(backgroundColor = Color.Transparent)
                     ) {
-
-                        Text(
-                            text = "Cancel",
-                            color = Color.Black,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-
+                        TextRegular(text = "Cancel",)
                     }
 
                     OutlinedButton(
-                        modifier = Modifier.padding(end = 20.dp),
+                        modifier = Modifier.padding(end = padding_screen),
                         onClick = {
                             confirmButtonCLicked(
                                 months.indexOf(month) + 1,
                                 year
                             )
                         },
-                        shape = CircleShape,
-                        border = BorderStroke(1.dp, color = Color.Blue),
+                        shape = RoundedCornerShape(border_radius),
+                        border = BorderStroke(1.dp, color = AppTheme.colors.highLight),
                         colors = ButtonDefaults.outlinedButtonColors(backgroundColor = Color.Transparent)
                     ) {
-
-                        Text(
-                            text = "OK",
-                            color = Color.Blue,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Medium
+                        TextRegular(
+                            text = "Confirm",
                         )
-
                     }
 
                 }
-
             },
-            onDismissRequest = {
-
-            }
+            onDismissRequest = {}
         )
-
     }
+}
 
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+fun MonthPickerPreviewNight(){
+    AppThemeComposable {
+        MonthPicker(
+            visible = true,
+            currentMonth = 9,
+            currentYear = 2024,
+            confirmButtonCLicked = {_,_ -> },
+            cancelClicked = {}
+        )
+    }
+}
+
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO
+)
+@Composable
+fun MonthPickerPreview(){
+    AppThemeComposable {
+        MonthPicker(
+            visible = true,
+            currentMonth = 9,
+            currentYear = 2024,
+            confirmButtonCLicked = {_,_ -> },
+            cancelClicked = {}
+        )
+    }
 }

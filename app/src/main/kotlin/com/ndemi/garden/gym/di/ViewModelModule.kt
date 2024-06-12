@@ -6,6 +6,7 @@ import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel
 import com.ndemi.garden.gym.ui.screens.main.MainScreenViewModel
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel
 import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel
+import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreenViewModel
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel
@@ -21,13 +22,15 @@ val viewModelModule =
 
         viewModel { ProfileScreenViewModel(get(), get(), get(), get(), get()) }
 
-        viewModel { AttendanceScreenViewModel(get(), get(), get()) }
+        viewModel { AttendanceScreenViewModel(get(), get()) }
 
-        viewModel { LiveAttendanceScreenViewModel(get(), get(), get(), get()) }
+        viewModel { LiveAttendanceScreenViewModel(get(), get()) }
 
-        viewModel { MembersScreenViewModel(get(), get(), get(), get()) }
+        viewModel { MembersScreenViewModel(get(), get(), get()) }
 
-        viewModel { MemberEditScreenViewModel(get(), get(), get(), get()) }
+        viewModel { MemberEditScreenViewModel(get(), get(), get()) }
+
+        viewModel { MembersAttendancesScreenViewModel(get(), get(), get()) }
 
         viewModel { RegisterScreenViewModel(get(), get(), get(), get()) }
 

@@ -1,10 +1,10 @@
 package com.ndemi.garden.gym.ui.screens.live
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,14 +17,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreenViewModel.UiState
+import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
-import com.ndemi.garden.gym.ui.widgets.MemberWidget
-import com.ndemi.garden.gym.ui.widgets.TextLarge
+import com.ndemi.garden.gym.ui.widgets.MemberStatusWidget
 import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.getMockMemberEntity
@@ -32,49 +34,45 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun LiveAttendanceScreen (
+fun LiveAttendanceScreen(
     viewModel: LiveAttendanceScreenViewModel = koinViewModel<LiveAttendanceScreenViewModel>()
 ) {
-    val uiState = viewModel.uiStateFlow.collectAsState(
-        initial = UiState.Loading
-    )
+    val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
     val isRefreshing = (uiState.value is UiState.Loading)
     val pullRefreshState = rememberPullRefreshState(isRefreshing, {
         viewModel.getLiveMembers()
     })
 
-    LaunchedEffect(true) {
-        viewModel.getLiveMembers()
-    }
+    LaunchedEffect(true) { viewModel.getLiveMembers() }
 
-    Box (modifier = Modifier
-        .pullRefresh(pullRefreshState)
-        .fillMaxSize()
-    ){
-        Column(
+    Column {
+        ToolBarWidget(title = "Who's in the Gym today?")
+
+        if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
+
+        Box(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(padding_screen)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .pullRefresh(pullRefreshState)
+                .verticalScroll(rememberScrollState())
         ) {
-            TextLarge(text = "Who's in the Gym today?")
-
-            Spacer(modifier = Modifier.padding(padding_screen_small))
-
-            when (val state = uiState.value){
-                is UiState.Error -> WarningWidget(title = state.message)
-                is UiState.Loading -> Unit
-                is UiState.Success ->
-                    if (state.members.isEmpty()){
-                        Spacer(modifier = Modifier.padding(padding_screen_small))
-                        TextRegular(text = "Oh no! No one's in, why don't you be the first")
-                    } else {
-                        LiveAttendanceListScreen(members = state.members)
-                    }
+            if (uiState.value is UiState.Success) {
+                if ((uiState.value as UiState.Success).members.isEmpty()) {
+                    Spacer(modifier = Modifier.padding(padding_screen_small))
+                    TextRegular(
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        text = "Oh no! No one's in, why don't you be the first"
+                    )
+                } else {
+                    LiveAttendanceListScreen(members = (uiState.value as UiState.Success).members)
+                }
             }
             PullRefreshIndicator(
+                backgroundColor = AppTheme.colors.highLight,
                 refreshing = isRefreshing,
+                modifier = Modifier.align(Alignment.TopCenter),
                 state = pullRefreshState,
             )
         }
@@ -83,24 +81,23 @@ fun LiveAttendanceScreen (
 
 @Composable
 fun LiveAttendanceListScreen(members: List<MemberEntity>) {
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-    ) {
+    Column {
         repeat(members.size) {
-            MemberWidget(memberEntity = members[it])
+            MemberStatusWidget(memberEntity = members[it])
         }
     }
 }
 
 @Preview
 @Composable
-fun LiveAttendanceListScreenPreview(){
+fun LiveAttendanceListScreenPreview() {
     AppThemeComposable {
-       LiveAttendanceListScreen(members = listOf(
-           getMockMemberEntity(),
-           getMockMemberEntity(),
-           getMockMemberEntity()
-       ))
+        LiveAttendanceListScreen(
+            members = listOf(
+                getMockMemberEntity(),
+                getMockMemberEntity(),
+                getMockMemberEntity()
+            )
+        )
     }
 }

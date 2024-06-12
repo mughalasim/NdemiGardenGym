@@ -8,21 +8,33 @@ import java.util.Date
 class MemberUseCase(
     private val memberRepository: MemberRepository,
 ) {
-    suspend fun getMember() = memberRepository.getMember()
+    suspend fun getMember() =
+        memberRepository.getMember()
 
-    suspend fun getMemberById(memberId: String) = memberRepository.getMemberById(memberId)
+    suspend fun getMemberById(memberId: String) =
+        memberRepository.getMemberById(memberId)
 
-    suspend fun getAllMembers() = memberRepository.getAllMembers(false)
+    suspend fun getAllMembers() =
+        memberRepository.getAllMembers(false)
 
-    suspend fun getLiveMembers() = memberRepository.getAllMembers(true)
+    suspend fun getLiveMembers() =
+        memberRepository.getAllMembers(true)
 
-    suspend fun getMemberAttendances(year: Int, month: Int) = memberRepository.getAttendances(true, year, month)
+    suspend fun getMemberAttendances(year: Int, month: Int) =
+        memberRepository.getAttendances(true, "", year, month)
 
-    suspend fun getAllAttendances(year: Int, month: Int) = memberRepository.getAttendances(false, year, month)
+    suspend fun getMemberAttendancesForId(memberId: String, year: Int, month: Int) =
+        memberRepository.getAttendances(true, memberId, year, month)
 
-    suspend fun addAttendance(startDate: Date, endDate: Date) = memberRepository.addAttendance(startDate, endDate)
+    suspend fun getAllAttendances(year: Int, month: Int) =
+        memberRepository.getAttendances(false, "", year, month)
 
-    suspend fun updateMember(memberEntity: MemberEntity) = memberRepository.updateMember(memberEntity)
+    suspend fun addAttendance(startDate: Date, endDate: Date) =
+        memberRepository.addAttendance(startDate, endDate)
 
-    suspend fun deleteAttendance(attendanceEntity: AttendanceEntity) = memberRepository.deleteAttendance(attendanceEntity)
+    suspend fun updateMember(memberEntity: MemberEntity) =
+        memberRepository.updateMember(memberEntity)
+
+    suspend fun deleteAttendance(attendanceEntity: AttendanceEntity) =
+        memberRepository.deleteAttendance(attendanceEntity)
 }

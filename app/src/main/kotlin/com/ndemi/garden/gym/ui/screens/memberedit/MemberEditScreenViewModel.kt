@@ -3,6 +3,7 @@ package com.ndemi.garden.gym.ui.screens.memberedit
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
+import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
@@ -11,14 +12,12 @@ import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiSt
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
-import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
 class MemberEditScreenViewModel(
     private val errorCodeConverter: ErrorCodeConverter,
-    private val authUseCase: AuthUseCase,
     private val memberUseCase: MemberUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
@@ -42,11 +41,34 @@ class MemberEditScreenViewModel(
         }
     }
 
-    private fun updateMemberLiveStatus(){
+    private fun updateMemberLiveStatus() {
         viewModelScope.launch {
             memberUseCase.updateMember(
                 memberEntity
             )
+        }
+    }
+
+    fun updateMember(dateTime: DateTime) {
+        sendAction(Action.SetLoading)
+        viewModelScope.launch {
+            memberUseCase.updateMember(
+                memberEntity.copy(renewalFutureDate = dateTime.toDate())
+            ).also { result ->
+                when (result) {
+                    is DomainResult.Error -> {
+                        sendAction(
+                            Action.Success(
+                                memberEntity,
+                                errorCodeConverter.getMessage(result.error)
+                            )
+                        )
+                    }
+
+                    is DomainResult.Success ->
+                        getMemberForId(memberEntity.id)
+                }
+            }
         }
     }
 
@@ -70,6 +92,14 @@ class MemberEditScreenViewModel(
                     }
                 }
         }
+    }
+
+    fun navigateBack() {
+        navigationService.popBack()
+    }
+
+    fun navigateToAttendanceScreen(memberEntity: MemberEntity) {
+        navigationService.openWithArgs(Route.MembersAttendancesScreen(memberEntity.id, memberEntity.getFullName()))
     }
 
     @Immutable

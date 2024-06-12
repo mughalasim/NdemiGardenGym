@@ -2,6 +2,8 @@ package com.ndemi.garden.gym
 
 import android.app.Application
 import android.content.res.Resources
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import com.ndemi.garden.gym.di.apiModule
 import com.ndemi.garden.gym.di.applicationModule
 import com.ndemi.garden.gym.di.repositoryModule
@@ -21,6 +23,7 @@ class App : Application() {
         Restring.init(this)
         ViewPump.init(RewordInterceptor)
         Restring.locale = this.resources.configuration.locales.get(0)
+        Firebase.crashlytics.setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
 
         startKoin {
             androidContext(this@App)

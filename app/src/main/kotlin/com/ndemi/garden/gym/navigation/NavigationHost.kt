@@ -35,6 +35,8 @@ fun NavigationHost(
             val args = it.toRoute<Route.MemberEditScreen>()
             MemberEditScreen(args.memberId)
         }
-        composable(route = Route.MembersAttendancesScreen.routeName) { MembersAttendancesScreen() }
+        composable<Route.MembersAttendancesScreen> {
+            val args = it.toRoute<Route.MembersAttendancesScreen>()
+            MembersAttendancesScreen(args.memberId, args.memberName) }
     }
 }

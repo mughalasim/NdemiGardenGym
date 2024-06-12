@@ -17,5 +17,4 @@ class MainScreenViewModel(
     fun isAuthenticated()  = authUseCase.isAuthenticated()
 
     fun isAdmin() = authUseCase.isAdmin()
-
 }

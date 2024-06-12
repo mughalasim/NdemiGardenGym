@@ -2,7 +2,6 @@ package cv.data.repository
 
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
@@ -120,26 +119,33 @@ class MemberRepositoryImp(
 
     override suspend fun getAttendances(
         isMembersAttendances: Boolean,
+        memberId: String,
         year: Int,
         month: Int
     ): DomainResult<List<AttendanceEntity>> {
-        val memberId = Firebase.auth.currentUser?.uid ?: run {
-            return DomainResult.Error(DomainError.UNAUTHORISED)
+        val setMemberId = memberId.ifEmpty {
+            Firebase.auth.currentUser?.uid ?: run {
+                return DomainResult.Error(DomainError.UNAUTHORISED)
+            }
         }
-        val collection = database.collection(PATH_ATTENDANCE)
-            .document(year.toString()).collection(month.toString())
-
-        if (isMembersAttendances) {
-            collection.where(Filter.equalTo("memberId", memberId))
-        }
+        val reference = database
+            .collection(PATH_ATTENDANCE)
+            .document(year.toString())
+            .collection(month.toString())
 
         val completable: CompletableDeferred<DomainResult<List<AttendanceEntity>>> =
             CompletableDeferred()
-        collection.get()
+        reference.get()
             .addOnSuccessListener { document ->
                 logger.log("Data received: $document")
                 val response = document.toObjects<AttendanceModel>()
-                completable.complete(DomainResult.Success(response.map { it.toAttendanceEntity() }))
+                if (isMembersAttendances) {
+                    completable.complete(DomainResult.Success(
+                        response.filter { it.memberId == setMemberId }.map { it.toAttendanceEntity() })
+                    )
+                } else {
+                    completable.complete(DomainResult.Success(response.map { it.toAttendanceEntity() }))
+                }
 
             }.addOnFailureListener {
                 logger.log("Exception: $it")

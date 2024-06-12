@@ -93,7 +93,11 @@ fun AttendanceWidget(
                 AlertDialog(
                     backgroundColor = AppTheme.colors.backgroundButtonDisabled,
                     title = { TextSmall(text = "Are you sure") },
-                    text = { TextRegular(text = "Are you sure you wish to delete this Attendance, This action is permanent") },
+                    text = {
+                        TextRegular(
+                            text = "Are you sure you wish to delete this Attendance, This action is permanent"
+                        )
+                    },
                     onDismissRequest = { showDialog = !showDialog },
                     confirmButton = {
                         ButtonWidget(title = "Delete", isEnabled = true) {

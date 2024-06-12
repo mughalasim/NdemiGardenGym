@@ -118,6 +118,7 @@ dependencies {
 
     implementation(libs.compiler)
     implementation(libs.ui.tooling.preview)
+    implementation(libs.material3.android)
     debugImplementation(libs.ui.tooling)
     implementation(libs.material)
     implementation(libs.runtime.livedata)

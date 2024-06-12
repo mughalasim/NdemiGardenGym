@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
@@ -101,10 +100,6 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: 
         Route.MembersScreen.routeName, Icons.Default.Info, "Members"
     )
 
-    data object MembersAttendancesScreen : BottomNavItem(
-        Route.MembersAttendancesScreen.routeName, Icons.Default.DateRange, "Attendances"
-    )
-
     companion object{
         fun getMemberBottomItems() = listOf(
             ProfileScreen,
@@ -121,7 +116,6 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: 
         fun getAdminBottomItems() = listOf(
             ProfileScreen,
             MembersScreen,
-//            MembersAttendancesScreen,
         )
     }
 }

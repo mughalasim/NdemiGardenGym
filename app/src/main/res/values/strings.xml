@@ -4,6 +4,7 @@
     <string name="txt_now">Now</string>
     <string name="txt_not_active">Not active</string>
     <string name="txt_today">Today</string>
+    <string name="txt_tomorrow">Tomorrow</string>
 
     <!-- Error messages-->
     <string name="error_internet_connection">Please check your internet connection</string>

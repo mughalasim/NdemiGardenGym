@@ -2,8 +2,6 @@ package com.ndemi.garden.gym.ui.screens.attendance
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
-import com.ndemi.garden.gym.navigation.NavigationService
-import com.ndemi.garden.gym.ui.UiError
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
@@ -17,10 +15,9 @@ import cv.domain.usecase.MemberUseCase
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
-class AttendanceScreenViewModel (
+class AttendanceScreenViewModel(
     private val errorCodeConverter: ErrorCodeConverter,
     private val membersUseCase: MemberUseCase,
-    private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
 
     private lateinit var selectedDate: DateTime
@@ -29,10 +26,14 @@ class AttendanceScreenViewModel (
         this.selectedDate = selectedDate
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            membersUseCase.getMemberAttendances(year = selectedDate.year, month = selectedDate.monthOfYear).also { result ->
-                when(result){
+            membersUseCase.getMemberAttendances(
+                year = selectedDate.year,
+                month = selectedDate.monthOfYear
+            ).also { result ->
+                when (result) {
                     is DomainResult.Error ->
                         sendAction(Action.ShowDomainError(result.error, errorCodeConverter))
+
                     is DomainResult.Success ->
                         sendAction(Action.Success(result.data))
                 }
@@ -43,9 +44,15 @@ class AttendanceScreenViewModel (
     fun deleteAttendance(attendanceEntity: AttendanceEntity) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            membersUseCase.deleteAttendance(attendanceEntity).also{result ->
-                when(result){
-                    is DomainResult.Error -> sendAction(Action.ShowDomainError(result.error, errorCodeConverter))
+            membersUseCase.deleteAttendance(attendanceEntity).also { result ->
+                when (result) {
+                    is DomainResult.Error -> sendAction(
+                        Action.ShowDomainError(
+                            result.error,
+                            errorCodeConverter
+                        )
+                    )
+
                     is DomainResult.Success -> getAttendances(selectedDate)
                 }
             }
@@ -66,14 +73,6 @@ class AttendanceScreenViewModel (
     sealed interface Action : BaseAction<UiState> {
         data object SetLoading : Action {
             override fun reduce(state: UiState): UiState = UiState.Loading
-        }
-
-        data class ShowUiError(
-            val uiError: UiError,
-            val errorCodeConverter: ErrorCodeConverter,
-        ) : Action {
-            override fun reduce(state: UiState): UiState =
-                UiState.Error(errorCodeConverter.getMessage(uiError))
         }
 
         data class ShowDomainError(

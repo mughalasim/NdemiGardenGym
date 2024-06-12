@@ -23,8 +23,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
+import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
@@ -34,6 +36,7 @@ import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.MonthPicker
 import com.ndemi.garden.gym.ui.widgets.TextLarge
 import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.getMockAttendanceEntity
@@ -47,79 +50,75 @@ fun AttendanceScreen(
 ) {
     var selectedDate by remember { mutableStateOf(DateTime.now()) }
     var monthPickerVisibility by remember { mutableStateOf(false) }
-    val uiState = viewModel.uiStateFlow.collectAsState(
-        initial = UiState.Loading
-    )
+    val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
     val isRefreshing = (uiState.value is UiState.Loading)
     val pullRefreshState = rememberPullRefreshState(isRefreshing, {
         viewModel.getAttendances(selectedDate)
     })
 
-    LaunchedEffect(true) {
-        viewModel.getAttendances(selectedDate)
-    }
+    LaunchedEffect(true) { viewModel.getAttendances(selectedDate) }
 
-    Box(
-        modifier = Modifier
-            .pullRefresh(pullRefreshState)
-            .fillMaxSize()
-    ) {
+    Column {
+        ToolBarWidget(title = "Your Attendances")
 
-        Column(
+        if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
+
+        Spacer(modifier = Modifier.padding(padding_screen_small))
+        Row(
             modifier = Modifier
-                .padding(padding_screen),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .padding(start = padding_screen, end = padding_screen),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
-            TextLarge(text = "Your attendance")
-
-            Spacer(modifier = Modifier.padding(padding_screen_small))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TextLarge(text = selectedDate.toString(formatMonthYear))
-                ButtonWidget(title = "Select Date", isEnabled = true) {
-                    monthPickerVisibility = !monthPickerVisibility
-                }
+            TextLarge(text = selectedDate.toString(formatMonthYear))
+            ButtonWidget(title = "Select Date", isEnabled = true) {
+                monthPickerVisibility = !monthPickerVisibility
             }
-            when (val state = uiState.value) {
-                is UiState.Error -> WarningWidget(title = state.message)
-                is UiState.Loading -> Unit
-                is UiState.Success -> {
-                    if (state.attendances.isEmpty()) {
-                        Spacer(modifier = Modifier.padding(padding_screen_small))
-                        TextRegular(text = "No Attendances for the selected month")
-                    } else {
-                        AttendanceItemsScreen(attendances = state.attendances){
-                            viewModel.deleteAttendance(it)
-                        }
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding_screen)
+                .pullRefresh(pullRefreshState)
+                .verticalScroll(rememberScrollState())
+        ) {
+            if (uiState.value is UiState.Success) {
+                if ((uiState.value as UiState.Success).attendances.isEmpty()) {
+                    Spacer(modifier = Modifier.padding(padding_screen_small))
+                    TextRegular(
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        text = "No Attendances for the selected month")
+                } else {
+                    AttendanceItemsScreen(
+                        attendances = (uiState.value as UiState.Success).attendances
+                    ){
+                        viewModel.deleteAttendance(it)
                     }
                 }
             }
-
             PullRefreshIndicator(
-                modifier = Modifier.padding(top = padding_screen),
+                backgroundColor = AppTheme.colors.highLight,
                 refreshing = isRefreshing,
+                modifier = Modifier.align(Alignment.TopCenter),
                 state = pullRefreshState,
             )
-
         }
+    }
 
-        MonthPicker(
-            visible = monthPickerVisibility,
-            currentMonth = selectedDate.monthOfYear - 1,
-            currentYear = selectedDate.year,
-            confirmButtonCLicked = { month, year ->
-                monthPickerVisibility = !monthPickerVisibility
-                selectedDate = DateTime.now().withDate(year, month, 1)
-                viewModel.getAttendances(selectedDate)
-            }
-        ) {
+    MonthPicker(
+        visible = monthPickerVisibility,
+        currentMonth = selectedDate.monthOfYear - 1,
+        currentYear = selectedDate.year,
+        confirmButtonCLicked = { month, year ->
             monthPickerVisibility = !monthPickerVisibility
+            selectedDate = DateTime.now().withDate(year, month, 1)
+            viewModel.getAttendances(selectedDate)
         }
+    ) {
+        monthPickerVisibility = !monthPickerVisibility
     }
 }
 
@@ -128,13 +127,12 @@ fun AttendanceItemsScreen(
     attendances: List<AttendanceEntity>,
     onDeleteAttendance: (AttendanceEntity)->Unit = {},
 ) {
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-    ) {
-        Spacer(modifier = Modifier.padding(padding_screen_small))
+    Column {
         repeat(attendances.size) {
-            AttendanceWidget(attendanceEntity = attendances[it], onDeleteAttendance = onDeleteAttendance)
+            AttendanceWidget(
+                attendanceEntity = attendances[it],
+                onDeleteAttendance = onDeleteAttendance
+            )
         }
     }
 }

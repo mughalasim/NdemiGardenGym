@@ -7,7 +7,6 @@ import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
 import com.ndemi.garden.gym.ui.utils.DateConstants.SECONDS_IN_HOUR
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
-import com.ndemi.garden.gym.ui.utils.DateConstants.formatYearMonthDay
 import dev.b3nedikt.restring.Restring
 import org.joda.time.DateTime
 import org.joda.time.Days
@@ -17,10 +16,6 @@ import org.joda.time.Seconds
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import java.util.Date
-
-fun String.toYearMonthDayDate(): DateTime {
-    return DateTime.parse(this, formatYearMonthDay)
-}
 
 fun String.isValidApartmentNumber(): Boolean =
     this.matches(Regex("^[A-Da-d](?:[1-9][0-4][0-4][0-4]?|1404)\$"))
@@ -35,7 +30,7 @@ fun String.toRoute(): Route =
 fun Date?.toMembershipStatusString(): String {
     return this?.let {
         DateTime(it).toString(formatDayMonthYear)
-    }?: run{ "Not Paid" }
+    }?: run{ "Expired" }
 }
 
 @Composable
@@ -103,16 +98,14 @@ fun DateTime.toDaysDuration(): String {
     val daysString = String.format(context.getQuantityString(R.plurals.plural_days, days), days)
 
     return (if (days > 0) daysString else "") +
-            (if (days == 1) context.getString(R.string.txt_today) else "")
+            (if (days == 1) context.getString(R.string.txt_today) else "") +
+            (if (days == 0) context.getString(R.string.txt_tomorrow) else "")
 
 }
 
 object DateConstants {
-    val formatYearMonthDay: DateTimeFormatter =
-        DateTimeFormat.forPattern("yyyy-MM-dd").withLocale(Restring.locale)
-
     val formatDayMonthYear: DateTimeFormatter =
-        DateTimeFormat.forPattern("dd-MMMM-yyyy").withLocale(Restring.locale)
+        DateTimeFormat.forPattern("dd MMMM yyyy").withLocale(Restring.locale)
 
 
     val formatDateDay: DateTimeFormatter =

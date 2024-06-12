@@ -1,7 +1,7 @@
 package com.ndemi.garden.gym.ui.utils
 
-import androidx.compose.runtime.Composable
 import android.view.ViewTreeObserver
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf

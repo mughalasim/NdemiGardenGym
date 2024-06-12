@@ -104,7 +104,8 @@ sealed class Route(val routeName: String, val isInitialRoute: Boolean = false) {
     data object MembersScreen
         : Route("MembersScreen")
 
-    data object MembersAttendancesScreen
+    @Serializable
+    data class MembersAttendancesScreen(val memberId: String, val memberName: String)
         : Route("MembersAttendancesScreen")
 
     @Serializable
