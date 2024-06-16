@@ -23,23 +23,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
-import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatMonthYear
-import com.ndemi.garden.gym.ui.widgets.AttendanceWidget
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.MonthPicker
 import com.ndemi.garden.gym.ui.widgets.TextLarge
-import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
-import cv.domain.entities.AttendanceEntity
-import cv.domain.entities.getMockAttendanceEntity
 import org.joda.time.DateTime
 import org.koin.androidx.compose.koinViewModel
 
@@ -86,11 +79,7 @@ fun AttendanceScreen(
         ) {
             if (uiState.value is UiState.Success) {
                 if ((uiState.value as UiState.Success).attendances.isEmpty()) {
-                    Spacer(modifier = Modifier.padding(padding_screen_small))
-                    TextRegular(
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        text = "No Attendances for the selected month")
+                    WarningWidget(title = "No Attendances for the selected month")
                 } else {
                     AttendanceItemsScreen(
                         attendances = (uiState.value as UiState.Success).attendances
@@ -119,45 +108,5 @@ fun AttendanceScreen(
         }
     ) {
         monthPickerVisibility = !monthPickerVisibility
-    }
-}
-
-@Composable
-fun AttendanceItemsScreen(
-    attendances: List<AttendanceEntity>,
-    onDeleteAttendance: (AttendanceEntity)->Unit = {},
-) {
-    Column {
-        repeat(attendances.size) {
-            AttendanceWidget(
-                attendanceEntity = attendances[it],
-                onDeleteAttendance = onDeleteAttendance
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-@Suppress("detekt.MagicNumber")
-fun AttendanceScreenPreview() {
-    AppThemeComposable {
-        AttendanceItemsScreen(
-            attendances = listOf(
-                getMockAttendanceEntity(
-                    startDate = DateTime.now().plusDays(1).plusHours(2).plusMinutes(3).toDate(),
-                    endDate = DateTime.now().plusDays(1).plusHours(3).plusMinutes(3).toDate()
-                ),
-                getMockAttendanceEntity(
-                    startDate = DateTime.now().plusDays(2).plusHours(2).plusMinutes(2).toDate(),
-                    endDate = DateTime.now().plusDays(2).plusHours(3).plusMinutes(43).toDate()
-                ),
-                getMockAttendanceEntity(
-                    startDate = DateTime.now().plusDays(3).plusHours(2).plusMinutes(3).toDate(),
-                    endDate = DateTime.now().plusDays(3).plusHours(3).toDate()
-
-                ),
-            ),
-        )
     }
 }

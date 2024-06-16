@@ -1,6 +1,5 @@
 package com.ndemi.garden.gym.ui.widgets
 
-import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,9 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
+import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
 fun EditTextWidget(
@@ -115,10 +114,7 @@ fun EditPasswordTextWidget(
     )
 }
 
-@Preview(
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
+@AppPreview
 @Composable
 fun EditTextPreviewsNight(){
     AppThemeComposable {

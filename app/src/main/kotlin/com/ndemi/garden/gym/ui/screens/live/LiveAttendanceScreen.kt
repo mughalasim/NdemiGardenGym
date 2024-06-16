@@ -2,9 +2,7 @@ package com.ndemi.garden.gym.ui.screens.live
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,19 +15,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
-import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.theme.padding_screen_small
-import com.ndemi.garden.gym.ui.widgets.MemberStatusWidget
-import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
-import cv.domain.entities.MemberEntity
-import cv.domain.entities.getMockMemberEntity
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -59,12 +49,7 @@ fun LiveAttendanceScreen(
         ) {
             if (uiState.value is UiState.Success) {
                 if ((uiState.value as UiState.Success).members.isEmpty()) {
-                    Spacer(modifier = Modifier.padding(padding_screen_small))
-                    TextRegular(
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        text = "Oh no! No one's in, why don't you be the first"
-                    )
+                    WarningWidget(title = "Oh no! No one's in, why don't you be the first")
                 } else {
                     LiveAttendanceListScreen(members = (uiState.value as UiState.Success).members)
                 }
@@ -76,28 +61,5 @@ fun LiveAttendanceScreen(
                 state = pullRefreshState,
             )
         }
-    }
-}
-
-@Composable
-fun LiveAttendanceListScreen(members: List<MemberEntity>) {
-    Column {
-        repeat(members.size) {
-            MemberStatusWidget(memberEntity = members[it])
-        }
-    }
-}
-
-@Preview
-@Composable
-fun LiveAttendanceListScreenPreview() {
-    AppThemeComposable {
-        LiveAttendanceListScreen(
-            members = listOf(
-                getMockMemberEntity(),
-                getMockMemberEntity(),
-                getMockMemberEntity()
-            )
-        )
     }
 }

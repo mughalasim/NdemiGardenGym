@@ -102,9 +102,15 @@ class ProfileScreenViewModel(
         }
     }
 
+    fun isAdmin() = authUseCase.isAdmin()
+
     fun onLogOutTapped() {
         authUseCase.logOut()
         navigationService.open(Route.LoginScreen, true)
+    }
+
+    fun onRegisterMember() {
+        navigationService.open(Route.RegisterNewScreen)
     }
 
     @Immutable

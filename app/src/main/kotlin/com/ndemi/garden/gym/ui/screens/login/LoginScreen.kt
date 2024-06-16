@@ -10,12 +10,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditPasswordTextWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
@@ -80,10 +80,7 @@ fun LoginScreen(
     }
 }
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true
-)
+@AppPreview
 @Composable
 fun LoginScreenPreview() {
     AppThemeComposable{

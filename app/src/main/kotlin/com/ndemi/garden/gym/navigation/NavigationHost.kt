@@ -12,6 +12,7 @@ import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreen
 import com.ndemi.garden.gym.ui.screens.members.MembersScreen
 import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreen
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreen
+import com.ndemi.garden.gym.ui.screens.register.RegisterNewScreen
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreen
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreen
 
@@ -22,19 +23,29 @@ fun NavigationHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = navigationService.getInitialRoute().routeName,
+        startDestination = navigationService.getInitialRoute(),
     ) {
-        composable(route = Route.LoginScreen.routeName) { LoginScreen() }
-        composable(route = Route.ResetPasswordScreen.routeName) { ResetPasswordScreen() }
-        composable(route = Route.RegisterScreen.routeName) { RegisterScreen() }
-        composable(route = Route.ProfileScreen.routeName) { ProfileScreen() }
-        composable(route = Route.AttendanceScreen.routeName) { AttendanceScreen() }
-        composable(route = Route.LiveAttendanceScreen.routeName) { LiveAttendanceScreen() }
-        composable(route = Route.MembersScreen.routeName) { MembersScreen() }
+        composable<Route.LoginScreen> { LoginScreen() }
+
+        composable<Route.ResetPasswordScreen> { ResetPasswordScreen() }
+
+        composable<Route.RegisterScreen> { RegisterScreen() }
+
+        composable<Route.RegisterNewScreen> { RegisterNewScreen() }
+
+        composable<Route.ProfileScreen> { ProfileScreen() }
+
+        composable<Route.AttendanceScreen> { AttendanceScreen() }
+
+        composable<Route.LiveAttendanceScreen> { LiveAttendanceScreen() }
+
+        composable<Route.MembersScreen> { MembersScreen() }
+
         composable<Route.MemberEditScreen> {
             val args = it.toRoute<Route.MemberEditScreen>()
             MemberEditScreen(args.memberId)
         }
+
         composable<Route.MembersAttendancesScreen> {
             val args = it.toRoute<Route.MembersAttendancesScreen>()
             MembersAttendancesScreen(args.memberId, args.memberName) }

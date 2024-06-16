@@ -36,6 +36,16 @@ android {
             "API_BASE_URL",
             gradleLocalProperties(rootDir, providers).getProperty("API_BASE_URL"),
         )
+        buildConfigField(
+            "String",
+            "ADMIN_LIVE",
+            gradleLocalProperties(rootDir, providers).getProperty("ADMIN_LIVE"),
+        )
+        buildConfigField(
+            "String",
+            "ADMIN_STAGING",
+            gradleLocalProperties(rootDir, providers).getProperty("ADMIN_STAGING"),
+        )
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         vectorDrawables { useSupportLibrary = true }
 
@@ -57,6 +67,16 @@ android {
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("config")
             resValue("string", "app_name", appName)
+            buildConfigField(
+                "String",
+                "PATH_USER",
+                gradleLocalProperties(rootDir, providers).getProperty("PATH_USER"),
+            )
+            buildConfigField(
+                "String",
+                "PATH_ATTENDANCE",
+                gradleLocalProperties(rootDir, providers).getProperty("PATH_ATTENDANCE"),
+            )
         }
 
         getByName("debug") {
@@ -64,6 +84,16 @@ android {
             isShrinkResources = false
             isDebuggable = true
             resValue("string", "app_name", "$appName (Debug)")
+            buildConfigField(
+                "String",
+                "PATH_USER",
+                gradleLocalProperties(rootDir, providers).getProperty("DEBUG_PATH_USER"),
+            )
+            buildConfigField(
+                "String",
+                "PATH_ATTENDANCE",
+                gradleLocalProperties(rootDir, providers).getProperty("DEBUG_PATH_ATTENDANCE"),
+            )
         }
     }
 

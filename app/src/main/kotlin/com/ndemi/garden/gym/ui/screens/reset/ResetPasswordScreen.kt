@@ -18,11 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextLarge
@@ -83,10 +83,7 @@ fun ResetPasswordScreen(
     }
 }
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true
-)
+@AppPreview
 @Composable
 fun ResetPasswordScreenPreview() {
     AppThemeComposable{

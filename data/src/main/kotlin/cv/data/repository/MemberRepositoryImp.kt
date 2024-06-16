@@ -6,8 +6,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
 import com.google.firebase.ktx.Firebase
-import cv.data.Variables.PATH_ATTENDANCE
-import cv.data.Variables.PATH_USER
+import cv.data.mappers.toAttendanceModel
+import cv.data.mappers.toMemberModel
 import cv.data.models.AttendanceModel
 import cv.data.models.MemberModel
 import cv.data.retrofit.toDomainError
@@ -24,6 +24,8 @@ import org.joda.time.Minutes
 import java.util.Date
 
 class MemberRepositoryImp(
+    private val pathUser: String,
+    private val pathAttendance: String,
     private val logger: AppLoggerRepository,
 ) : MemberRepository {
     private val database = Firebase.firestore
@@ -35,7 +37,7 @@ class MemberRepositoryImp(
         }
 
         val completable: CompletableDeferred<DomainResult<MemberEntity>> = CompletableDeferred()
-        database.collection(PATH_USER).document(id).get()
+        database.collection(pathUser).document(id).get()
             .addOnSuccessListener { document ->
                 logger.log("Data received: $document")
                 val response = document.toObject<MemberModel>()
@@ -55,7 +57,7 @@ class MemberRepositoryImp(
 
     override suspend fun getMemberById(memberId: String): DomainResult<MemberEntity> {
         val completable: CompletableDeferred<DomainResult<MemberEntity>> = CompletableDeferred()
-        database.collection(PATH_USER).document(memberId).get()
+        database.collection(pathUser).document(memberId).get()
             .addOnSuccessListener { document ->
                 logger.log("Data received: $document")
                 val response = document.toObject<MemberModel>()
@@ -76,7 +78,7 @@ class MemberRepositoryImp(
     override suspend fun getAllMembers(isLive: Boolean): DomainResult<List<MemberEntity>> {
         val completable: CompletableDeferred<DomainResult<List<MemberEntity>>> =
             CompletableDeferred()
-        val collection = database.collection(PATH_USER)
+        val collection = database.collection(pathUser)
 
         collection.get()
             .addOnSuccessListener { document ->
@@ -104,7 +106,7 @@ class MemberRepositoryImp(
         val completable: CompletableDeferred<DomainResult<Boolean>> = CompletableDeferred()
         val memberModel = memberEntity.toMemberModel()
 
-        database.collection(PATH_USER).document(memberModel.id).set(memberModel)
+        database.collection(pathUser).document(memberModel.id).set(memberModel)
             .addOnSuccessListener {
                 completable.complete(DomainResult.Success(true))
             }
@@ -129,7 +131,7 @@ class MemberRepositoryImp(
             }
         }
         val reference = database
-            .collection(PATH_ATTENDANCE)
+            .collection(pathAttendance)
             .document(year.toString())
             .collection(month.toString())
 
@@ -176,7 +178,7 @@ class MemberRepositoryImp(
             endDate = Timestamp(endDate)
         )
         val collection = database
-            .collection(PATH_ATTENDANCE)
+            .collection(pathAttendance)
             .document(startDateTime.year.toString())
             .collection(startDateTime.monthOfYear.toString())
             .document(attendanceModel.getAttendanceId())
@@ -200,7 +202,7 @@ class MemberRepositoryImp(
         val startDateTime = DateTime(attendanceEntity.startDate)
 
         val collection = database
-            .collection(PATH_ATTENDANCE)
+            .collection(pathAttendance)
             .document(startDateTime.year.toString())
             .collection(startDateTime.monthOfYear.toString())
             .document(attendanceModel.getAttendanceId())
@@ -218,22 +220,4 @@ class MemberRepositoryImp(
 
         return completable.await()
     }
-
-    private fun AttendanceEntity.toAttendanceModel() = AttendanceModel(
-        memberId = memberId,
-        startDate = Timestamp(startDate),
-        endDate = Timestamp(endDate)
-    )
-
-    private fun MemberEntity.toMemberModel() = MemberModel(
-        id = id,
-        firstName = firstName,
-        lastName = lastName,
-        email = email,
-        activeNowDate = activeNowDate?.let { Timestamp(it) }?: run { null },
-        renewalFutureDate = renewalFutureDate?.let { Timestamp(it) }?: run { null },
-        registrationDate = Timestamp(registrationDate),
-        apartmentNumber = apartmentNumber
-    )
-
 }

@@ -5,10 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.theme.AppTheme
+import com.ndemi.garden.gym.ui.utils.AppPreview
 
-@Preview(showBackground = true)
+@AppPreview
 @Composable
 fun TextRegular(
     modifier: Modifier = Modifier,
@@ -27,7 +27,7 @@ fun TextRegular(
     }
 }
 
-@Preview(showBackground = true)
+@AppPreview
 @Composable
 fun TextSmall(
     modifier: Modifier = Modifier,
@@ -46,7 +46,7 @@ fun TextSmall(
     }
 }
 
-@Preview(showBackground = true)
+@AppPreview
 @Composable
 fun TextLarge(
     modifier: Modifier = Modifier,

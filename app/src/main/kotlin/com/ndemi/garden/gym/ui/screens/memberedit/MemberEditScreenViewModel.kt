@@ -99,7 +99,7 @@ class MemberEditScreenViewModel(
     }
 
     fun navigateToAttendanceScreen(memberEntity: MemberEntity) {
-        navigationService.openWithArgs(Route.MembersAttendancesScreen(memberEntity.id, memberEntity.getFullName()))
+        navigationService.open(Route.MembersAttendancesScreen(memberEntity.id, memberEntity.getFullName()))
     }
 
     @Immutable

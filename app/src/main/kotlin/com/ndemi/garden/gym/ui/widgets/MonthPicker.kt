@@ -1,6 +1,5 @@
 package com.ndemi.garden.gym.ui.widgets
 
-import android.content.res.Configuration
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -36,13 +35,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.icon_image_size_large
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -229,25 +228,7 @@ fun MonthPicker(
     }
 }
 
-@Preview(
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-fun MonthPickerPreviewNight(){
-    AppThemeComposable {
-        MonthPicker(
-            visible = true,
-            currentMonth = 9,
-            currentYear = 2024,
-            confirmButtonCLicked = {_,_ -> },
-            cancelClicked = {}
-        )
-    }
-}
-
-@Preview(
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
+@AppPreview
 @Composable
 fun MonthPickerPreview(){
     AppThemeComposable {

@@ -1,6 +1,5 @@
 package com.ndemi.garden.gym.ui.widgets
 
-import android.content.res.Configuration
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,12 +20,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.line_thickness_small
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
 import com.ndemi.garden.gym.ui.utils.toHoursMinutesDuration
@@ -115,23 +114,7 @@ fun AttendanceWidget(
     }
 }
 
-@Preview(
-    showBackground = false,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-)
-@Composable
-fun AttendanceWidgetPreviewNight() {
-    AppThemeComposable {
-        AttendanceWidget(attendanceEntity = getMockAttendanceEntity())
-    }
-}
-
-@Preview(
-    showBackground = false,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-)
+@AppPreview
 @Composable
 fun AttendanceWidgetPreview() {
     AppThemeComposable {

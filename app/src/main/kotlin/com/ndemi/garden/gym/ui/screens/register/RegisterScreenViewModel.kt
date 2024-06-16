@@ -19,6 +19,7 @@ import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
+import java.util.UUID
 
 class RegisterScreenViewModel(
     private val converter: ErrorCodeConverter,
@@ -120,6 +121,11 @@ class RegisterScreenViewModel(
         }
     }
 
+    fun onRegisterNewTapped(){
+        sendAction(Action.SetLoading)
+        updateMember(UUID.randomUUID().toString())
+    }
+
     private fun updateMember(memberId: String){
         sendAction(Action.SetLoading)
         viewModelScope.launch {
@@ -142,6 +148,10 @@ class RegisterScreenViewModel(
 
     fun navigateLogInSuccess() {
         navigationService.open(Route.ProfileScreen, true)
+    }
+
+    fun navigateBack() {
+        navigationService.popBack()
     }
 
 

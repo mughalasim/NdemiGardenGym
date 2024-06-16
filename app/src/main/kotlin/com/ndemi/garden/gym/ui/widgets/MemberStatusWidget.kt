@@ -1,6 +1,5 @@
 package com.ndemi.garden.gym.ui.widgets
 
-import android.content.res.Configuration
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -27,6 +25,7 @@ import com.ndemi.garden.gym.ui.theme.icon_image_size_large
 import com.ndemi.garden.gym.ui.theme.line_thickness_small
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toDaysDuration
 import com.ndemi.garden.gym.ui.utils.toHoursMinutesSecondsDuration
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
@@ -116,26 +115,7 @@ fun MemberStatusWidget(
     }
 }
 
-@Preview(
-    showBackground = false,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-)
-@Composable
-fun MemberWidgetPreviewNight() {
-    AppThemeComposable {
-        Column {
-            MemberStatusWidget(memberEntity = getMockMemberEntity(), showDetails = true)
-            MemberStatusWidget(memberEntity = getMockMemberEntity(), showDetails = false)
-        }
-    }
-}
-
-@Preview(
-    showBackground = false,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-)
+@AppPreview
 @Composable
 fun MemberWidgetPreview() {
     AppThemeComposable {

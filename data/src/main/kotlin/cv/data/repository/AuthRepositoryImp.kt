@@ -9,12 +9,13 @@ import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.AuthRepository
 
 class AuthRepositoryImp(
+    private val adminEmails: List<String>,
     private val logger: AppLoggerRepository,
 ) : AuthRepository {
 
     override fun isAuthenticated() = Firebase.auth.currentUser != null
 
-    override fun isAdmin() = Firebase.auth.currentUser?.email?.contains("admin") == true
+    override fun isAdmin() = adminEmails.contains(Firebase.auth.currentUser?.email)
 
     override fun logOut() = Firebase.auth.signOut()
 

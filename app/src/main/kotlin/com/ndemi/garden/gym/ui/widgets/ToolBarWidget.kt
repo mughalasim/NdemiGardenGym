@@ -1,6 +1,5 @@
 package com.ndemi.garden.gym.ui.widgets
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,10 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
 fun ToolBarWidget(
@@ -52,27 +51,7 @@ fun ToolBarWidget(
     }
 }
 
-@Preview(
-    showBackground = false,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-)
-@Composable
-fun ToolBarWidgetPreviewNight() {
-    AppThemeComposable {
-        Column {
-            ToolBarWidget(
-                title = "Test Long toolbar title that may over flow",
-            )
-        }
-    }
-}
-
-@Preview(
-    showBackground = false,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-)
+@AppPreview
 @Composable
 fun ToolBarWidgetPreview() {
     AppThemeComposable {

@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceItemsScreen
 import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
@@ -33,7 +32,6 @@ import com.ndemi.garden.gym.ui.utils.DateConstants
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.MonthPicker
 import com.ndemi.garden.gym.ui.widgets.TextLarge
-import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.joda.time.DateTime
@@ -86,11 +84,7 @@ fun MembersAttendancesScreen (
         ) {
             if (uiState.value is UiState.Success) {
                 if ((uiState.value as UiState.Success).attendances.isEmpty()) {
-                    Spacer(modifier = Modifier.padding(padding_screen_small))
-                    TextRegular(
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        text = "No Attendances for the selected month")
+                    WarningWidget(title = "No Attendances for the selected month")
                 } else {
                     AttendanceItemsScreen(
                         attendances = (uiState.value as UiState.Success).attendances

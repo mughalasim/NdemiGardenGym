@@ -1,6 +1,5 @@
 package com.ndemi.garden.gym.ui.widgets
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -16,13 +15,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.tooling.preview.Preview
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.icon_image_size
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
 fun ButtonWidget(
@@ -64,28 +63,7 @@ fun ButtonWidget(
     }
 }
 
-@Preview(
-    showBackground = false,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-)
-@Composable
-fun ButtonWidgetPreviewNight() {
-    AppThemeComposable {
-        Column {
-            ButtonWidget(title = "Enabled button", isEnabled = true) {}
-            ButtonWidget(title = "Disabled button", isEnabled = false) {}
-            ButtonWidget(title = "Disabled Loading", isEnabled = false, isLoading = true) {}
-            ButtonWidget(title = "Enabled Loading", isEnabled = true, isLoading = true) {}
-        }
-    }
-}
-
-@Preview(
-    showBackground = false,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-)
+@AppPreview
 @Composable
 fun ButtonWidgetPreview() {
     AppThemeComposable {

@@ -37,7 +37,7 @@ class MembersScreenViewModel (
     }
 
     fun onMemberTapped(memberEntity: MemberEntity) {
-       navigationService.openWithArgs(Route.MemberEditScreen(memberEntity.id))
+       navigationService.open(Route.MemberEditScreen(memberEntity.id))
     }
 
     @Immutable

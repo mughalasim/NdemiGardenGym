@@ -9,14 +9,13 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ndemi.garden.gym.navigation.NavigationHost
 import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.theme.AppTheme
-import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.utils.toRoute
 import com.ndemi.garden.gym.ui.widgets.BottomNavItem
 import com.ndemi.garden.gym.ui.widgets.BottomNavigationWidget
 import org.koin.androidx.compose.koinViewModel
@@ -28,13 +27,13 @@ fun MainScreen(
     val navController = rememberNavController()
     viewModel.setNavController(navController)
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    val currentRoute = navBackStackEntry?.destination?.route?.toRoute()
 
     Scaffold(
         topBar = {},
         bottomBar = {
             val bottomNavItems = when (currentRoute) {
-                Route.LoginScreen.routeName -> BottomNavItem.getLoginBottomItems()
+                Route.LoginScreen -> BottomNavItem.getLoginBottomItems()
                 else -> {
                     if (viewModel.isAuthenticated() && viewModel.isAdmin()){
                         BottomNavItem.getAdminBottomItems()
@@ -64,16 +63,5 @@ fun MainScreen(
                 navigationService = viewModel.getNavigationService(),
             )
         }
-    }
-}
-
-@Preview(
-    showBackground = true,
-    showSystemUi = true
-)
-@Composable
-fun MainScreenPreview() {
-    AppThemeComposable {
-        MainScreen()
     }
 }

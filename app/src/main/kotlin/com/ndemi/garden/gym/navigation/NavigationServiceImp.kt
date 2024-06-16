@@ -28,9 +28,9 @@ class NavigationServiceImp(
         if (route == getCurrentRoute()) {
             return
         }
-        navController.navigate(route.routeName) {
+        navController.navigate(route) {
             if (removeCurrentFromStack) {
-                popUpTo(getCurrentRoute().routeName) {
+                popUpTo(getCurrentRoute()) {
                     inclusive = true
                 }
             }
@@ -38,29 +38,7 @@ class NavigationServiceImp(
         analyticsRepository.logEvent(
             EVENT_NAME_NAVIGATE,
             listOf(
-                Pair(PARAM_SCREEN_NAME, route.routeName),
-            ),
-        )
-    }
-
-    override fun openWithArgs(
-        dataClass: Route,
-        removeCurrentFromStack: Boolean,
-    ) {
-        if (dataClass == getCurrentRoute()) {
-            return
-        }
-        navController.navigate(dataClass) {
-            if (removeCurrentFromStack) {
-                popUpTo(getCurrentRoute().routeName) {
-                    inclusive = true
-                }
-            }
-        }
-        analyticsRepository.logEvent(
-            EVENT_NAME_NAVIGATE,
-            listOf(
-                Pair(PARAM_SCREEN_NAME, dataClass.javaClass.simpleName),
+                Pair(PARAM_SCREEN_NAME, route.toString()),
             ),
         )
     }
@@ -70,53 +48,57 @@ class NavigationServiceImp(
         analyticsRepository.logEvent(
             EVENT_NAME_NAVIGATE,
             listOf(
-                Pair(PARAM_SCREEN_NAME, getCurrentRoute().routeName),
+                Pair(PARAM_SCREEN_NAME, getCurrentRoute().toString()),
             ),
         )
     }
 
-    override fun getCurrentRoute(): Route = navController.currentDestination?.route?.toRoute() ?:
-    Route.getInitialRoute(authUseCase.isAuthenticated())
+    override fun getCurrentRoute(): Route =
+        navController.currentDestination?.route?.toRoute() ?:
+        Route.getInitialRoute(authUseCase.isAuthenticated())
 
     override fun getInitialRoute(): Route = initialRoute
 }
 
 @Serializable
-sealed class Route(val routeName: String, val isInitialRoute: Boolean = false) {
-    data object LoginScreen
-        : Route("LoginScreen")
-
-    data object ResetPasswordScreen
-        : Route("ResetPasswordScreen")
-
-    data object RegisterScreen
-        : Route("RegisterScreen")
-
-    data object ProfileScreen
-        : Route("ProfileScreen")
-
-    data object AttendanceScreen
-        : Route("AttendanceScreen")
-
-    data object LiveAttendanceScreen
-        : Route("LiveAttendanceScreen")
-
-    data object MembersScreen
-        : Route("MembersScreen")
+sealed class Route {
+    @Serializable
+    data object LoginScreen : Route()
 
     @Serializable
-    data class MembersAttendancesScreen(val memberId: String, val memberName: String)
-        : Route("MembersAttendancesScreen")
+    data object ResetPasswordScreen : Route()
 
     @Serializable
-    data class MemberEditScreen(val memberId: String)
-        : Route("MemberEditScreen")
+    data object RegisterScreen : Route()
+
+    @Serializable
+    data object RegisterNewScreen : Route()
+
+    @Serializable
+    data object ProfileScreen : Route()
+
+    @Serializable
+    data object AttendanceScreen : Route()
+
+    @Serializable
+    data object LiveAttendanceScreen : Route()
+
+    @Serializable
+    data object MembersScreen : Route()
+
+    @Serializable
+    data class MembersAttendancesScreen(
+        val memberId: String,
+        val memberName: String,
+    ) : Route()
+
+    @Serializable
+    data class MemberEditScreen(
+        val memberId: String,
+    ) : Route()
 
     companion object {
         fun getInitialRoute(isAuthenticated: Boolean): Route =
-            Route::class.sealedSubclasses
-                .firstOrNull { it.objectInstance?.isInitialRoute == true }
-                ?.objectInstance
-                ?: if (isAuthenticated) ProfileScreen else LoginScreen
+            if (isAuthenticated) ProfileScreen else LoginScreen
     }
 }

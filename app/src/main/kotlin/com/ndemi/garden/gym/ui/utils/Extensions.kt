@@ -20,11 +20,20 @@ import java.util.Date
 fun String.isValidApartmentNumber(): Boolean =
     this.matches(Regex("^[A-Da-d](?:[1-9][0-4][0-4][0-4]?|1404)\$"))
 
-fun String.toRoute(): Route =
-    Route::class.sealedSubclasses
-        .firstOrNull { it.objectInstance?.routeName == this }
-        ?.objectInstance
-        ?: Route.LoginScreen
+fun String.toRoute(): Route {
+    return when {
+        this.contains(Route.ResetPasswordScreen.javaClass.simpleName) -> Route.ResetPasswordScreen
+        this.contains(Route.RegisterScreen.javaClass.simpleName)-> Route.RegisterScreen
+        this.contains(Route.RegisterNewScreen.javaClass.simpleName) -> Route.RegisterNewScreen
+        this.contains(Route.ProfileScreen.javaClass.simpleName) -> Route.ProfileScreen
+        this.contains(Route.AttendanceScreen.javaClass.simpleName) -> Route.AttendanceScreen
+        this.contains(Route.LiveAttendanceScreen.javaClass.simpleName) -> Route.LiveAttendanceScreen
+        this.contains(Route.MembersScreen.javaClass.simpleName) -> Route.MembersScreen
+        this.contains("MembersAttendancesScreen") -> Route.MembersAttendancesScreen("", "")
+        this.contains("MemberEditScreen") -> Route.MemberEditScreen("")
+        else  -> Route.LoginScreen
+    }
+}
 
 @Composable
 fun Date?.toMembershipStatusString(): String {
@@ -117,7 +126,6 @@ object DateConstants {
     val formatMonthYear: DateTimeFormatter =
         DateTimeFormat.forPattern("MMMM yyyy").withLocale(Restring.locale)
 
-    const val MONTHS = 12
     const val MINUTES_IN_HOUR = 60
     const val SECONDS_IN_HOUR = 3600
 }

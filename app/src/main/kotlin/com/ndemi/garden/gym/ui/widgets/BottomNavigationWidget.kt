@@ -1,6 +1,5 @@
 package com.ndemi.garden.gym.ui.widgets
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -15,7 +14,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -24,6 +22,8 @@ import androidx.navigation.compose.rememberNavController
 import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
+import com.ndemi.garden.gym.ui.utils.AppPreview
+import com.ndemi.garden.gym.ui.utils.toRoute
 
 @Composable
 fun BottomNavigationWidget(
@@ -37,7 +37,7 @@ fun BottomNavigationWidget(
         val currentDestination = navStackBackEntry?.destination
 
         navBottomItems.forEach { item ->
-            val isCurrentSelection = currentDestination?.hierarchy?.any { it.route == item.route } == true
+            val isCurrentSelection = currentDestination?.hierarchy?.any { it.route?.toRoute() == item.route } == true
             val selectedColor =
                 if (isCurrentSelection) AppTheme.colors.highLight else AppTheme.colors.backgroundButtonDisabled
             BottomNavigationItem(
@@ -71,33 +71,33 @@ fun BottomNavigationWidget(
     }
 }
 
-sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
+sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: String) {
     data object LoginScreen : BottomNavItem(
-        Route.LoginScreen.routeName, Icons.Default.CheckCircle, "Login"
+        Route.LoginScreen, Icons.Default.CheckCircle, "Login"
     )
 
     data object RegisterScreen : BottomNavItem(
-        Route.RegisterScreen.routeName, Icons.Default.Email, "Register"
+        Route.RegisterScreen, Icons.Default.Email, "Register"
     )
 
     data object ResetPasswordScreen : BottomNavItem(
-        Route.ResetPasswordScreen.routeName, Icons.Default.Create, "Reset"
+        Route.ResetPasswordScreen, Icons.Default.Create, "Reset"
     )
 
     data object ProfileScreen : BottomNavItem(
-        Route.ProfileScreen.routeName, Icons.Default.AccountCircle, "Profile"
+        Route.ProfileScreen, Icons.Default.AccountCircle, "Profile"
     )
 
     data object AttendanceScreen : BottomNavItem(
-        Route.AttendanceScreen.routeName, Icons.Default.Favorite, "Attendance"
+        Route.AttendanceScreen, Icons.Default.Favorite, "Attendance"
     )
 
     data object LiveAttendanceScreen : BottomNavItem(
-        Route.LiveAttendanceScreen.routeName, Icons.Default.Info, "Live view"
+        Route.LiveAttendanceScreen, Icons.Default.Info, "Live view"
     )
 
     data object MembersScreen : BottomNavItem(
-        Route.MembersScreen.routeName, Icons.Default.Info, "Members"
+        Route.MembersScreen, Icons.Default.Info, "Members"
     )
 
     companion object{
@@ -120,36 +120,7 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: 
     }
 }
 
-@Preview(
-    showBackground = false,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-)
-@Composable
-fun BottomNavigationWidgetPreviewNight(){
-    AppThemeComposable {
-        Column {
-            BottomNavigationWidget(
-                navHostController = rememberNavController(),
-                BottomNavItem.getLoginBottomItems()
-            )
-            BottomNavigationWidget(
-                navHostController = rememberNavController(),
-                BottomNavItem.getMemberBottomItems()
-            )
-            BottomNavigationWidget(
-                navHostController = rememberNavController(),
-                BottomNavItem.getAdminBottomItems()
-            )
-        }
-    }
-}
-
-@Preview(
-    showBackground = false,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-)
+@AppPreview
 @Composable
 fun BottomNavigationWidgetPreview(){
     AppThemeComposable {
