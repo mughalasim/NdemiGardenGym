@@ -2,9 +2,11 @@ package com.ndemi.garden.gym.ui.widgets
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -34,7 +36,8 @@ fun ButtonWidget(
     Row(
         modifier =
         modifier
-            .wrapContentWidth(align = Alignment.CenterHorizontally)
+            .fillMaxWidth()
+            .padding(top = padding_screen)
             .background(
                 color =
                 if (isEnabled && !isLoading) {
@@ -48,7 +51,8 @@ fun ButtonWidget(
             .clickable {
                 if (isEnabled && !isLoading) onButtonClicked()
             },
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
         if (isLoading){
             CircularProgressIndicator(
@@ -57,8 +61,13 @@ fun ButtonWidget(
             Spacer(modifier = Modifier.padding(padding_screen_small))
         }
         TextSmall(
+            modifier = Modifier.wrapContentWidth(),
             text = title.uppercase(),
-            color = if (isEnabled && !isLoading) AppTheme.colors.backgroundScreen else AppTheme.colors.textSecondary,
+            color = if (isEnabled && !isLoading) {
+                AppTheme.colors.backgroundScreen
+            } else {
+                AppTheme.colors.textSecondary
+            },
         )
     }
 }
@@ -68,7 +77,7 @@ fun ButtonWidget(
 fun ButtonWidgetPreview() {
     AppThemeComposable {
         Column {
-            ButtonWidget(title = "Enabled button", isEnabled = true) {}
+            ButtonWidget(title = "Enabled button", isEnabled = true, isLoading = true) {}
             ButtonWidget(title = "Disabled button", isEnabled = false) {}
         }
     }

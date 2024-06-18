@@ -28,10 +28,8 @@ class ProfileScreenViewModel(
 ) : BaseViewModel<UiState, ProfileScreenViewModel.Action>(UiState.Loading) {
 
     private lateinit var memberEntity: MemberEntity
-
     private val _sessionStartTime = MutableLiveData<DateTime?>()
     val sessionStartTime: LiveData<DateTime?> = _sessionStartTime
-
 
     init {
         val time = sharedPrefsUseCase.getStartedSession()

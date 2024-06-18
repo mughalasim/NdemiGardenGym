@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DisplayMode
@@ -38,6 +37,7 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.MemberInfoWidget
+import com.ndemi.garden.gym.ui.widgets.SessionWidget
 import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.TextSmall
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
@@ -45,12 +45,16 @@ import cv.domain.entities.MemberEntity
 import cv.domain.entities.getMockMemberEntity
 import org.joda.time.DateTime
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MemberEditDetailsScreen(
     memberEntity: MemberEntity,
     onMembershipDueDateUpdate: (DateTime) -> Unit = { },
-    onViewAttendance: (memberEntity: MemberEntity) -> Unit = {}
+    onViewAttendance: (memberEntity: MemberEntity) -> Unit = {},
+    sessionMessage: String = "",
+    sessionStartTime: DateTime? = null,
+    onSessionStarted: () -> Unit = {},
+    onSessionCompleted: (DateTime, DateTime) -> Unit = { _, _ -> },
 ) {
     Column(
         modifier = Modifier
@@ -65,6 +69,10 @@ fun MemberEditDetailsScreen(
         val state = rememberDatePickerState(initialDisplayMode = DisplayMode.Picker)
 
         MemberInfoWidget(memberEntity)
+
+        SessionWidget(
+            sessionMessage, sessionStartTime, onSessionStarted, onSessionCompleted
+        )
 
         Column(
             modifier = Modifier
@@ -90,8 +98,7 @@ fun MemberEditDetailsScreen(
             OutlinedButton(
                 modifier = Modifier
                     .padding(top = padding_screen_small)
-                    .fillMaxWidth()
-                    .padding(end = padding_screen),
+                    .fillMaxWidth(),
                 onClick = {
                     datePickerVisibility = !datePickerVisibility
                     errorMessage = ""
@@ -151,7 +158,6 @@ fun MemberEditDetailsScreen(
             }
         }
 
-        Spacer(modifier = Modifier.padding(top = padding_screen))
         ButtonWidget(title = "View Attendance", isEnabled = true) {
             onViewAttendance.invoke(memberEntity)
         }

@@ -3,7 +3,6 @@ package com.ndemi.garden.gym.ui.screens.reset
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -21,11 +20,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
-import com.ndemi.garden.gym.ui.widgets.TextLarge
+import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.koin.androidx.compose.koinViewModel
 
@@ -53,32 +52,33 @@ fun ResetPasswordScreen(
            ).show()
         }
 
+        ToolBarWidget(title = "Forgot your password?")
+
         if (uiState.value is UiState.Error){
             val message = (uiState.value as UiState.Error).message
             WarningWidget(message)
-            Spacer(modifier = Modifier.padding(padding_screen_small))
         }
 
-        Spacer(modifier = Modifier.padding(padding_screen_small))
-        TextLarge(text = "Forgot your password?")
-
-        Spacer(modifier = Modifier.padding(padding_screen_small))
-        EditTextWidget(
-            hint = "Email",
-            isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL,
-            keyboardType = KeyboardType.Email
-        ){
-            email = it
-            viewModel.setEmail(it)
-        }
-
-        Spacer(modifier = Modifier.padding(padding_screen_small))
-        ButtonWidget(
-            title = "Reset",
-            isEnabled = uiState.value is UiState.Ready,
-            isLoading = uiState.value is UiState.Loading
+        Column(
+            modifier = Modifier
+                .padding(horizontal = padding_screen_large)
         ) {
-            viewModel.onResetPasswordTapped()
+            EditTextWidget(
+                hint = "Email",
+                isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL,
+                keyboardType = KeyboardType.Email
+            ){
+                email = it
+                viewModel.setEmail(it)
+            }
+
+            ButtonWidget(
+                title = "Reset",
+                isEnabled = uiState.value is UiState.Ready,
+                isLoading = uiState.value is UiState.Loading
+            ) {
+                viewModel.onResetPasswordTapped()
+            }
         }
     }
 }

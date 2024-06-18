@@ -3,14 +3,14 @@ import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-    kotlin("kapt")
+    alias(libs.plugins.kapt)
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.crashlytics)
     alias(libs.plugins.google.services)
     alias(libs.plugins.detekt)
     alias(libs.plugins.spotless)
-    kotlin("plugin.serialization")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")

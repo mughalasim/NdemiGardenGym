@@ -28,17 +28,19 @@ import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
-import com.ndemi.garden.gym.ui.utils.toHoursMinutesDuration
+import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.getMockAttendanceEntity
 import org.joda.time.DateTime
+import org.joda.time.Minutes
 
 @Composable
 fun AttendanceWidget(
     modifier: Modifier = Modifier,
     attendanceEntity: AttendanceEntity,
+    canDeleteAttendance: Boolean = false,
     onDeleteAttendance: (AttendanceEntity)-> Unit = {},
-) {
+): Int {
     val startDate = DateTime(attendanceEntity.startDate)
     val endDate = DateTime(attendanceEntity.endDate)
     var showDialog by remember { mutableStateOf(false) }
@@ -66,12 +68,13 @@ fun AttendanceWidget(
             TextSmall(
                 text = startDate.toString(formatDateDay),
             )
-            Icon(
-                modifier = Modifier.clickable { showDialog = !showDialog },
-                imageVector = Icons.Default.Clear,
-                tint = AppTheme.colors.highLight,
-                contentDescription = "Delete"
-            )
+            if (canDeleteAttendance)
+                Icon(
+                    modifier = Modifier.clickable { showDialog = !showDialog },
+                    imageVector = Icons.Default.Clear,
+                    tint = AppTheme.colors.highLight,
+                    contentDescription = "Delete"
+                )
         }
         Row(
             modifier = Modifier
@@ -85,7 +88,7 @@ fun AttendanceWidget(
             )
 
             TextRegular(
-                text = endDate.toHoursMinutesDuration(startDate),
+                text = endDate.toActiveStatusDuration(startDate),
             )
 
             if (showDialog){
@@ -112,6 +115,10 @@ fun AttendanceWidget(
             }
         }
     }
+    return Minutes.minutesBetween(
+        startDate.toInstant(),
+        endDate.toInstant()
+    ).minutes
 }
 
 @AppPreview

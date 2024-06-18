@@ -1,6 +1,8 @@
 package com.ndemi.garden.gym.ui.screens.memberedit
 
 import androidx.compose.runtime.Immutable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
@@ -23,6 +25,8 @@ class MemberEditScreenViewModel(
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
 
     private lateinit var memberEntity: MemberEntity
+    private val _sessionStartTime = MutableLiveData<DateTime?>()
+    val sessionStartTime: LiveData<DateTime?> = _sessionStartTime
 
     fun getMemberForId(memberId: String) {
         sendAction(Action.SetLoading)
@@ -33,6 +37,9 @@ class MemberEditScreenViewModel(
                         sendAction(Action.ShowError(errorCodeConverter.getMessage(result.error)))
 
                     is DomainResult.Success -> {
+                        if(result.data.activeNowDate != null){
+                            _sessionStartTime.value = DateTime(result.data.activeNowDate)
+                        }
                         memberEntity = result.data
                         sendAction(Action.Success(result.data))
                     }
@@ -41,10 +48,20 @@ class MemberEditScreenViewModel(
         }
     }
 
+    fun setStartedSession() {
+        _sessionStartTime.value = DateTime.now()
+        updateMemberLiveStatus()
+    }
+
+    private fun clearStartedSession() {
+        _sessionStartTime.value = null
+        updateMemberLiveStatus()
+    }
+
     private fun updateMemberLiveStatus() {
         viewModelScope.launch {
             memberUseCase.updateMember(
-                memberEntity
+                memberEntity.copy(activeNowDate =  _sessionStartTime.value?.toDate())
             )
         }
     }
@@ -75,8 +92,9 @@ class MemberEditScreenViewModel(
     fun setAttendance(startDateTime: DateTime, endDateTime: DateTime) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            memberUseCase.addAttendance(startDateTime.toDate(), endDateTime.toDate())
+            memberUseCase.addAttendanceForMember(memberEntity.id, startDateTime.toDate(), endDateTime.toDate())
                 .also { result ->
+                    clearStartedSession()
                     when (result) {
                         is DomainResult.Error -> {
                             sendAction(

@@ -2,7 +2,6 @@ package com.ndemi.garden.gym.ui.screens.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -14,13 +13,13 @@ import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditPasswordTextWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
-import com.ndemi.garden.gym.ui.widgets.TextLarge
 import com.ndemi.garden.gym.ui.widgets.TextSmall
+import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.koin.androidx.compose.koinViewModel
 
@@ -42,41 +41,44 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        ToolBarWidget(title = "Login")
+
         if (uiState.value is UiState.Error){
             val message = (uiState.value as UiState.Error).message
             WarningWidget(message)
-            Spacer(modifier = Modifier.padding(padding_screen_small))
         }
 
-        Spacer(modifier = Modifier.padding(padding_screen_small))
-        TextLarge(text = "Login")
-
-        Spacer(modifier = Modifier.padding(padding_screen_small))
-        EditTextWidget(
-            hint = "Email",
-            isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL,
-            keyboardType = KeyboardType.Email
-        ){
-            viewModel.setEmail(it)
-        }
-
-        Spacer(modifier = Modifier.padding(padding_screen_small))
-        EditPasswordTextWidget(
-            hint = "Password",
-            isError = (uiState.value as? UiState.Error)?.inputType == InputType.PASSWORD
-        ){
-            viewModel.setPassword(it)
-        }
-        Spacer(modifier = Modifier.padding(padding_screen_small))
-        ButtonWidget(
-            title = "Login",
-            isEnabled = uiState.value is UiState.Ready,
-            isLoading = uiState.value is UiState.Loading
+        Column(
+            modifier = Modifier.padding(horizontal = padding_screen_large)
         ) {
-            viewModel.onLoginTapped()
+            EditTextWidget(
+                hint = "Email",
+                isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL,
+                keyboardType = KeyboardType.Email
+            ){
+                viewModel.setEmail(it)
+            }
+
+            EditPasswordTextWidget(
+                hint = "Password",
+                isError = (uiState.value as? UiState.Error)?.inputType == InputType.PASSWORD
+            ){
+                viewModel.setPassword(it)
+            }
+
+            ButtonWidget(
+                title = "Login",
+                isEnabled = uiState.value is UiState.Ready,
+                isLoading = uiState.value is UiState.Loading
+            ) {
+                viewModel.onLoginTapped()
+            }
+
+            TextSmall(
+                modifier = Modifier.padding(top = padding_screen_large),
+                text = "App version: "+ BuildConfig.VERSION_NAME
+            )
         }
-        Spacer(modifier = Modifier.padding(padding_screen_small))
-        TextSmall(text = "App version: "+ BuildConfig.VERSION_NAME)
     }
 }
 

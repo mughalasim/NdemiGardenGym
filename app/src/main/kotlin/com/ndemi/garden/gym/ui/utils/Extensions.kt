@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.Route
+import com.ndemi.garden.gym.ui.utils.DateConstants.HOUR_IN_DAY
 import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
 import com.ndemi.garden.gym.ui.utils.DateConstants.SECONDS_IN_HOUR
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
@@ -26,8 +27,8 @@ fun String.toRoute(): Route {
         this.contains(Route.RegisterScreen.javaClass.simpleName)-> Route.RegisterScreen
         this.contains(Route.RegisterNewScreen.javaClass.simpleName) -> Route.RegisterNewScreen
         this.contains(Route.ProfileScreen.javaClass.simpleName) -> Route.ProfileScreen
-        this.contains(Route.AttendanceScreen.javaClass.simpleName) -> Route.AttendanceScreen
         this.contains(Route.LiveAttendanceScreen.javaClass.simpleName) -> Route.LiveAttendanceScreen
+        this.contains(Route.AttendanceScreen.javaClass.simpleName) -> Route.AttendanceScreen
         this.contains(Route.MembersScreen.javaClass.simpleName) -> Route.MembersScreen
         this.contains("MembersAttendancesScreen") -> Route.MembersAttendancesScreen("", "")
         this.contains("MemberEditScreen") -> Route.MemberEditScreen("")
@@ -43,7 +44,7 @@ fun Date?.toMembershipStatusString(): String {
 }
 
 @Composable
-fun DateTime.toHoursMinutesSecondsDuration(startDate: DateTime): String {
+fun DateTime.toActiveStatusDuration(startDate: DateTime): String {
     val context = LocalContext.current.resources
 
     val hours = Hours.hoursBetween(
@@ -61,38 +62,14 @@ fun DateTime.toHoursMinutesSecondsDuration(startDate: DateTime): String {
 
     val hoursString = String.format(context.getQuantityString(R.plurals.plural_hours, hours), hours)
     val minutesString = String.format(context.getQuantityString(R.plurals.plural_minutes, minutes), minutes)
-    val nowString = context.getString(R.string.txt_now)
-    val notActiveString = context.getString(R.string.txt_not_active)
 
-    return (if (hours > 0) hoursString else "") +
-            (if (hours > 0 && minutes > 0) " " else "") +
-            (if (minutes > 0) minutesString else "") +
-            (if (seconds > 0 && minutes < 1) nowString else notActiveString)
-
-}
-
-@Composable
-fun DateTime.toHoursMinutesDuration(startDate: DateTime): String {
-    val context = LocalContext.current.resources
-
-    val hours = Hours.hoursBetween(
-        startDate.toInstant(),
-        this.toInstant()
-    ).hours
-    val minutes = Minutes.minutesBetween(
-        startDate.toInstant(),
-        this.toInstant()
-    ).minutes % MINUTES_IN_HOUR
-
-    val hoursString = String.format(context.getQuantityString(R.plurals.plural_hours, hours), hours)
-    val minutesString = String.format(context.getQuantityString(R.plurals.plural_minutes, minutes), minutes)
-    val nowString = context.getString(R.string.txt_now)
-
-    return (if (hours > 0) hoursString else "") +
-            (if (hours > 0 && minutes > 0) " " else "") +
-            (if (minutes > 0) minutesString else "") +
-            (if (hours < 1 && minutes < 1) nowString else "")
-
+    return if (seconds <= 0){
+        context.getString(R.string.txt_not_active)
+    } else if (hours <= 0 && minutes < 1){
+        context.getString(R.string.txt_now)
+    } else {
+        (if (hours > 0) hoursString else "") + (if (minutes > 0) " $minutesString" else "")
+    }
 }
 
 @Composable
@@ -104,12 +81,20 @@ fun DateTime.toDaysDuration(): String {
         this.toInstant()
     ).days
 
+    val hours = Hours.hoursBetween(
+        DateTime.now().toInstant(),
+        this.toInstant()
+    ).hours
+
     val daysString = String.format(context.getQuantityString(R.plurals.plural_days, days), days)
 
-    return (if (days > 0) daysString else "") +
-            (if (days == 1) context.getString(R.string.txt_today) else "") +
-            (if (days == 0) context.getString(R.string.txt_tomorrow) else "")
-
+    return if (hours <= HOUR_IN_DAY){
+        context.getString(R.string.txt_today)
+    } else if (hours <= HOUR_IN_DAY*2){
+        context.getString(R.string.txt_tomorrow)
+    } else {
+        daysString
+    }
 }
 
 object DateConstants {
@@ -126,6 +111,7 @@ object DateConstants {
     val formatMonthYear: DateTimeFormatter =
         DateTimeFormat.forPattern("MMMM yyyy").withLocale(Restring.locale)
 
+    const val HOUR_IN_DAY = 12
     const val MINUTES_IN_HOUR = 60
     const val SECONDS_IN_HOUR = 3600
 }

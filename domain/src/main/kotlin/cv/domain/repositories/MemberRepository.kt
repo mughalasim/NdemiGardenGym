@@ -17,7 +17,7 @@ interface MemberRepository {
     suspend fun getAttendances(isMembersAttendances: Boolean, memberId: String, year: Int, month: Int):
             DomainResult<List<AttendanceEntity>>
 
-    suspend fun addAttendance(startDate: Date, endDate: Date): DomainResult<Unit>
+    suspend fun addAttendance(memberId: String, startDate: Date, endDate: Date): DomainResult<Unit>
 
     suspend fun deleteAttendance (attendanceEntity: AttendanceEntity): DomainResult<Unit>
 }

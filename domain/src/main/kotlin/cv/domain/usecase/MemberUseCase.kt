@@ -30,7 +30,10 @@ class MemberUseCase(
         memberRepository.getAttendances(false, "", year, month)
 
     suspend fun addAttendance(startDate: Date, endDate: Date) =
-        memberRepository.addAttendance(startDate, endDate)
+        memberRepository.addAttendance("", startDate, endDate)
+
+    suspend fun addAttendanceForMember(memberId: String, startDate: Date, endDate: Date) =
+        memberRepository.addAttendance(memberId, startDate, endDate)
 
     suspend fun updateMember(memberEntity: MemberEntity) =
         memberRepository.updateMember(memberEntity)

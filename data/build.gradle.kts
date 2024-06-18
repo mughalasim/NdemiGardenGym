@@ -1,10 +1,10 @@
 plugins {
-    kotlin("kapt")
+    alias(libs.plugins.kapt)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.detekt)
     alias(libs.plugins.spotless)
-    kotlin("plugin.serialization")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {

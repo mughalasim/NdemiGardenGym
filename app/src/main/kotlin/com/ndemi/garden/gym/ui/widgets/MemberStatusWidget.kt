@@ -26,8 +26,8 @@ import com.ndemi.garden.gym.ui.theme.line_thickness_small
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
+import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import com.ndemi.garden.gym.ui.utils.toDaysDuration
-import com.ndemi.garden.gym.ui.utils.toHoursMinutesSecondsDuration
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.getMockMemberEntity
@@ -58,7 +58,7 @@ fun MemberStatusWidget(
             Column(modifier = Modifier.weight(8f)) {
                 TextLarge(
                     text = memberEntity.getFullName() + " (" + DateTime.now()
-                        .toHoursMinutesSecondsDuration(
+                        .toActiveStatusDuration(
                             startDate = DateTime(memberEntity.activeNowDate)
                         ) + ")",
                 )

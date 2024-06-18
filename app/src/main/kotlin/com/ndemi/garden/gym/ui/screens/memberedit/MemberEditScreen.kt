@@ -12,6 +12,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
@@ -31,6 +32,7 @@ fun MemberEditScreen(
     val pullRefreshState = rememberPullRefreshState(isRefreshing, {
         viewModel.getMemberForId(memberId)
     })
+    val sessionStartTime = viewModel.sessionStartTime.observeAsState().value
 
     LaunchedEffect(true) { viewModel.getMemberForId(memberId) }
 
@@ -55,7 +57,11 @@ fun MemberEditScreen(
                     },
                     onViewAttendance = {
                         viewModel.navigateToAttendanceScreen(it)
-                    }
+                    },
+                    sessionMessage = (uiState.value as UiState.Success).message,
+                    sessionStartTime = sessionStartTime,
+                    onSessionStarted = viewModel::setStartedSession,
+                    onSessionCompleted = viewModel::setAttendance
                 )
             }
             PullRefreshIndicator(

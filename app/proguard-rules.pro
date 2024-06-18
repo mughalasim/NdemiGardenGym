@@ -21,3 +21,5 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class cv.data.models.** { *; }
+-dontwarn org.gradle.api.Plugin
+-dontwarn org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar

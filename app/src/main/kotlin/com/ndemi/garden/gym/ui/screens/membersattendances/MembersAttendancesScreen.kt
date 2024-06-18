@@ -1,6 +1,5 @@
 package com.ndemi.garden.gym.ui.screens.membersattendances
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.ndemi.garden.gym.ui.screens.attendance.AttendanceItemsScreen
+import com.ndemi.garden.gym.ui.screens.attendance.AttendanceListScreen
 import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.padding_screen
@@ -67,10 +66,15 @@ fun MembersAttendancesScreen (
                 .fillMaxWidth()
                 .padding(start = padding_screen, end = padding_screen),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextLarge(text = selectedDate.toString(DateConstants.formatMonthYear))
-            ButtonWidget(title = "Select Date", isEnabled = true) {
+            TextLarge(
+                modifier = Modifier.weight(1f),
+                text = selectedDate.toString(DateConstants.formatMonthYear))
+            ButtonWidget(
+                modifier = Modifier.weight(1f),
+                title = "Select Date",
+                isEnabled = true
+            ) {
                 monthPickerVisibility = !monthPickerVisibility
             }
         }
@@ -86,8 +90,9 @@ fun MembersAttendancesScreen (
                 if ((uiState.value as UiState.Success).attendances.isEmpty()) {
                     WarningWidget(title = "No Attendances for the selected month")
                 } else {
-                    AttendanceItemsScreen(
-                        attendances = (uiState.value as UiState.Success).attendances
+                    AttendanceListScreen(
+                        attendances = (uiState.value as UiState.Success).attendances,
+                        canDeleteAttendance = true
                     ){
                         viewModel.deleteAttendance(it)
                     }

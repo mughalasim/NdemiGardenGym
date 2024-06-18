@@ -64,8 +64,14 @@ fun AttendanceScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextLarge(text = selectedDate.toString(formatMonthYear))
-            ButtonWidget(title = "Select Date", isEnabled = true) {
+            TextLarge(
+                modifier = Modifier.weight(1f),
+                text = selectedDate.toString(formatMonthYear))
+            ButtonWidget(
+                modifier = Modifier.weight(1f),
+                title = "Select Date",
+                isEnabled = true
+            ) {
                 monthPickerVisibility = !monthPickerVisibility
             }
         }
@@ -81,8 +87,9 @@ fun AttendanceScreen(
                 if ((uiState.value as UiState.Success).attendances.isEmpty()) {
                     WarningWidget(title = "No Attendances for the selected month")
                 } else {
-                    AttendanceItemsScreen(
-                        attendances = (uiState.value as UiState.Success).attendances
+                    AttendanceListScreen(
+                        attendances = (uiState.value as UiState.Success).attendances,
+                        canDeleteAttendance = false
                     ){
                         viewModel.deleteAttendance(it)
                     }

@@ -1,5 +1,6 @@
 package com.ndemi.garden.gym.navigation
 
+import androidx.annotation.Keep
 import androidx.navigation.NavController
 import com.ndemi.garden.gym.ui.utils.toRoute
 import cv.domain.Variables.EVENT_NAME_NAVIGATE
@@ -44,7 +45,7 @@ class NavigationServiceImp(
     }
 
     override fun popBack() {
-        navController.popBackStack()
+        navController.navigateUp()
         analyticsRepository.logEvent(
             EVENT_NAME_NAVIGATE,
             listOf(
@@ -60,38 +61,49 @@ class NavigationServiceImp(
     override fun getInitialRoute(): Route = initialRoute
 }
 
+@Keep
 @Serializable
 sealed class Route {
+    @Keep
     @Serializable
     data object LoginScreen : Route()
 
+    @Keep
     @Serializable
     data object ResetPasswordScreen : Route()
 
+    @Keep
     @Serializable
     data object RegisterScreen : Route()
 
+    @Keep
     @Serializable
     data object RegisterNewScreen : Route()
 
+    @Keep
     @Serializable
     data object ProfileScreen : Route()
 
+    @Keep
     @Serializable
     data object AttendanceScreen : Route()
 
+    @Keep
     @Serializable
     data object LiveAttendanceScreen : Route()
 
+    @Keep
     @Serializable
     data object MembersScreen : Route()
 
+    @Keep
     @Serializable
     data class MembersAttendancesScreen(
         val memberId: String,
         val memberName: String,
     ) : Route()
 
+    @Keep
     @Serializable
     data class MemberEditScreen(
         val memberId: String,

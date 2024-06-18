@@ -24,7 +24,8 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -33,13 +34,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.icon_image_size_large
+import com.ndemi.garden.gym.ui.theme.line_thickness_small
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
@@ -91,11 +92,9 @@ fun MonthPicker(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
                         Icon(
                             modifier = Modifier
                                 .size(icon_image_size_large)
-                                .rotate(90f)
                                 .clickable(
                                     indication = null,
                                     interactionSource = interactionSource,
@@ -104,7 +103,7 @@ fun MonthPicker(
                                     }
                                 ),
                             tint = AppTheme.colors.highLight,
-                            imageVector = Icons.Rounded.KeyboardArrowDown,
+                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
                             contentDescription = null
                         )
 
@@ -116,7 +115,6 @@ fun MonthPicker(
                         Icon(
                             modifier = Modifier
                                 .size(icon_image_size_large)
-                                .rotate(-90f)
                                 .clickable(
                                     indication = null,
                                     interactionSource = interactionSource,
@@ -125,7 +123,7 @@ fun MonthPicker(
                                     }
                                 ),
                             tint = AppTheme.colors.highLight,
-                            imageVector = Icons.Rounded.KeyboardArrowDown,
+                            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                             contentDescription = null
                         )
                     }
@@ -198,7 +196,7 @@ fun MonthPicker(
                             cancelClicked()
                         },
                         shape = CircleShape,
-                        border = BorderStroke(1.dp, color = Color.Transparent),
+                        border = BorderStroke(line_thickness_small, color = Color.Transparent),
                         colors = ButtonDefaults.outlinedButtonColors(backgroundColor = Color.Transparent)
                     ) {
                         TextRegular(text = "Cancel",)
@@ -213,7 +211,7 @@ fun MonthPicker(
                             )
                         },
                         shape = RoundedCornerShape(border_radius),
-                        border = BorderStroke(1.dp, color = AppTheme.colors.highLight),
+                        border = BorderStroke(line_thickness_small, color = AppTheme.colors.highLight),
                         colors = ButtonDefaults.outlinedButtonColors(backgroundColor = Color.Transparent)
                     ) {
                         TextRegular(

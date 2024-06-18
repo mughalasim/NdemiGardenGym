@@ -53,9 +53,7 @@ fun ProfileScreen(
                     message = (uiState.value as UiState.Success).message,
                     sessionStartTime = sessionStartTime,
                     onSessionStarted = viewModel::setStartedSession,
-                    onSessionCompleted = { startDate, endDate ->
-                        viewModel.setAttendance(startDate, endDate)
-                    },
+                    onSessionCompleted = viewModel::setAttendance,
                     onRegisterMember = viewModel::onRegisterMember,
                     onLogOut = viewModel::onLogOutTapped
                 )

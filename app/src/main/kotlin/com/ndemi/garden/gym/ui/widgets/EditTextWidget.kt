@@ -2,6 +2,9 @@ package com.ndemi.garden.gym.ui.widgets
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -23,6 +26,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
+import com.ndemi.garden.gym.ui.theme.border_radius
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
@@ -37,7 +42,7 @@ fun EditTextWidget(
 ) {
     var text by remember { mutableStateOf(textInput) }
     OutlinedTextField(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth().padding(top = padding_screen_small),
         value = text,
         enabled = isEnabled,
         isError = isError,
@@ -63,7 +68,8 @@ fun EditTextWidget(
             unfocusedLabelColor = AppTheme.colors.backgroundButtonDisabled,
             disabledTextColor = AppTheme.colors.backgroundButtonDisabled,
             textColor = AppTheme.colors.textPrimary
-        )
+        ),
+        shape = RoundedCornerShape(border_radius)
     )
 }
 
@@ -80,7 +86,7 @@ fun EditPasswordTextWidget(
     var passwordVisible: Boolean by rememberSaveable { mutableStateOf(false) }
 
     OutlinedTextField(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth().padding(top = padding_screen_small),
         value = password,
         onValueChange = {
             password = it
@@ -110,7 +116,8 @@ fun EditPasswordTextWidget(
             unfocusedLabelColor = AppTheme.colors.backgroundButtonDisabled,
             disabledTextColor = AppTheme.colors.backgroundButtonDisabled,
             textColor = AppTheme.colors.textPrimary
-        )
+        ),
+        shape = RoundedCornerShape(border_radius)
     )
 }
 

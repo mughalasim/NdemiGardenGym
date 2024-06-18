@@ -86,11 +86,23 @@ class MemberRepositoryImp(
                 val response = document.toObjects<MemberModel>()
                 if (isLive) {
                     completable.complete(DomainResult.Success(
-                        response.filter { it.activeNowDate != null }.map { it.toMemberEntity() })
+                        response.filter {
+                            it.activeNowDate != null
+                        }.map {
+                            it.toMemberEntity()
+                        }.sortedByDescending {
+                            it.registrationDate
+                        })
                     )
                 } else {
                     completable.complete(DomainResult.Success(
-                        response.filter { it.id != Firebase.auth.currentUser?.uid }.map { it.toMemberEntity() })
+                        response.filter {
+                            it.id != Firebase.auth.currentUser?.uid
+                        }.map {
+                            it.toMemberEntity()
+                        }.sortedByDescending {
+                            it.registrationDate
+                        })
                     )
                 }
 
@@ -143,10 +155,22 @@ class MemberRepositoryImp(
                 val response = document.toObjects<AttendanceModel>()
                 if (isMembersAttendances) {
                     completable.complete(DomainResult.Success(
-                        response.filter { it.memberId == setMemberId }.map { it.toAttendanceEntity() })
+                        response.filter {
+                            it.memberId == setMemberId
+                        }.map {
+                            it.toAttendanceEntity()
+                        }.sortedByDescending {
+                            it.startDate
+                        })
                     )
                 } else {
-                    completable.complete(DomainResult.Success(response.map { it.toAttendanceEntity() }))
+                    completable.complete(DomainResult.Success(
+                        response.map {
+                            it.toAttendanceEntity()
+                        }.sortedByDescending {
+                            it.startDate
+                        })
+                    )
                 }
 
             }.addOnFailureListener {
@@ -157,9 +181,15 @@ class MemberRepositoryImp(
         return completable.await()
     }
 
-    override suspend fun addAttendance(startDate: Date, endDate: Date): DomainResult<Unit> {
-        val memberId = Firebase.auth.currentUser?.uid ?: run {
-            return DomainResult.Error(DomainError.UNAUTHORISED)
+    override suspend fun addAttendance(
+        memberId: String,
+        startDate: Date,
+        endDate: Date
+    ): DomainResult<Unit> {
+        val setMemberId = memberId.ifEmpty {
+            Firebase.auth.currentUser?.uid ?: run {
+                return DomainResult.Error(DomainError.UNAUTHORISED)
+            }
         }
 
         val startDateTime = DateTime(startDate)
@@ -173,7 +203,7 @@ class MemberRepositoryImp(
         }
 
         val attendanceModel = AttendanceModel(
-            memberId = memberId,
+            memberId = setMemberId,
             startDate = Timestamp(startDate),
             endDate = Timestamp(endDate)
         )

@@ -2,7 +2,6 @@ package com.ndemi.garden.gym.ui.screens.register
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -14,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
-import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditPasswordTextWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
@@ -30,11 +29,11 @@ fun RegisterDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(horizontal = padding_screen_large)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(modifier = Modifier.padding(padding_screen_small))
         EditTextWidget(
             hint = "First name",
             isError = currentInputType == InputType.FIRST_NAME
@@ -42,7 +41,6 @@ fun RegisterDetailScreen(
             onSetString.invoke(it, InputType.FIRST_NAME)
         }
 
-        Spacer(modifier = Modifier.padding(padding_screen_small))
         EditTextWidget(
             hint = "Last Name",
             isError = currentInputType == InputType.LAST_NAME
@@ -50,7 +48,6 @@ fun RegisterDetailScreen(
             onSetString.invoke(it, InputType.LAST_NAME)
         }
 
-        Spacer(modifier = Modifier.padding(padding_screen_small))
         EditTextWidget(
             hint = "Email",
             isError = currentInputType == InputType.EMAIL,
@@ -59,7 +56,6 @@ fun RegisterDetailScreen(
             onSetString.invoke(it, InputType.EMAIL)
         }
 
-        Spacer(modifier = Modifier.padding(padding_screen_small))
         EditTextWidget(
             hint = "Apartment number",
             isError = currentInputType == InputType.APARTMENT_NUMBER
@@ -68,7 +64,6 @@ fun RegisterDetailScreen(
         }
 
         if (!hidePassword){
-            Spacer(modifier = Modifier.padding(padding_screen_small))
             EditPasswordTextWidget(
                 hint = "Password",
                 isError = currentInputType == InputType.PASSWORD
@@ -76,7 +71,6 @@ fun RegisterDetailScreen(
                 onSetString.invoke(it, InputType.PASSWORD)
             }
 
-            Spacer(modifier = Modifier.padding(padding_screen_small))
             EditPasswordTextWidget(
                 hint = "Confirm password",
                 isError = currentInputType == InputType.CONFIRM_PASSWORD
@@ -88,7 +82,6 @@ fun RegisterDetailScreen(
             onSetString.invoke("123456", InputType.CONFIRM_PASSWORD)
         }
 
-        Spacer(modifier = Modifier.padding(padding_screen_small))
         ButtonWidget(
             title = "Register",
             isEnabled = uiState.value is UiState.Ready,

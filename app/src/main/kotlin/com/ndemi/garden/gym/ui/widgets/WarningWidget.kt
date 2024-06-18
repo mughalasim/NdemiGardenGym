@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
@@ -26,7 +27,7 @@ fun WarningWidget(title: String) {
         TextRegular(
             modifier = Modifier.padding(padding_screen_small),
             text = title,
-            color = AppTheme.colors.backgroundScreen,
+            color = Color.White,
         )
     }
 }
