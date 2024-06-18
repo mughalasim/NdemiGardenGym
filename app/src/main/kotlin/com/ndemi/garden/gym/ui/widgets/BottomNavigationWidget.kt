@@ -20,10 +20,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ndemi.garden.gym.navigation.Route
+import com.ndemi.garden.gym.navigation.Route.Companion.toRoute
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.toRoute
 
 @Composable
 fun BottomNavigationWidget(

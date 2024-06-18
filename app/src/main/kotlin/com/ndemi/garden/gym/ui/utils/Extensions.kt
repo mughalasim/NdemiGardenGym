@@ -3,7 +3,6 @@ package com.ndemi.garden.gym.ui.utils
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.utils.DateConstants.HOUR_IN_DAY
 import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
 import com.ndemi.garden.gym.ui.utils.DateConstants.SECONDS_IN_HOUR
@@ -17,24 +16,6 @@ import org.joda.time.Seconds
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import java.util.Date
-
-fun String.isValidApartmentNumber(): Boolean =
-    this.matches(Regex("^[A-Da-d](?:[1-9][0-4][0-4][0-4]?|1404)\$"))
-
-fun String.toRoute(): Route {
-    return when {
-        this.contains(Route.ResetPasswordScreen.javaClass.simpleName) -> Route.ResetPasswordScreen
-        this.contains(Route.RegisterScreen.javaClass.simpleName)-> Route.RegisterScreen
-        this.contains(Route.RegisterNewScreen.javaClass.simpleName) -> Route.RegisterNewScreen
-        this.contains(Route.ProfileScreen.javaClass.simpleName) -> Route.ProfileScreen
-        this.contains(Route.LiveAttendanceScreen.javaClass.simpleName) -> Route.LiveAttendanceScreen
-        this.contains(Route.AttendanceScreen.javaClass.simpleName) -> Route.AttendanceScreen
-        this.contains(Route.MembersScreen.javaClass.simpleName) -> Route.MembersScreen
-        this.contains("MembersAttendancesScreen") -> Route.MembersAttendancesScreen("", "")
-        this.contains("MemberEditScreen") -> Route.MemberEditScreen("")
-        else  -> Route.LoginScreen
-    }
-}
 
 @Composable
 fun Date?.toMembershipStatusString(): String {

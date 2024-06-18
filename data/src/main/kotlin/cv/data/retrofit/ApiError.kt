@@ -24,7 +24,7 @@ fun ApiError.toDomainError(): DomainError =
         else -> DomainError.SERVER
     }
 
-
+@Suppress("detekt.CyclomaticComplexMethod")
 fun Exception.toDomainError(): DomainError{
     return when(this){
         is FirebaseAuthWeakPasswordException -> DomainError.INVALID_PASSWORD_LENGTH

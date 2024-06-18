@@ -33,6 +33,7 @@ import cv.domain.entities.MemberEntity
 import cv.domain.entities.getMockMemberEntity
 import org.joda.time.DateTime
 
+@Suppress("detekt.MagicNumber")
 @Composable
 fun MemberStatusWidget(
     modifier: Modifier = Modifier,

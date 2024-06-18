@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,7 +25,6 @@ import androidx.compose.ui.Modifier
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatMonthYear
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.MonthPicker
@@ -56,7 +54,6 @@ fun AttendanceScreen(
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
-        Spacer(modifier = Modifier.padding(padding_screen_small))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -65,7 +62,7 @@ fun AttendanceScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TextLarge(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).padding(top = padding_screen),
                 text = selectedDate.toString(formatMonthYear))
             ButtonWidget(
                 modifier = Modifier.weight(1f),

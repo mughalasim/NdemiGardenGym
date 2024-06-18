@@ -12,7 +12,6 @@ import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
-import com.ndemi.garden.gym.ui.utils.isValidApartmentNumber
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.usecase.AuthUseCase
@@ -111,6 +110,9 @@ class RegisterScreenViewModel(
         }
     }
 
+    private fun String.isValidApartmentNumber(): Boolean =
+        this.matches(Regex("^[A-Da-d](?:[1-9][0-4][0-4][0-4]?|1404)\$"))
+
     fun onRegisterTapped() {
         sendAction(Action.SetLoading)
         authUseCase.register(email, password) {
@@ -135,7 +137,7 @@ class RegisterScreenViewModel(
                 lastName = lastName.replaceFirstChar(Char::uppercase).trim(),
                 email = email.trim(),
                 registrationDate = DateTime.now().toDate(),
-                apartmentNumber = apartmentNumber
+                apartmentNumber = apartmentNumber.replaceFirstChar(Char::uppercase)
             )).also {result ->
                 when(result){
                     is DomainResult.Error ->

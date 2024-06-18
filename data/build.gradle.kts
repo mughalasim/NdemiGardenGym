@@ -24,6 +24,12 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+
+    detekt {
+        toolVersion = libs.findVersion("detekt").get().toString()
+        config.setFrom(rootProject.file("detekt.yml"))
+        buildUponDefaultConfig = true
+    }
 }
 
 dependencies {

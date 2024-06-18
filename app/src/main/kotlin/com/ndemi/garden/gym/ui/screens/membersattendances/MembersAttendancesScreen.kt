@@ -68,7 +68,7 @@ fun MembersAttendancesScreen (
             verticalAlignment = Alignment.CenterVertically,
         ) {
             TextLarge(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).padding(top = padding_screen),
                 text = selectedDate.toString(DateConstants.formatMonthYear))
             ButtonWidget(
                 modifier = Modifier.weight(1f),

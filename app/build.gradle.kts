@@ -132,6 +132,12 @@ android {
         nativeSymbolUploadEnabled = false
     }
 
+    detekt {
+        toolVersion = libs.findVersion("detekt").get().toString()
+        config.setFrom(rootProject.file("detekt.yml"))
+        buildUponDefaultConfig = true
+    }
+
     packaging {
         resources.excludes.add("META-INF/LICENSE.txt")
         resources.excludes.add("META-INF/NOTICE.txt")

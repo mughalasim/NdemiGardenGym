@@ -13,9 +13,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ndemi.garden.gym.navigation.NavigationHost
 import com.ndemi.garden.gym.navigation.Route
+import com.ndemi.garden.gym.navigation.Route.Companion.toRoute
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.utils.toRoute
 import com.ndemi.garden.gym.ui.widgets.BottomNavItem
 import com.ndemi.garden.gym.ui.widgets.BottomNavigationWidget
 import org.koin.androidx.compose.koinViewModel

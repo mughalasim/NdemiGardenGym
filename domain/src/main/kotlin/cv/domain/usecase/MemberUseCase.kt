@@ -26,9 +26,6 @@ class MemberUseCase(
     suspend fun getMemberAttendancesForId(memberId: String, year: Int, month: Int) =
         memberRepository.getAttendances(true, memberId, year, month)
 
-    suspend fun getAllAttendances(year: Int, month: Int) =
-        memberRepository.getAttendances(false, "", year, month)
-
     suspend fun addAttendance(startDate: Date, endDate: Date) =
         memberRepository.addAttendance("", startDate, endDate)
 

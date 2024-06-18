@@ -68,13 +68,14 @@ fun AttendanceWidget(
             TextSmall(
                 text = startDate.toString(formatDateDay),
             )
-            if (canDeleteAttendance)
+            if (canDeleteAttendance) {
                 Icon(
                     modifier = Modifier.clickable { showDialog = !showDialog },
                     imageVector = Icons.Default.Clear,
                     tint = AppTheme.colors.highLight,
                     contentDescription = "Delete"
                 )
+            }
         }
         Row(
             modifier = Modifier

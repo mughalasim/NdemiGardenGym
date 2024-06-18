@@ -24,7 +24,7 @@ fun RegisterNewScreen(
     }
 
     Column {
-        ToolBarWidget(title = "Register new Member", canNavigateBack = true){
+        ToolBarWidget(title = "Register New Member", canNavigateBack = true){
             viewModel.navigateBack()
         }
 

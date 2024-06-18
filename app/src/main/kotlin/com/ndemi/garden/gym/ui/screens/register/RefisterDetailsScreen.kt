@@ -35,7 +35,7 @@ fun RegisterDetailScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         EditTextWidget(
-            hint = "First name",
+            hint = "First Name",
             isError = currentInputType == InputType.FIRST_NAME
         ) {
             onSetString.invoke(it, InputType.FIRST_NAME)
@@ -57,7 +57,7 @@ fun RegisterDetailScreen(
         }
 
         EditTextWidget(
-            hint = "Apartment number",
+            hint = "Apartment Number",
             isError = currentInputType == InputType.APARTMENT_NUMBER
         ) {
             onSetString.invoke(it, InputType.APARTMENT_NUMBER)

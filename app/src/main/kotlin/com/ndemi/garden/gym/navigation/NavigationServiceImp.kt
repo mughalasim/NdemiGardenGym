@@ -2,7 +2,7 @@ package com.ndemi.garden.gym.navigation
 
 import androidx.annotation.Keep
 import androidx.navigation.NavController
-import com.ndemi.garden.gym.ui.utils.toRoute
+import com.ndemi.garden.gym.navigation.Route.Companion.toRoute
 import cv.domain.Variables.EVENT_NAME_NAVIGATE
 import cv.domain.Variables.PARAM_SCREEN_NAME
 import cv.domain.repositories.AnalyticsRepository
@@ -112,5 +112,20 @@ sealed class Route {
     companion object {
         fun getInitialRoute(isAuthenticated: Boolean): Route =
             if (isAuthenticated) ProfileScreen else LoginScreen
+
+        fun String.toRoute(): Route {
+            return when {
+                this.contains(ResetPasswordScreen.javaClass.simpleName) -> ResetPasswordScreen
+                this.contains(RegisterScreen.javaClass.simpleName)-> RegisterScreen
+                this.contains(RegisterNewScreen.javaClass.simpleName) -> RegisterNewScreen
+                this.contains(ProfileScreen.javaClass.simpleName) -> ProfileScreen
+                this.contains(LiveAttendanceScreen.javaClass.simpleName) -> LiveAttendanceScreen
+                this.contains(AttendanceScreen.javaClass.simpleName) -> AttendanceScreen
+                this.contains(MembersScreen.javaClass.simpleName) -> MembersScreen
+                this.contains("MembersAttendancesScreen") -> MembersAttendancesScreen("", "")
+                this.contains("MemberEditScreen") -> MemberEditScreen("")
+                else  -> LoginScreen
+            }
+        }
     }
 }
