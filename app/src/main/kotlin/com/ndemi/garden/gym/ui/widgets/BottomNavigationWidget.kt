@@ -1,9 +1,6 @@
 package com.ndemi.garden.gym.ui.widgets
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CheckCircle
@@ -11,6 +8,9 @@ import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -30,8 +30,8 @@ fun BottomNavigationWidget(
     navHostController: NavHostController,
     navBottomItems: List<BottomNavItem> = listOf()
 ) {
-    BottomNavigation(
-        backgroundColor = AppTheme.colors.backgroundScreen,
+    NavigationBar(
+        containerColor = AppTheme.colors.backgroundScreen,
     ) {
         val navStackBackEntry by navHostController.currentBackStackEntryAsState()
         val currentDestination = navStackBackEntry?.destination
@@ -40,7 +40,7 @@ fun BottomNavigationWidget(
             val isCurrentSelection = currentDestination?.hierarchy?.any { it.route?.toRoute() == item.route } == true
             val selectedColor =
                 if (isCurrentSelection) AppTheme.colors.highLight else AppTheme.colors.backgroundButtonDisabled
-            BottomNavigationItem(
+            NavigationBarItem(
                 selected = isCurrentSelection,
                 onClick = {
                     if (!isCurrentSelection) {

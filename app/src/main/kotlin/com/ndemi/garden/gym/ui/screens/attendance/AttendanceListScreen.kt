@@ -11,8 +11,8 @@ import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
-import com.ndemi.garden.gym.ui.widgets.AttendanceWidget
 import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.attendanceWidget
 import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.getMockAttendanceEntity
 import org.joda.time.DateTime
@@ -26,7 +26,7 @@ fun AttendanceListScreen(
     Column {
         var totalMinutes  = 0
         repeat(attendances.size) {
-            totalMinutes += AttendanceWidget(
+            totalMinutes += attendanceWidget(
                 attendanceEntity = attendances[it],
                 canDeleteAttendance = canDeleteAttendance,
                 onDeleteAttendance = onDeleteAttendance

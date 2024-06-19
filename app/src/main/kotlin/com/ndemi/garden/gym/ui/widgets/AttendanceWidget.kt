@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +35,7 @@ import org.joda.time.DateTime
 import org.joda.time.Minutes
 
 @Composable
-fun AttendanceWidget(
+fun attendanceWidget(
     modifier: Modifier = Modifier,
     attendanceEntity: AttendanceEntity,
     canDeleteAttendance: Boolean = false,
@@ -94,7 +94,7 @@ fun AttendanceWidget(
 
             if (showDialog){
                 AlertDialog(
-                    backgroundColor = AppTheme.colors.backgroundButtonDisabled,
+                    containerColor = AppTheme.colors.backgroundButtonDisabled,
                     title = { TextSmall(text = "Are you sure") },
                     text = {
                         TextRegular(
@@ -126,6 +126,6 @@ fun AttendanceWidget(
 @Composable
 fun AttendanceWidgetPreview() {
     AppThemeComposable {
-        AttendanceWidget(attendanceEntity = getMockAttendanceEntity())
+        attendanceWidget(attendanceEntity = getMockAttendanceEntity())
     }
 }

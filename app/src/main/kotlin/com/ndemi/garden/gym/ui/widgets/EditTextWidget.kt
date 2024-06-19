@@ -6,14 +6,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +42,9 @@ fun EditTextWidget(
 ) {
     var text by remember { mutableStateOf(textInput) }
     OutlinedTextField(
-        modifier = modifier.fillMaxWidth().padding(top = padding_screen_small),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = padding_screen_small),
         value = text,
         enabled = isEnabled,
         isError = isError,
@@ -61,13 +63,14 @@ fun EditTextWidget(
         },
         label = { TextSmall(text = hint) },
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = AppTheme.colors.highLight,
+        colors = TextFieldDefaults.colors().copy(
+            focusedPlaceholderColor = AppTheme.colors.highLight,
             focusedLabelColor = AppTheme.colors.highLight,
-            unfocusedBorderColor = AppTheme.colors.backgroundButtonDisabled,
+            unfocusedPlaceholderColor = AppTheme.colors.backgroundButtonDisabled,
             unfocusedLabelColor = AppTheme.colors.backgroundButtonDisabled,
             disabledTextColor = AppTheme.colors.backgroundButtonDisabled,
-            textColor = AppTheme.colors.textPrimary
+            focusedTextColor = AppTheme.colors.textPrimary,
+            unfocusedTextColor = AppTheme.colors.textPrimary
         ),
         shape = RoundedCornerShape(border_radius)
     )
@@ -86,7 +89,9 @@ fun EditPasswordTextWidget(
     var passwordVisible: Boolean by rememberSaveable { mutableStateOf(false) }
 
     OutlinedTextField(
-        modifier = modifier.fillMaxWidth().padding(top = padding_screen_small),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = padding_screen_small),
         value = password,
         onValueChange = {
             password = it
@@ -109,13 +114,14 @@ fun EditPasswordTextWidget(
         },
         isError = isError,
         enabled = isEnabled,
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = AppTheme.colors.highLight,
+        colors = TextFieldDefaults.colors().copy(
+            focusedPlaceholderColor = AppTheme.colors.highLight,
             focusedLabelColor = AppTheme.colors.highLight,
-            unfocusedBorderColor = AppTheme.colors.backgroundButtonDisabled,
+            unfocusedPlaceholderColor = AppTheme.colors.backgroundButtonDisabled,
             unfocusedLabelColor = AppTheme.colors.backgroundButtonDisabled,
             disabledTextColor = AppTheme.colors.backgroundButtonDisabled,
-            textColor = AppTheme.colors.textPrimary
+            focusedTextColor = AppTheme.colors.textPrimary,
+            unfocusedTextColor = AppTheme.colors.textPrimary
         ),
         shape = RoundedCornerShape(border_radius)
     )

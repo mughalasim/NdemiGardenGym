@@ -3,14 +3,15 @@ import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.kapt)
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.crashlytics)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kapt)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.crashlytics)
     alias(libs.plugins.detekt)
     alias(libs.plugins.spotless)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -111,10 +112,6 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.findVersion("compiler").get().toString()
-    }
-
     flavorDimensions += "version"
     productFlavors {
         create("App") {
@@ -152,11 +149,9 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.core.ktx)
 
-    implementation(libs.compiler)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3.android)
     debugImplementation(libs.ui.tooling)
-    implementation(libs.material)
     implementation(libs.runtime.livedata)
     implementation(libs.foundation.android)
 

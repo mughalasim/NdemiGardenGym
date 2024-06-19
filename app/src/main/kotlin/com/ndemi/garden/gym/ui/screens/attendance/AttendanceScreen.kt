@@ -1,18 +1,13 @@
 package com.ndemi.garden.gym.ui.screens.attendance
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
-import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatMonthYear
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
@@ -34,7 +28,7 @@ import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.joda.time.DateTime
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttendanceScreen(
     viewModel: AttendanceScreenViewModel = koinViewModel<AttendanceScreenViewModel>()
@@ -42,10 +36,6 @@ fun AttendanceScreen(
     var selectedDate by remember { mutableStateOf(DateTime.now()) }
     var monthPickerVisibility by remember { mutableStateOf(false) }
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
-    val isRefreshing = (uiState.value is UiState.Loading)
-    val pullRefreshState = rememberPullRefreshState(isRefreshing, {
-        viewModel.getAttendances(selectedDate)
-    })
 
     LaunchedEffect(true) { viewModel.getAttendances(selectedDate) }
 
@@ -73,12 +63,10 @@ fun AttendanceScreen(
             }
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding_screen)
-                .pullRefresh(pullRefreshState)
-                .verticalScroll(rememberScrollState())
+        PullToRefreshBox(
+            modifier = Modifier.fillMaxSize().padding(padding_screen),
+            isRefreshing= (uiState.value is UiState.Loading),
+            onRefresh = { viewModel.getAttendances(selectedDate) }
         ) {
             if (uiState.value is UiState.Success) {
                 if ((uiState.value as UiState.Success).attendances.isEmpty()) {
@@ -92,12 +80,6 @@ fun AttendanceScreen(
                     }
                 }
             }
-            PullRefreshIndicator(
-                backgroundColor = AppTheme.colors.highLight,
-                refreshing = isRefreshing,
-                modifier = Modifier.align(Alignment.TopCenter),
-                state = pullRefreshState,
-            )
         }
     }
 
