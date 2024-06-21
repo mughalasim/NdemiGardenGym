@@ -6,13 +6,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,8 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -50,44 +46,28 @@ fun MonthPicker(
     confirmButtonCLicked: (Int, Int) -> Unit,
     cancelClicked: () -> Unit,
 ) {
-
-    val months = listOf(
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY",
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC"
-    )
-
-    var month by remember {
-        mutableStateOf(months[currentMonth])
-    }
-
-    var year by remember {
-        mutableIntStateOf(currentYear)
-    }
-
-    val interactionSource = remember {
-        MutableInteractionSource()
-    }
+    val months =
+        listOf("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
+    var month by remember { mutableStateOf(months[currentMonth]) }
+    var year by remember { mutableIntStateOf(currentYear) }
+    val interactionSource = remember { MutableInteractionSource() }
 
     if (visible) {
         BasicAlertDialog(
+            modifier = Modifier
+                .background(
+                    color = AppTheme.colors.backgroundButtonDisabled,
+                    shape = RoundedCornerShape(border_radius)
+                )
+                .padding(padding_screen),
             onDismissRequest = {}
         ) {
-            Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row (
                     verticalAlignment = Alignment.CenterVertically
-                ) {
+                ){
                     Icon(
                         modifier = Modifier
                             .size(icon_image_size_large)
@@ -124,65 +104,51 @@ fun MonthPicker(
                     )
                 }
 
-                Card(
-                    modifier = Modifier
-                        .padding(top = padding_screen)
-                        .fillMaxWidth(),
-                    colors = CardDefaults.cardColors().copy(
-                        containerColor = AppTheme.colors.backgroundButtonDisabled
-                    )
+                FlowRow(
+                    modifier = Modifier.padding(vertical = padding_screen)
                 ) {
-                    FlowRow(
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        months.forEach {
+                    months.forEach {
+                        Box(
+                            modifier = Modifier
+                                .size(60.dp)
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = interactionSource,
+                                    onClick = { month = it }
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+
+                            val animatedSize by animateDpAsState(
+                                targetValue = if (month == it) 60.dp else 0.dp,
+                                animationSpec = tween(
+                                    durationMillis = 300,
+                                    easing = LinearOutSlowInEasing
+                                ), label = ""
+                            )
+
                             Box(
                                 modifier = Modifier
-                                    .size(60.dp)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = interactionSource,
-                                        onClick = { month = it }
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
+                                    .size(animatedSize)
+                                    .background(
+                                        color = if (month == it) {
+                                            AppTheme.colors.backgroundScreen
+                                        } else {
+                                            Color.Transparent
+                                        },
+                                        shape = RoundedCornerShape(border_radius)
+                                    )
+                            )
 
-                                val animatedSize by animateDpAsState(
-                                    targetValue = if (month == it) 60.dp else 0.dp,
-                                    animationSpec = tween(
-                                        durationMillis = 500,
-                                        easing = LinearOutSlowInEasing
-                                    ), label = ""
-                                )
-
-                                Box(
-                                    modifier = Modifier
-                                        .size(animatedSize)
-                                        .background(
-                                            color = if (month == it) {
-                                                AppTheme.colors.backgroundScreen
-                                            } else {
-                                                Color.Transparent
-                                            },
-                                            shape = RoundedCornerShape(border_radius)
-                                        )
-                                )
-
-                                TextSmall(
-                                    text = it,
-                                    color =
-                                    if (month == it) AppTheme.colors.textPrimary else AppTheme.colors.highLight,
-                                )
-                            }
+                            TextSmall(
+                                text = it,
+                                color = AppTheme.colors.textPrimary
+                            )
                         }
                     }
                 }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = padding_screen),
-                    horizontalArrangement = Arrangement.Center
-                ) {
+
+                Row {
                     ButtonOutlineWidget(
                         text = "Cancel",
                         hasOutline = false,

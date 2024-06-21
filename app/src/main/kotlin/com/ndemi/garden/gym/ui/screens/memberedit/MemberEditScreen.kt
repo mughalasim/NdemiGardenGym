@@ -3,6 +3,8 @@ package com.ndemi.garden.gym.ui.screens.memberedit
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -39,20 +41,22 @@ fun MemberEditScreen(
             isRefreshing= (uiState.value is UiState.Loading),
             onRefresh = { viewModel.getMemberForId(memberId) }
         ) {
-            if (uiState.value is UiState.Success) {
-                MemberEditDetailsScreen(
-                    memberEntity = (uiState.value as UiState.Success).memberEntity,
-                    onMembershipDueDateUpdate = { dateTime ->
-                        viewModel.updateMember(dateTime)
-                    },
-                    onViewAttendance = {
-                        viewModel.navigateToAttendanceScreen(it)
-                    },
-                    sessionMessage = (uiState.value as UiState.Success).message,
-                    sessionStartTime = sessionStartTime,
-                    onSessionStarted = viewModel::setStartedSession,
-                    onSessionCompleted = viewModel::setAttendance
-                )
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                if (uiState.value is UiState.Success) {
+                    MemberEditDetailsScreen(
+                        memberEntity = (uiState.value as UiState.Success).memberEntity,
+                        onMembershipDueDateUpdate = { dateTime ->
+                            viewModel.updateMember(dateTime)
+                        },
+                        onViewAttendance = {
+                            viewModel.navigateToAttendanceScreen(it)
+                        },
+                        sessionMessage = (uiState.value as UiState.Success).message,
+                        sessionStartTime = sessionStartTime,
+                        onSessionStarted = viewModel::setStartedSession,
+                        onSessionCompleted = viewModel::setAttendance
+                    )
+                }
             }
         }
     }

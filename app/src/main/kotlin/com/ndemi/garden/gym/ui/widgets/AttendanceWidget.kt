@@ -23,7 +23,8 @@ import androidx.compose.ui.Modifier
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.line_thickness_small
+import com.ndemi.garden.gym.ui.theme.line_thickness
+import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
@@ -48,11 +49,12 @@ fun attendanceWidget(
     Column(
         modifier =
         modifier
-            .padding(bottom = padding_screen_small)
+            .padding(horizontal = padding_screen)
+            .padding(top = padding_screen_small)
             .fillMaxWidth()
             .wrapContentHeight()
             .border(
-                width = line_thickness_small,
+                width = line_thickness,
                 color = AppTheme.colors.backgroundChip,
                 shape = RoundedCornerShape(border_radius),
             )

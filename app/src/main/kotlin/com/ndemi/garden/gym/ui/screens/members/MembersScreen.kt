@@ -3,6 +3,8 @@ package com.ndemi.garden.gym.ui.screens.members
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -30,18 +32,22 @@ fun MembersScreen (
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
         PullToRefreshBox(
-            modifier = Modifier.fillMaxSize().padding(padding_screen),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding_screen),
             isRefreshing= (uiState.value is UiState.Loading),
             onRefresh = { viewModel.getMembers() }
         ){
-            if (uiState.value is UiState.Success) {
-                if ((uiState.value as UiState.Success).members.isEmpty()){
-                    WarningWidget(title = "No registered members")
-                } else {
-                    MembersListScreen(
-                        members = (uiState.value as UiState.Success).members,
-                        onMemberTapped = viewModel::onMemberTapped
-                    )
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                if (uiState.value is UiState.Success) {
+                    if ((uiState.value as UiState.Success).members.isEmpty()){
+                        WarningWidget(title = "No registered members")
+                    } else {
+                        MembersListScreen(
+                            members = (uiState.value as UiState.Success).members,
+                            onMemberTapped = viewModel::onMemberTapped
+                        )
+                    }
                 }
             }
         }

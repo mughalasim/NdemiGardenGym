@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
-import com.ndemi.garden.gym.ui.theme.padding_screen_large
+import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditPasswordTextWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
@@ -29,7 +29,7 @@ fun RegisterDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = padding_screen_large)
+            .padding(horizontal = padding_screen)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,

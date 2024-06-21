@@ -3,7 +3,6 @@ package com.ndemi.garden.gym.ui.screens.register
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
@@ -20,14 +19,11 @@ fun RegisterScreen(
         viewModel.navigateLogInSuccess()
     }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Column {
         ToolBarWidget(title = "Register")
 
         if (uiState.value is UiState.Error){
-            val message = (uiState.value as UiState.Error).message
-            WarningWidget(message)
+            WarningWidget((uiState.value as UiState.Error).message)
         }
 
         RegisterDetailScreen(

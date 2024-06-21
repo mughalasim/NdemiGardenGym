@@ -35,7 +35,7 @@ fun AttendanceListScreen(
         Row {
             TextRegular(
                 modifier = Modifier
-                    .padding(vertical = padding_screen)
+                    .padding(padding_screen)
                     .fillMaxWidth(),
                 text = "Total time spent: ${
                     DateTime.now().plusMinutes(totalMinutes).toActiveStatusDuration(
