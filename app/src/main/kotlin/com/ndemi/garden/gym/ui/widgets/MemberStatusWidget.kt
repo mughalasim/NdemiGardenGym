@@ -4,25 +4,24 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.icon_image_size_large
-import com.ndemi.garden.gym.ui.theme.line_thickness_small
+import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
@@ -48,25 +47,29 @@ fun MemberStatusWidget(
             .fillMaxWidth()
             .wrapContentHeight()
             .border(
-                width = line_thickness_small,
+                width = line_thickness,
                 color = AppTheme.colors.backgroundChip,
                 shape = RoundedCornerShape(border_radius),
             )
             .padding(padding_screen)
             .clickable { if (showDetails) onMemberTapped.invoke(memberEntity) },
     ) {
-        Row {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Column(modifier = Modifier.weight(8f)) {
-                TextLarge(
-                    text = memberEntity.getFullName() + " (" + DateTime.now()
+                TextRegularBold(
+                    text = memberEntity.getFullName() + ": " + DateTime.now()
                         .toActiveStatusDuration(
                             startDate = DateTime(memberEntity.activeNowDate)
-                        ) + ")",
+                        ),
                 )
             }
-            if (showDetails) {
-                Column(modifier = Modifier.weight(1f)) {
 
+            if (showDetails) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
                     if (memberEntity.isActiveNow()) {
                         Icon(
                             modifier = Modifier
@@ -74,7 +77,7 @@ fun MemberStatusWidget(
                                 .height(icon_image_size_large),
                             imageVector = Icons.Rounded.CheckCircle,
                             contentDescription = null,
-                            tint = Color.Green,
+                            tint = AppTheme.colors.highLight,
                         )
                     } else if (!memberEntity.hasPaidMembership()) {
                         Icon(
@@ -92,23 +95,24 @@ fun MemberStatusWidget(
         }
         if (showDetails) {
             TextRegular(
+                modifier = Modifier.padding(top = padding_screen_small),
                 text = "Email: " + memberEntity.email,
             )
-            Spacer(modifier = Modifier.padding(top = padding_screen_small))
-            TextRegular(
+            TextRegularBold(
+                modifier = Modifier.padding(top = padding_screen_small),
                 color = AppTheme.colors.highLight,
                 text = memberEntity.getResidentialStatus(),
             )
-            Spacer(modifier = Modifier.padding(top = padding_screen_small))
             TextRegular(
+                modifier = Modifier.padding(top = padding_screen_small),
                 text = "Membership due date: "
                         + memberEntity.renewalFutureDate.toMembershipStatusString(),
             )
             if (memberEntity.hasPaidMembership()) {
-                Spacer(modifier = Modifier.padding(top = padding_screen_small))
-                TextRegular(
+                TextRegularBold(
+                    modifier = Modifier.padding(top = padding_screen_small),
                     color = AppTheme.colors.highLight,
-                    text = "Payment due in: "
+                    text = "Payment due: "
                             + DateTime(memberEntity.renewalFutureDate).toDaysDuration(),
                 )
             }

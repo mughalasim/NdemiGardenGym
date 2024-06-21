@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.line_thickness_small
+import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
@@ -34,11 +34,10 @@ fun MemberInfoWidget(
 ) {
     Column(
         modifier = Modifier
-            .padding(top = padding_screen)
             .fillMaxWidth()
             .wrapContentHeight()
             .border(
-                width = line_thickness_small,
+                width = line_thickness,
                 color = AppTheme.colors.backgroundChip,
                 shape = RoundedCornerShape(border_radius),
             )

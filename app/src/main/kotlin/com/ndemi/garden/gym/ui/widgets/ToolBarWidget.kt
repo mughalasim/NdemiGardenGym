@@ -7,16 +7,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
+import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
@@ -28,24 +32,38 @@ fun ToolBarWidget(
     Row(
         modifier =
         Modifier
-            .background(color = AppTheme.colors.highLight)
+            .shadow(
+                elevation = padding_screen_tiny,
+                shape = RoundedCornerShape(
+                    bottomEnd = border_radius,
+                    bottomStart = border_radius
+                )
+            )
+            .background(
+                color = AppTheme.colors.backgroundButtonDisabled,
+                shape = RoundedCornerShape(
+                    bottomEnd = border_radius,
+                    bottomStart = border_radius
+                )
+            )
             .padding(padding_screen)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
     ) {
-        if (canNavigateBack){
+        if (canNavigateBack) {
             Icon(
                 modifier = Modifier
                     .clickable { onBackPressed.invoke() },
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                tint = AppTheme.colors.textPrimary,
                 contentDescription = null
             )
         }
-        TextLarge(
+        TextRegularBold(
             modifier = Modifier.fillMaxWidth(),
             text = title,
-            color = AppTheme.colors.black,
+            color = AppTheme.colors.textPrimary,
             textAlign = TextAlign.Center
         )
     }
@@ -56,7 +74,13 @@ fun ToolBarWidget(
 fun ToolBarWidgetPreview() {
     AppThemeComposable {
         Column {
-            ToolBarWidget(title = "Test Toolbar text")
+            ToolBarWidget(
+                title = "Test Toolbar",
+                canNavigateBack = true
+            )
+            ToolBarWidget(
+                title = "Test Toolbar",
+            )
         }
     }
 }

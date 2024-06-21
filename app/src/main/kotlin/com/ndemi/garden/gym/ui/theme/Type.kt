@@ -12,13 +12,19 @@ data class AppTextStyles(
     val small: TextStyle =
         TextStyle(
             fontFamily = localFontFamily,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp,
         ),
     val regular: TextStyle =
         TextStyle(
             fontFamily = localFontFamily,
             fontWeight = FontWeight.Normal,
+            fontSize = 18.sp,
+        ),
+    val regularBold: TextStyle =
+        TextStyle(
+            fontFamily = localFontFamily,
+            fontWeight = FontWeight.ExtraBold,
             fontSize = 18.sp,
         ),
     val large: TextStyle =

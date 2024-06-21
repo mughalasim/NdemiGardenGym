@@ -2,18 +2,20 @@ package com.ndemi.garden.gym.ui.widgets
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,13 +23,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
@@ -42,7 +46,9 @@ fun EditTextWidget(
 ) {
     var text by remember { mutableStateOf(textInput) }
     OutlinedTextField(
-        modifier = modifier.fillMaxWidth().padding(top = padding_screen_small),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = padding_screen),
         value = text,
         enabled = isEnabled,
         isError = isError,
@@ -51,24 +57,20 @@ fun EditTextWidget(
             text = it
             onValueChanged(text)
         },
+        textStyle = AppTheme.textStyles.regular,
         trailingIcon = {
             Icon(
                 Icons.Default.Clear,
-                tint = AppTheme.colors.highLight,
                 contentDescription = "Clear text",
-                modifier = Modifier.clickable { text = "" }
+                modifier = Modifier.clickable {
+                    onValueChanged.invoke("")
+                    text = ""
+                }
             )
         },
         label = { TextSmall(text = hint) },
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = AppTheme.colors.highLight,
-            focusedLabelColor = AppTheme.colors.highLight,
-            unfocusedBorderColor = AppTheme.colors.backgroundButtonDisabled,
-            unfocusedLabelColor = AppTheme.colors.backgroundButtonDisabled,
-            disabledTextColor = AppTheme.colors.backgroundButtonDisabled,
-            textColor = AppTheme.colors.textPrimary
-        ),
+        colors = getAppTextColors(),
         shape = RoundedCornerShape(border_radius)
     )
 }
@@ -86,15 +88,19 @@ fun EditPasswordTextWidget(
     var passwordVisible: Boolean by rememberSaveable { mutableStateOf(false) }
 
     OutlinedTextField(
-        modifier = modifier.fillMaxWidth().padding(top = padding_screen_small),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = padding_screen),
         value = password,
         onValueChange = {
             password = it
             onValueChanged(password)
         },
+        textStyle = AppTheme.textStyles.regular,
         label = { TextSmall(text = hint) },
         singleLine = true,
-        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        visualTransformation =
+        if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         trailingIcon = {
             val image = if (passwordVisible) {
@@ -104,22 +110,39 @@ fun EditPasswordTextWidget(
             }
 
             IconButton(onClick = {passwordVisible = !passwordVisible}){
-                Icon(imageVector  = image, null, tint = AppTheme.colors.highLight)
+                Icon(imageVector  = image, null)
             }
         },
         isError = isError,
         enabled = isEnabled,
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = AppTheme.colors.highLight,
-            focusedLabelColor = AppTheme.colors.highLight,
-            unfocusedBorderColor = AppTheme.colors.backgroundButtonDisabled,
-            unfocusedLabelColor = AppTheme.colors.backgroundButtonDisabled,
-            disabledTextColor = AppTheme.colors.backgroundButtonDisabled,
-            textColor = AppTheme.colors.textPrimary
-        ),
+        colors = getAppTextColors(),
         shape = RoundedCornerShape(border_radius)
     )
 }
+
+@Composable
+private fun getAppTextColors() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = AppTheme.colors.textPrimary,
+    focusedTrailingIconColor = AppTheme.colors.highLight,
+    focusedBorderColor = AppTheme.colors.highLight,
+
+    unfocusedTextColor = AppTheme.colors.textPrimary,
+    unfocusedTrailingIconColor = AppTheme.colors.backgroundButtonDisabled,
+    unfocusedBorderColor = AppTheme.colors.backgroundButtonDisabled,
+
+    disabledTextColor = AppTheme.colors.textPrimary,
+    disabledTrailingIconColor = Color.Transparent,
+    disabledBorderColor = Color.Transparent,
+
+    errorTextColor = AppTheme.colors.backgroundError,
+    errorTrailingIconColor = AppTheme.colors.backgroundError,
+    errorBorderColor = AppTheme.colors.backgroundError,
+
+    focusedContainerColor = Color.Transparent,
+    unfocusedContainerColor = Color.Transparent,
+    disabledContainerColor = Color.Transparent,
+    errorContainerColor = Color.Transparent,
+)
 
 @AppPreview
 @Composable
@@ -127,7 +150,15 @@ fun EditTextPreviewsNight(){
     AppThemeComposable {
         Column {
             EditPasswordTextWidget()
+            EditPasswordTextWidget(textInput = "Normal")
+            EditPasswordTextWidget(textInput = "Error", isError = true)
+            EditPasswordTextWidget(textInput = "Disabled", isEnabled = false)
+
+            Spacer(modifier = Modifier.height(padding_screen_large))
             EditTextWidget()
+            EditTextWidget(textInput = "Normal")
+            EditTextWidget(textInput = "Error", isError = true)
+            EditTextWidget(textInput = "Disabled", isEnabled = false)
         }
     }
 }

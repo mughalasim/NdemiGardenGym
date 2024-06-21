@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +23,8 @@ import androidx.compose.ui.Modifier
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.line_thickness_small
+import com.ndemi.garden.gym.ui.theme.line_thickness
+import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
@@ -35,7 +36,7 @@ import org.joda.time.DateTime
 import org.joda.time.Minutes
 
 @Composable
-fun AttendanceWidget(
+fun attendanceWidget(
     modifier: Modifier = Modifier,
     attendanceEntity: AttendanceEntity,
     canDeleteAttendance: Boolean = false,
@@ -48,11 +49,12 @@ fun AttendanceWidget(
     Column(
         modifier =
         modifier
-            .padding(bottom = padding_screen_small)
+            .padding(horizontal = padding_screen)
+            .padding(top = padding_screen_small)
             .fillMaxWidth()
             .wrapContentHeight()
             .border(
-                width = line_thickness_small,
+                width = line_thickness,
                 color = AppTheme.colors.backgroundChip,
                 shape = RoundedCornerShape(border_radius),
             )
@@ -94,7 +96,7 @@ fun AttendanceWidget(
 
             if (showDialog){
                 AlertDialog(
-                    backgroundColor = AppTheme.colors.backgroundButtonDisabled,
+                    containerColor = AppTheme.colors.backgroundButtonDisabled,
                     title = { TextSmall(text = "Are you sure") },
                     text = {
                         TextRegular(
@@ -126,6 +128,6 @@ fun AttendanceWidget(
 @Composable
 fun AttendanceWidgetPreview() {
     AppThemeComposable {
-        AttendanceWidget(attendanceEntity = getMockAttendanceEntity())
+        attendanceWidget(attendanceEntity = getMockAttendanceEntity())
     }
 }

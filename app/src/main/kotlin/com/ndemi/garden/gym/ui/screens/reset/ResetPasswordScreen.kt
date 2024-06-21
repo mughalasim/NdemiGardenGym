@@ -20,7 +20,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.padding_screen_large
+import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
@@ -61,7 +61,7 @@ fun ResetPasswordScreen(
 
         Column(
             modifier = Modifier
-                .padding(horizontal = padding_screen_large)
+                .padding(horizontal = padding_screen)
         ) {
             EditTextWidget(
                 hint = "Email",
