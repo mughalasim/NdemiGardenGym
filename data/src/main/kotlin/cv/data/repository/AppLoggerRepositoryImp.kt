@@ -5,6 +5,7 @@ import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 
 class AppLoggerRepositoryImp(val isEnabled: Boolean): AppLoggerRepository {
+
     override fun log(
         message: String,
         appLogLevel: AppLogLevel,

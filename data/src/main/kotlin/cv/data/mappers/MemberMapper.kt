@@ -12,5 +12,6 @@ fun MemberEntity.toMemberModel() = MemberModel(
     activeNowDate = activeNowDate?.let { Timestamp(it) }?: run { null },
     renewalFutureDate = renewalFutureDate?.let { Timestamp(it) }?: run { null },
     registrationDate = Timestamp(registrationDate),
-    apartmentNumber = apartmentNumber
+    apartmentNumber = apartmentNumber,
+    profileImageUrl = profileImageUrl
 )

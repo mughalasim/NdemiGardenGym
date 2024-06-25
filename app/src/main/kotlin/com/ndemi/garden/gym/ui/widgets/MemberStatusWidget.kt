@@ -1,5 +1,6 @@
 package com.ndemi.garden.gym.ui.widgets
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
@@ -17,10 +19,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.icon_image_size_large
+import com.ndemi.garden.gym.ui.theme.icon_image_size_profile_small
 import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
@@ -57,7 +67,31 @@ fun MemberStatusWidget(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(8f)) {
+            Row(
+                modifier = Modifier.weight(8f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(memberEntity.profileImageUrl)
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(R.drawable.ic_app_foreground),
+                    fallback = painterResource(R.drawable.ic_app_foreground),
+                    error = painterResource(R.drawable.ic_app_foreground),
+                    contentDescription = "profile picture",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .padding(end = padding_screen)
+                        .clip(CircleShape)
+                        .border(
+                            border = BorderStroke(line_thickness, AppTheme.colors.highLight),
+                            shape = CircleShape
+                        )
+                        .width(icon_image_size_profile_small)
+                        .height(icon_image_size_profile_small)
+                )
+
                 TextRegularBold(
                     text = memberEntity.getFullName() + ": " + DateTime.now()
                         .toActiveStatusDuration(

@@ -20,7 +20,7 @@ val viewModelModule =
 
         viewModel { LoginScreenViewModel(get(), get(), get()) }
 
-        viewModel { ProfileScreenViewModel(get(), get(), get(), get(), get()) }
+        viewModel { ProfileScreenViewModel(get(), get(), get(), get(), get(), get()) }
 
         viewModel { AttendanceScreenViewModel(get(), get()) }
 

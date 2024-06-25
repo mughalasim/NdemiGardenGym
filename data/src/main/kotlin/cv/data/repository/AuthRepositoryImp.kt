@@ -5,6 +5,7 @@ import com.google.firebase.ktx.Firebase
 import cv.data.retrofit.toDomainError
 import cv.domain.DomainError
 import cv.domain.DomainResult
+import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.AuthRepository
 
@@ -28,7 +29,7 @@ class AuthRepositoryImp(
                     callback.invoke(DomainResult.Error(DomainError.NO_DATA))
                 }
             }.addOnFailureListener {
-                logger.log("Exception: $it")
+                logger.log("Exception: $it", AppLogLevel.ERROR)
                 callback.invoke(DomainResult.Error(it.toDomainError()))
             }
     }
@@ -42,7 +43,7 @@ class AuthRepositoryImp(
                     callback.invoke(DomainResult.Error(DomainError.NO_DATA))
                 }
             }.addOnFailureListener {
-                logger.log("Exception: $it")
+                logger.log("Exception: $it", AppLogLevel.ERROR)
                 callback.invoke(DomainResult.Error(it.toDomainError()))
             }
     }
@@ -52,7 +53,7 @@ class AuthRepositoryImp(
             .addOnSuccessListener {
                 callback.invoke(DomainResult.Success(Unit))
             }.addOnFailureListener {
-                logger.log("Exception: $it")
+                logger.log("Exception: $it", AppLogLevel.ERROR)
                 callback.invoke(DomainResult.Error(it.toDomainError()))
             }
     }
