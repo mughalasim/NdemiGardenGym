@@ -6,6 +6,7 @@ import cv.domain.repositories.SharedPrefsRepository
 class SharedPrefsRepositoryImp(
     private val sharedPreferences: SharedPreferences,
 ) : SharedPrefsRepository {
+
     override fun setBool(settingName: String, value: Boolean) {
         sharedPreferences.edit().putBoolean(settingName, value).apply()
     }

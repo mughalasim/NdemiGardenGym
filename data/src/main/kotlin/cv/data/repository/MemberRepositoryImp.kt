@@ -15,6 +15,7 @@ import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.MemberEntity
+import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.MemberRepository
 import kotlinx.coroutines.CompletableDeferred
@@ -32,7 +33,7 @@ class MemberRepositoryImp(
 
     override suspend fun getMember(): DomainResult<MemberEntity> {
         val id = Firebase.auth.currentUser?.uid ?: run {
-            logger.log("Not Authorised")
+            logger.log("Not Authorised", AppLogLevel.ERROR)
             return DomainResult.Error(DomainError.UNAUTHORISED)
         }
 
@@ -48,7 +49,7 @@ class MemberRepositoryImp(
                 }
 
             }.addOnFailureListener {
-                logger.log("Exception: $it")
+                logger.log("Exception: $it", AppLogLevel.ERROR)
                 completable.complete(DomainResult.Error(it.toDomainError()))
             }
 
@@ -68,7 +69,7 @@ class MemberRepositoryImp(
                 }
 
             }.addOnFailureListener {
-                logger.log("Exception: $it")
+                logger.log("Exception: $it", AppLogLevel.ERROR)
                 completable.complete(DomainResult.Error(it.toDomainError()))
             }
 
@@ -107,7 +108,7 @@ class MemberRepositoryImp(
                 }
 
             }.addOnFailureListener {
-                logger.log("Exception: $it")
+                logger.log("Exception: $it", AppLogLevel.ERROR)
                 completable.complete(DomainResult.Error(it.toDomainError()))
             }
 
@@ -124,7 +125,7 @@ class MemberRepositoryImp(
             }
 
             .addOnFailureListener {
-                logger.log("Exception: $it")
+                logger.log("Exception: $it", AppLogLevel.ERROR)
                 completable.complete(DomainResult.Error(it.toDomainError()))
             }
 
@@ -139,6 +140,7 @@ class MemberRepositoryImp(
     ): DomainResult<List<AttendanceEntity>> {
         val setMemberId = memberId.ifEmpty {
             Firebase.auth.currentUser?.uid ?: run {
+                logger.log("Not Authorised", AppLogLevel.ERROR)
                 return DomainResult.Error(DomainError.UNAUTHORISED)
             }
         }
@@ -174,7 +176,7 @@ class MemberRepositoryImp(
                 }
 
             }.addOnFailureListener {
-                logger.log("Exception: $it")
+                logger.log("Exception: $it", AppLogLevel.ERROR)
                 completable.complete(DomainResult.Error(it.toDomainError()))
             }
 
@@ -188,6 +190,7 @@ class MemberRepositoryImp(
     ): DomainResult<Unit> {
         val setMemberId = memberId.ifEmpty {
             Firebase.auth.currentUser?.uid ?: run {
+                logger.log("Not Authorised", AppLogLevel.ERROR)
                 return DomainResult.Error(DomainError.UNAUTHORISED)
             }
         }
@@ -220,14 +223,16 @@ class MemberRepositoryImp(
                 completable.complete(DomainResult.Success(Unit))
 
             }.addOnFailureListener {
-                logger.log("Exception: $it")
+                logger.log("Exception: $it", AppLogLevel.ERROR)
                 completable.complete(DomainResult.Error(it.toDomainError()))
             }
 
         return completable.await()
     }
 
-    override suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit> {
+    override suspend fun deleteAttendance(
+        attendanceEntity: AttendanceEntity
+    ): DomainResult<Unit> {
         val attendanceModel = attendanceEntity.toAttendanceModel()
         val startDateTime = DateTime(attendanceEntity.startDate)
 
@@ -244,7 +249,7 @@ class MemberRepositoryImp(
                 completable.complete(DomainResult.Success(Unit))
 
             }.addOnFailureListener {
-                logger.log("Exception: $it")
+                logger.log("Exception: $it", AppLogLevel.ERROR)
                 completable.complete(DomainResult.Error(it.toDomainError()))
             }
 

@@ -137,7 +137,8 @@ class RegisterScreenViewModel(
                 lastName = lastName.replaceFirstChar(Char::uppercase).trim(),
                 email = email.trim(),
                 registrationDate = DateTime.now().toDate(),
-                apartmentNumber = apartmentNumber.replaceFirstChar(Char::uppercase)
+                apartmentNumber = apartmentNumber.replaceFirstChar(Char::uppercase),
+                profileImageUrl = ""
             )).also {result ->
                 when(result){
                     is DomainResult.Error ->

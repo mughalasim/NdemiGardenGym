@@ -16,6 +16,7 @@ import cv.domain.entities.MemberEntity
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.SharedPrefsUseCase
+import cv.domain.usecase.StorageUseCase
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
@@ -24,6 +25,7 @@ class ProfileScreenViewModel(
     private val authUseCase: AuthUseCase,
     private val memberUseCase: MemberUseCase,
     private val sharedPrefsUseCase: SharedPrefsUseCase,
+    private val storageUseCase: StorageUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, ProfileScreenViewModel.Action>(UiState.Loading) {
 
@@ -45,7 +47,7 @@ class ProfileScreenViewModel(
                         sendAction(Action.ShowError(errorCodeConverter.getMessage(result.error)))
 
                     is DomainResult.Success -> {
-                        if(result.data.activeNowDate != null){
+                        if (result.data.activeNowDate != null) {
                             _sessionStartTime.value = DateTime(result.data.activeNowDate)
                             sharedPrefsUseCase.setStartedSession(_sessionStartTime.value.toString())
                         }
@@ -69,10 +71,10 @@ class ProfileScreenViewModel(
         updateMemberLiveStatus()
     }
 
-    private fun updateMemberLiveStatus(){
+    private fun updateMemberLiveStatus() {
         viewModelScope.launch {
             memberUseCase.updateMember(
-                memberEntity.copy(activeNowDate =  _sessionStartTime.value?.toDate())
+                memberEntity.copy(activeNowDate = _sessionStartTime.value?.toDate())
             )
         }
     }
@@ -109,6 +111,27 @@ class ProfileScreenViewModel(
 
     fun onRegisterMember() {
         navigationService.open(Route.RegisterNewScreen)
+    }
+
+    fun deleteMemberImage() {
+        sendAction(Action.SetLoading)
+        viewModelScope.launch {
+            memberUseCase
+                .updateMember(memberEntity.copy(profileImageUrl = ""))
+                .also { getMember() }
+        }
+    }
+
+    fun updateMemberImage(byteArray: ByteArray) {
+        sendAction(Action.SetLoading)
+        viewModelScope.launch {
+            val success = storageUseCase.updateImageForMember(memberEntity, byteArray)
+            if (success){
+                getMember()
+            } else {
+                sendAction(Action.Success(memberEntity))
+            }
+        }
     }
 
     @Immutable

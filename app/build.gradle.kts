@@ -47,6 +47,11 @@ android {
             "ADMIN_STAGING",
             gradleLocalProperties(rootDir, providers).getProperty("ADMIN_STAGING"),
         )
+        buildConfigField(
+            "String",
+            "PATH_USER_IMAGES",
+            gradleLocalProperties(rootDir, providers).getProperty("PATH_USER_IMAGES"),
+        )
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         vectorDrawables { useSupportLibrary = true }
 
@@ -150,8 +155,8 @@ dependencies {
     implementation(libs.core.ktx)
 
     implementation(libs.ui.tooling.preview)
-    implementation(libs.material3.android)
     debugImplementation(libs.ui.tooling)
+    implementation(libs.material3.android)
     implementation(libs.runtime.livedata)
     implementation(libs.foundation.android)
 
@@ -165,6 +170,9 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.extensions)
+
+    // Image loading - Coil
+    implementation(libs.coil.compose)
 
     // Navigation
     implementation(libs.navigation.compose)

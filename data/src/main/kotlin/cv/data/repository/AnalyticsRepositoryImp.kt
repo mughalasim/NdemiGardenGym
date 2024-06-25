@@ -9,6 +9,7 @@ class AnalyticsRepositoryImp(
     private val firebaseAnalytics: FirebaseAnalytics,
     private val logger: AppLoggerRepository
 ) : AnalyticsRepository {
+
     override fun logEvent(
         eventName: String,
         params: List<Pair<String, String>>,

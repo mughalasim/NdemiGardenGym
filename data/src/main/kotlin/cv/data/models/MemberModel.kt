@@ -15,7 +15,8 @@ data class MemberModel(
     val registrationDate: Timestamp = Timestamp(Date()),
     val renewalFutureDate: Timestamp? = null,
     val activeNowDate: Timestamp? = null,
-    val apartmentNumber: String? = null
+    val apartmentNumber: String? = null,
+    val profileImageUrl: String? = null
 ) {
     fun toMemberEntity(): MemberEntity {
 
@@ -27,7 +28,8 @@ data class MemberModel(
             registrationDate = registrationDate.toDate(),
             renewalFutureDate = isAfterNow(renewalFutureDate),
             activeNowDate = activeNowDate?.toDate() ?: run { null },
-            apartmentNumber = apartmentNumber
+            apartmentNumber = apartmentNumber,
+            profileImageUrl = profileImageUrl ?: ""
         )
     }
 

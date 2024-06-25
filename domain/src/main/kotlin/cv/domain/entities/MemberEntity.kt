@@ -10,7 +10,8 @@ data class MemberEntity(
     val registrationDate: Date,
     val renewalFutureDate: Date? = null,
     val activeNowDate: Date? = null,
-    val apartmentNumber: String? = null
+    val apartmentNumber: String? = null,
+    val profileImageUrl: String,
 ){
     fun getFullName(): String = "$firstName $lastName"
 
@@ -34,5 +35,6 @@ fun getMockMemberEntity() = MemberEntity(
     registrationDate = Date(),
     renewalFutureDate = Date(),
     activeNowDate = Date(),
-    apartmentNumber = ""
+    apartmentNumber = "",
+    profileImageUrl = ""
 )

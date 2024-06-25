@@ -1,5 +1,7 @@
 package com.ndemi.garden.gym.ui.screens.profile
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,10 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
+import com.ndemi.garden.gym.ui.widgets.MemberProfileWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.koin.androidx.compose.koinViewModel
@@ -26,11 +31,19 @@ fun ProfileScreen(
 ) {
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
     val sessionStartTime = viewModel.sessionStartTime.observeAsState().value
+    val context = LocalContext.current
+    val galleryLauncher =  rememberLauncherForActivityResult(GetContent()) { imageUri ->
+        imageUri?.let {
+            context.contentResolver.openInputStream(imageUri)?.use { it.buffered().readBytes()}?.let {
+                viewModel.updateMemberImage(it)
+            }
+        }
+    }
 
     LaunchedEffect(true) { viewModel.getMember() }
 
     Column {
-        ToolBarWidget(title = if(viewModel.isAdmin()) "Admin Profile" else "My profile")
+        ToolBarWidget(title = if (viewModel.isAdmin()) "Admin Profile" else "My Profile")
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
@@ -40,11 +53,21 @@ fun ProfileScreen(
             onRefresh = { viewModel.getMember() }
         ) {
             Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(padding_screen)
+                    .padding(padding_screen),
             ) {
                 if (uiState.value is UiState.Success) {
+                    MemberProfileWidget(
+                        imageUrl = (uiState.value as UiState.Success).memberEntity.profileImageUrl,
+                        onImageDelete = {
+                            viewModel.deleteMemberImage()
+                        },
+                        onImageSelect = {
+                            galleryLauncher.launch("image/*")
+                        }
+                    )
                     ProfileDetailsScreen(
                         memberEntity = (uiState.value as UiState.Success).memberEntity,
                         isAdmin = viewModel.isAdmin(),
