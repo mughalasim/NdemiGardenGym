@@ -28,7 +28,7 @@ val viewModelModule =
 
         viewModel { MembersScreenViewModel(get(), get(), get()) }
 
-        viewModel { MemberEditScreenViewModel(get(), get(), get()) }
+        viewModel { MemberEditScreenViewModel(get(), get(), get(), get()) }
 
         viewModel { MembersAttendancesScreenViewModel(get(), get(), get()) }
 
