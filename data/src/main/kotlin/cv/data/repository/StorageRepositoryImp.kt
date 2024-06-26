@@ -1,7 +1,6 @@
 package cv.data.repository
 
 import com.google.firebase.Firebase
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.storage.storage
 import cv.data.retrofit.toDomainError
 import cv.domain.DomainError
@@ -18,14 +17,14 @@ class StorageRepositoryImp(
 ): StorageRepository  {
     private val storageReference = Firebase.storage.reference
 
-    override suspend fun updateImageForMember(byteArray: ByteArray): DomainResult<String> {
-        val id = com.google.firebase.ktx.Firebase.auth.currentUser?.uid ?: run {
+    override suspend fun updateImageForMember(memberId: String, byteArray: ByteArray): DomainResult<String> {
+        if(memberId.isEmpty()){
             logger.log("Not Authorised", AppLogLevel.ERROR)
             return DomainResult.Error(DomainError.UNAUTHORISED)
         }
         val completable: CompletableDeferred<DomainResult<String>> = CompletableDeferred()
 
-        storageReference.child("$pathUserImage$id.jpg").putBytes(byteArray).await().storage.downloadUrl
+        storageReference.child("$pathUserImage$memberId.jpg").putBytes(byteArray).await().storage.downloadUrl
             .addOnSuccessListener { result ->
                 val url = "https://" + result.encodedAuthority + result.encodedPath + "?" + result.encodedQuery
                 completable.complete(DomainResult.Success(url))

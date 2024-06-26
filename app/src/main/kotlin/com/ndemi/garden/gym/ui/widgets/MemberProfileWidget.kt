@@ -15,18 +15,14 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.rounded.CameraAlt
+import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.icon_image_size_large
@@ -43,29 +39,11 @@ fun MemberProfileWidget(
 ) {
     Box(
         modifier = Modifier
-            .padding(vertical = padding_screen_large)
+            .padding(bottom = padding_screen_large)
             .wrapContentHeight()
             .wrapContentWidth()
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(imageUrl)
-                .crossfade(true)
-                .build(),
-            placeholder = painterResource(R.drawable.ic_app_foreground),
-            fallback = painterResource(R.drawable.ic_app_foreground),
-            error = painterResource(R.drawable.ic_app_foreground),
-            contentDescription = "profile picture",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .clip(CircleShape)
-                .border(
-                    border = BorderStroke(line_thickness, AppTheme.colors.highLight),
-                    shape = CircleShape
-                )
-                .width(icon_image_size_profile)
-                .height(icon_image_size_profile)
-        )
+        AsyncImageWidget(profileImageUrl = imageUrl, isLarge = true)
         Row(
             modifier = Modifier
                 .align(alignment = Alignment.BottomCenter)
@@ -73,9 +51,9 @@ fun MemberProfileWidget(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Image(
-                imageVector = Icons.Default.AccountCircle,
+                imageVector = Icons.Rounded.CameraAlt,
                 contentDescription = "Select Picture",
-                contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.Inside,
                 modifier = Modifier
                     .clip(CircleShape)
                     .border(
@@ -92,16 +70,17 @@ fun MemberProfileWidget(
 
             if (imageUrl.isNotEmpty()) {
                 Image(
-                    imageVector = Icons.Default.Clear,
+                    imageVector = Icons.Rounded.DeleteForever,
                     contentDescription = "Delete Picture",
-                    contentScale = ContentScale.FillBounds,
+                    contentScale = ContentScale.Inside,
+                    colorFilter = ColorFilter.tint(AppTheme.colors.backgroundError),
                     modifier = Modifier
                         .clip(CircleShape)
                         .border(
                             border = BorderStroke(line_thickness, AppTheme.colors.highLight),
                             shape = CircleShape
                         )
-                        .background(AppTheme.colors.backgroundError)
+                        .background(AppTheme.colors.highLight)
                         .width(icon_image_size_large)
                         .height(icon_image_size_large)
                         .clickable {

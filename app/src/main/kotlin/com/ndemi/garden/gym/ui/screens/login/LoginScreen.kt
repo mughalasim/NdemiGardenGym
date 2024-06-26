@@ -8,8 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.BuildConfig
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
@@ -19,6 +21,7 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditPasswordTextWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
+import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.TextSmall
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
@@ -52,6 +55,11 @@ fun LoginScreen(
         Column(
             modifier = Modifier.padding(horizontal = padding_screen)
         ) {
+            TextRegular(
+                modifier = Modifier.padding(top = padding_screen),
+                text = "Welcome to ${LocalContext.current.getString(R.string.app_name)} App, Please enter your login details to proceed"
+            )
+
             EditTextWidget(
                 hint = "Email",
                 isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL,

@@ -15,12 +15,14 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.usecase.MemberUseCase
+import cv.domain.usecase.StorageUseCase
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
 class MemberEditScreenViewModel(
     private val errorCodeConverter: ErrorCodeConverter,
     private val memberUseCase: MemberUseCase,
+    private val storageUseCase: StorageUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
 
@@ -89,6 +91,14 @@ class MemberEditScreenViewModel(
         }
     }
 
+    fun onCoachSetUpdate(hasCoach: Boolean) {
+        sendAction(Action.SetLoading)
+        viewModelScope.launch {
+            memberUseCase.updateMember(memberEntity.copy(hasCoach = hasCoach))
+                .also { getMemberForId(memberEntity.id) }
+        }
+    }
+
     fun setAttendance(startDateTime: DateTime, endDateTime: DateTime) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
@@ -109,6 +119,27 @@ class MemberEditScreenViewModel(
                             sendAction(Action.Success(memberEntity))
                     }
                 }
+        }
+    }
+
+    fun deleteMemberImage() {
+        sendAction(Action.SetLoading)
+        viewModelScope.launch {
+            memberUseCase
+                .updateMember(memberEntity.copy(profileImageUrl = ""))
+                .also { getMemberForId(memberEntity.id) }
+        }
+    }
+
+    fun updateMemberImage(byteArray: ByteArray) {
+        sendAction(Action.SetLoading)
+        viewModelScope.launch {
+            val success = storageUseCase.updateImageForMember(memberEntity, byteArray)
+            if (success){
+                getMemberForId(memberEntity.id)
+            } else {
+                sendAction(Action.Success(memberEntity))
+            }
         }
     }
 

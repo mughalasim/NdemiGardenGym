@@ -24,6 +24,7 @@ import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
+import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.koin.androidx.compose.koinViewModel
@@ -52,7 +53,7 @@ fun ResetPasswordScreen(
            ).show()
         }
 
-        ToolBarWidget(title = "Forgot your password?")
+        ToolBarWidget(title = "Password reset")
 
         if (uiState.value is UiState.Error){
             val message = (uiState.value as UiState.Error).message
@@ -63,6 +64,11 @@ fun ResetPasswordScreen(
             modifier = Modifier
                 .padding(horizontal = padding_screen)
         ) {
+            TextRegular(
+                modifier = Modifier.padding(top = padding_screen),
+                text = "Oh no! Did you forget your password? Worry not!" +
+                        "Enter the email address you used to register with us and we shall send you a reset password link"
+            )
             EditTextWidget(
                 hint = "Email",
                 isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL,

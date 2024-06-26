@@ -105,13 +105,13 @@ fun attendanceWidget(
                     },
                     onDismissRequest = { showDialog = !showDialog },
                     confirmButton = {
-                        ButtonWidget(title = "Delete", isEnabled = true) {
+                        ButtonWidget(title = "Delete") {
                             showDialog = !showDialog
                             onDeleteAttendance.invoke(attendanceEntity)
                         }
                     },
                     dismissButton = {
-                        ButtonWidget(title = "Cancel", isEnabled = true) {
+                        ButtonWidget(title = "Cancel") {
                             showDialog = !showDialog
                         }
                     })

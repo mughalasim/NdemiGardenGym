@@ -80,7 +80,6 @@ fun ProfileScreen(
                 }
                 ButtonWidget(
                     title = "Logout",
-                    isEnabled = true
                 ){
                     viewModel.onLogOutTapped()
                 }

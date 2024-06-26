@@ -19,7 +19,7 @@ import com.ndemi.garden.gym.ui.utils.DateConstants
 import org.joda.time.DateTime
 
 @Composable
-fun SessionWidget(
+fun MemberSessionWidget(
     message: String = "",
     sessionStartTime: DateTime? = null,
     onSessionStarted: () -> Unit = {},
@@ -56,8 +56,7 @@ fun SessionWidget(
         }
 
         ButtonWidget(
-            title = if (sessionStartTime != null) "End session" else "Start session",
-            isEnabled = true
+            title = if (sessionStartTime != null) "End session" else "Start session"
         ) {
             if (sessionStartTime != null){
                 onSessionCompleted.invoke(sessionStartTime, DateTime.now())
@@ -78,8 +77,8 @@ fun SessionWidget(
 
 @AppPreview
 @Composable
-fun SessionWidgetPreview(){
+fun MemberSessionWidgetPreview(){
     AppThemeComposable {
-        SessionWidget()
+        MemberSessionWidget()
     }
 }

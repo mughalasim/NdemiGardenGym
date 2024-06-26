@@ -35,7 +35,7 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 fun ButtonWidget(
     modifier: Modifier = Modifier,
     title: String,
-    isEnabled: Boolean,
+    isEnabled: Boolean = true,
     isLoading: Boolean = false,
     onButtonClicked: () -> Unit,
 ) {

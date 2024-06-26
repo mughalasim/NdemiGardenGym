@@ -12,6 +12,7 @@ data class MemberEntity(
     val activeNowDate: Date? = null,
     val apartmentNumber: String? = null,
     val profileImageUrl: String,
+    val hasCoach: Boolean = false,
 ){
     fun getFullName(): String = "$firstName $lastName"
 
@@ -20,11 +21,14 @@ data class MemberEntity(
     fun isActiveNow(): Boolean = activeNowDate != null
 
     fun getResidentialStatus(): String =
-        if (!apartmentNumber.isNullOrEmpty()) {
-            "Apartment number: $apartmentNumber"
-        } else {
+        if (apartmentNumber.isNullOrEmpty()) {
             "Guest member"
+        } else {
+            "Apartment number: $apartmentNumber"
         }
+
+    fun getCoachStatus(): String = if (hasCoach) "Yes" else "No"
+
 }
 
 fun getMockMemberEntity() = MemberEntity(
@@ -36,5 +40,6 @@ fun getMockMemberEntity() = MemberEntity(
     renewalFutureDate = Date(),
     activeNowDate = Date(),
     apartmentNumber = "",
-    profileImageUrl = ""
+    profileImageUrl = "",
+    hasCoach = true
 )

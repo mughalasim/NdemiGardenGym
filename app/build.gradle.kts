@@ -157,6 +157,8 @@ dependencies {
     implementation(libs.ui.tooling.preview)
     debugImplementation(libs.ui.tooling)
     implementation(libs.material3.android)
+    implementation(libs.material.icons.extended.android)
+
     implementation(libs.runtime.livedata)
     implementation(libs.foundation.android)
 

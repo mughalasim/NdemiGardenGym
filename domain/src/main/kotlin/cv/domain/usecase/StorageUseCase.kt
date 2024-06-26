@@ -10,7 +10,7 @@ class StorageUseCase (
     private val memberRepository: MemberRepository,
 ){
     suspend fun updateImageForMember(memberEntity: MemberEntity, byteArray: ByteArray): Boolean {
-        when(val result = storageRepository.updateImageForMember(byteArray)){
+        when(val result = storageRepository.updateImageForMember(memberEntity.id, byteArray)){
             is DomainResult.Error -> return false
             is DomainResult.Success -> {
                 val response = memberRepository.updateMember(memberEntity.copy(profileImageUrl = result.data))

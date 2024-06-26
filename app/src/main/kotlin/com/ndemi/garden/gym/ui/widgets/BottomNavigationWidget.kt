@@ -6,12 +6,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.rounded.ContactMail
+import androidx.compose.material.icons.rounded.Group
+import androidx.compose.material.icons.rounded.Groups
+import androidx.compose.material.icons.rounded.InsertChartOutlined
+import androidx.compose.material.icons.rounded.Key
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -85,12 +86,12 @@ fun BottomNavigationWidget(
                     )
                 },
                 label = {
-                    Text(text = item.label, style = AppTheme.textStyles.regular)
+                    Text(text = item.label, style = AppTheme.textStyles.regularBold)
                 },
                 colors = NavigationBarItemColors(
-                    selectedIconColor = AppTheme.colors.textPrimary,
+                    selectedIconColor = AppTheme.colors.backgroundScreen,
                     selectedTextColor = AppTheme.colors.textPrimary,
-                    selectedIndicatorColor = AppTheme.colors.highLight,
+                    selectedIndicatorColor = AppTheme.colors.textPrimary,
                     disabledIconColor = AppTheme.colors.backgroundError,
                     disabledTextColor = AppTheme.colors.backgroundError,
                     unselectedIconColor = AppTheme.colors.textSecondary,
@@ -103,31 +104,31 @@ fun BottomNavigationWidget(
 
 sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: String) {
     data object LoginScreen : BottomNavItem(
-        Route.LoginScreen, Icons.Default.CheckCircle, "Login"
+        Route.LoginScreen, Icons.Rounded.Lock, "Login"
     )
 
     data object RegisterScreen : BottomNavItem(
-        Route.RegisterScreen, Icons.Default.Email, "Register"
+        Route.RegisterScreen, Icons.Rounded.ContactMail, "Register"
     )
 
     data object ResetPasswordScreen : BottomNavItem(
-        Route.ResetPasswordScreen, Icons.Default.Create, "Reset"
+        Route.ResetPasswordScreen, Icons.Rounded.Key, "Reset"
     )
 
     data object ProfileScreen : BottomNavItem(
-        Route.ProfileScreen, Icons.Default.AccountCircle, "Profile"
+        Route.ProfileScreen, Icons.Rounded.Person, "Profile"
     )
 
     data object AttendanceScreen : BottomNavItem(
-        Route.AttendanceScreen, Icons.Default.Favorite, "Attendance"
+        Route.AttendanceScreen, Icons.Rounded.InsertChartOutlined, "Attendance"
     )
 
     data object LiveAttendanceScreen : BottomNavItem(
-        Route.LiveAttendanceScreen, Icons.Default.Info, "Live View"
+        Route.LiveAttendanceScreen, Icons.Rounded.Groups, "Live View"
     )
 
     data object MembersScreen : BottomNavItem(
-        Route.MembersScreen, Icons.Default.Info, "Members"
+        Route.MembersScreen, Icons.Rounded.Group, "Members"
     )
 
     companion object {

@@ -43,7 +43,6 @@ fun AttendanceDateSelectionWidget(
 
         ButtonWidget(
             title = selectedDate.toString(formatMonthYear),
-            isEnabled = true
         ) {
             monthPickerVisibility = !monthPickerVisibility
         }

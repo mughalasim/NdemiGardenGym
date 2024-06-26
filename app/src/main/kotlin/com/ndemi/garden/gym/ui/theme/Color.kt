@@ -60,5 +60,4 @@ class AppColors(
     val backgroundButtonDisabled: Color,
     val backgroundButtonEnabled: Color,
     val highLight: Color,
-    val black: Color = Color.Black,
 )

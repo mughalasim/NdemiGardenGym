@@ -1,10 +1,13 @@
 package com.ndemi.garden.gym.ui.widgets
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -54,7 +57,7 @@ fun MemberInfoWidget(
                 color = AppTheme.colors.highLight,
                 text = "Full name:"
             )
-            TextRegular(
+            TextRegularBold(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.End,
                 text = memberEntity.getFullName()
@@ -62,7 +65,8 @@ fun MemberInfoWidget(
         }
 
         Row(
-            modifier = Modifier.padding(top = padding_screen_tiny)
+            modifier = Modifier
+                .padding(top = padding_screen_tiny)
                 .fillMaxWidth()
                 .padding(top = padding_screen_small),
             verticalAlignment = Alignment.CenterVertically,
@@ -80,8 +84,17 @@ fun MemberInfoWidget(
         }
 
         if (showExtraInfo){
+            Spacer(
+                modifier = Modifier
+                    .padding(top = padding_screen)
+                    .fillMaxWidth()
+                    .height(line_thickness)
+                    .background(AppTheme.colors.highLight)
+            )
+
             Row(
-                modifier = Modifier.padding(top = padding_screen_tiny)
+                modifier = Modifier
+                    .padding(top = padding_screen_tiny)
                     .fillMaxWidth()
                     .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
@@ -99,7 +112,36 @@ fun MemberInfoWidget(
             }
 
             Row(
-                modifier = Modifier.padding(top = padding_screen_tiny)
+                modifier = Modifier
+                    .padding(top = padding_screen_tiny)
+                    .fillMaxWidth()
+                    .padding(top = padding_screen_small),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                TextSmall(
+                    color = AppTheme.colors.highLight,
+                    text = "Training coach assigned:"
+                )
+                TextRegularBold(
+                    color = if(memberEntity.hasCoach) AppTheme.colors.highLight else AppTheme.colors.backgroundError,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.End,
+                    text = memberEntity.getCoachStatus()
+                )
+            }
+
+            Spacer(
+                modifier = Modifier
+                    .padding(top = padding_screen)
+                    .fillMaxWidth()
+                    .height(line_thickness)
+                    .background(AppTheme.colors.highLight)
+            )
+
+            Row(
+                modifier = Modifier
+                    .padding(top = padding_screen_tiny)
                     .fillMaxWidth()
                     .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
@@ -119,7 +161,8 @@ fun MemberInfoWidget(
             }
 
             Row(
-                modifier = Modifier.padding(top = padding_screen_tiny)
+                modifier = Modifier
+                    .padding(top = padding_screen_tiny)
                     .fillMaxWidth()
                     .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
@@ -137,7 +180,8 @@ fun MemberInfoWidget(
             }
             if (memberEntity.hasPaidMembership()) {
                 Row(
-                    modifier = Modifier.padding(top = padding_screen_tiny)
+                    modifier = Modifier
+                        .padding(top = padding_screen_tiny)
                         .fillMaxWidth()
                         .padding(top = padding_screen_small),
                     verticalAlignment = Alignment.CenterVertically,

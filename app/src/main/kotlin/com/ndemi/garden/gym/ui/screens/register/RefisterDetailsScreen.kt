@@ -17,6 +17,7 @@ import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditPasswordTextWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
+import com.ndemi.garden.gym.ui.widgets.TextRegular
 
 @Composable
 fun RegisterDetailScreen(
@@ -34,6 +35,12 @@ fun RegisterDetailScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        TextRegular(
+            modifier = Modifier.padding(top = padding_screen),
+            text = "Register with us by filling in the details below, " +
+                    "Contact the Gym Coach in order to activate your account"
+        )
+
         EditTextWidget(
             hint = "First Name",
             isError = currentInputType == InputType.FIRST_NAME
