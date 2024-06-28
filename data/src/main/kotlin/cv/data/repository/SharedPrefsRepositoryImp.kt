@@ -20,6 +20,6 @@ class SharedPrefsRepositoryImp(
     }
 
     override fun getString(settingName: String): String {
-        return sharedPreferences.getString(settingName, "") ?: ""
+        return sharedPreferences.getString(settingName, "").orEmpty()
     }
 }

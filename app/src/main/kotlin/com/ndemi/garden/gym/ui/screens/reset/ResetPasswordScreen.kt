@@ -66,7 +66,7 @@ fun ResetPasswordScreen(
         ) {
             TextRegular(
                 modifier = Modifier.padding(top = padding_screen),
-                text = "Oh no! Did you forget your password? Worry not!" +
+                text = "Oh no! Did you forget your password? Worry not! " +
                         "Enter the email address you used to register with us and we shall send you a reset password link"
             )
             EditTextWidget(

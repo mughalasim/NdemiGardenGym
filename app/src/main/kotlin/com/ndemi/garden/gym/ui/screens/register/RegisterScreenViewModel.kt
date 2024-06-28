@@ -2,7 +2,10 @@ package com.ndemi.garden.gym.ui.screens.register
 
 import androidx.compose.runtime.Immutable
 import androidx.core.text.isDigitsOnly
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.UiError
@@ -26,27 +29,49 @@ class RegisterScreenViewModel(
     private val memberUseCase: MemberUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
-    private var email: String = ""
-    private var password: String = ""
-    private var confirmPassword: String = ""
-    private var firstName: String = ""
-    private var lastName: String = ""
-    private var apartmentNumber: String = ""
+
+    data class InputData(
+        val firstName: String,
+        val lastName: String,
+        val email: String,
+        val apartmentNumber: String,
+        val password: String,
+        val confirmPassword: String,
+    )
+
+    private val _inputData = MutableLiveData(
+        InputData(
+            firstName = "",
+            lastName = "",
+            email = if (BuildConfig.DEBUG) BuildConfig.ADMIN_STAGING else "",
+            apartmentNumber = "",
+            password = "",
+            confirmPassword = "",
+        )
+    )
+    val inputData: LiveData<InputData> = _inputData
 
     fun setString(value: String, inPutType: InputType) {
-        when (inPutType) {
-            InputType.FIRST_NAME -> this.firstName = value
-            InputType.LAST_NAME -> this.lastName = value
-            InputType.EMAIL -> this.email = value
-            InputType.APARTMENT_NUMBER -> this.apartmentNumber = value
-            InputType.PASSWORD -> this.password = value
-            InputType.CONFIRM_PASSWORD -> this.confirmPassword = value
-            InputType.NONE -> Unit
+        _inputData.value = when (inPutType) {
+            InputType.FIRST_NAME -> _inputData.value?.copy(firstName = value)
+            InputType.LAST_NAME -> _inputData.value?.copy(lastName = value)
+            InputType.EMAIL -> _inputData.value?.copy(email = value)
+            InputType.APARTMENT_NUMBER -> _inputData.value?.copy(apartmentNumber = value)
+            InputType.PASSWORD -> _inputData.value?.copy(password = value)
+            InputType.CONFIRM_PASSWORD -> _inputData.value?.copy(confirmPassword = value)
+            InputType.NONE -> _inputData.value
         }
         validateInput()
     }
 
     private fun validateInput() {
+        val email = _inputData.value?.email.orEmpty()
+        val password = _inputData.value?.password.orEmpty()
+        val confirmPassword = _inputData.value?.confirmPassword.orEmpty()
+        val firstName = _inputData.value?.firstName.orEmpty()
+        val lastName = _inputData.value?.lastName.orEmpty()
+        val apartmentNumber = _inputData.value?.apartmentNumber.orEmpty()
+
         if (firstName.isEmpty() || firstName.isDigitsOnly()) {
             sendAction(
                 Action.ShowError(
@@ -115,34 +140,50 @@ class RegisterScreenViewModel(
 
     fun onRegisterTapped() {
         sendAction(Action.SetLoading)
-        authUseCase.register(email, password) {
-            when(it){
+        authUseCase.register(
+            inputData.value?.email.orEmpty(),
+            inputData.value?.password.orEmpty()
+        ) {
+            when (it) {
                 is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
                 is DomainResult.Success -> updateMember(it.data)
             }
         }
     }
 
-    fun onRegisterNewTapped(){
+    fun onRegisterNewTapped() {
         sendAction(Action.SetLoading)
         updateMember(UUID.randomUUID().toString())
     }
 
-    private fun updateMember(memberId: String){
+    private fun updateMember(memberId: String) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            memberUseCase.updateMember(MemberEntity(
-                id = memberId,
-                firstName = firstName.replaceFirstChar(Char::uppercase).trim(),
-                lastName = lastName.replaceFirstChar(Char::uppercase).trim(),
-                email = email.trim(),
-                registrationDate = DateTime.now().toDate(),
-                apartmentNumber = apartmentNumber.replaceFirstChar(Char::uppercase),
-                profileImageUrl = ""
-            )).also {result ->
-                when(result){
+            memberUseCase.updateMember(
+                MemberEntity(
+                    id = memberId,
+                    firstName =
+                    (inputData.value?.firstName.orEmpty())
+                        .replaceFirstChar(Char::uppercase)
+                        .trim(),
+                    lastName =
+                    (inputData.value?.lastName.orEmpty())
+                        .replaceFirstChar(Char::uppercase)
+                        .trim(),
+                    email =
+                    (inputData.value?.email.orEmpty())
+                        .trim(),
+                    registrationDateMillis = DateTime.now().millis,
+                    apartmentNumber =
+                    (inputData.value?.apartmentNumber.orEmpty())
+                        .replaceFirstChar(Char::uppercase),
+                    profileImageUrl = ""
+                )
+            ).also { result ->
+                when (result) {
                     is DomainResult.Error ->
                         sendAction(Action.ShowError(converter.getMessage(UiError.REGISTRATION_FAILED)))
+
                     is DomainResult.Success -> sendAction(Action.Success)
                 }
             }
@@ -193,7 +234,7 @@ class RegisterScreenViewModel(
 
         data class ShowError(
             val message: String,
-            val inputType: InputType = InputType.NONE
+            val inputType: InputType = InputType.NONE,
         ) : Action {
             override fun reduce(state: UiState): UiState =
                 UiState.Error(message, inputType)

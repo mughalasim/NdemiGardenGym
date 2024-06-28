@@ -59,14 +59,16 @@ fun EditTextWidget(
         },
         textStyle = AppTheme.textStyles.regular,
         trailingIcon = {
-            Icon(
-                Icons.Default.Clear,
-                contentDescription = "Clear text",
-                modifier = Modifier.clickable {
-                    onValueChanged.invoke("")
-                    text = ""
-                }
-            )
+            if (text.isNotEmpty()){
+                Icon(
+                    Icons.Default.Clear,
+                    contentDescription = "Clear text",
+                    modifier = Modifier.clickable {
+                        onValueChanged.invoke("")
+                        text = ""
+                    }
+                )
+            }
         },
         label = { TextSmall(text = hint) },
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),

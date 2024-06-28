@@ -47,8 +47,8 @@ class ProfileScreenViewModel(
                         sendAction(Action.ShowError(errorCodeConverter.getMessage(result.error)))
 
                     is DomainResult.Success -> {
-                        if (result.data.activeNowDate != null) {
-                            _sessionStartTime.value = DateTime(result.data.activeNowDate)
+                        if (result.data.activeNowDateMillis != null) {
+                            _sessionStartTime.value = DateTime(result.data.activeNowDateMillis)
                             sharedPrefsUseCase.setStartedSession(_sessionStartTime.value.toString())
                         }
                         memberEntity = result.data
@@ -74,7 +74,7 @@ class ProfileScreenViewModel(
     private fun updateMemberLiveStatus() {
         viewModelScope.launch {
             memberUseCase.updateMember(
-                memberEntity.copy(activeNowDate = _sessionStartTime.value?.toDate())
+                memberEntity.copy(activeNowDateMillis = _sessionStartTime.value?.millis)
             )
         }
     }

@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CameraAlt
 import androidx.compose.material.icons.rounded.DeleteForever
@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
+import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.icon_image_size_large
 import com.ndemi.garden.gym.ui.theme.icon_image_size_profile
 import com.ndemi.garden.gym.ui.theme.line_thickness
@@ -55,10 +56,10 @@ fun MemberProfileWidget(
                 contentDescription = "Select Picture",
                 contentScale = ContentScale.Inside,
                 modifier = Modifier
-                    .clip(CircleShape)
+                    .clip(RoundedCornerShape(border_radius))
                     .border(
                         border = BorderStroke(line_thickness, AppTheme.colors.highLight),
-                        shape = CircleShape
+                        shape = RoundedCornerShape(border_radius)
                     )
                     .background(AppTheme.colors.highLight)
                     .width(icon_image_size_large)
@@ -75,10 +76,10 @@ fun MemberProfileWidget(
                     contentScale = ContentScale.Inside,
                     colorFilter = ColorFilter.tint(AppTheme.colors.backgroundError),
                     modifier = Modifier
-                        .clip(CircleShape)
+                        .clip(RoundedCornerShape(border_radius))
                         .border(
                             border = BorderStroke(line_thickness, AppTheme.colors.highLight),
-                            shape = CircleShape
+                            shape = RoundedCornerShape(border_radius)
                         )
                         .background(AppTheme.colors.highLight)
                         .width(icon_image_size_large)

@@ -18,6 +18,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
+import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
+import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -29,7 +32,6 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import com.ndemi.garden.gym.ui.utils.toDaysDuration
 import cv.domain.entities.MemberEntity
-import cv.domain.entities.getMockMemberEntity
 import org.joda.time.DateTime
 
 @Suppress("detekt.MagicNumber")
@@ -48,7 +50,7 @@ fun MemberStatusWidget(
             .wrapContentHeight()
             .border(
                 width = line_thickness,
-                color = AppTheme.colors.backgroundChip,
+                color = AppTheme.colors.backgroundCardBorder,
                 shape = RoundedCornerShape(border_radius),
             )
             .padding(padding_screen)
@@ -75,7 +77,7 @@ fun MemberStatusWidget(
 
                 TextSmall(
                     text = DateTime.now().toActiveStatusDuration(
-                        startDate = DateTime(memberEntity.activeNowDate)
+                        startDate = DateTime(memberEntity.activeNowDateMillis)
                     )
                 )
             }
@@ -130,7 +132,7 @@ fun MemberStatusWidget(
                 TextRegularBold(
                     modifier = Modifier.padding(top = padding_screen_small),
                     text = "Payment due: "
-                            + DateTime(memberEntity.renewalFutureDate).toDaysDuration(),
+                            + DateTime(memberEntity.renewalFutureDateMillis).toDaysDuration(),
                 )
             } else {
                 TextRegularBold(
@@ -148,8 +150,22 @@ fun MemberStatusWidget(
 fun MemberWidgetPreview() {
     AppThemeComposable {
         Column {
-            MemberStatusWidget(memberEntity = getMockMemberEntity(), showDetails = true)
-            MemberStatusWidget(memberEntity = getMockMemberEntity(), showDetails = false)
+            MemberStatusWidget(
+                memberEntity = getMockRegisteredMemberEntity(),
+                showDetails = true
+            )
+            MemberStatusWidget(
+                memberEntity = getMockActiveMemberEntity(),
+                showDetails = true
+            )
+            MemberStatusWidget(
+                memberEntity = getMockExpiredMemberEntity(),
+                showDetails = true
+            )
+            MemberStatusWidget(
+                memberEntity = getMockRegisteredMemberEntity(),
+                showDetails = false
+            )
         }
     }
 }

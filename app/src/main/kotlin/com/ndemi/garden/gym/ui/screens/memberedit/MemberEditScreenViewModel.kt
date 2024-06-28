@@ -39,8 +39,8 @@ class MemberEditScreenViewModel(
                         sendAction(Action.ShowError(errorCodeConverter.getMessage(result.error)))
 
                     is DomainResult.Success -> {
-                        if(result.data.activeNowDate != null){
-                            _sessionStartTime.value = DateTime(result.data.activeNowDate)
+                        if(result.data.activeNowDateMillis != null){
+                            _sessionStartTime.value = DateTime(result.data.activeNowDateMillis)
                         }
                         memberEntity = result.data
                         sendAction(Action.Success(result.data))
@@ -50,20 +50,15 @@ class MemberEditScreenViewModel(
         }
     }
 
-    fun setStartedSession() {
-        _sessionStartTime.value = DateTime.now()
-        updateMemberLiveStatus()
-    }
-
-    private fun clearStartedSession() {
-        _sessionStartTime.value = null
+    fun setStartedSession(clear: Boolean = false) {
+        _sessionStartTime.value = if (clear) null else DateTime.now()
         updateMemberLiveStatus()
     }
 
     private fun updateMemberLiveStatus() {
         viewModelScope.launch {
             memberUseCase.updateMember(
-                memberEntity.copy(activeNowDate =  _sessionStartTime.value?.toDate())
+                memberEntity.copy(activeNowDateMillis =  _sessionStartTime.value?.millis)
             )
         }
     }
@@ -72,7 +67,7 @@ class MemberEditScreenViewModel(
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             memberUseCase.updateMember(
-                memberEntity.copy(renewalFutureDate = dateTime.toDate())
+                memberEntity.copy(renewalFutureDateMillis = dateTime.millis)
             ).also { result ->
                 when (result) {
                     is DomainResult.Error -> {
@@ -104,7 +99,7 @@ class MemberEditScreenViewModel(
         viewModelScope.launch {
             memberUseCase.addAttendanceForMember(memberEntity.id, startDateTime.toDate(), endDateTime.toDate())
                 .also { result ->
-                    clearStartedSession()
+                    setStartedSession(true)
                     when (result) {
                         is DomainResult.Error -> {
                             sendAction(

@@ -4,7 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -15,6 +15,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
+import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.icon_image_size_profile
 import com.ndemi.garden.gym.ui.theme.icon_image_size_profile_small
 import com.ndemi.garden.gym.ui.theme.line_thickness
@@ -36,10 +37,10 @@ fun AsyncImageWidget(
         contentDescription = "profile picture",
         contentScale = ContentScale.Crop,
         modifier = Modifier
-            .clip(CircleShape)
+            .clip(RoundedCornerShape(border_radius))
             .border(
                 border = BorderStroke(line_thickness, AppTheme.colors.highLight),
-                shape = CircleShape
+                shape = RoundedCornerShape(border_radius)
             )
             .width(dimen)
             .height(dimen)

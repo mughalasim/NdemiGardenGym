@@ -1,24 +1,22 @@
 package cv.domain.entities
 
-import java.util.Date
-
 data class MemberEntity(
     val id: String,
     val firstName: String,
     val lastName: String,
     val email: String,
-    val registrationDate: Date,
-    val renewalFutureDate: Date? = null,
-    val activeNowDate: Date? = null,
+    val registrationDateMillis: Long,
+    val renewalFutureDateMillis: Long? = null,
+    val activeNowDateMillis: Long? = null,
     val apartmentNumber: String? = null,
     val profileImageUrl: String,
     val hasCoach: Boolean = false,
 ){
     fun getFullName(): String = "$firstName $lastName"
 
-    fun hasPaidMembership(): Boolean = renewalFutureDate != null
+    fun hasPaidMembership(): Boolean = renewalFutureDateMillis != null
 
-    fun isActiveNow(): Boolean = activeNowDate != null
+    fun isActiveNow(): Boolean = activeNowDateMillis != null
 
     fun getResidentialStatus(): String =
         if (apartmentNumber.isNullOrEmpty()) {
@@ -28,18 +26,4 @@ data class MemberEntity(
         }
 
     fun getCoachStatus(): String = if (hasCoach) "Yes" else "No"
-
 }
-
-fun getMockMemberEntity() = MemberEntity(
-    id= "1234567890",
-    firstName = "Asim",
-    lastName = "Mughal",
-    email = "asim@test.com",
-    registrationDate = Date(),
-    renewalFutureDate = Date(),
-    activeNowDate = Date(),
-    apartmentNumber = "",
-    profileImageUrl = "",
-    hasCoach = true
-)

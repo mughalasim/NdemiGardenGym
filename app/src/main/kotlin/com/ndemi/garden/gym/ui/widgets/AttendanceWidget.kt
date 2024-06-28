@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.ndemi.garden.gym.ui.mock.getMockAttendanceEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -31,7 +32,6 @@ import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import cv.domain.entities.AttendanceEntity
-import cv.domain.entities.getMockAttendanceEntity
 import org.joda.time.DateTime
 import org.joda.time.Minutes
 
@@ -42,8 +42,8 @@ fun attendanceWidget(
     canDeleteAttendance: Boolean = false,
     onDeleteAttendance: (AttendanceEntity)-> Unit = {},
 ): Int {
-    val startDate = DateTime(attendanceEntity.startDate)
-    val endDate = DateTime(attendanceEntity.endDate)
+    val startDate = DateTime(attendanceEntity.startDateMillis)
+    val endDate = DateTime(attendanceEntity.endDateMillis)
     var showDialog by remember { mutableStateOf(false) }
 
     Column(
@@ -55,7 +55,7 @@ fun attendanceWidget(
             .wrapContentHeight()
             .border(
                 width = line_thickness,
-                color = AppTheme.colors.backgroundChip,
+                color = AppTheme.colors.backgroundCardBorder,
                 shape = RoundedCornerShape(border_radius),
             )
             .padding(padding_screen_small),

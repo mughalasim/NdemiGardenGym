@@ -77,11 +77,11 @@ fun ProfileScreen(
                         onSessionCompleted = viewModel::setAttendance,
                         onRegisterMember = viewModel::onRegisterMember,
                     )
-                }
-                ButtonWidget(
-                    title = "Logout",
-                ){
-                    viewModel.onLogOutTapped()
+                    ButtonWidget(
+                        title = "Logout",
+                    ){
+                        viewModel.onLogOutTapped()
+                    }
                 }
             }
         }

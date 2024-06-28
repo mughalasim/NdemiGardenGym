@@ -30,6 +30,7 @@ fun RegisterNewScreen(
 
         RegisterDetailScreen(
             uiState = uiState,
+            inputData = viewModel.inputData.value,
             hidePassword = true,
             onSetString = viewModel::setString,
             onRegisterTapped = viewModel::onRegisterNewTapped,

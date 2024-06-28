@@ -11,6 +11,7 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.InputData
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
@@ -22,6 +23,7 @@ import com.ndemi.garden.gym.ui.widgets.TextRegular
 @Composable
 fun RegisterDetailScreen(
     uiState: State<UiState>,
+    inputData: InputData?,
     hidePassword: Boolean,
     onSetString: (String, InputType) -> Unit,
     onRegisterTapped: () -> Unit,
@@ -43,6 +45,7 @@ fun RegisterDetailScreen(
 
         EditTextWidget(
             hint = "First Name",
+            textInput = inputData?.firstName.orEmpty(),
             isError = currentInputType == InputType.FIRST_NAME
         ) {
             onSetString.invoke(it, InputType.FIRST_NAME)
@@ -50,6 +53,7 @@ fun RegisterDetailScreen(
 
         EditTextWidget(
             hint = "Last Name",
+            textInput = inputData?.lastName.orEmpty(),
             isError = currentInputType == InputType.LAST_NAME
         ) {
             onSetString.invoke(it, InputType.LAST_NAME)
@@ -57,6 +61,7 @@ fun RegisterDetailScreen(
 
         EditTextWidget(
             hint = "Email",
+            textInput = inputData?.email.orEmpty(),
             isError = currentInputType == InputType.EMAIL,
             keyboardType = KeyboardType.Email
         ) {
@@ -65,6 +70,7 @@ fun RegisterDetailScreen(
 
         EditTextWidget(
             hint = "Apartment Number",
+            textInput = inputData?.apartmentNumber.orEmpty(),
             isError = currentInputType == InputType.APARTMENT_NUMBER
         ) {
             onSetString.invoke(it, InputType.APARTMENT_NUMBER)
@@ -73,6 +79,7 @@ fun RegisterDetailScreen(
         if (!hidePassword){
             EditPasswordTextWidget(
                 hint = "Password",
+                textInput = inputData?.password.orEmpty(),
                 isError = currentInputType == InputType.PASSWORD
             ) {
                 onSetString.invoke(it, InputType.PASSWORD)
@@ -80,6 +87,7 @@ fun RegisterDetailScreen(
 
             EditPasswordTextWidget(
                 hint = "Confirm password",
+                textInput = inputData?.confirmPassword.orEmpty(),
                 isError = currentInputType == InputType.CONFIRM_PASSWORD
             ) {
                 onSetString.invoke(it, InputType.CONFIRM_PASSWORD)

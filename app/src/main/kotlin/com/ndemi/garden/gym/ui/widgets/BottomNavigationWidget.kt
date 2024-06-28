@@ -1,10 +1,7 @@
 package com.ndemi.garden.gym.ui.widgets
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ContactMail
 import androidx.compose.material.icons.rounded.Group
@@ -32,8 +29,6 @@ import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.navigation.Route.Companion.toRoute
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
@@ -44,19 +39,8 @@ fun BottomNavigationWidget(
     NavigationBar(
         modifier = Modifier
             .background(AppTheme.colors.backgroundScreen)
-            .border(
-                border = BorderStroke(line_thickness, AppTheme.colors.textSecondary),
-                shape = RoundedCornerShape(
-                    topStart = border_radius,
-                    topEnd = border_radius
-                )
-            )
             .background(
                 color = AppTheme.colors.backgroundButtonDisabled,
-                shape = RoundedCornerShape(
-                    topStart = border_radius,
-                    topEnd = border_radius
-                )
             ),
         containerColor = Color.Transparent
     ) {
@@ -145,8 +129,8 @@ sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: S
         )
 
         fun getAdminBottomItems() = listOf(
-            ProfileScreen,
             MembersScreen,
+            ProfileScreen,
         )
     }
 }

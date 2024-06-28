@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
@@ -14,7 +15,6 @@ import com.ndemi.garden.gym.ui.widgets.MemberDueDateWidget
 import com.ndemi.garden.gym.ui.widgets.MemberInfoWidget
 import com.ndemi.garden.gym.ui.widgets.MemberSessionWidget
 import cv.domain.entities.MemberEntity
-import cv.domain.entities.getMockMemberEntity
 import org.joda.time.DateTime
 
 @Composable
@@ -55,7 +55,7 @@ fun MemberEditDetailsScreen(
 fun MemberEditDetailsScreenPreview() {
     AppThemeComposable {
         MemberEditDetailsScreen(
-            memberEntity = getMockMemberEntity(),
+            memberEntity = getMockRegisteredMemberEntity(),
         )
     }
 }

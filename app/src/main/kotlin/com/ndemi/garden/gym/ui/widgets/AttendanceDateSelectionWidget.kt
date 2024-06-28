@@ -34,7 +34,7 @@ fun AttendanceDateSelectionWidget(
             .wrapContentHeight()
             .border(
                 width = line_thickness,
-                color = AppTheme.colors.backgroundChip,
+                color = AppTheme.colors.backgroundCardBorder,
                 shape = RoundedCornerShape(border_radius),
             )
             .padding(padding_screen),

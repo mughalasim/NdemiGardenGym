@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.koin.androidx.compose.koinViewModel
@@ -39,7 +40,9 @@ fun LiveAttendanceScreen(
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 if (uiState.value is UiState.Success) {
                     if ((uiState.value as UiState.Success).members.isEmpty()) {
-                        WarningWidget(title = "Oh no! No one's in, why don't you be the first")
+                        TextRegular(
+                            text = "Oh no! No one's in, why don't you be the first"
+                        )
                     } else {
                         LiveAttendanceListScreen(members = (uiState.value as UiState.Success).members)
                     }

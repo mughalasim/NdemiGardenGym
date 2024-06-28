@@ -1,6 +1,8 @@
 package com.ndemi.garden.gym.ui.widgets
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,6 +10,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -21,7 +25,7 @@ import org.joda.time.DateTime
 @Composable
 fun MemberSessionWidget(
     message: String = "",
-    sessionStartTime: DateTime? = null,
+    sessionStartTime: DateTime?,
     onSessionStarted: () -> Unit = {},
     onSessionCompleted: (DateTime, DateTime) -> Unit = { _, _ -> },
 ){
@@ -32,7 +36,7 @@ fun MemberSessionWidget(
             .padding(top = padding_screen)
             .border(
                 width = line_thickness,
-                color = AppTheme.colors.backgroundChip,
+                color = AppTheme.colors.backgroundCardBorder,
                 shape = RoundedCornerShape(border_radius),
             )
             .padding(padding_screen),
@@ -45,7 +49,7 @@ fun MemberSessionWidget(
             TextRegular(
                 modifier = Modifier.padding(top = padding_screen_small),
                 text = "Your work out session is in progress...")
-            TextRegular(
+            TextRegularBold(
                 modifier = Modifier.padding(top = padding_screen_small),
                 text = "Started at ${sessionStartTime.toString(DateConstants.formatTime)}"
             )
@@ -55,15 +59,31 @@ fun MemberSessionWidget(
                 text = "Set session start and end time by tapping the button below")
         }
 
-        ButtonWidget(
-            title = if (sessionStartTime != null) "End session" else "Start session"
-        ) {
-            if (sessionStartTime != null){
-                onSessionCompleted.invoke(sessionStartTime, DateTime.now())
-            } else {
-                onSessionStarted.invoke()
-            }
-        }
+        TextRegularBold(
+            modifier = Modifier
+                .padding(top = padding_screen)
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(
+                    color = if (sessionStartTime != null) {
+                        AppTheme.colors.backgroundError
+                    } else {
+                        AppTheme.colors.highLight
+                    },
+                    shape = RoundedCornerShape(border_radius)
+                )
+                .padding(padding_screen)
+                .clickable {
+                    if (sessionStartTime != null) {
+                        onSessionCompleted.invoke(sessionStartTime, DateTime.now())
+                    } else {
+                        onSessionStarted.invoke()
+                    }
+                },
+            text = if (sessionStartTime != null) "End session" else "Start session",
+            textAlign = TextAlign.Center,
+            color = Color.Black
+        )
 
         if (sessionStartTime == null) {
             TextRegular(
@@ -79,6 +99,9 @@ fun MemberSessionWidget(
 @Composable
 fun MemberSessionWidgetPreview(){
     AppThemeComposable {
-        MemberSessionWidget()
+        Column {
+            MemberSessionWidget(sessionStartTime = DateTime.now().minusHours(2))
+            MemberSessionWidget(sessionStartTime = null)
+        }
     }
 }

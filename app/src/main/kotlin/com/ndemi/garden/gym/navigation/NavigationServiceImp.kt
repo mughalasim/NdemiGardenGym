@@ -18,7 +18,7 @@ class NavigationServiceImp(
 
     override fun setNavController(navController: NavController) {
         this.navController = navController
-        val initialRoute = Route.getInitialRoute(authUseCase.isAuthenticated())
+        val initialRoute = Route.getInitialRoute(authUseCase.isAuthenticated(), authUseCase.isAdmin())
         this.initialRoute = initialRoute
     }
 
@@ -56,7 +56,7 @@ class NavigationServiceImp(
 
     override fun getCurrentRoute(): Route =
         navController.currentDestination?.route?.toRoute() ?:
-        Route.getInitialRoute(authUseCase.isAuthenticated())
+        Route.getInitialRoute(authUseCase.isAuthenticated(), authUseCase.isAdmin())
 
     override fun getInitialRoute(): Route = initialRoute
 }
@@ -110,8 +110,14 @@ sealed class Route {
     ) : Route()
 
     companion object {
-        fun getInitialRoute(isAuthenticated: Boolean): Route =
-            if (isAuthenticated) ProfileScreen else LoginScreen
+        fun getInitialRoute(isAuthenticated: Boolean, isAdmin: Boolean): Route =
+            if (isAuthenticated && isAdmin) {
+                MembersScreen
+            } else if (isAuthenticated){
+                ProfileScreen
+            } else {
+                LoginScreen
+            }
 
         fun String.toRoute(): Route {
             return when {

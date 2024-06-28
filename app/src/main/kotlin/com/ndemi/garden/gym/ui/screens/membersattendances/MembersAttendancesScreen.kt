@@ -2,6 +2,7 @@ package com.ndemi.garden.gym.ui.screens.membersattendances
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,7 +17,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceListScreen
 import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreenViewModel.UiState
+import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.AttendanceDateSelectionWidget
+import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.joda.time.DateTime
@@ -54,7 +57,10 @@ fun MembersAttendancesScreen (
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 if (uiState.value is UiState.Success) {
                     if ((uiState.value as UiState.Success).attendances.isEmpty()) {
-                        WarningWidget(title = "No Attendances for the selected month")
+                        TextRegular(
+                            modifier = Modifier.padding(padding_screen),
+                            text = "No Attendances for the selected month"
+                        )
                     } else {
                         AttendanceListScreen(
                             attendances = (uiState.value as UiState.Success).attendances,

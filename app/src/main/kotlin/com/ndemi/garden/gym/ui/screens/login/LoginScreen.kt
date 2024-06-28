@@ -62,17 +62,19 @@ fun LoginScreen(
 
             EditTextWidget(
                 hint = "Email",
+                textInput = viewModel.inputData.value?.email.orEmpty(),
                 isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL,
                 keyboardType = KeyboardType.Email
             ){
-                viewModel.setEmail(it)
+                viewModel.setString(it, InputType.EMAIL)
             }
 
             EditPasswordTextWidget(
                 hint = "Password",
+                textInput = viewModel.inputData.value?.password.orEmpty(),
                 isError = (uiState.value as? UiState.Error)?.inputType == InputType.PASSWORD
             ){
-                viewModel.setPassword(it)
+                viewModel.setString(it, InputType.PASSWORD)
             }
 
             ButtonWidget(

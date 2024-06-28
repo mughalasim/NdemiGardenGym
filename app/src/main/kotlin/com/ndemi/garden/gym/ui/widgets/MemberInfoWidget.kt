@@ -15,6 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
+import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
+import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -27,12 +30,11 @@ import com.ndemi.garden.gym.ui.utils.DateConstants
 import com.ndemi.garden.gym.ui.utils.toDaysDuration
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import cv.domain.entities.MemberEntity
-import cv.domain.entities.getMockMemberEntity
 import org.joda.time.DateTime
 
 @Composable
 fun MemberInfoWidget(
-    memberEntity: MemberEntity = getMockMemberEntity(),
+    memberEntity: MemberEntity,
     showExtraInfo: Boolean = true,
 ) {
     Column(
@@ -41,7 +43,7 @@ fun MemberInfoWidget(
             .wrapContentHeight()
             .border(
                 width = line_thickness,
-                color = AppTheme.colors.backgroundChip,
+                color = AppTheme.colors.backgroundCardBorder,
                 shape = RoundedCornerShape(border_radius),
             )
             .padding(padding_screen),
@@ -154,7 +156,7 @@ fun MemberInfoWidget(
                 TextRegular(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
-                    text = DateTime(memberEntity.registrationDate).toString(
+                    text = DateTime(memberEntity.registrationDateMillis).toString(
                         DateConstants.formatDayMonthYear
                     )
                 )
@@ -175,7 +177,7 @@ fun MemberInfoWidget(
                 TextRegular(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
-                    text = memberEntity.renewalFutureDate.toMembershipStatusString()
+                    text = memberEntity.renewalFutureDateMillis.toMembershipStatusString()
                 )
             }
             if (memberEntity.hasPaidMembership()) {
@@ -194,7 +196,7 @@ fun MemberInfoWidget(
                     TextRegular(
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.End,
-                        text = DateTime(memberEntity.renewalFutureDate).toDaysDuration()
+                        text = DateTime(memberEntity.renewalFutureDateMillis).toDaysDuration()
                     )
                 }
             }
@@ -206,6 +208,10 @@ fun MemberInfoWidget(
 @Composable
 fun MemberInfoWidgetPreview() {
     AppThemeComposable {
-        MemberInfoWidget()
+        Column {
+            MemberInfoWidget(memberEntity = getMockRegisteredMemberEntity())
+            MemberInfoWidget(memberEntity = getMockActiveMemberEntity())
+            MemberInfoWidget(memberEntity = getMockExpiredMemberEntity())
+        }
     }
 }

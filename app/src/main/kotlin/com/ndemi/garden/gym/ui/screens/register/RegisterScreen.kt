@@ -28,6 +28,7 @@ fun RegisterScreen(
 
         RegisterDetailScreen(
             uiState = uiState,
+            inputData = viewModel.inputData.value,
             hidePassword = false,
             onSetString = viewModel::setString,
             onRegisterTapped = viewModel::onRegisterTapped,
