@@ -151,7 +151,6 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":domain"))
 
-    implementation(libs.kotlin.reflect)
     implementation(libs.core.ktx)
 
     implementation(libs.ui.tooling.preview)
@@ -186,16 +185,7 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
-
-    // Restring for Dynamic languages
-    implementation(libs.restring)
-    implementation(libs.viewpump)
-    implementation(libs.reword)
-    implementation(libs.applocale)
-    implementation(libs.appcompat)
-
 
     // TESTING -------------------------------------------------------------------------------------
     testImplementation(libs.junit)

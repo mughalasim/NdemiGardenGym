@@ -1,14 +1,15 @@
 package com.ndemi.garden.gym.ui.utils
 
+import android.content.res.Resources
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.core.os.ConfigurationCompat
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.utils.DateConstants.HOUR_IN_DAY
 import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
 import com.ndemi.garden.gym.ui.utils.DateConstants.SECONDS_IN_HOUR
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
-import dev.b3nedikt.restring.Restring
 import org.joda.time.DateTime
 import org.joda.time.Days
 import org.joda.time.Hours
@@ -75,18 +76,21 @@ fun DateTime.toDaysDuration(): String {
 }
 
 object DateConstants {
+    private val appLocale =
+        ConfigurationCompat.getLocales(Resources.getSystem().configuration).get(0)
+
     val formatDayMonthYear: DateTimeFormatter =
-        DateTimeFormat.forPattern("dd MMMM yyyy").withLocale(Restring.locale)
+        DateTimeFormat.forPattern("dd MMMM yyyy").withLocale(appLocale)
 
 
     val formatDateDay: DateTimeFormatter =
-        DateTimeFormat.forPattern("d EEEE").withLocale(Restring.locale)
+        DateTimeFormat.forPattern("d EEEE").withLocale(appLocale)
 
     val formatTime: DateTimeFormatter =
-        DateTimeFormat.shortTime().withLocale(Restring.locale)
+        DateTimeFormat.shortTime().withLocale(appLocale)
 
     val formatMonthYear: DateTimeFormatter =
-        DateTimeFormat.forPattern("MMMM yyyy").withLocale(Restring.locale)
+        DateTimeFormat.forPattern("MMMM yyyy").withLocale(appLocale)
 
     const val HOUR_IN_DAY = 12
     const val MINUTES_IN_HOUR = 60

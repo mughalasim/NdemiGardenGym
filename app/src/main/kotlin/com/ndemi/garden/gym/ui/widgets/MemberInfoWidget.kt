@@ -43,6 +43,10 @@ fun MemberInfoWidget(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
+            .background(
+                color = AppTheme.colors.backgroundCard,
+                shape = RoundedCornerShape(border_radius)
+            )
             .border(
                 width = line_thickness,
                 color = AppTheme.colors.backgroundCardBorder,

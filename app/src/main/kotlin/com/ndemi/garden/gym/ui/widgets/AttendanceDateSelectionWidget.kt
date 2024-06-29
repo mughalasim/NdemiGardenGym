@@ -1,5 +1,6 @@
 package com.ndemi.garden.gym.ui.widgets
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +35,10 @@ fun AttendanceDateSelectionWidget(
             .padding(start = padding_screen, end = padding_screen, top = padding_screen)
             .fillMaxWidth()
             .wrapContentHeight()
+            .background(
+                color = AppTheme.colors.backgroundCard,
+                shape = RoundedCornerShape(border_radius)
+            )
             .border(
                 width = line_thickness,
                 color = AppTheme.colors.backgroundCardBorder,

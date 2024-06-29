@@ -1,5 +1,6 @@
 package com.ndemi.garden.gym.ui.widgets
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,10 @@ fun MemberDueDateWidget(
             .padding(top = padding_screen)
             .fillMaxWidth()
             .wrapContentHeight()
+            .background(
+                color = AppTheme.colors.backgroundCard,
+                shape = RoundedCornerShape(border_radius)
+            )
             .border(
                 width = line_thickness,
                 color = AppTheme.colors.backgroundCardBorder,

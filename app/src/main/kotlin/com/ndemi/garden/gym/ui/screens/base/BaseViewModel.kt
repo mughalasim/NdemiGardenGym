@@ -20,6 +20,6 @@ open class BaseViewModel<State : BaseState, Action : BaseAction<State>>(initialV
     }
 
     fun sendAction(action: Action) {
-        viewState = action.reduce(viewState)
+        viewState = action.reduce(state = viewState)
     }
 }

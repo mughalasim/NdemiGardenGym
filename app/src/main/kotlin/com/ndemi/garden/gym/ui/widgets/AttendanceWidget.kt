@@ -1,5 +1,6 @@
 package com.ndemi.garden.gym.ui.widgets
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -55,6 +56,10 @@ fun attendanceWidget(
             .padding(top = padding_screen_small)
             .fillMaxWidth()
             .wrapContentHeight()
+            .background(
+                color = AppTheme.colors.backgroundCard,
+                shape = RoundedCornerShape(border_radius)
+            )
             .border(
                 width = line_thickness,
                 color = AppTheme.colors.backgroundCardBorder,
@@ -64,7 +69,6 @@ fun attendanceWidget(
     ) {
         Row(
             modifier = Modifier
-                .padding(top = padding_screen_small)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -89,7 +93,9 @@ fun attendanceWidget(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TextRegular(
-                text = startDate.toString(formatTime) + " - " + endDate.toString(formatTime),
+                text = startDate.toString(formatTime)
+                        + " - "
+                        + endDate.toString(formatTime),
             )
 
             TextRegular(

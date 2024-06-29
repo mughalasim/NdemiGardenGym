@@ -36,6 +36,10 @@ fun MemberSessionWidget(
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(top = padding_screen)
+            .background(
+                color = AppTheme.colors.backgroundCard,
+                shape = RoundedCornerShape(border_radius)
+            )
             .border(
                 width = line_thickness,
                 color = AppTheme.colors.backgroundCardBorder,

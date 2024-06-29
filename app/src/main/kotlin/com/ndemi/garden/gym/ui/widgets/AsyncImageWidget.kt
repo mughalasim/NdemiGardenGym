@@ -39,7 +39,7 @@ fun AsyncImageWidget(
         modifier = Modifier
             .clip(RoundedCornerShape(border_radius))
             .border(
-                border = BorderStroke(line_thickness, AppTheme.colors.highLight),
+                border = BorderStroke(line_thickness, AppTheme.colors.backgroundCardBorder),
                 shape = RoundedCornerShape(border_radius)
             )
             .width(dimen)

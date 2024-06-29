@@ -7,7 +7,6 @@
     <string name="error_unauthorised">You are not authorised to access this data</string>
     <string name="error_no_data">No records found</string>
     <string name="error_unknown">An unknown error has occurred, please try again later</string>
-    <string name="error_invalid_link">Invalid Link Url</string>
     <string name="error_email">Invalid email address</string>
     <string name="error_password">Invalid password</string>
     <string name="error_password_confirm">Invalid confirm password</string>
@@ -92,10 +91,6 @@
     <string name="txt_payment_due">"Payment due: "</string>
 
     <!-- Plurals-->
-    <plurals name="plural_year">
-        <item quantity="one">%d year</item>
-        <item quantity="other">%d years</item>
-    </plurals>
     <plurals name="plural_days">
         <item quantity="one">%d day</item>
         <item quantity="other">%d days</item>
@@ -103,10 +98,6 @@
     <plurals name="plural_hours">
         <item quantity="one">%d hour</item>
         <item quantity="other">%d hours</item>
-    </plurals>
-    <plurals name="plural_month">
-        <item quantity="one">%d month</item>
-        <item quantity="other">%d months</item>
     </plurals>
     <plurals name="plural_minutes">
         <item quantity="one">%d minute</item>

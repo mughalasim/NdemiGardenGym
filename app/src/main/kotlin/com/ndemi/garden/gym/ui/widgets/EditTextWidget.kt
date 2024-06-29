@@ -140,10 +140,10 @@ private fun getAppTextColors() = OutlinedTextFieldDefaults.colors(
     errorTrailingIconColor = AppTheme.colors.backgroundError,
     errorBorderColor = AppTheme.colors.backgroundError,
 
-    focusedContainerColor = Color.Transparent,
-    unfocusedContainerColor = Color.Transparent,
-    disabledContainerColor = Color.Transparent,
-    errorContainerColor = Color.Transparent,
+    focusedContainerColor = AppTheme.colors.backgroundScreen,
+    unfocusedContainerColor = AppTheme.colors.backgroundScreen,
+    disabledContainerColor = AppTheme.colors.backgroundScreen,
+    errorContainerColor = AppTheme.colors.backgroundScreen,
 )
 
 @AppPreview
