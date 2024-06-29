@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
@@ -27,7 +29,7 @@ fun MembersScreen (
     LaunchedEffect(true) { viewModel.getMembers() }
 
     Column {
-        ToolBarWidget(title = "Members")
+        ToolBarWidget(title = stringResource(R.string.txt_members))
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
@@ -41,7 +43,7 @@ fun MembersScreen (
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 if (uiState.value is UiState.Success) {
                     if ((uiState.value as UiState.Success).members.isEmpty()){
-                        WarningWidget(title = "No registered members")
+                        WarningWidget(title = stringResource(R.string.txt_no_members))
                     } else {
                         MembersListScreen(
                             members = (uiState.value as UiState.Success).members,

@@ -11,7 +11,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -43,20 +45,26 @@ fun MemberSessionWidget(
     ) {
         TextSmall(
             color = AppTheme.colors.highLight,
-            text = "Workout session")
+            text = stringResource(R.string.txt_workout_session)
+        )
 
         if (sessionStartTime != null) {
             TextRegular(
                 modifier = Modifier.padding(top = padding_screen_small),
-                text = "Your work out session is in progress...")
+                text = stringResource(R.string.txt_your_workout_session_is_in_progress)
+            )
             TextRegularBold(
                 modifier = Modifier.padding(top = padding_screen_small),
-                text = "Started at ${sessionStartTime.toString(DateConstants.formatTime)}"
+                text = stringResource(
+                    R.string.txt_started_at,
+                    sessionStartTime.toString(DateConstants.formatTime)
+                )
             )
         } else {
             TextRegular(
                 modifier = Modifier.padding(top = padding_screen_small),
-                text = "Set session start and end time by tapping the button below")
+                text = stringResource(R.string.txt_workout_session_desc)
+            )
         }
 
         TextRegularBold(
@@ -80,7 +88,11 @@ fun MemberSessionWidget(
                         onSessionStarted.invoke()
                     }
                 },
-            text = if (sessionStartTime != null) "End session" else "Start session",
+            text = if (sessionStartTime != null) {
+                stringResource(R.string.txt_end_session)
+            } else {
+                stringResource(R.string.txt_start_session)
+            },
             textAlign = TextAlign.Center,
             color = Color.Black
         )

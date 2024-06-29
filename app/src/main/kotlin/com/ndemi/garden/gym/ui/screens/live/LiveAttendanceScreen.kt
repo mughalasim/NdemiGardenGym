@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.TextRegular
@@ -28,12 +30,14 @@ fun LiveAttendanceScreen(
     LaunchedEffect(true) { viewModel.getLiveMembers() }
 
     Column {
-        ToolBarWidget(title = "Who's in the Gym today?")
+        ToolBarWidget(title = stringResource(R.string.txt_who_is_in))
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
         PullToRefreshBox(
-            modifier = Modifier.fillMaxSize().padding(padding_screen),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding_screen),
             isRefreshing= (uiState.value is UiState.Loading),
             onRefresh = { viewModel.getLiveMembers() }
         ) {
@@ -41,7 +45,7 @@ fun LiveAttendanceScreen(
                 if (uiState.value is UiState.Success) {
                     if ((uiState.value as UiState.Success).members.isEmpty()) {
                         TextRegular(
-                            text = "Oh no! No one's in, why don't you be the first"
+                            text = stringResource(R.string.txt_no_one_is_in)
                         )
                     } else {
                         LiveAttendanceListScreen(members = (uiState.value as UiState.Success).members)

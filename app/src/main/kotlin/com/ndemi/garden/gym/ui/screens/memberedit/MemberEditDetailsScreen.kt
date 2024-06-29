@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.utils.AppPreview
@@ -43,7 +45,7 @@ fun MemberEditDetailsScreen(
 
         MemberDueDateWidget(memberEntity, onMembershipDueDateUpdate)
 
-        ButtonWidget(title = "View Attendance") {
+        ButtonWidget(title = stringResource(R.string.txt_view_attendance)) {
             onViewAttendance.invoke(memberEntity)
         }
 

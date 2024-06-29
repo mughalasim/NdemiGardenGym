@@ -1,7 +1,8 @@
 package com.ndemi.garden.gym.ui.utils
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.utils.DateConstants.HOUR_IN_DAY
 import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
@@ -20,13 +21,11 @@ import org.joda.time.format.DateTimeFormatter
 fun Long?.toMembershipStatusString(): String {
     return this?.let {
         DateTime(it).toString(formatDayMonthYear)
-    }?: run{ "Expired" }
+    }?: run{ stringResource(R.string.txt_expired) }
 }
 
 @Composable
 fun DateTime.toActiveStatusDuration(startDate: DateTime): String {
-    val context = LocalContext.current.resources
-
     val hours = Hours.hoursBetween(
         startDate.toInstant(),
         this.toInstant()
@@ -40,13 +39,13 @@ fun DateTime.toActiveStatusDuration(startDate: DateTime): String {
         this.toInstant()
     ).seconds % SECONDS_IN_HOUR
 
-    val hoursString = String.format(context.getQuantityString(R.plurals.plural_hours, hours), hours)
-    val minutesString = String.format(context.getQuantityString(R.plurals.plural_minutes, minutes), minutes)
+    val hoursString = String.format(pluralStringResource(R.plurals.plural_hours, hours), hours)
+    val minutesString = String.format(pluralStringResource(R.plurals.plural_minutes, minutes), minutes)
 
     return if (seconds <= 0){
-        context.getString(R.string.txt_not_active)
+        stringResource(R.string.txt_not_active)
     } else if (hours <= 0 && minutes < 1){
-        context.getString(R.string.txt_now)
+        stringResource(R.string.txt_now)
     } else {
         (if (hours > 0) hoursString else "") + (if (minutes > 0) " $minutesString" else "")
     }
@@ -54,8 +53,6 @@ fun DateTime.toActiveStatusDuration(startDate: DateTime): String {
 
 @Composable
 fun DateTime.toDaysDuration(): String {
-    val context = LocalContext.current.resources
-
     val days = Days.daysBetween(
         DateTime.now().toInstant(),
         this.toInstant()
@@ -66,12 +63,12 @@ fun DateTime.toDaysDuration(): String {
         this.toInstant()
     ).hours
 
-    val daysString = String.format(context.getQuantityString(R.plurals.plural_days, days), days)
+    val daysString = String.format(pluralStringResource(R.plurals.plural_days, days), days)
 
     return if (hours <= HOUR_IN_DAY){
-        context.getString(R.string.txt_today)
+        stringResource(R.string.txt_today)
     } else if (hours <= HOUR_IN_DAY*2){
-        context.getString(R.string.txt_tomorrow)
+        stringResource(R.string.txt_tomorrow)
     } else {
         daysString
     }

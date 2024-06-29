@@ -18,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
@@ -105,7 +107,7 @@ fun MemberStatusWidget(
                             tint = AppTheme.colors.highLight,
                         )
                         TextSmall(
-                            text = "Coach",
+                            text = stringResource(R.string.txt_coach),
                             color = AppTheme.colors.highLight
                         )
                     }
@@ -131,13 +133,13 @@ fun MemberStatusWidget(
             if (memberEntity.hasPaidMembership()) {
                 TextRegularBold(
                     modifier = Modifier.padding(top = padding_screen_small),
-                    text = "Payment due: "
+                    text = stringResource(R.string.txt_payment_due)
                             + DateTime(memberEntity.renewalFutureDateMillis).toDaysDuration(),
                 )
             } else {
                 TextRegularBold(
                     modifier = Modifier.padding(top = padding_screen_small),
-                    text = "Membership Expired",
+                    text = stringResource(R.string.txt_membership_expired),
                     color = AppTheme.colors.backgroundError
                 )
             }

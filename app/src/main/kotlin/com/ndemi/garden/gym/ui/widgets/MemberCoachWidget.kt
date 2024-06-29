@@ -9,6 +9,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
@@ -41,15 +43,21 @@ fun MemberCoachWidget(
     ) {
         TextSmall(
             color = AppTheme.colors.highLight,
-            text = "Update training coach status"
+            text = stringResource(R.string.txt_update_training_coach_status)
         )
         TextRegular(
             modifier = Modifier.padding(top = padding_screen_small),
-            text = "Please select if a training coach has been assigned to the member"
+            text = stringResource(R.string.txt_select_training_coach)
         )
 
         ButtonWidget(
-            title = if (memberEntity.hasCoach) "Remove Training Coach" else "Assign training coach",
+            title = if (memberEntity.hasCoach) {
+                stringResource(R.string.txt_remove_training_coach)
+            } else {
+                stringResource(
+                    R.string.txt_assign_training_coach
+                )
+            },
         ) {
             onCoachSetUpdate.invoke(!memberEntity.hasCoach)
         }

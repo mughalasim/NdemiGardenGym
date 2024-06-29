@@ -20,6 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
@@ -60,11 +63,11 @@ fun MemberDueDateWidget(
     ) {
         TextSmall(
             color = AppTheme.colors.highLight,
-            text = "Update Membership Due date"
+            text = stringResource(R.string.txt_update_membership_due_date)
         )
         TextRegular(
             modifier = Modifier.padding(top = padding_screen_small),
-            text = "Please select the date the members subscription will end"
+            text = stringResource(R.string.txt_members_subscription_end_date)
         )
 
         ButtonWidget(
@@ -81,13 +84,14 @@ fun MemberDueDateWidget(
         )
 
         if (datePickerVisibility) {
+            val context = LocalContext.current
             DatePickerDialog(
                 onDismissRequest = {
                     datePickerVisibility = !datePickerVisibility
                 },
                 confirmButton = {
                     Text(
-                        text = "Update",
+                        text = stringResource(R.string.txt_update),
                         style = AppTheme.textStyles.regularBold,
                         modifier = Modifier
                             .padding(padding_screen)
@@ -97,7 +101,8 @@ fun MemberDueDateWidget(
                                 state.selectedDateMillis?.let {
                                     val selectedTime = DateTime(it)
                                     if (selectedTime.isBeforeNow) {
-                                        errorMessage = "You cannot set a date in the past"
+                                        errorMessage =
+                                            context.getString(R.string.error_past_date_set)
                                     } else {
                                         onMembershipDueDateUpdate.invoke(selectedTime)
                                     }
@@ -107,7 +112,7 @@ fun MemberDueDateWidget(
                 },
                 dismissButton = {
                     Text(
-                        text = "Cancel",
+                        text = stringResource(id = R.string.txt_cancel),
                         style = AppTheme.textStyles.regular,
                         modifier = Modifier
                             .padding(padding_screen)

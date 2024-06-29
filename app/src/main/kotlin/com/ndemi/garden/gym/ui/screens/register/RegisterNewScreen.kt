@@ -3,6 +3,8 @@ package com.ndemi.garden.gym.ui.screens.register
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
@@ -20,7 +22,7 @@ fun RegisterNewScreen(
     }
 
     Column {
-        ToolBarWidget(title = "Register New Member", canNavigateBack = true){
+        ToolBarWidget(title = stringResource(id = R.string.txt_register_new_member), canNavigateBack = true){
             viewModel.navigateBack()
         }
 

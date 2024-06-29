@@ -15,6 +15,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceListScreen
 import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
@@ -38,7 +40,7 @@ fun MembersAttendancesScreen (
     LaunchedEffect(true) { viewModel.getAttendances(memberId, selectedDate) }
 
     Column {
-        ToolBarWidget(title = "Attendance for $memberName", canNavigateBack = true){
+        ToolBarWidget(title = stringResource(R.string.txt_attendance_for, memberName), canNavigateBack = true){
             viewModel.navigateBack()
         }
 
@@ -59,7 +61,7 @@ fun MembersAttendancesScreen (
                     if ((uiState.value as UiState.Success).attendances.isEmpty()) {
                         TextRegular(
                             modifier = Modifier.padding(padding_screen),
-                            text = "No Attendances for the selected month"
+                            text = stringResource(R.string.txt_no_attendances)
                         )
                     } else {
                         AttendanceListScreen(

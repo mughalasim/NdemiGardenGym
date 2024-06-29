@@ -14,7 +14,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
@@ -57,7 +59,7 @@ fun MemberInfoWidget(
         ) {
             TextSmall(
                 color = AppTheme.colors.highLight,
-                text = "Full name:"
+                text = stringResource(R.string.txt_full_name)
             )
             TextRegularBold(
                 modifier = Modifier.fillMaxWidth(),
@@ -76,7 +78,7 @@ fun MemberInfoWidget(
         ) {
             TextSmall(
                 color = AppTheme.colors.highLight,
-                text = "Email:"
+                text = stringResource(id = R.string.txt_email)
             )
             TextRegular(
                 modifier = Modifier.fillMaxWidth(),
@@ -104,7 +106,7 @@ fun MemberInfoWidget(
             ) {
                 TextSmall(
                     color = AppTheme.colors.highLight,
-                    text = "Residence:"
+                    text = stringResource(R.string.txt_residence)
                 )
                 TextRegular(
                     modifier = Modifier.fillMaxWidth(),
@@ -123,7 +125,7 @@ fun MemberInfoWidget(
             ) {
                 TextSmall(
                     color = AppTheme.colors.highLight,
-                    text = "Training coach assigned:"
+                    text = stringResource(R.string.txt_training_coach_assigned)
                 )
                 TextRegularBold(
                     color = if(memberEntity.hasCoach) AppTheme.colors.highLight else AppTheme.colors.backgroundError,
@@ -151,7 +153,7 @@ fun MemberInfoWidget(
             ) {
                 TextSmall(
                     color = AppTheme.colors.highLight,
-                    text = "Registration date:"
+                    text = stringResource(R.string.txt_registration_date)
                 )
                 TextRegular(
                     modifier = Modifier.fillMaxWidth(),
@@ -172,7 +174,7 @@ fun MemberInfoWidget(
             ) {
                 TextSmall(
                     color = AppTheme.colors.highLight,
-                    text = "Membership due date:"
+                    text = stringResource(R.string.txt_membership_due_date)
                 )
                 TextRegular(
                     modifier = Modifier.fillMaxWidth(),
@@ -191,7 +193,7 @@ fun MemberInfoWidget(
                 ) {
                     TextSmall(
                         color = AppTheme.colors.highLight,
-                        text = "Payment due in:"
+                        text = stringResource(R.string.txt_payment_due_in)
                     )
                     TextRegular(
                         modifier = Modifier.fillMaxWidth(),

@@ -1,12 +1,7 @@
 <resources>
     <string name="app_name">Ndemi Garden Gym</string>
 
-    <string name="txt_now">Now</string>
-    <string name="txt_not_active">Not active</string>
-    <string name="txt_today">Today</string>
-    <string name="txt_tomorrow">Tomorrow</string>
-
-    <!-- Error messages-->
+    <!-- Error messages -->
     <string name="error_internet_connection">Please check your internet connection</string>
     <string name="error_server">There seems to be an error with the server, please contact your administrator</string>
     <string name="error_unauthorised">You are not authorised to access this data</string>
@@ -27,6 +22,74 @@
     <string name="error_account_disabled">Your account has been disabled, please contact admin</string>
     <string name="error_workout_session_length">Cannot update your workout session as it is either too short or longer than a day</string>
     <string name="error_apartment_number">Apartment number is invalid, Leave blank if not a resident</string>
+    <string name="error_past_date_set">You cannot set a date in the past</string>
+
+    <!-- Text within screens-->
+    <string name="txt_login">Login</string>
+    <string name="txt_logout">Logout</string>
+    <string name="txt_cancel">Cancel</string>
+    <string name="txt_delete">Delete</string>
+    <string name="txt_update">Update</string>
+    <string name="txt_expired">Expired</string>
+    <string name="txt_register_new_member">Register a new member</string>
+    <string name="txt_your_attendances">Your Attendances</string>
+
+    <string name="txt_profile">Profile</string>
+    <string name="txt_members">Members</string>
+    <string name="txt_edit_member">Edit Member</string>
+    <string name="txt_attendance">Attendance</string>
+    <string name="txt_live_view">Live view</string>
+    <string name="txt_password_reset">Password reset</string>
+    <string name="txt_register">Register</string>
+    <string name="txt_reset">Reset</string>
+
+    <string name="txt_full_name">Full name</string>
+    <string name="txt_first_name">First Name</string>
+    <string name="txt_last_name">Last Name</string>
+    <string name="txt_email">Email</string>
+    <string name="txt_password">Password</string>
+    <string name="txt_confirm_password">Confirm password</string>
+    <string name="txt_apartment_number">Apartment Number</string>
+
+    <string name="txt_total_time_spent">Total time spent: %1$s</string>
+    <string name="txt_no_attendances">No Attendances for the selected month</string>
+    <string name="txt_who_is_in">Who\'s in the Gym today?</string>
+    <string name="txt_no_one_is_in">Oh no! No one\'s in, why don\'t you be the first?</string>
+    <string name="txt_login_desc">Welcome to %1$s App, Please enter your login details to proceed</string>
+    <string name="txt_app_version">"App version: "</string>
+    <string name="txt_view_attendance">View Attendance</string>
+    <string name="txt_no_members">No registered members</string>
+    <string name="txt_attendance_for">Attendance for %1$s</string>
+    <string name="txt_register_info">Register with us by filling in the details below, Contact the Gym Coach in order to activate your account</string>
+    <string name="txt_reset_desc">Oh no! Did you forget your password? Worry not! Enter the email address you used to register with us and we shall send you a reset password link</string>
+    <string name="txt_email_has_been_sent">Email has been sent to %1$s</string>
+    <string name="txt_select_date_range">Select a date range</string>
+    <string name="txt_are_you_sure">Are you sure</string>
+    <string name="txt_are_you_sure_delete_attendance">Are you sure you wish to delete this Attendance, This action is permanent</string>
+    <string name="txt_now">Now</string>
+    <string name="txt_not_active">Not active</string>
+    <string name="txt_today">Today</string>
+    <string name="txt_tomorrow">Tomorrow</string>
+    <string name="txt_update_training_coach_status">Update training coach status</string>
+    <string name="txt_select_training_coach">Please select if a training coach has been assigned to the member</string>
+    <string name="txt_remove_training_coach">Remove Training Coach</string>
+    <string name="txt_assign_training_coach">Assign training coach</string>
+    <string name="txt_update_membership_due_date">Update Membership Due date</string>
+    <string name="txt_members_subscription_end_date">Please select the date the members subscription will end</string>
+    <string name="txt_residence">Residence</string>
+    <string name="txt_training_coach_assigned">Training coach assigned</string>
+    <string name="txt_registration_date">Registration date</string>
+    <string name="txt_membership_due_date">Membership due date</string>
+    <string name="txt_payment_due_in">Payment due in</string>
+    <string name="txt_workout_session">Workout session</string>
+    <string name="txt_your_workout_session_is_in_progress">Your workout session is in progress…</string>
+    <string name="txt_started_at">Started at %1$s</string>
+    <string name="txt_workout_session_desc">Set session start and end time by tapping the button below</string>
+    <string name="txt_end_session">End session</string>
+    <string name="txt_start_session">Start session</string>
+    <string name="txt_coach">Coach</string>
+    <string name="txt_membership_expired">Membership expired</string>
+    <string name="txt_payment_due">"Payment due: "</string>
 
     <!-- Plurals-->
     <plurals name="plural_year">
@@ -38,15 +101,15 @@
         <item quantity="other">%d days</item>
     </plurals>
     <plurals name="plural_hours">
-        <item quantity="one">%d hr</item>
-        <item quantity="other">%d hrs</item>
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
     </plurals>
     <plurals name="plural_month">
         <item quantity="one">%d month</item>
         <item quantity="other">%d months</item>
     </plurals>
     <plurals name="plural_minutes">
-        <item quantity="one">%d min</item>
-        <item quantity="other">%d mins</item>
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
     </plurals>
 </resources>

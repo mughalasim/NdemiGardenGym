@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.utils.AppPreview
@@ -44,7 +46,7 @@ fun ProfileDetailsScreen(
 
         if (isAdmin){
             ButtonWidget(
-                title = "Register a new Member",
+                title = stringResource(R.string.txt_register_new_member),
             ) {
                 onRegisterMember.invoke()
             }

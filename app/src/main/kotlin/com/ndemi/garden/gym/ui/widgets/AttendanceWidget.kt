@@ -20,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockAttendanceEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
@@ -75,7 +77,7 @@ fun attendanceWidget(
                     modifier = Modifier.clickable { showDialog = !showDialog },
                     imageVector = Icons.Default.Clear,
                     tint = AppTheme.colors.highLight,
-                    contentDescription = "Delete"
+                    contentDescription = stringResource(id = R.string.txt_delete)
                 )
             }
         }
@@ -97,21 +99,21 @@ fun attendanceWidget(
             if (showDialog){
                 AlertDialog(
                     containerColor = AppTheme.colors.backgroundButtonDisabled,
-                    title = { TextSmall(text = "Are you sure") },
+                    title = { TextSmall(text = stringResource(R.string.txt_are_you_sure)) },
                     text = {
                         TextRegular(
-                            text = "Are you sure you wish to delete this Attendance, This action is permanent"
+                            text = stringResource(R.string.txt_are_you_sure_delete_attendance)
                         )
                     },
                     onDismissRequest = { showDialog = !showDialog },
                     confirmButton = {
-                        ButtonWidget(title = "Delete") {
+                        ButtonWidget(title = stringResource(R.string.txt_delete)) {
                             showDialog = !showDialog
                             onDeleteAttendance.invoke(attendanceEntity)
                         }
                     },
                     dismissButton = {
-                        ButtonWidget(title = "Cancel") {
+                        ButtonWidget(title = stringResource(R.string.txt_cancel)) {
                             showDialog = !showDialog
                         }
                     })

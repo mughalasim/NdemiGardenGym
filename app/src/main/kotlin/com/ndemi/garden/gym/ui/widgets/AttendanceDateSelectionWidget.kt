@@ -12,6 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -39,7 +41,7 @@ fun AttendanceDateSelectionWidget(
             )
             .padding(padding_screen),
     ) {
-        TextRegular(text = "Select a date range")
+        TextRegular(text = stringResource(R.string.txt_select_date_range))
 
         ButtonWidget(
             title = selectedDate.toString(formatMonthYear),

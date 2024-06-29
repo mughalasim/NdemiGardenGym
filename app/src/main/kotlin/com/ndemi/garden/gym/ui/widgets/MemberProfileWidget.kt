@@ -98,6 +98,6 @@ fun MemberProfileWidget(
 @Composable
 fun MemberProfileWidgetPreview() {
     AppThemeComposable {
-        MemberProfileWidget(imageUrl = "tyutu")
+        MemberProfileWidget(imageUrl = "some url goes here")
     }
 }

@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
@@ -45,7 +46,7 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        ToolBarWidget(title = "Login")
+        ToolBarWidget(title = stringResource(R.string.txt_login))
 
         if (uiState.value is UiState.Error){
             val message = (uiState.value as UiState.Error).message
@@ -57,7 +58,10 @@ fun LoginScreen(
         ) {
             TextRegular(
                 modifier = Modifier.padding(top = padding_screen),
-                text = "Welcome to ${LocalContext.current.getString(R.string.app_name)} App, Please enter your login details to proceed"
+                text = stringResource(
+                    R.string.txt_login_desc,
+                    LocalContext.current.getString(R.string.app_name)
+                )
             )
 
             EditTextWidget(
@@ -70,7 +74,7 @@ fun LoginScreen(
             }
 
             EditPasswordTextWidget(
-                hint = "Password",
+                hint = stringResource(R.string.txt_password),
                 textInput = viewModel.inputData.value?.password.orEmpty(),
                 isError = (uiState.value as? UiState.Error)?.inputType == InputType.PASSWORD
             ){
@@ -78,7 +82,7 @@ fun LoginScreen(
             }
 
             ButtonWidget(
-                title = "Login",
+                title = stringResource(R.string.txt_login),
                 isEnabled = uiState.value is UiState.Ready,
                 isLoading = uiState.value is UiState.Loading
             ) {
@@ -87,7 +91,7 @@ fun LoginScreen(
 
             TextSmall(
                 modifier = Modifier.padding(top = padding_screen_large),
-                text = "App version: "+ BuildConfig.VERSION_NAME
+                text = stringResource(R.string.txt_app_version) + BuildConfig.VERSION_NAME
             )
         }
     }

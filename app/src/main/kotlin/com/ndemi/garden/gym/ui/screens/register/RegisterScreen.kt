@@ -3,6 +3,8 @@ package com.ndemi.garden.gym.ui.screens.register
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
@@ -20,7 +22,7 @@ fun RegisterScreen(
     }
 
     Column {
-        ToolBarWidget(title = "Register")
+        ToolBarWidget(title = stringResource(id = R.string.txt_register))
 
         if (uiState.value is UiState.Error){
             WarningWidget((uiState.value as UiState.Error).message)
