@@ -1,5 +1,6 @@
 package com.ndemi.garden.gym.ui.widgets
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.ui.mock.getMockAttendanceEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -31,7 +35,6 @@ import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import cv.domain.entities.AttendanceEntity
-import cv.domain.entities.getMockAttendanceEntity
 import org.joda.time.DateTime
 import org.joda.time.Minutes
 
@@ -42,8 +45,8 @@ fun attendanceWidget(
     canDeleteAttendance: Boolean = false,
     onDeleteAttendance: (AttendanceEntity)-> Unit = {},
 ): Int {
-    val startDate = DateTime(attendanceEntity.startDate)
-    val endDate = DateTime(attendanceEntity.endDate)
+    val startDate = DateTime(attendanceEntity.startDateMillis)
+    val endDate = DateTime(attendanceEntity.endDateMillis)
     var showDialog by remember { mutableStateOf(false) }
 
     Column(
@@ -53,16 +56,19 @@ fun attendanceWidget(
             .padding(top = padding_screen_small)
             .fillMaxWidth()
             .wrapContentHeight()
+            .background(
+                color = AppTheme.colors.backgroundCard,
+                shape = RoundedCornerShape(border_radius)
+            )
             .border(
                 width = line_thickness,
-                color = AppTheme.colors.backgroundChip,
+                color = AppTheme.colors.backgroundCardBorder,
                 shape = RoundedCornerShape(border_radius),
             )
             .padding(padding_screen_small),
     ) {
         Row(
             modifier = Modifier
-                .padding(top = padding_screen_small)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -75,7 +81,7 @@ fun attendanceWidget(
                     modifier = Modifier.clickable { showDialog = !showDialog },
                     imageVector = Icons.Default.Clear,
                     tint = AppTheme.colors.highLight,
-                    contentDescription = "Delete"
+                    contentDescription = stringResource(id = R.string.txt_delete)
                 )
             }
         }
@@ -87,7 +93,9 @@ fun attendanceWidget(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TextRegular(
-                text = startDate.toString(formatTime) + " - " + endDate.toString(formatTime),
+                text = startDate.toString(formatTime)
+                        + " - "
+                        + endDate.toString(formatTime),
             )
 
             TextRegular(
@@ -97,21 +105,21 @@ fun attendanceWidget(
             if (showDialog){
                 AlertDialog(
                     containerColor = AppTheme.colors.backgroundButtonDisabled,
-                    title = { TextSmall(text = "Are you sure") },
+                    title = { TextSmall(text = stringResource(R.string.txt_are_you_sure)) },
                     text = {
                         TextRegular(
-                            text = "Are you sure you wish to delete this Attendance, This action is permanent"
+                            text = stringResource(R.string.txt_are_you_sure_delete_attendance)
                         )
                     },
                     onDismissRequest = { showDialog = !showDialog },
                     confirmButton = {
-                        ButtonWidget(title = "Delete") {
+                        ButtonWidget(title = stringResource(R.string.txt_delete)) {
                             showDialog = !showDialog
                             onDeleteAttendance.invoke(attendanceEntity)
                         }
                     },
                     dismissButton = {
-                        ButtonWidget(title = "Cancel") {
+                        ButtonWidget(title = stringResource(R.string.txt_cancel)) {
                             showDialog = !showDialog
                         }
                     })

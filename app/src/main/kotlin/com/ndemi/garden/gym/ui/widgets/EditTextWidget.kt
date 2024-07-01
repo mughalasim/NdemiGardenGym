@@ -59,14 +59,16 @@ fun EditTextWidget(
         },
         textStyle = AppTheme.textStyles.regular,
         trailingIcon = {
-            Icon(
-                Icons.Default.Clear,
-                contentDescription = "Clear text",
-                modifier = Modifier.clickable {
-                    onValueChanged.invoke("")
-                    text = ""
-                }
-            )
+            if (text.isNotEmpty()){
+                Icon(
+                    Icons.Default.Clear,
+                    contentDescription = "Clear text",
+                    modifier = Modifier.clickable {
+                        onValueChanged.invoke("")
+                        text = ""
+                    }
+                )
+            }
         },
         label = { TextSmall(text = hint) },
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
@@ -138,10 +140,10 @@ private fun getAppTextColors() = OutlinedTextFieldDefaults.colors(
     errorTrailingIconColor = AppTheme.colors.backgroundError,
     errorBorderColor = AppTheme.colors.backgroundError,
 
-    focusedContainerColor = Color.Transparent,
-    unfocusedContainerColor = Color.Transparent,
-    disabledContainerColor = Color.Transparent,
-    errorContainerColor = Color.Transparent,
+    focusedContainerColor = AppTheme.colors.backgroundScreen,
+    unfocusedContainerColor = AppTheme.colors.backgroundScreen,
+    disabledContainerColor = AppTheme.colors.backgroundScreen,
+    errorContainerColor = AppTheme.colors.backgroundScreen,
 )
 
 @AppPreview

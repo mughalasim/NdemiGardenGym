@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -18,7 +17,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
@@ -32,19 +30,9 @@ fun ToolBarWidget(
     Row(
         modifier =
         Modifier
-            .shadow(
-                elevation = padding_screen_tiny,
-                shape = RoundedCornerShape(
-                    bottomEnd = border_radius,
-                    bottomStart = border_radius
-                )
-            )
+            .shadow(elevation = padding_screen_tiny)
             .background(
-                color = AppTheme.colors.backgroundButtonDisabled,
-                shape = RoundedCornerShape(
-                    bottomEnd = border_radius,
-                    bottomStart = border_radius
-                )
+                color = AppTheme.colors.backgroundButtonDisabled
             )
             .padding(padding_screen)
             .fillMaxWidth(),

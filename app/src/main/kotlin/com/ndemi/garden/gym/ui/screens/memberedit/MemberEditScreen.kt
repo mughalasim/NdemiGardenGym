@@ -16,6 +16,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.MemberProfileWidget
@@ -42,7 +44,7 @@ fun MemberEditScreen(
     LaunchedEffect(true) { viewModel.getMemberForId(memberId) }
 
     Column {
-        ToolBarWidget(title = "Edit Member", canNavigateBack = true) {
+        ToolBarWidget(title = stringResource(R.string.txt_edit_member), canNavigateBack = true) {
             viewModel.navigateBack()
         }
 

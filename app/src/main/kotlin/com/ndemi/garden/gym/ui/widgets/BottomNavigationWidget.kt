@@ -1,10 +1,7 @@
 package com.ndemi.garden.gym.ui.widgets
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ContactMail
 import androidx.compose.material.icons.rounded.Group
@@ -23,17 +20,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.navigation.Route.Companion.toRoute
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
@@ -44,19 +41,8 @@ fun BottomNavigationWidget(
     NavigationBar(
         modifier = Modifier
             .background(AppTheme.colors.backgroundScreen)
-            .border(
-                border = BorderStroke(line_thickness, AppTheme.colors.textSecondary),
-                shape = RoundedCornerShape(
-                    topStart = border_radius,
-                    topEnd = border_radius
-                )
-            )
             .background(
                 color = AppTheme.colors.backgroundButtonDisabled,
-                shape = RoundedCornerShape(
-                    topStart = border_radius,
-                    topEnd = border_radius
-                )
             ),
         containerColor = Color.Transparent
     ) {
@@ -86,7 +72,7 @@ fun BottomNavigationWidget(
                     )
                 },
                 label = {
-                    Text(text = item.label, style = AppTheme.textStyles.regularBold)
+                    Text(text = stringResource(id = item.label), style = AppTheme.textStyles.regularBold)
                 },
                 colors = NavigationBarItemColors(
                     selectedIconColor = AppTheme.colors.backgroundScreen,
@@ -102,33 +88,33 @@ fun BottomNavigationWidget(
     }
 }
 
-sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: String) {
+sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: Int) {
     data object LoginScreen : BottomNavItem(
-        Route.LoginScreen, Icons.Rounded.Lock, "Login"
+        Route.LoginScreen, Icons.Rounded.Lock, R.string.txt_login
     )
 
     data object RegisterScreen : BottomNavItem(
-        Route.RegisterScreen, Icons.Rounded.ContactMail, "Register"
+        Route.RegisterScreen, Icons.Rounded.ContactMail, R.string.txt_register
     )
 
     data object ResetPasswordScreen : BottomNavItem(
-        Route.ResetPasswordScreen, Icons.Rounded.Key, "Reset"
+        Route.ResetPasswordScreen, Icons.Rounded.Key, R.string.txt_reset
     )
 
     data object ProfileScreen : BottomNavItem(
-        Route.ProfileScreen, Icons.Rounded.Person, "Profile"
+        Route.ProfileScreen, Icons.Rounded.Person, R.string.txt_profile
     )
 
     data object AttendanceScreen : BottomNavItem(
-        Route.AttendanceScreen, Icons.Rounded.InsertChartOutlined, "Attendance"
+        Route.AttendanceScreen, Icons.Rounded.InsertChartOutlined, R.string.txt_attendance
     )
 
     data object LiveAttendanceScreen : BottomNavItem(
-        Route.LiveAttendanceScreen, Icons.Rounded.Groups, "Live View"
+        Route.LiveAttendanceScreen, Icons.Rounded.Groups, R.string.txt_live_view
     )
 
     data object MembersScreen : BottomNavItem(
-        Route.MembersScreen, Icons.Rounded.Group, "Members"
+        Route.MembersScreen, Icons.Rounded.Group, R.string.txt_members
     )
 
     companion object {
@@ -145,8 +131,8 @@ sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: S
         )
 
         fun getAdminBottomItems() = listOf(
-            ProfileScreen,
             MembersScreen,
+            ProfileScreen,
         )
     }
 }

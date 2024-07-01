@@ -16,7 +16,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
@@ -48,12 +50,12 @@ fun ResetPasswordScreen(
         if (uiState.value is UiState.Success){
            Toast.makeText(
                LocalContext.current,
-               "Email has been sent to $email",
+               stringResource(R.string.txt_email_has_been_sent, email),
                Toast.LENGTH_LONG
            ).show()
         }
 
-        ToolBarWidget(title = "Password reset")
+        ToolBarWidget(title = stringResource(R.string.txt_password_reset))
 
         if (uiState.value is UiState.Error){
             val message = (uiState.value as UiState.Error).message
@@ -66,11 +68,10 @@ fun ResetPasswordScreen(
         ) {
             TextRegular(
                 modifier = Modifier.padding(top = padding_screen),
-                text = "Oh no! Did you forget your password? Worry not!" +
-                        "Enter the email address you used to register with us and we shall send you a reset password link"
+                text = stringResource(R.string.txt_reset_desc)
             )
             EditTextWidget(
-                hint = "Email",
+                hint = stringResource(id = R.string.txt_email),
                 isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL,
                 keyboardType = KeyboardType.Email
             ){
@@ -79,7 +80,7 @@ fun ResetPasswordScreen(
             }
 
             ButtonWidget(
-                title = "Reset",
+                title = stringResource(R.string.txt_reset),
                 isEnabled = uiState.value is UiState.Ready,
                 isLoading = uiState.value is UiState.Loading
             ) {

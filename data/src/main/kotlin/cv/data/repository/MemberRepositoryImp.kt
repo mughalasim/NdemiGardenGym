@@ -6,7 +6,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
 import com.google.firebase.ktx.Firebase
+import cv.data.mappers.toAttendanceEntity
 import cv.data.mappers.toAttendanceModel
+import cv.data.mappers.toMemberEntity
 import cv.data.mappers.toMemberModel
 import cv.data.models.AttendanceModel
 import cv.data.models.MemberModel
@@ -92,7 +94,7 @@ class MemberRepositoryImp(
                         }.map {
                             it.toMemberEntity()
                         }.sortedByDescending {
-                            it.registrationDate
+                            it.registrationDateMillis
                         })
                     )
                 } else {
@@ -102,7 +104,7 @@ class MemberRepositoryImp(
                         }.map {
                             it.toMemberEntity()
                         }.sortedByDescending {
-                            it.registrationDate
+                            it.registrationDateMillis
                         })
                     )
                 }
@@ -162,7 +164,7 @@ class MemberRepositoryImp(
                         }.map {
                             it.toAttendanceEntity()
                         }.sortedByDescending {
-                            it.startDate
+                            it.startDateMillis
                         })
                     )
                 } else {
@@ -170,7 +172,7 @@ class MemberRepositoryImp(
                         response.map {
                             it.toAttendanceEntity()
                         }.sortedByDescending {
-                            it.startDate
+                            it.startDateMillis
                         })
                     )
                 }
@@ -234,7 +236,7 @@ class MemberRepositoryImp(
         attendanceEntity: AttendanceEntity
     ): DomainResult<Unit> {
         val attendanceModel = attendanceEntity.toAttendanceModel()
-        val startDateTime = DateTime(attendanceEntity.startDate)
+        val startDateTime = DateTime(attendanceEntity.startDateMillis)
 
         val collection = database
             .collection(pathAttendance)

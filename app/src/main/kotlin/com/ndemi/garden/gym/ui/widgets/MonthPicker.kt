@@ -29,7 +29,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -150,14 +152,14 @@ fun MonthPicker(
 
                 Row {
                     ButtonOutlineWidget(
-                        text = "Cancel",
+                        text = stringResource(id = R.string.txt_cancel),
                         hasOutline = false,
                     ) {
                         cancelClicked()
                     }
 
                     ButtonOutlineWidget(
-                        text = "Update",
+                        text = stringResource(id = R.string.txt_update),
                     ) {
                         confirmButtonCLicked(
                             months.indexOf(month) + 1,

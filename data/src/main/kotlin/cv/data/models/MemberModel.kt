@@ -2,8 +2,6 @@ package cv.data.models
 
 import androidx.annotation.Keep
 import com.google.firebase.Timestamp
-import cv.domain.entities.MemberEntity
-import org.joda.time.DateTime
 import java.util.Date
 
 @Keep
@@ -18,28 +16,4 @@ data class MemberModel(
     val apartmentNumber: String? = null,
     val profileImageUrl: String? = null,
     val hasCoach: Boolean = false
-) {
-    fun toMemberEntity(): MemberEntity {
-
-        return MemberEntity(
-            id = id,
-            firstName = firstName,
-            lastName = lastName,
-            email = email,
-            registrationDate = registrationDate.toDate(),
-            renewalFutureDate = isAfterNow(renewalFutureDate),
-            activeNowDate = activeNowDate?.toDate() ?: run { null },
-            apartmentNumber = apartmentNumber,
-            profileImageUrl = profileImageUrl ?: "",
-            hasCoach = hasCoach
-        )
-    }
-
-    private fun isAfterNow(timestamp: Timestamp?): Date? {
-        if (timestamp == null) return null
-        val dateTimeStamp = timestamp.toDate()
-        if (DateTime(dateTimeStamp).isBefore(DateTime.now())) return null
-        return dateTimeStamp
-    }
-
-}
+)

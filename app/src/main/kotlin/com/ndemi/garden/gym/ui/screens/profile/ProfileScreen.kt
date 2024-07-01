@@ -16,6 +16,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
@@ -43,7 +45,7 @@ fun ProfileScreen(
     LaunchedEffect(true) { viewModel.getMember() }
 
     Column {
-        ToolBarWidget(title = if (viewModel.isAdmin()) "Admin Profile" else "My Profile")
+        ToolBarWidget(title = stringResource(R.string.txt_profile))
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
@@ -77,11 +79,11 @@ fun ProfileScreen(
                         onSessionCompleted = viewModel::setAttendance,
                         onRegisterMember = viewModel::onRegisterMember,
                     )
-                }
-                ButtonWidget(
-                    title = "Logout",
-                ){
-                    viewModel.onLogOutTapped()
+                    ButtonWidget(
+                        title = stringResource(R.string.txt_logout),
+                    ){
+                        viewModel.onLogOutTapped()
+                    }
                 }
             }
         }

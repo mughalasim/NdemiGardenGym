@@ -15,10 +15,16 @@ val LightGreen = Color(0xFFA0E294)
 val DarkBlue = Color(0xFF31078F)
 
 @Suppress("detekt.MagicNumber")
-val LightBlue = Color(0xFFCBD0D8)
+val LightBlue = Color(0xFFC0CADA)
+
+@Suppress("detekt.MagicNumber")
+val LighterBlue = Color(0xFFF4F7FD)
 
 @Suppress("detekt.MagicNumber")
 val DarkGrey = Color(0xFF3B3A3C)
+
+@Suppress("detekt.MagicNumber")
+val DarkerGrey = Color(0xFF232324)
 
 @Suppress("detekt.MagicNumber")
 val LightGrey = Color(0xFF8D939C)
@@ -29,7 +35,8 @@ val DarkAppColors =
         textSecondary = LightGrey,
         backgroundTitleBar = Color.Black,
         backgroundScreen = Color.Black,
-        backgroundChip = DarkGrey,
+        backgroundCard = DarkerGrey,
+        backgroundCardBorder = DarkGrey,
         backgroundError = Red,
         backgroundButtonDisabled = DarkGrey,
         backgroundButtonEnabled = Color.White,
@@ -40,9 +47,10 @@ val LightAppColors =
     AppColors(
         textPrimary = DarkBlue,
         textSecondary = DarkGrey,
-        backgroundTitleBar = DarkBlue,
+        backgroundTitleBar = Yellow,
         backgroundScreen = Color.White,
-        backgroundChip = LightBlue,
+        backgroundCard = LighterBlue,
+        backgroundCardBorder = LightBlue,
         backgroundError = Red,
         backgroundButtonDisabled = LightBlue,
         backgroundButtonEnabled = DarkBlue,
@@ -55,7 +63,8 @@ class AppColors(
     val textSecondary: Color,
     val backgroundTitleBar: Color,
     val backgroundScreen: Color,
-    val backgroundChip: Color,
+    val backgroundCard: Color,
+    val backgroundCardBorder: Color,
     val backgroundError: Color,
     val backgroundButtonDisabled: Color,
     val backgroundButtonEnabled: Color,
