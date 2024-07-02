@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -15,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.koin.androidx.compose.koinViewModel
@@ -29,7 +32,11 @@ fun MembersScreen (
     LaunchedEffect(true) { viewModel.getMembers() }
 
     Column {
-        ToolBarWidget(title = stringResource(R.string.txt_members))
+        ToolBarWidget(
+            title = stringResource(R.string.txt_members),
+            secondaryIcon = Icons.Default.PersonAdd,
+            onSecondaryIconPressed = viewModel::onRegisterMember
+        )
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
@@ -43,7 +50,7 @@ fun MembersScreen (
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 if (uiState.value is UiState.Success) {
                     if ((uiState.value as UiState.Success).members.isEmpty()){
-                        WarningWidget(title = stringResource(R.string.txt_no_members))
+                        TextRegular(text = stringResource(R.string.txt_no_members))
                     } else {
                         MembersListScreen(
                             members = (uiState.value as UiState.Success).members,

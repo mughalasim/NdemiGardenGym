@@ -12,6 +12,9 @@ class AppLoggerRepositoryImp(val isEnabled: Boolean): AppLoggerRepository {
     ) {
         if (isEnabled){
             when(appLogLevel){
+                AppLogLevel.ANALYTICS ->{
+                    Log.i(AppLogLevel.ANALYTICS.name, message)
+                }
                 AppLogLevel.DEBUG ->{
                     Log.d(javaClass.simpleName, message)
                 }

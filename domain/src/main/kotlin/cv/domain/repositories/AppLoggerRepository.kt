@@ -9,5 +9,6 @@ interface AppLoggerRepository {
 
 enum class AppLogLevel {
     DEBUG,
-    ERROR
+    ERROR,
+    ANALYTICS,
 }

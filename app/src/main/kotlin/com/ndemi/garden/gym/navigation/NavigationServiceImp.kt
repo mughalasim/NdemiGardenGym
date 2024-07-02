@@ -3,7 +3,7 @@ package com.ndemi.garden.gym.navigation
 import androidx.annotation.Keep
 import androidx.navigation.NavController
 import com.ndemi.garden.gym.navigation.Route.Companion.toRoute
-import cv.domain.Variables.EVENT_NAME_NAVIGATE
+import cv.domain.Variables.EVENT_NAVIGATE
 import cv.domain.Variables.PARAM_SCREEN_NAME
 import cv.domain.repositories.AnalyticsRepository
 import cv.domain.usecase.AuthUseCase
@@ -37,9 +37,9 @@ class NavigationServiceImp(
             }
         }
         analyticsRepository.logEvent(
-            EVENT_NAME_NAVIGATE,
+            EVENT_NAVIGATE,
             listOf(
-                Pair(PARAM_SCREEN_NAME, route.toString()),
+                Pair(PARAM_SCREEN_NAME, route.javaClass.simpleName),
             ),
         )
     }
@@ -47,9 +47,9 @@ class NavigationServiceImp(
     override fun popBack() {
         navController.navigateUp()
         analyticsRepository.logEvent(
-            EVENT_NAME_NAVIGATE,
+            EVENT_NAVIGATE,
             listOf(
-                Pair(PARAM_SCREEN_NAME, getCurrentRoute().toString()),
+                Pair(PARAM_SCREEN_NAME, getCurrentRoute().javaClass.simpleName),
             ),
         )
     }

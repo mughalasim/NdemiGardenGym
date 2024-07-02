@@ -257,4 +257,27 @@ class MemberRepositoryImp(
 
         return completable.await()
     }
+
+    override suspend fun deleteMember(
+        memberEntity: MemberEntity
+    ): DomainResult<Unit> {
+        val memberModel = memberEntity.toMemberModel()
+
+        val collection = database
+            .collection(pathUser)
+            .document(memberModel.id)
+
+        val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
+        collection.delete()
+            .addOnSuccessListener {
+                logger.log("Member Deleted")
+                completable.complete(DomainResult.Success(Unit))
+
+            }.addOnFailureListener {
+                logger.log("Exception: $it", AppLogLevel.ERROR)
+                completable.complete(DomainResult.Error(it.toDomainError()))
+            }
+
+        return completable.await()
+    }
 }
