@@ -11,12 +11,14 @@ import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
+import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.SharedPrefsUseCase
 import cv.domain.usecase.StorageUseCase
+import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
@@ -43,8 +45,13 @@ class ProfileScreenViewModel(
         viewModelScope.launch {
             memberUseCase.getMember().also { result ->
                 when (result) {
-                    is DomainResult.Error ->
-                        sendAction(Action.ShowError(errorCodeConverter.getMessage(result.error)))
+                    is DomainResult.Error ->{
+                        if (result.error == DomainError.NO_DATA){
+                            sendAction(Action.ShowError(errorCodeConverter.getMessage(DomainError.USER_DISABLED)))
+                        }else{
+                            sendAction(Action.ShowError(errorCodeConverter.getMessage(result.error)))
+                        }
+                    }
 
                     is DomainResult.Success -> {
                         if (result.data.activeNowDateMillis != null) {
@@ -74,7 +81,8 @@ class ProfileScreenViewModel(
     private fun updateMemberLiveStatus() {
         viewModelScope.launch {
             memberUseCase.updateMember(
-                memberEntity.copy(activeNowDateMillis = _sessionStartTime.value?.millis)
+                memberEntity.copy(activeNowDateMillis = _sessionStartTime.value?.millis),
+                UpdateType.ACTIVE_SESSION
             )
         }
     }
@@ -117,7 +125,8 @@ class ProfileScreenViewModel(
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             memberUseCase
-                .updateMember(memberEntity.copy(profileImageUrl = ""))
+                .updateMember(memberEntity.copy(profileImageUrl = ""),
+                    UpdateType.PHOTO_DELETE)
                 .also { getMember() }
         }
     }

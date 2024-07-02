@@ -16,6 +16,7 @@ import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.StorageUseCase
+import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
@@ -58,16 +59,18 @@ class MemberEditScreenViewModel(
     private fun updateMemberLiveStatus() {
         viewModelScope.launch {
             memberUseCase.updateMember(
-                memberEntity.copy(activeNowDateMillis =  _sessionStartTime.value?.millis)
+                memberEntity.copy(activeNowDateMillis =  _sessionStartTime.value?.millis),
+                UpdateType.ACTIVE_SESSION
             )
         }
     }
 
-    fun updateMember(dateTime: DateTime) {
+    fun updateMembershipRegistration(dateTime: DateTime) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             memberUseCase.updateMember(
-                memberEntity.copy(renewalFutureDateMillis = dateTime.millis)
+                memberEntity.copy(renewalFutureDateMillis = dateTime.millis),
+                UpdateType.MEMBERSHIP
             ).also { result ->
                 when (result) {
                     is DomainResult.Error -> {
@@ -89,7 +92,7 @@ class MemberEditScreenViewModel(
     fun onCoachSetUpdate(hasCoach: Boolean) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            memberUseCase.updateMember(memberEntity.copy(hasCoach = hasCoach))
+            memberUseCase.updateMember(memberEntity.copy(hasCoach = hasCoach), UpdateType.HAS_COACH)
                 .also { getMemberForId(memberEntity.id) }
         }
     }
@@ -121,7 +124,7 @@ class MemberEditScreenViewModel(
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             memberUseCase
-                .updateMember(memberEntity.copy(profileImageUrl = ""))
+                .updateMember(memberEntity.copy(profileImageUrl = ""), UpdateType.PHOTO_DELETE)
                 .also { getMemberForId(memberEntity.id) }
         }
     }
@@ -144,6 +147,21 @@ class MemberEditScreenViewModel(
 
     fun navigateToAttendanceScreen(memberEntity: MemberEntity) {
         navigationService.open(Route.MembersAttendancesScreen(memberEntity.id, memberEntity.getFullName()))
+    }
+
+    fun deleteMember() {
+        sendAction(Action.SetLoading)
+        viewModelScope.launch {
+            memberUseCase.deleteMember(memberEntity).also {
+                when(it){
+                    is DomainResult.Error -> Action.Success(
+                        memberEntity,
+                        errorCodeConverter.getMessage(it.error)
+                    )
+                    is DomainResult.Success -> navigationService.popBack()
+                }
+            }
+        }
     }
 
     @Immutable

@@ -40,6 +40,10 @@ class MembersScreenViewModel (
        navigationService.open(Route.MemberEditScreen(memberEntity.id))
     }
 
+    fun onRegisterMember() {
+        navigationService.open(Route.RegisterNewScreen)
+    }
+
     @Immutable
     sealed interface UiState : BaseState {
         data object Loading : UiState

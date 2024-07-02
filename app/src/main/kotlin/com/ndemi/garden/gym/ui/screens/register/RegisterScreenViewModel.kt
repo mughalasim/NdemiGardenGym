@@ -19,6 +19,7 @@ import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
+import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import java.util.UUID
@@ -146,17 +147,16 @@ class RegisterScreenViewModel(
         ) {
             when (it) {
                 is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
-                is DomainResult.Success -> updateMember(it.data)
+                is DomainResult.Success -> updateMember(it.data, UpdateType.SELF_REGISTRATION)
             }
         }
     }
 
     fun onRegisterNewTapped() {
-        sendAction(Action.SetLoading)
-        updateMember(UUID.randomUUID().toString())
+        updateMember(UUID.randomUUID().toString(), UpdateType.ADMIN_REGISTRATION)
     }
 
-    private fun updateMember(memberId: String) {
+    private fun updateMember(memberId: String, updateType: UpdateType) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             memberUseCase.updateMember(
@@ -178,7 +178,8 @@ class RegisterScreenViewModel(
                     (inputData.value?.apartmentNumber.orEmpty())
                         .replaceFirstChar(Char::uppercase),
                     profileImageUrl = ""
-                )
+                ),
+                updateType
             ).also { result ->
                 when (result) {
                     is DomainResult.Error ->

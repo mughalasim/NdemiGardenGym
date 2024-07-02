@@ -19,19 +19,15 @@ val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 android {
-    val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
-    val appName = libs.findVersion("appName").get().toString()
-    val versionNameString = libs.findVersion("appVersionName").get().toString()
-
-    namespace = libs.findVersion("appNamespaceId").get().toString()
-    compileSdk = libs.findVersion("compileSdk").get().toString().toInt()
+    namespace = libs.versions.appNamespaceId.get()
+    compileSdk = libs.versions.appCompileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = libs.findVersion("appNamespaceId").get().toString()
-        minSdk = libs.findVersion("minSdk").get().toString().toInt()
-        targetSdk = libs.findVersion("compileSdk").get().toString().toInt()
-        versionCode = libs.findVersion("appVersionCode").get().toString().toInt()
-        versionName = versionNameString
+        applicationId = libs.versions.appNamespaceId.get()
+        minSdk = libs.versions.appMinSdk.get().toInt()
+        targetSdk = libs.versions.appTargetSdk.get().toInt()
+        versionCode = libs.versions.appVersionCode.get().toInt()
+        versionName = libs.versions.appVersionName.get()
         buildConfigField(
             "String",
             "API_BASE_URL",
@@ -72,7 +68,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("config")
-            resValue("string", "app_name", appName)
+            resValue("string", "app_name", libs.versions.appName.get())
             buildConfigField(
                 "String",
                 "PATH_USER",
@@ -89,7 +85,7 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
             isDebuggable = true
-            resValue("string", "app_name", "$appName (Debug)")
+            resValue("string", "app_name", "${libs.versions.appName.get()} (Debug)")
             buildConfigField(
                 "String",
                 "PATH_USER",
@@ -121,7 +117,7 @@ android {
     productFlavors {
         create("App") {
             dimension = "version"
-            setProperty("archivesBaseName", "$appName ($versionNameString)")
+            setProperty("archivesBaseName", "${libs.versions.appName.get()} (${libs.versions.appVersionName.get()})")
         }
     }
 
@@ -135,7 +131,7 @@ android {
     }
 
     detekt {
-        toolVersion = libs.findVersion("detekt").get().toString()
+        toolVersion = libs.versions.detekt.get()
         config.setFrom(rootProject.file("detekt.yml"))
         buildUponDefaultConfig = true
     }

@@ -13,7 +13,7 @@ val useCaseModule =
 
         single { AuthUseCase(get()) }
 
-        single { MemberUseCase(get()) }
+        single { MemberUseCase(get(), get()) }
 
-        single { StorageUseCase(get(), get()) }
+        single { StorageUseCase(get(), get(), get()) }
     }

@@ -18,7 +18,7 @@
     <string name="error_invalid_info">Information supplied is invalid</string>
     <string name="error_email_already_exists">The supplied email already exists</string>
     <string name="error_password_length">Password must be at least 6 characters in length</string>
-    <string name="error_account_disabled">Your account has been disabled, please contact admin</string>
+    <string name="error_account_disabled">Your account has been disabled, please contact the administration</string>
     <string name="error_workout_session_length">Cannot update your workout session as it is either too short or longer than a day</string>
     <string name="error_apartment_number">Apartment number is invalid, Leave blank if not a resident</string>
     <string name="error_past_date_set">You cannot set a date in the past</string>
@@ -64,7 +64,8 @@
     <string name="txt_email_has_been_sent">Email has been sent to %1$s</string>
     <string name="txt_select_date_range">Select a date range</string>
     <string name="txt_are_you_sure">Are you sure</string>
-    <string name="txt_are_you_sure_delete_attendance">Are you sure you wish to delete this Attendance, This action is permanent</string>
+    <string name="txt_are_you_sure_delete_attendance">Are you sure you wish to delete this Attendance, This action is permanent.</string>
+    <string name="txt_are_you_sure_delete_member">Are you sure you wish to delete this Member. Their respective attendance will also be deleted. This action is permanent.</string>
     <string name="txt_now">Now</string>
     <string name="txt_not_active">Not active</string>
     <string name="txt_today">Today</string>

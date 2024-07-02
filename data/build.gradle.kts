@@ -8,12 +8,11 @@ plugins {
 }
 
 android {
-    val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
     namespace = "cv.data"
-    compileSdk = libs.findVersion("compileSdk").get().toString().toInt()
+    compileSdk = libs.versions.appCompileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = libs.findVersion("minSdk").get().toString().toInt()
+        minSdk = libs.versions.appMinSdk.get().toInt()
     }
 
     compileOptions {
@@ -26,7 +25,7 @@ android {
     }
 
     detekt {
-        toolVersion = libs.findVersion("detekt").get().toString()
+        toolVersion = libs.versions.detekt.get()
         config.setFrom(rootProject.file("detekt.yml"))
         buildUponDefaultConfig = true
     }
