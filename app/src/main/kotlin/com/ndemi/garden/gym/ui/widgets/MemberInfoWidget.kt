@@ -24,11 +24,10 @@ import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.line_thickness
-import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
-import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants
+import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toDaysDuration
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import cv.domain.entities.MemberEntity
@@ -52,7 +51,7 @@ fun MemberInfoWidget(
                 color = AppTheme.colors.backgroundCardBorder,
                 shape = RoundedCornerShape(border_radius),
             )
-            .padding(padding_screen),
+            .padding(padding_screen_small),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -74,7 +73,6 @@ fun MemberInfoWidget(
 
         Row(
             modifier = Modifier
-                .padding(top = padding_screen_tiny)
                 .fillMaxWidth()
                 .padding(top = padding_screen_small),
             verticalAlignment = Alignment.CenterVertically,
@@ -94,7 +92,7 @@ fun MemberInfoWidget(
         if (showExtraInfo){
             Spacer(
                 modifier = Modifier
-                    .padding(top = padding_screen)
+                    .padding(top = padding_screen_small)
                     .fillMaxWidth()
                     .height(line_thickness)
                     .background(AppTheme.colors.highLight)
@@ -102,7 +100,6 @@ fun MemberInfoWidget(
 
             Row(
                 modifier = Modifier
-                    .padding(top = padding_screen_tiny)
                     .fillMaxWidth()
                     .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
@@ -121,7 +118,6 @@ fun MemberInfoWidget(
 
             Row(
                 modifier = Modifier
-                    .padding(top = padding_screen_tiny)
                     .fillMaxWidth()
                     .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
@@ -141,7 +137,7 @@ fun MemberInfoWidget(
 
             Spacer(
                 modifier = Modifier
-                    .padding(top = padding_screen)
+                    .padding(top = padding_screen_small)
                     .fillMaxWidth()
                     .height(line_thickness)
                     .background(AppTheme.colors.highLight)
@@ -149,7 +145,6 @@ fun MemberInfoWidget(
 
             Row(
                 modifier = Modifier
-                    .padding(top = padding_screen_tiny)
                     .fillMaxWidth()
                     .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
@@ -170,7 +165,6 @@ fun MemberInfoWidget(
 
             Row(
                 modifier = Modifier
-                    .padding(top = padding_screen_tiny)
                     .fillMaxWidth()
                     .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
@@ -189,7 +183,6 @@ fun MemberInfoWidget(
             if (memberEntity.hasPaidMembership()) {
                 Row(
                     modifier = Modifier
-                        .padding(top = padding_screen_tiny)
                         .fillMaxWidth()
                         .padding(top = padding_screen_small),
                     verticalAlignment = Alignment.CenterVertically,
@@ -203,6 +196,24 @@ fun MemberInfoWidget(
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.End,
                         text = DateTime(memberEntity.renewalFutureDateMillis).toDaysDuration()
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = padding_screen_small),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    TextSmall(
+                        color = AppTheme.colors.highLight,
+                        text = "Amount due"
+                    )
+                    TextRegularBold(
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End,
+                        color = AppTheme.colors.backgroundError,
+                        text = memberEntity.amountDue.toAmountString()
                     )
                 }
             }

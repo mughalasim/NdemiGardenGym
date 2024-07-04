@@ -11,6 +11,7 @@ data class MemberEntity(
     val apartmentNumber: String? = null,
     val profileImageUrl: String,
     val hasCoach: Boolean = false,
+    val amountDue: Double = 0.0,
 ){
     fun getFullName(): String = "$firstName $lastName"
 

@@ -30,8 +30,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_large
+import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
@@ -48,7 +48,7 @@ fun EditTextWidget(
     OutlinedTextField(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = padding_screen),
+            .padding(top = padding_screen_tiny),
         value = text,
         enabled = isEnabled,
         isError = isError,
@@ -64,8 +64,8 @@ fun EditTextWidget(
                     Icons.Default.Clear,
                     contentDescription = "Clear text",
                     modifier = Modifier.clickable {
-                        onValueChanged.invoke("")
                         text = ""
+                        onValueChanged("")
                     }
                 )
             }
@@ -92,7 +92,7 @@ fun EditPasswordTextWidget(
     OutlinedTextField(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = padding_screen),
+            .padding(top = padding_screen_tiny),
         value = password,
         onValueChange = {
             password = it

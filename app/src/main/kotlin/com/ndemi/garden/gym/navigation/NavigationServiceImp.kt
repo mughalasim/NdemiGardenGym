@@ -105,6 +105,19 @@ sealed class Route {
 
     @Keep
     @Serializable
+    data class PaymentsScreen(
+        val memberId: String,
+        val memberName: String,
+    ) : Route()
+
+    @Keep
+    @Serializable
+    data class PaymentAddScreen(
+        val memberId: String,
+    ) : Route()
+
+    @Keep
+    @Serializable
     data class MemberEditScreen(
         val memberId: String,
     ) : Route()
@@ -129,6 +142,8 @@ sealed class Route {
                 this.contains(AttendanceScreen.javaClass.simpleName) -> AttendanceScreen
                 this.contains(MembersScreen.javaClass.simpleName) -> MembersScreen
                 this.contains("MembersAttendancesScreen") -> MembersAttendancesScreen("", "")
+                this.contains("PaymentsScreen") -> PaymentsScreen("", "")
+                this.contains("PaymentAddScreen") -> PaymentAddScreen("")
                 this.contains("MemberEditScreen") -> MemberEditScreen("")
                 else  -> LoginScreen
             }

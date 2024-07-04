@@ -96,12 +96,6 @@ fun MemberEditScreen(
                         onCoachSetUpdate = {
                           viewModel.onCoachSetUpdate(it)
                         },
-                        onMembershipDueDateUpdate = { dateTime ->
-                            viewModel.updateMembershipRegistration(dateTime)
-                        },
-                        onViewAttendance = {
-                            viewModel.navigateToAttendanceScreen(it)
-                        },
                         sessionMessage = (uiState.value as UiState.Success).message,
                         sessionStartTime = sessionStartTime,
                         onSessionStarted = viewModel::setStartedSession,

@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.ApplicationBuildType
+import com.android.build.api.dsl.ApplicationDefaultConfig
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import java.io.FileInputStream
 import java.util.Properties
@@ -28,26 +30,13 @@ android {
         targetSdk = libs.versions.appTargetSdk.get().toInt()
         versionCode = libs.versions.appVersionCode.get().toInt()
         versionName = libs.versions.appVersionName.get()
-        buildConfigField(
-            "String",
-            "API_BASE_URL",
-            gradleLocalProperties(rootDir, providers).getProperty("API_BASE_URL"),
-        )
-        buildConfigField(
-            "String",
-            "ADMIN_LIVE",
-            gradleLocalProperties(rootDir, providers).getProperty("ADMIN_LIVE"),
-        )
-        buildConfigField(
-            "String",
-            "ADMIN_STAGING",
-            gradleLocalProperties(rootDir, providers).getProperty("ADMIN_STAGING"),
-        )
-        buildConfigField(
-            "String",
-            "PATH_USER_IMAGES",
-            gradleLocalProperties(rootDir, providers).getProperty("PATH_USER_IMAGES"),
-        )
+
+        setConfigVariable(variableName = "API_BASE_URL", variableSource = "API_BASE_URL")
+        setConfigVariable(variableName = "ADMIN_LIVE", variableSource = "ADMIN_LIVE")
+        setConfigVariable(variableName = "ADMIN_STAGING", variableSource = "ADMIN_STAGING")
+        setConfigVariable(variableName = "PATH_USER_IMAGES", variableSource = "PATH_USER_IMAGES")
+        setConfigVariable(variableName = "PATH_PAYMENT", variableSource = "PATH_PAYMENT")
+
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         vectorDrawables { useSupportLibrary = true }
 
@@ -69,16 +58,9 @@ android {
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("config")
             resValue("string", "app_name", libs.versions.appName.get())
-            buildConfigField(
-                "String",
-                "PATH_USER",
-                gradleLocalProperties(rootDir, providers).getProperty("PATH_USER"),
-            )
-            buildConfigField(
-                "String",
-                "PATH_ATTENDANCE",
-                gradleLocalProperties(rootDir, providers).getProperty("PATH_ATTENDANCE"),
-            )
+            setConfigVariable(variableName = "PATH_USER", variableSource = "PATH_USER")
+            setConfigVariable(variableName = "PATH_ATTENDANCE", variableSource = "PATH_ATTENDANCE")
+            setConfigVariable(variableName = "PATH_PAYMENT_PLAN", variableSource = "PATH_PAYMENT_PLAN")
         }
 
         getByName("debug") {
@@ -86,16 +68,9 @@ android {
             isShrinkResources = false
             isDebuggable = true
             resValue("string", "app_name", "${libs.versions.appName.get()} (Debug)")
-            buildConfigField(
-                "String",
-                "PATH_USER",
-                gradleLocalProperties(rootDir, providers).getProperty("DEBUG_PATH_USER"),
-            )
-            buildConfigField(
-                "String",
-                "PATH_ATTENDANCE",
-                gradleLocalProperties(rootDir, providers).getProperty("DEBUG_PATH_ATTENDANCE"),
-            )
+            setConfigVariable(variableName = "PATH_USER", variableSource = "DEBUG_PATH_USER")
+            setConfigVariable(variableName = "PATH_ATTENDANCE", variableSource = "DEBUG_PATH_ATTENDANCE")
+            setConfigVariable(variableName = "PATH_PAYMENT_PLAN", variableSource = "DEBUG_PATH_PAYMENT")
         }
     }
 
@@ -140,6 +115,14 @@ android {
         resources.excludes.add("META-INF/LICENSE.txt")
         resources.excludes.add("META-INF/NOTICE.txt")
     }
+}
+
+fun ApplicationDefaultConfig.setConfigVariable(variableName: String, variableSource: String){
+    buildConfigField("String", variableName, gradleLocalProperties(rootDir, providers).getProperty(variableSource))
+}
+
+fun ApplicationBuildType.setConfigVariable(variableName: String, variableSource: String){
+    buildConfigField("String", variableName, gradleLocalProperties(rootDir, providers).getProperty(variableSource))
 }
 
 dependencies {

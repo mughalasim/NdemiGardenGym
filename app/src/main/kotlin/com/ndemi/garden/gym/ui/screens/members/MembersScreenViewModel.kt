@@ -44,6 +44,14 @@ class MembersScreenViewModel (
         navigationService.open(Route.RegisterNewScreen)
     }
 
+    fun onPaymentsTapped(memberEntity: MemberEntity) {
+        navigationService.open(Route.PaymentsScreen(memberEntity.id, memberEntity.getFullName()))
+    }
+
+    fun onAttendanceTapped(memberEntity: MemberEntity) {
+        navigationService.open(Route.MembersAttendancesScreen(memberEntity.id, memberEntity.getFullName()))
+    }
+
     @Immutable
     sealed interface UiState : BaseState {
         data object Loading : UiState

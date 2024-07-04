@@ -20,6 +20,7 @@ import cv.domain.Variables.PARAM_REGISTRATION_ADMIN
 import cv.domain.Variables.PARAM_REGISTRATION_SELF
 import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.MemberEntity
+import cv.domain.entities.PaymentEntity
 import cv.domain.repositories.AnalyticsRepository
 import cv.domain.repositories.MemberRepository
 import java.util.Date
@@ -32,25 +33,43 @@ class MemberUseCase(
         memberRepository.getMember()
 
     suspend fun getMemberById(memberId: String) =
-        memberRepository.getMemberById(memberId)
+        memberRepository.getMemberById(memberId = memberId)
 
     suspend fun getAllMembers() =
-        memberRepository.getAllMembers(false)
+        memberRepository.getAllMembers(isLive = false)
 
     suspend fun getLiveMembers() =
-        memberRepository.getAllMembers(true)
+        memberRepository.getAllMembers(isLive = true)
 
     suspend fun getMemberAttendances(year: Int, month: Int) =
-        memberRepository.getAttendances(true, "", year, month)
+        memberRepository.getAttendances(
+            isMembersAttendances = true,
+            memberId = "",
+            year = year,
+            month = month
+        )
 
     suspend fun getMemberAttendancesForId(memberId: String, year: Int, month: Int) =
-        memberRepository.getAttendances(true, memberId, year, month)
+        memberRepository.getAttendances(
+            isMembersAttendances = true,
+            memberId = memberId,
+            year = year,
+            month = month
+        )
 
     suspend fun addAttendance(startDate: Date, endDate: Date) =
-        memberRepository.addAttendance("", startDate, endDate)
+        memberRepository.addAttendance(
+            memberId = "",
+            startDate = startDate,
+            endDate = endDate
+        )
 
     suspend fun addAttendanceForMember(memberId: String, startDate: Date, endDate: Date) =
-        memberRepository.addAttendance(memberId, startDate, endDate)
+        memberRepository.addAttendance(
+            memberId = memberId,
+            startDate = startDate,
+            endDate = endDate
+        )
 
     suspend fun updateMember(
         memberEntity: MemberEntity,
@@ -116,7 +135,6 @@ class MemberUseCase(
         return memberRepository.updateMember(memberEntity)
     }
 
-
     suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit> {
         analyticsRepository.logEvent(
             eventName = EVENT_ATTENDANCE_DELETE,
@@ -126,7 +144,6 @@ class MemberUseCase(
         )
         return memberRepository.deleteAttendance(attendanceEntity)
     }
-
 
     suspend fun deleteMember(memberEntity: MemberEntity): DomainResult<Unit> {
         analyticsRepository.logEvent(
@@ -138,6 +155,26 @@ class MemberUseCase(
         )
         return memberRepository.deleteMember(memberEntity)
     }
+
+    suspend fun getAllPaymentPlans(year: Int) =
+        memberRepository.getPaymentPlans(
+            isMembersPayment = false,
+            memberId = "",
+            year = year
+        )
+
+    suspend fun getPaymentPlanForMember(memberId: String, year: Int) =
+        memberRepository.getPaymentPlans(
+            isMembersPayment = true,
+            memberId = memberId,
+            year = year
+        )
+
+    suspend fun addPaymentPlanForMember(paymentEntity: PaymentEntity) =
+        memberRepository.addPaymentPlan(paymentEntity)
+
+    suspend fun deletePaymentPlanForMember(paymentEntity: PaymentEntity) =
+        memberRepository.deletePaymentPlan(paymentEntity)
 }
 
 enum class UpdateType {

@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
-import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
@@ -65,30 +64,6 @@ class MemberEditScreenViewModel(
         }
     }
 
-    fun updateMembershipRegistration(dateTime: DateTime) {
-        sendAction(Action.SetLoading)
-        viewModelScope.launch {
-            memberUseCase.updateMember(
-                memberEntity.copy(renewalFutureDateMillis = dateTime.millis),
-                UpdateType.MEMBERSHIP
-            ).also { result ->
-                when (result) {
-                    is DomainResult.Error -> {
-                        sendAction(
-                            Action.Success(
-                                memberEntity,
-                                errorCodeConverter.getMessage(result.error)
-                            )
-                        )
-                    }
-
-                    is DomainResult.Success ->
-                        getMemberForId(memberEntity.id)
-                }
-            }
-        }
-    }
-
     fun onCoachSetUpdate(hasCoach: Boolean) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
@@ -143,10 +118,6 @@ class MemberEditScreenViewModel(
 
     fun navigateBack() {
         navigationService.popBack()
-    }
-
-    fun navigateToAttendanceScreen(memberEntity: MemberEntity) {
-        navigationService.open(Route.MembersAttendancesScreen(memberEntity.id, memberEntity.getFullName()))
     }
 
     fun deleteMember() {

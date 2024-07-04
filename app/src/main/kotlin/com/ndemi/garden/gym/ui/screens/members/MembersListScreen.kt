@@ -14,13 +14,17 @@ import cv.domain.entities.MemberEntity
 fun MembersListScreen(
     members: List<MemberEntity>,
     onMemberTapped: (memberEntity: MemberEntity) -> Unit = {},
+    onPaymentsTapped: (memberEntity: MemberEntity) -> Unit = {},
+    onAttendanceTapped: (memberEntity: MemberEntity) -> Unit = {},
 ) {
     Column {
         repeat(members.size) {
             MemberStatusWidget(
                 memberEntity = members[it],
                 showDetails = true,
-                onMemberTapped = onMemberTapped
+                onMemberTapped = onMemberTapped,
+                onPaymentsTapped = onPaymentsTapped,
+                onAttendanceTapped = onAttendanceTapped
             )
         }
     }

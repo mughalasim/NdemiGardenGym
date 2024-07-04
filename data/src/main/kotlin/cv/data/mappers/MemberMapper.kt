@@ -11,27 +11,29 @@ fun MemberEntity.toMemberModel() = MemberModel(
     firstName = firstName,
     lastName = lastName,
     email = email,
-    activeNowDate = activeNowDateMillis?.let { Timestamp(Date(it)) }?: run { null },
-    renewalFutureDate = renewalFutureDateMillis?.let { Timestamp(Date(it)) }?: run { null },
+    activeNowDate = activeNowDateMillis?.let { Timestamp(Date(it)) } ?: run { null },
+    renewalFutureDate = renewalFutureDateMillis?.let { Timestamp(Date(it)) } ?: run { null },
     registrationDate = Timestamp(Date(registrationDateMillis)),
     apartmentNumber = apartmentNumber,
     profileImageUrl = profileImageUrl,
     hasCoach = hasCoach,
+    amountDue = amountDue,
 )
 
 
 fun MemberModel.toMemberEntity() = MemberEntity(
-        id = id,
-        firstName = firstName,
-        lastName = lastName,
-        email = email,
-        registrationDateMillis = registrationDate.toDate().time,
-        renewalFutureDateMillis = isAfterNow(renewalFutureDate?.toDate()?.time),
-        activeNowDateMillis = activeNowDate?.toDate()?.time ?: run { null },
-        apartmentNumber = apartmentNumber,
-        profileImageUrl = profileImageUrl.orEmpty(),
-        hasCoach = hasCoach
-    )
+    id = id,
+    firstName = firstName,
+    lastName = lastName,
+    email = email,
+    registrationDateMillis = registrationDate.toDate().time,
+    renewalFutureDateMillis = isAfterNow(renewalFutureDate?.toDate()?.time),
+    activeNowDateMillis = activeNowDate?.toDate()?.time ?: run { null },
+    apartmentNumber = apartmentNumber,
+    profileImageUrl = profileImageUrl.orEmpty(),
+    hasCoach = hasCoach,
+    amountDue = amountDue,
+)
 
 private fun isAfterNow(millis: Long?): Long? {
     if (millis == null) return null
