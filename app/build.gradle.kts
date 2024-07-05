@@ -31,6 +31,7 @@ android {
         versionCode = libs.versions.appVersionCode.get().toInt()
         versionName = libs.versions.appVersionName.get()
 
+        setConfigVariable(variableName = "CURRENCY_CODE", variableSource = "CURRENCY_CODE")
         setConfigVariable(variableName = "API_BASE_URL", variableSource = "API_BASE_URL")
         setConfigVariable(variableName = "ADMIN_LIVE", variableSource = "ADMIN_LIVE")
         setConfigVariable(variableName = "ADMIN_STAGING", variableSource = "ADMIN_STAGING")

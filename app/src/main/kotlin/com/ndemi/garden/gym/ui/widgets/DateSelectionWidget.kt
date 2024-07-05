@@ -19,12 +19,14 @@ import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatMonthYear
+import com.ndemi.garden.gym.ui.utils.DateConstants.formatYear
 import org.joda.time.DateTime
 
 @Composable
-fun AttendanceDateSelectionWidget(
+fun DateSelectionWidget(
     selectedDate: DateTime,
-    onDateSelected: (selectedDate: DateTime) -> Unit = {}
+    hideMonthSelection: Boolean,
+    onDateSelected: (selectedDate: DateTime) -> Unit,
 ) {
     var monthPickerVisibility by remember { mutableStateOf(false) }
     Row(
@@ -36,10 +38,20 @@ fun AttendanceDateSelectionWidget(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        TextRegular(text = stringResource(R.string.txt_select_date_range))
+        TextRegular(
+            text = if (hideMonthSelection) {
+                stringResource(R.string.txt_select_year)
+            } else {
+                stringResource(R.string.txt_select_date)
+            }
+        )
 
         ButtonOutlineWidget(
-            text = selectedDate.toString(formatMonthYear),
+            text = if (hideMonthSelection) {
+                selectedDate.toString(formatYear)
+            } else {
+                selectedDate.toString(formatMonthYear)
+            }
         ) {
             monthPickerVisibility = !monthPickerVisibility
         }
@@ -49,6 +61,7 @@ fun AttendanceDateSelectionWidget(
         visible = monthPickerVisibility,
         currentMonth = selectedDate.monthOfYear - 1,
         currentYear = selectedDate.year,
+        hideMonthSelection = hideMonthSelection,
         confirmButtonCLicked = { month, year ->
             monthPickerVisibility = !monthPickerVisibility
             onDateSelected.invoke(DateTime.now().withDate(year, month, 1))
@@ -60,8 +73,11 @@ fun AttendanceDateSelectionWidget(
 
 @AppPreview
 @Composable
-fun AttendanceDateSelectionWidgetPreview(){
+fun AttendanceDateSelectionWidgetPreview() {
     AppThemeComposable {
-        AttendanceDateSelectionWidget(DateTime.now()){}
+        DateSelectionWidget(
+            selectedDate = DateTime.now(),
+            hideMonthSelection = true
+        ) {}
     }
 }

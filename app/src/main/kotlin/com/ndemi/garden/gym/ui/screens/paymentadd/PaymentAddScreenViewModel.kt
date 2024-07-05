@@ -86,10 +86,10 @@ class PaymentAddScreenViewModel(
         val amount = _inputData.value?.amount ?: 0.0
 
         if (monthDuration < 1) {
-            sendAction(Action.ShowError(converter.getMessage(UiError.MONTH_DURATION), MONTH_DURATION)
+            sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_MONTH_DURATION), MONTH_DURATION)
             )
         } else if (amount < 1) {
-            sendAction(Action.ShowError(converter.getMessage(UiError.AMOUNT), AMOUNT))
+            sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_AMOUNT), AMOUNT))
         } else {
             sendAction(Action.SetReady)
         }

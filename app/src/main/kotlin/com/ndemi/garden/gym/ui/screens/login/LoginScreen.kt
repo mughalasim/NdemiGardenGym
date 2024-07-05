@@ -65,7 +65,7 @@ fun LoginScreen(
             )
 
             EditTextWidget(
-                hint = "Email",
+                hint = stringResource(R.string.txt_email),
                 textInput = viewModel.inputData.value?.email.orEmpty(),
                 isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL,
                 keyboardType = KeyboardType.Email

@@ -1,4 +1,4 @@
-package com.ndemi.garden.gym.ui.widgets
+package com.ndemi.garden.gym.ui.widgets.member
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,8 +28,10 @@ import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants
 import com.ndemi.garden.gym.ui.utils.toAmountString
-import com.ndemi.garden.gym.ui.utils.toDaysDuration
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
+import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.TextRegularBold
+import com.ndemi.garden.gym.ui.widgets.TextSmall
 import cv.domain.entities.MemberEntity
 import org.joda.time.DateTime
 
@@ -181,23 +183,6 @@ fun MemberInfoWidget(
                 )
             }
             if (memberEntity.hasPaidMembership()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = padding_screen_small),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    TextSmall(
-                        color = AppTheme.colors.highLight,
-                        text = stringResource(R.string.txt_payment_due_in)
-                    )
-                    TextRegular(
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.End,
-                        text = DateTime(memberEntity.renewalFutureDateMillis).toDaysDuration()
-                    )
-                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

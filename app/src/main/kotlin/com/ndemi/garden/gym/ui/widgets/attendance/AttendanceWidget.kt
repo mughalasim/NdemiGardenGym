@@ -1,4 +1,4 @@
-package com.ndemi.garden.gym.ui.widgets
+package com.ndemi.garden.gym.ui.widgets.attendance
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,8 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.mock.getMockActivePaymentEntity
-import com.ndemi.garden.gym.ui.mock.getMockExpiredPaymentEntity
+import com.ndemi.garden.gym.ui.mock.getMockAttendanceEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -32,21 +31,24 @@ import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
-import com.ndemi.garden.gym.ui.utils.toAmountString
-import com.ndemi.garden.gym.ui.utils.toPaymentPlanDuration
-import cv.domain.entities.PaymentEntity
+import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
+import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
+import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
+import com.ndemi.garden.gym.ui.widgets.ButtonWidget
+import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.TextSmall
+import cv.domain.entities.AttendanceEntity
 import org.joda.time.DateTime
 
 @Composable
-fun paymentWidget(
+fun AttendanceWidget(
     modifier: Modifier = Modifier,
-    paymentEntity: PaymentEntity,
-    canDeletePayment: Boolean = false,
-    onDeletePayment: (PaymentEntity)-> Unit = {},
-): Double {
-    val startDate = DateTime(paymentEntity.startDateMillis)
-    val endDate = DateTime(paymentEntity.endDateMillis)
+    attendanceEntity: AttendanceEntity,
+    canDeleteAttendance: Boolean = false,
+    onDeleteAttendance: (AttendanceEntity)-> Unit = {},
+) {
+    val startDate = DateTime(attendanceEntity.startDateMillis)
+    val endDate = DateTime(attendanceEntity.endDateMillis)
     var showDialog by remember { mutableStateOf(false) }
 
     Column(
@@ -73,11 +75,10 @@ fun paymentWidget(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextRegularBold(
-                text = endDate.toPaymentPlanDuration(),
-                color = AppTheme.colors.highLight
+            TextSmall(
+                text = startDate.toString(formatDateDay),
             )
-            if (canDeletePayment) {
+            if (canDeleteAttendance) {
                 Icon(
                     modifier = Modifier.clickable { showDialog = !showDialog },
                     imageVector = Icons.Default.Clear,
@@ -93,54 +94,47 @@ fun paymentWidget(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            TextRegular(
+                text = startDate.toString(formatTime)
+                        + " - "
+                        + endDate.toString(formatTime),
+            )
 
-            Column {
-                TextSmall(text = "Start Date")
-                TextRegular(text = startDate.toString(formatDayMonthYear))
-            }
-            Column {
-                TextSmall(text = "End Date")
-                TextRegular(text = endDate.toString(formatDayMonthYear))
-            }
-            Column {
-                TextSmall(text = "Total")
-                TextRegular(text = paymentEntity.amount.toAmountString())
-            }
-        }
+            TextRegular(
+                text = endDate.toActiveStatusDuration(startDate),
+            )
 
-        if (showDialog){
-            AlertDialog(
-                containerColor = AppTheme.colors.backgroundButtonDisabled,
-                title = { TextSmall(text = stringResource(R.string.txt_are_you_sure)) },
-                text = {
-                    TextRegular(
-                        text = stringResource(R.string.txt_are_you_sure_delete_payment)
-                    )
-                },
-                onDismissRequest = { showDialog = !showDialog },
-                confirmButton = {
-                    ButtonWidget(title = stringResource(R.string.txt_delete)) {
-                        showDialog = !showDialog
-                        onDeletePayment.invoke(paymentEntity)
+            if (showDialog){
+                AlertDialog(
+                    containerColor = AppTheme.colors.backgroundButtonDisabled,
+                    title = { TextSmall(text = stringResource(R.string.txt_are_you_sure)) },
+                    text = {
+                        TextRegular(
+                            text = stringResource(R.string.txt_are_you_sure_delete_attendance)
+                        )
+                    },
+                    onDismissRequest = { showDialog = !showDialog },
+                    confirmButton = {
+                        ButtonWidget(title = stringResource(R.string.txt_delete)) {
+                            showDialog = !showDialog
+                            onDeleteAttendance.invoke(attendanceEntity)
+                        }
+                    },
+                    dismissButton = {
+                        ButtonWidget(title = stringResource(R.string.txt_cancel)) {
+                            showDialog = !showDialog
+                        }
                     }
-                },
-                dismissButton = {
-                    ButtonWidget(title = stringResource(R.string.txt_cancel)) {
-                        showDialog = !showDialog
-                    }
-                })
+                )
+            }
         }
     }
-    return paymentEntity.amount
 }
 
 @AppPreview
 @Composable
-fun PaymentWidgetPreview() {
+fun AttendanceWidgetPreview() {
     AppThemeComposable {
-        Column {
-            paymentWidget(paymentEntity = getMockActivePaymentEntity())
-            paymentWidget(paymentEntity = getMockExpiredPaymentEntity(), canDeletePayment = true)
-        }
+        AttendanceWidget(attendanceEntity = getMockAttendanceEntity())
     }
 }

@@ -1,4 +1,4 @@
-package com.ndemi.garden.gym.ui.widgets
+package com.ndemi.garden.gym.ui.widgets.member
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,8 +36,11 @@ import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import com.ndemi.garden.gym.ui.utils.toAmountString
-import com.ndemi.garden.gym.ui.utils.toDaysDuration
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
+import com.ndemi.garden.gym.ui.widgets.ButtonOutlineWidget
+import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.TextRegularBold
+import com.ndemi.garden.gym.ui.widgets.TextSmall
 import cv.domain.entities.MemberEntity
 import org.joda.time.DateTime
 
@@ -94,6 +97,12 @@ fun MemberStatusWidget(
                         startDate = DateTime(memberEntity.activeNowDateMillis)
                     )
                 )
+                if (showDetails) {
+                    TextSmall(
+                        color = AppTheme.colors.backgroundError,
+                        text = memberEntity.getResidentialStatus()
+                    )
+                }
             }
 
             if (showDetails) {
@@ -140,23 +149,6 @@ fun MemberStatusWidget(
             ) {
                 TextSmall(
                     color = AppTheme.colors.highLight,
-                    text = stringResource(R.string.txt_residence)
-                )
-                TextRegular(
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.End,
-                    text = memberEntity.getResidentialStatus()
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .padding(top = padding_screen_tiny)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
                     text = stringResource(R.string.txt_membership_due_date)
                 )
                 TextRegular(
@@ -176,24 +168,7 @@ fun MemberStatusWidget(
                 ) {
                     TextSmall(
                         color = AppTheme.colors.highLight,
-                        text = stringResource(R.string.txt_payment_due_in)
-                    )
-                    TextRegular(
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.End,
-                        text = DateTime(memberEntity.renewalFutureDateMillis).toDaysDuration()
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .padding(top = padding_screen_tiny)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    TextSmall(
-                        color = AppTheme.colors.highLight,
-                        text = "Amount due"
+                        text = stringResource(R.string.txt_amount_due)
                     )
                     TextRegularBold(
                         modifier = Modifier.fillMaxWidth(),
@@ -218,11 +193,11 @@ fun MemberStatusWidget(
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                ButtonOutlineWidget(text = "Payments"){
+            ) {
+                ButtonOutlineWidget(text = stringResource(R.string.txt_payments)) {
                     onPaymentsTapped.invoke(memberEntity)
                 }
-                ButtonOutlineWidget(text = "Attendance"){
+                ButtonOutlineWidget(text = stringResource(R.string.txt_attendance)) {
                     onAttendanceTapped.invoke(memberEntity)
                 }
             }

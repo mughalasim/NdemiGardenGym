@@ -157,14 +157,14 @@ class MemberUseCase(
     }
 
     suspend fun getAllPaymentPlans(year: Int) =
-        memberRepository.getPaymentPlans(
+        memberRepository.getPayments(
             isMembersPayment = false,
             memberId = "",
             year = year
         )
 
     suspend fun getPaymentPlanForMember(memberId: String, year: Int) =
-        memberRepository.getPaymentPlans(
+        memberRepository.getPayments(
             isMembersPayment = true,
             memberId = memberId,
             year = year

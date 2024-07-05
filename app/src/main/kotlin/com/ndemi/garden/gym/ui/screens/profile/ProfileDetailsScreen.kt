@@ -12,8 +12,8 @@ import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
-import com.ndemi.garden.gym.ui.widgets.MemberInfoWidget
-import com.ndemi.garden.gym.ui.widgets.MemberSessionWidget
+import com.ndemi.garden.gym.ui.widgets.member.MemberInfoWidget
+import com.ndemi.garden.gym.ui.widgets.member.MemberSessionWidget
 import cv.domain.entities.MemberEntity
 import org.joda.time.DateTime
 

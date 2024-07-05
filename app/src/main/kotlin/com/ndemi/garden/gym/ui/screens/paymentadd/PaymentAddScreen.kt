@@ -11,6 +11,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
@@ -37,7 +39,7 @@ fun PaymentAddScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        ToolBarWidget(title = "Add Payment",
+        ToolBarWidget(title = stringResource(R.string.txt_add_payment),
             canNavigateBack = true,
             onBackPressed = viewModel::navigateBack
         )

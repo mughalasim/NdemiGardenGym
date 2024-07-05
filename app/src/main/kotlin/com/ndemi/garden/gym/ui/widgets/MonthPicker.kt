@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,6 +46,7 @@ fun MonthPicker(
     visible: Boolean,
     currentMonth: Int,
     currentYear: Int,
+    hideMonthSelection: Boolean = false,
     confirmButtonCLicked: (Int, Int) -> Unit,
     cancelClicked: () -> Unit,
 ) {
@@ -67,9 +69,9 @@ fun MonthPicker(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row (
+                Row(
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Icon(
                         modifier = Modifier
                             .size(icon_image_size_large)
@@ -106,48 +108,52 @@ fun MonthPicker(
                     )
                 }
 
-                FlowRow(
-                    modifier = Modifier.padding(vertical = padding_screen)
-                ) {
-                    months.forEach {
-                        Box(
-                            modifier = Modifier
-                                .size(60.dp)
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = interactionSource,
-                                    onClick = { month = it }
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-
-                            val animatedSize by animateDpAsState(
-                                targetValue = if (month == it) 60.dp else 0.dp,
-                                animationSpec = tween(
-                                    durationMillis = 300,
-                                    easing = LinearOutSlowInEasing
-                                ), label = ""
-                            )
-
+                if (!hideMonthSelection) {
+                    FlowRow(
+                        modifier = Modifier.padding(vertical = padding_screen)
+                    ) {
+                        months.forEach {
                             Box(
                                 modifier = Modifier
-                                    .size(animatedSize)
-                                    .background(
-                                        color = if (month == it) {
-                                            AppTheme.colors.backgroundScreen
-                                        } else {
-                                            Color.Transparent
-                                        },
-                                        shape = RoundedCornerShape(border_radius)
-                                    )
-                            )
+                                    .size(60.dp)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = interactionSource,
+                                        onClick = { month = it }
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
 
-                            TextSmall(
-                                text = it,
-                                color = AppTheme.colors.textPrimary
-                            )
+                                val animatedSize by animateDpAsState(
+                                    targetValue = if (month == it) 60.dp else 0.dp,
+                                    animationSpec = tween(
+                                        durationMillis = 300,
+                                        easing = LinearOutSlowInEasing
+                                    ), label = ""
+                                )
+
+                                Box(
+                                    modifier = Modifier
+                                        .size(animatedSize)
+                                        .background(
+                                            color = if (month == it) {
+                                                AppTheme.colors.backgroundScreen
+                                            } else {
+                                                Color.Transparent
+                                            },
+                                            shape = RoundedCornerShape(border_radius)
+                                        )
+                                )
+
+                                TextSmall(
+                                    text = it,
+                                    color = AppTheme.colors.textPrimary
+                                )
+                            }
                         }
                     }
+                } else {
+                    Spacer(modifier = Modifier.padding(padding_screen))
                 }
 
                 Row {
@@ -180,6 +186,7 @@ fun MonthPickerPreview() {
             visible = true,
             currentMonth = 9,
             currentYear = 2024,
+            hideMonthSelection = true,
             confirmButtonCLicked = { _, _ -> },
             cancelClicked = {}
         )

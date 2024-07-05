@@ -24,8 +24,8 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.widgets.AttendanceDateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
+import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
@@ -47,8 +47,13 @@ fun PaymentsScreen(
     LaunchedEffect(true) { viewModel.getPaymentsForMember(memberId, selectedDate) }
 
     Column {
-        ToolBarWidget(title = "Payments by $memberName",
-            secondaryIcon = Icons.Default.AddCircle,
+        ToolBarWidget(
+            title = if (memberName.isEmpty()) {
+                stringResource(R.string.txt_payments)
+            } else {
+                stringResource(R.string.txt_payments_by, memberName)
+            },
+            secondaryIcon = if (memberId.isEmpty()) null else Icons.Default.AddCircle,
             onSecondaryIconPressed = {
                 if (canAddPayment.value == true){
                     viewModel.navigateToPaymentAddScreen()
@@ -56,13 +61,13 @@ fun PaymentsScreen(
                   showDialog = true
                 }
             },
-            canNavigateBack = true,
+            canNavigateBack = memberId.isNotEmpty(),
             onBackPressed = viewModel::navigateBack
         )
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
-        AttendanceDateSelectionWidget(selectedDate){
+        DateSelectionWidget(selectedDate, true){
             selectedDate = it
             viewModel.getPaymentsForMember(memberId, selectedDate)
         }
@@ -75,15 +80,17 @@ fun PaymentsScreen(
             Column(modifier = Modifier.verticalScroll(rememberScrollState())
             ) {
                 if (uiState.value is UiState.Success) {
-                    if ((uiState.value as UiState.Success).payments.isEmpty()) {
+                    val result = (uiState.value as UiState.Success)
+                    if (result.payments.isEmpty()) {
                         TextRegular(
                             modifier = Modifier.padding(padding_screen),
                             text = stringResource(R.string.txt_no_payments)
                         )
                     } else {
                         PaymentsListScreen(
-                            payments = (uiState.value as UiState.Success).payments,
-                            canDeletePayment = true
+                            payments = result.payments,
+                            totalAmount = result.totalAmount,
+                            canDeletePayment = memberId.isNotEmpty()
                         ){
                             viewModel.deletePayment(it)
                         }
@@ -98,12 +105,12 @@ fun PaymentsScreen(
             containerColor = AppTheme.colors.backgroundButtonDisabled,
             text = {
                 TextRegular(
-                    text = "You cannot add a new payment plan when there is one which is still active"
+                    text = stringResource(R.string.txt_cannot_add_payment)
                 )
             },
             onDismissRequest = { showDialog = !showDialog },
             confirmButton = {
-                ButtonWidget(title = "OK") {
+                ButtonWidget(title = stringResource(id = R.string.txt_ok)) {
                     showDialog = !showDialog
                 }
             },

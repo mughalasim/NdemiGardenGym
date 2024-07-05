@@ -20,7 +20,7 @@ interface MemberRepository {
         memberId: String,
         year: Int,
         month: Int,
-    ): DomainResult<List<AttendanceEntity>>
+    ): DomainResult<Pair<List<AttendanceEntity>, Int>>
 
     suspend fun addAttendance(
         memberId: String,
@@ -36,9 +36,9 @@ interface MemberRepository {
 
     suspend fun addPaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit>
 
-    suspend fun getPaymentPlans(
+    suspend fun getPayments(
         isMembersPayment: Boolean,
         memberId: String,
         year: Int,
-    ): DomainResult<Pair<List<PaymentEntity>, Boolean>>
+    ): DomainResult<Triple<List<PaymentEntity>, Boolean, Double>>
 }

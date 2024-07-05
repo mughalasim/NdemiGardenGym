@@ -47,9 +47,8 @@ class PaymentsScreenViewModel(
 
                     is DomainResult.Success -> {
                         _canAddPayment.value = result.data.second
-                        sendAction(Action.Success(result.data.first))
+                        sendAction(Action.Success(result.data.first, result.data.third))
                     }
-
                 }
             }
         }
@@ -88,7 +87,7 @@ class PaymentsScreenViewModel(
 
         data class Error(val message: String) : UiState
 
-        data class Success(val payments: List<PaymentEntity>) : UiState
+        data class Success(val payments: List<PaymentEntity>, val totalAmount: Double) : UiState
 
     }
 
@@ -105,8 +104,8 @@ class PaymentsScreenViewModel(
                 UiState.Error(errorCodeConverter.getMessage(domainError))
         }
 
-        data class Success(val payments: List<PaymentEntity>) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Success(payments)
+        data class Success(val payments: List<PaymentEntity>, val totalAmount: Double) : Action {
+            override fun reduce(state: UiState): UiState = UiState.Success(payments, totalAmount)
         }
     }
 }

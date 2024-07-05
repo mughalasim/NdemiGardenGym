@@ -47,12 +47,12 @@ fun PaymentAddDetailsScreen(
 
     TextRegular(
         modifier = Modifier.padding(top = padding_screen),
-        text = "Capture a members payment plan"
+        text = stringResource(R.string.txt_payments_add_desc)
     )
 
     TextSmall(
         modifier = Modifier.padding(top = padding_screen),
-        text = "Select the date a payment was made"
+        text = stringResource(R.string.txt_payments_add_select_date)
     )
 
     ButtonWidget(
@@ -64,11 +64,11 @@ fun PaymentAddDetailsScreen(
 
     TextSmall(
         modifier = Modifier.padding(top = padding_screen),
-        text = "How many months is the subscription for?"
+        text = stringResource(R.string.txt_payments_add_select_duration)
     )
 
     EditTextWidget(
-        hint = "Month duration",
+        hint = stringResource(R.string.txt_payments_add_month_duration),
         isError = (uiState.value as? UiState.Error)?.inputType == InputType.MONTH_DURATION,
         keyboardType = KeyboardType.Number
     ) {
@@ -77,11 +77,11 @@ fun PaymentAddDetailsScreen(
 
     TextSmall(
         modifier = Modifier.padding(top = padding_screen),
-        text = "Enter the amount paid"
+        text = stringResource(R.string.txt_payments_add_amount_paid)
     )
 
     EditTextWidget(
-        hint = "Amount",
+        hint = stringResource(R.string.txt_amount),
         isError = (uiState.value as? UiState.Error)?.inputType == InputType.AMOUNT,
         keyboardType = KeyboardType.Number
     ) {

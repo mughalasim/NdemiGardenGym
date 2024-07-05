@@ -145,7 +145,7 @@ class MemberRepositoryImp(
         memberId: String,
         year: Int,
         month: Int
-    ): DomainResult<List<AttendanceEntity>> {
+    ): DomainResult<Pair<List<AttendanceEntity>, Int>> {
         val setMemberId = memberId.ifEmpty {
             Firebase.auth.currentUser?.uid ?: run {
                 logger.log("Not Authorised", AppLogLevel.ERROR)
@@ -157,31 +157,28 @@ class MemberRepositoryImp(
             .document(year.toString())
             .collection(month.toString())
 
-        val completable: CompletableDeferred<DomainResult<List<AttendanceEntity>>> =
+        val completable: CompletableDeferred<DomainResult<Pair<List<AttendanceEntity>, Int>>> =
             CompletableDeferred()
         reference.get()
             .addOnSuccessListener { document ->
                 logger.log("Data received: $document")
                 val response = document.toObjects<AttendanceModel>()
-                if (isMembersAttendances) {
-                    completable.complete(DomainResult.Success(
-                        response.filter {
-                            it.memberId == setMemberId
-                        }.map {
-                            it.toAttendanceEntity()
-                        }.sortedByDescending {
-                            it.startDateMillis
-                        })
-                    )
-                } else {
-                    completable.complete(DomainResult.Success(
-                        response.map {
-                            it.toAttendanceEntity()
-                        }.sortedByDescending {
-                            it.startDateMillis
-                        })
-                    )
+                val list = response
+                    .map { it.toAttendanceEntity() }
+                    .sortedByDescending { it.startDateMillis }
+                    .filter { it.memberId == setMemberId && isMembersAttendances }
+
+                var totalMinutes = 0
+                list.forEach {
+                    totalMinutes +=
+                        Minutes.minutesBetween(
+                            DateTime(it.startDateMillis),
+                            DateTime(it.endDateMillis)
+                        ).minutes
                 }
+                completable.complete(
+                    DomainResult.Success(Pair(list, totalMinutes))
+                )
 
             }.addOnFailureListener {
                 logger.log("Exception: $it", AppLogLevel.ERROR)
@@ -310,24 +307,27 @@ class MemberRepositoryImp(
         return completable.await()
     }
 
-    override suspend fun getPaymentPlans(
+    override suspend fun getPayments(
         isMembersPayment: Boolean,
         memberId: String,
         year: Int,
-    ): DomainResult<Pair<List<PaymentEntity>, Boolean>> {
+    ): DomainResult<Triple<List<PaymentEntity>, Boolean, Double>> {
         val setMemberId = memberId.ifEmpty {
             Firebase.auth.currentUser?.uid ?: run {
                 logger.log("Not Authorised", AppLogLevel.ERROR)
                 return DomainResult.Error(DomainError.UNAUTHORISED)
             }
         }
+
         val reference = database
             .collection(pathPayment)
             .document(pathPaymentPlan)
             .collection(year.toString())
 
-        val completable: CompletableDeferred<DomainResult<Pair<List<PaymentEntity>, Boolean>>> =
+        val completable:
+                CompletableDeferred<DomainResult<Triple<List<PaymentEntity>, Boolean, Double>>> =
             CompletableDeferred()
+
         reference.get()
             .addOnSuccessListener { document ->
                 logger.log("Data received: $document")
@@ -337,14 +337,15 @@ class MemberRepositoryImp(
                     .sortedByDescending { it.startDateMillis }
                     .filter { it.memberId == setMemberId && isMembersPayment }
 
-                var canAddPayment = true
+                var canAddPayment = memberId.isNotEmpty() && DateTime.now().year == year
+                var totalAmount = 0.0
                 list.forEach {
+                    totalAmount += it.amount
                     if (DateTime(it.endDateMillis).isAfterNow){
                         canAddPayment = false
-                        return@forEach
                     }
                 }
-                completable.complete(DomainResult.Success(Pair(list, canAddPayment)))
+                completable.complete(DomainResult.Success(Triple(list, canAddPayment, totalAmount)))
 
             }.addOnFailureListener {
                 logger.log("Exception: $it", AppLogLevel.ERROR)

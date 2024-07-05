@@ -21,9 +21,9 @@ data class MemberEntity(
 
     fun getResidentialStatus(): String =
         if (apartmentNumber.isNullOrEmpty()) {
-            "Guest member"
+            "Guest"
         } else {
-            "Apartment number: $apartmentNumber"
+            "Apartment $apartmentNumber"
         }
 
     fun getCoachStatus(): String = if (hasCoach) "Yes" else "No"

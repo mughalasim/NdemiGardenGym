@@ -1,4 +1,4 @@
-package com.ndemi.garden.gym.ui.widgets
+package com.ndemi.garden.gym.ui.widgets.member
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -24,8 +24,8 @@ import com.ndemi.garden.gym.ui.theme.line_thickness
 fun AsyncImageWidget(
     profileImageUrl: String,
     isLarge: Boolean = false,
-){
-    val dimen = if(isLarge) icon_image_size_profile else icon_image_size_profile_small
+) {
+    val dimen = if (isLarge) icon_image_size_profile else icon_image_size_profile_small
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(profileImageUrl)

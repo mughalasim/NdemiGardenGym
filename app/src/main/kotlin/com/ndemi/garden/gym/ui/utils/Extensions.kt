@@ -5,12 +5,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.os.ConfigurationCompat
+import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.utils.DateConstants.DAYS_IN_MONTH
 import com.ndemi.garden.gym.ui.utils.DateConstants.HOUR_IN_DAY
 import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
 import com.ndemi.garden.gym.ui.utils.DateConstants.SECONDS_IN_HOUR
-import com.ndemi.garden.gym.ui.utils.DateConstants.appLocale
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import org.joda.time.DateTime
 import org.joda.time.Days
@@ -21,12 +21,12 @@ import org.joda.time.Seconds
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import java.text.DecimalFormat
-import java.util.Currency
 
 @Composable
 fun Long?.toMembershipStatusString(): String {
     return this?.let {
-        DateTime(it).toString(formatDayMonthYear)
+        val date = DateTime(it)
+        date.toString(formatDayMonthYear) + " (${date.toDaysDuration()})"
     } ?: run { stringResource(R.string.txt_expired) }
 }
 
@@ -105,11 +105,14 @@ fun DateTime.toPaymentPlanDuration(): String {
         this.toInstant()
     ).hours
 
-    val monthsString = String.format(pluralStringResource(R.plurals.plural_months, months), months)
-    val daysLeftString = String.format(pluralStringResource(R.plurals.plural_days, daysLeft), daysLeft)
-    val daysTotalString = String.format(pluralStringResource(R.plurals.plural_days, totalDays), totalDays)
+    val monthsString =
+        String.format(pluralStringResource(R.plurals.plural_months, months), months)
+    val daysLeftString =
+        String.format(pluralStringResource(R.plurals.plural_days, daysLeft), daysLeft)
+    val daysTotalString =
+        String.format(pluralStringResource(R.plurals.plural_days, totalDays), totalDays)
 
-    return if(daysLeft == 0 && totalDays > 0){
+    return if (daysLeft == 0 && totalDays > 0) {
         daysTotalString
     } else if (months > 0 || hours <= HOUR_IN_DAY * 2 || daysLeft > 0) {
         (if (months > 0) monthsString else "") + (if (daysLeft > 0) " $daysLeftString" else "")
@@ -119,10 +122,10 @@ fun DateTime.toPaymentPlanDuration(): String {
 }
 
 fun Double.toAmountString(): String =
-    DecimalFormat("${Currency.getInstance(appLocale).currencyCode} #,###").format(this)
+    DecimalFormat("${BuildConfig.CURRENCY_CODE} #,###").format(this)
 
 object DateConstants {
-    val appLocale =
+    private val appLocale =
         ConfigurationCompat.getLocales(Resources.getSystem().configuration).get(0)
 
     val formatDayMonthYear: DateTimeFormatter =
@@ -137,6 +140,9 @@ object DateConstants {
 
     val formatMonthYear: DateTimeFormatter =
         DateTimeFormat.forPattern("MMMM yyyy").withLocale(appLocale)
+
+    val formatYear: DateTimeFormatter =
+        DateTimeFormat.forPattern("yyyy").withLocale(appLocale)
 
     const val DAYS_IN_MONTH = 30
     const val HOUR_IN_DAY = 12

@@ -13,37 +13,39 @@ import com.ndemi.garden.gym.ui.mock.getMockActivePaymentEntity
 import com.ndemi.garden.gym.ui.mock.getMockExpiredPaymentEntity
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.widgets.TextRegular
-import com.ndemi.garden.gym.ui.widgets.paymentWidget
+import com.ndemi.garden.gym.ui.widgets.payments.PaymentWidget
 import cv.domain.entities.PaymentEntity
 
 @Composable
 fun PaymentsListScreen(
     payments: List<PaymentEntity>,
+    totalAmount: Double,
     canDeletePayment: Boolean,
     onDeletePayment: (PaymentEntity) -> Unit = {},
 ) {
     Column {
-        var totalAmount  = 0.0
-        repeat(payments.size) {
-            totalAmount += paymentWidget(
-                paymentEntity = payments[it],
-                canDeletePayment = canDeletePayment,
-                onDeletePayment = onDeletePayment
-            )
-        }
         Row {
             TextRegular(
                 modifier = Modifier
-                    .padding(padding_screen)
+                    .padding(horizontal = padding_screen)
+                    .padding(top = padding_screen_small)
                     .fillMaxWidth(),
                 text = stringResource(
                     R.string.txt_total_amount,
                     totalAmount.toAmountString()
                 ),
                 textAlign = TextAlign.End
+            )
+        }
+        repeat(payments.size) {
+            PaymentWidget(
+                paymentEntity = payments[it],
+                canDeletePayment = canDeletePayment,
+                onDeletePayment = onDeletePayment
             )
         }
     }
@@ -59,6 +61,7 @@ fun PaymentPlanListScreenPreview() {
                 getMockActivePaymentEntity(),
                 getMockExpiredPaymentEntity()
             ),
+            totalAmount = 1200.0,
             canDeletePayment = false
         )
     }
