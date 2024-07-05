@@ -1,4 +1,4 @@
-package com.ndemi.garden.gym.ui.widgets
+package com.ndemi.garden.gym.ui.widgets.payments
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,7 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.mock.getMockAttendanceEntity
+import com.ndemi.garden.gym.ui.mock.getMockActivePaymentEntity
+import com.ndemi.garden.gym.ui.mock.getMockExpiredPaymentEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -31,22 +32,25 @@ import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
-import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
-import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
-import cv.domain.entities.AttendanceEntity
+import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
+import com.ndemi.garden.gym.ui.utils.toAmountString
+import com.ndemi.garden.gym.ui.utils.toPaymentPlanDuration
+import com.ndemi.garden.gym.ui.widgets.ButtonWidget
+import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.TextRegularBold
+import com.ndemi.garden.gym.ui.widgets.TextSmall
+import cv.domain.entities.PaymentEntity
 import org.joda.time.DateTime
-import org.joda.time.Minutes
 
 @Composable
-fun attendanceWidget(
+fun PaymentWidget(
     modifier: Modifier = Modifier,
-    attendanceEntity: AttendanceEntity,
-    canDeleteAttendance: Boolean = false,
-    onDeleteAttendance: (AttendanceEntity)-> Unit = {},
-): Int {
-    val startDate = DateTime(attendanceEntity.startDateMillis)
-    val endDate = DateTime(attendanceEntity.endDateMillis)
+    paymentEntity: PaymentEntity,
+    canDeletePayment: Boolean = false,
+    onDeletePayment: (PaymentEntity)-> Unit = {},
+) {
+    val startDate = DateTime(paymentEntity.startDateMillis)
+    val endDate = DateTime(paymentEntity.endDateMillis)
     var showDialog by remember { mutableStateOf(false) }
 
     Column(
@@ -73,10 +77,11 @@ fun attendanceWidget(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextSmall(
-                text = startDate.toString(formatDateDay),
+            TextRegularBold(
+                text = endDate.toPaymentPlanDuration(),
+                color = AppTheme.colors.highLight
             )
-            if (canDeleteAttendance) {
+            if (canDeletePayment) {
                 Icon(
                     modifier = Modifier.clickable { showDialog = !showDialog },
                     imageVector = Icons.Default.Clear,
@@ -92,50 +97,53 @@ fun attendanceWidget(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextRegular(
-                text = startDate.toString(formatTime)
-                        + " - "
-                        + endDate.toString(formatTime),
-            )
 
-            TextRegular(
-                text = endDate.toActiveStatusDuration(startDate),
-            )
-
-            if (showDialog){
-                AlertDialog(
-                    containerColor = AppTheme.colors.backgroundButtonDisabled,
-                    title = { TextSmall(text = stringResource(R.string.txt_are_you_sure)) },
-                    text = {
-                        TextRegular(
-                            text = stringResource(R.string.txt_are_you_sure_delete_attendance)
-                        )
-                    },
-                    onDismissRequest = { showDialog = !showDialog },
-                    confirmButton = {
-                        ButtonWidget(title = stringResource(R.string.txt_delete)) {
-                            showDialog = !showDialog
-                            onDeleteAttendance.invoke(attendanceEntity)
-                        }
-                    },
-                    dismissButton = {
-                        ButtonWidget(title = stringResource(R.string.txt_cancel)) {
-                            showDialog = !showDialog
-                        }
-                    })
+            Column {
+                TextSmall(text = "Start Date")
+                TextRegular(text = startDate.toString(formatDayMonthYear))
+            }
+            Column {
+                TextSmall(text = "End Date")
+                TextRegular(text = endDate.toString(formatDayMonthYear))
+            }
+            Column {
+                TextSmall(text = "Total")
+                TextRegular(text = paymentEntity.amount.toAmountString())
             }
         }
+
+        if (showDialog){
+            AlertDialog(
+                containerColor = AppTheme.colors.backgroundButtonDisabled,
+                title = { TextSmall(text = stringResource(R.string.txt_are_you_sure)) },
+                text = {
+                    TextRegular(
+                        text = stringResource(R.string.txt_are_you_sure_delete_payment)
+                    )
+                },
+                onDismissRequest = { showDialog = !showDialog },
+                confirmButton = {
+                    ButtonWidget(title = stringResource(R.string.txt_delete)) {
+                        showDialog = !showDialog
+                        onDeletePayment.invoke(paymentEntity)
+                    }
+                },
+                dismissButton = {
+                    ButtonWidget(title = stringResource(R.string.txt_cancel)) {
+                        showDialog = !showDialog
+                    }
+                })
+        }
     }
-    return Minutes.minutesBetween(
-        startDate.toInstant(),
-        endDate.toInstant()
-    ).minutes
 }
 
 @AppPreview
 @Composable
-fun AttendanceWidgetPreview() {
+fun PaymentWidgetPreview() {
     AppThemeComposable {
-        attendanceWidget(attendanceEntity = getMockAttendanceEntity())
+        Column {
+            PaymentWidget(paymentEntity = getMockActivePaymentEntity())
+            PaymentWidget(paymentEntity = getMockExpiredPaymentEntity(), canDeletePayment = true)
+        }
     }
 }

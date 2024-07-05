@@ -21,9 +21,9 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
-import com.ndemi.garden.gym.ui.widgets.MemberProfileWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
+import com.ndemi.garden.gym.ui.widgets.member.MemberProfileWidget
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

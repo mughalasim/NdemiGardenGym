@@ -35,7 +35,7 @@ class AttendanceScreenViewModel(
                         sendAction(Action.ShowDomainError(result.error, errorCodeConverter))
 
                     is DomainResult.Success ->
-                        sendAction(Action.Success(result.data))
+                        sendAction(Action.Success(result.data.first, result.data.second))
                 }
             }
         }
@@ -66,7 +66,7 @@ class AttendanceScreenViewModel(
 
         data class Error(val message: String) : UiState
 
-        data class Success(val attendances: List<AttendanceEntity>) : UiState
+        data class Success(val attendances: List<AttendanceEntity>, val totalMinutes: Int) : UiState
 
     }
 
@@ -83,8 +83,8 @@ class AttendanceScreenViewModel(
                 UiState.Error(errorCodeConverter.getMessage(domainError))
         }
 
-        data class Success(val attendances: List<AttendanceEntity>) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Success(attendances)
+        data class Success(val attendances: List<AttendanceEntity>, val totalMinutes: Int) : Action {
+            override fun reduce(state: UiState): UiState = UiState.Success(attendances, totalMinutes)
         }
     }
 }

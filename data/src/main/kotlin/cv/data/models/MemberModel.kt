@@ -15,5 +15,6 @@ data class MemberModel(
     val activeNowDate: Timestamp? = null,
     val apartmentNumber: String? = null,
     val profileImageUrl: String? = null,
-    val hasCoach: Boolean = false
+    val hasCoach: Boolean = false,
+    val amountDue: Double = 0.0,
 )

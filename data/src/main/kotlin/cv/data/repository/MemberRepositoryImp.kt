@@ -10,13 +10,17 @@ import cv.data.mappers.toAttendanceEntity
 import cv.data.mappers.toAttendanceModel
 import cv.data.mappers.toMemberEntity
 import cv.data.mappers.toMemberModel
+import cv.data.mappers.toPaymentEntity
+import cv.data.mappers.toPaymentModel
 import cv.data.models.AttendanceModel
 import cv.data.models.MemberModel
+import cv.data.models.PaymentModel
 import cv.data.retrofit.toDomainError
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.MemberEntity
+import cv.domain.entities.PaymentEntity
 import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.MemberRepository
@@ -29,6 +33,8 @@ import java.util.Date
 class MemberRepositoryImp(
     private val pathUser: String,
     private val pathAttendance: String,
+    private val pathPayment: String,
+    private val pathPaymentPlan: String,
     private val logger: AppLoggerRepository,
 ) : MemberRepository {
     private val database = Firebase.firestore
@@ -139,7 +145,7 @@ class MemberRepositoryImp(
         memberId: String,
         year: Int,
         month: Int
-    ): DomainResult<List<AttendanceEntity>> {
+    ): DomainResult<Pair<List<AttendanceEntity>, Int>> {
         val setMemberId = memberId.ifEmpty {
             Firebase.auth.currentUser?.uid ?: run {
                 logger.log("Not Authorised", AppLogLevel.ERROR)
@@ -151,31 +157,28 @@ class MemberRepositoryImp(
             .document(year.toString())
             .collection(month.toString())
 
-        val completable: CompletableDeferred<DomainResult<List<AttendanceEntity>>> =
+        val completable: CompletableDeferred<DomainResult<Pair<List<AttendanceEntity>, Int>>> =
             CompletableDeferred()
         reference.get()
             .addOnSuccessListener { document ->
                 logger.log("Data received: $document")
                 val response = document.toObjects<AttendanceModel>()
-                if (isMembersAttendances) {
-                    completable.complete(DomainResult.Success(
-                        response.filter {
-                            it.memberId == setMemberId
-                        }.map {
-                            it.toAttendanceEntity()
-                        }.sortedByDescending {
-                            it.startDateMillis
-                        })
-                    )
-                } else {
-                    completable.complete(DomainResult.Success(
-                        response.map {
-                            it.toAttendanceEntity()
-                        }.sortedByDescending {
-                            it.startDateMillis
-                        })
-                    )
+                val list = response
+                    .map { it.toAttendanceEntity() }
+                    .sortedByDescending { it.startDateMillis }
+                    .filter { it.memberId == setMemberId && isMembersAttendances }
+
+                var totalMinutes = 0
+                list.forEach {
+                    totalMinutes +=
+                        Minutes.minutesBetween(
+                            DateTime(it.startDateMillis),
+                            DateTime(it.endDateMillis)
+                        ).minutes
                 }
+                completable.complete(
+                    DomainResult.Success(Pair(list, totalMinutes))
+                )
 
             }.addOnFailureListener {
                 logger.log("Exception: $it", AppLogLevel.ERROR)
@@ -271,6 +274,100 @@ class MemberRepositoryImp(
         collection.delete()
             .addOnSuccessListener {
                 logger.log("Member Deleted")
+                completable.complete(DomainResult.Success(Unit))
+
+            }.addOnFailureListener {
+                logger.log("Exception: $it", AppLogLevel.ERROR)
+                completable.complete(DomainResult.Error(it.toDomainError()))
+            }
+
+        return completable.await()
+    }
+
+    override suspend fun addPaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit> {
+        val paymentModel = paymentEntity.toPaymentModel()
+
+        val collection = database
+            .collection(pathPayment)
+            .document(pathPaymentPlan)
+            .collection(DateTime(paymentEntity.startDateMillis).year.toString())
+            .document(paymentModel.paymentId)
+
+        val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
+        collection.set(paymentModel)
+            .addOnSuccessListener {
+                logger.log("Payment Plan Added")
+                completable.complete(DomainResult.Success(Unit))
+
+            }.addOnFailureListener {
+                logger.log("Exception: $it", AppLogLevel.ERROR)
+                completable.complete(DomainResult.Error(it.toDomainError()))
+            }
+
+        return completable.await()
+    }
+
+    override suspend fun getPayments(
+        isMembersPayment: Boolean,
+        memberId: String,
+        year: Int,
+    ): DomainResult<Triple<List<PaymentEntity>, Boolean, Double>> {
+        val setMemberId = memberId.ifEmpty {
+            Firebase.auth.currentUser?.uid ?: run {
+                logger.log("Not Authorised", AppLogLevel.ERROR)
+                return DomainResult.Error(DomainError.UNAUTHORISED)
+            }
+        }
+
+        val reference = database
+            .collection(pathPayment)
+            .document(pathPaymentPlan)
+            .collection(year.toString())
+
+        val completable:
+                CompletableDeferred<DomainResult<Triple<List<PaymentEntity>, Boolean, Double>>> =
+            CompletableDeferred()
+
+        reference.get()
+            .addOnSuccessListener { document ->
+                logger.log("Data received: $document")
+                val response = document.toObjects<PaymentModel>()
+                val list = response
+                    .map { it.toPaymentEntity() }
+                    .sortedByDescending { it.startDateMillis }
+                    .filter { it.memberId == setMemberId && isMembersPayment }
+
+                var canAddPayment = memberId.isNotEmpty() && DateTime.now().year == year
+                var totalAmount = 0.0
+                list.forEach {
+                    totalAmount += it.amount
+                    if (DateTime(it.endDateMillis).isAfterNow){
+                        canAddPayment = false
+                    }
+                }
+                completable.complete(DomainResult.Success(Triple(list, canAddPayment, totalAmount)))
+
+            }.addOnFailureListener {
+                logger.log("Exception: $it", AppLogLevel.ERROR)
+                completable.complete(DomainResult.Error(it.toDomainError()))
+            }
+
+        return completable.await()
+    }
+
+    override suspend fun deletePaymentPlan(
+        paymentEntity: PaymentEntity
+    ): DomainResult<Unit> {
+        val collection = database
+            .collection(pathPayment)
+            .document(pathPaymentPlan)
+            .collection(DateTime(paymentEntity.startDateMillis).year.toString())
+            .document(paymentEntity.paymentId)
+
+        val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
+        collection.delete()
+            .addOnSuccessListener {
+                logger.log("Payment Plan Deleted")
                 completable.complete(DomainResult.Success(Unit))
 
             }.addOnFailureListener {

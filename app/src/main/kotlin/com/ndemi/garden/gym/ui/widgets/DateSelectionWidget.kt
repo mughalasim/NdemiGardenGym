@@ -1,55 +1,57 @@
 package com.ndemi.garden.gym.ui.widgets
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatMonthYear
+import com.ndemi.garden.gym.ui.utils.DateConstants.formatYear
 import org.joda.time.DateTime
 
 @Composable
-fun AttendanceDateSelectionWidget(
+fun DateSelectionWidget(
     selectedDate: DateTime,
-    onDateSelected: (selectedDate: DateTime) -> Unit = {}
+    hideMonthSelection: Boolean,
+    onDateSelected: (selectedDate: DateTime) -> Unit,
 ) {
     var monthPickerVisibility by remember { mutableStateOf(false) }
-    Column(
+    Row(
         modifier = Modifier
-            .padding(start = padding_screen, end = padding_screen, top = padding_screen)
+            .padding(horizontal = padding_screen)
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(
-                color = AppTheme.colors.backgroundCard,
-                shape = RoundedCornerShape(border_radius)
-            )
-            .border(
-                width = line_thickness,
-                color = AppTheme.colors.backgroundCardBorder,
-                shape = RoundedCornerShape(border_radius),
-            )
-            .padding(padding_screen),
+            .padding(top = padding_screen_small),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        TextRegular(text = stringResource(R.string.txt_select_date_range))
+        TextRegular(
+            text = if (hideMonthSelection) {
+                stringResource(R.string.txt_select_year)
+            } else {
+                stringResource(R.string.txt_select_date)
+            }
+        )
 
-        ButtonWidget(
-            title = selectedDate.toString(formatMonthYear),
+        ButtonOutlineWidget(
+            text = if (hideMonthSelection) {
+                selectedDate.toString(formatYear)
+            } else {
+                selectedDate.toString(formatMonthYear)
+            }
         ) {
             monthPickerVisibility = !monthPickerVisibility
         }
@@ -59,6 +61,7 @@ fun AttendanceDateSelectionWidget(
         visible = monthPickerVisibility,
         currentMonth = selectedDate.monthOfYear - 1,
         currentYear = selectedDate.year,
+        hideMonthSelection = hideMonthSelection,
         confirmButtonCLicked = { month, year ->
             monthPickerVisibility = !monthPickerVisibility
             onDateSelected.invoke(DateTime.now().withDate(year, month, 1))
@@ -70,8 +73,11 @@ fun AttendanceDateSelectionWidget(
 
 @AppPreview
 @Composable
-fun AttendanceDateSelectionWidgetPreview(){
+fun AttendanceDateSelectionWidgetPreview() {
     AppThemeComposable {
-        AttendanceDateSelectionWidget(DateTime.now()){}
+        DateSelectionWidget(
+            selectedDate = DateTime.now(),
+            hideMonthSelection = true
+        ) {}
     }
 }

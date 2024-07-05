@@ -11,6 +11,7 @@ data class MemberEntity(
     val apartmentNumber: String? = null,
     val profileImageUrl: String,
     val hasCoach: Boolean = false,
+    val amountDue: Double = 0.0,
 ){
     fun getFullName(): String = "$firstName $lastName"
 
@@ -20,9 +21,9 @@ data class MemberEntity(
 
     fun getResidentialStatus(): String =
         if (apartmentNumber.isNullOrEmpty()) {
-            "Guest member"
+            "Guest"
         } else {
-            "Apartment number: $apartmentNumber"
+            "Apartment $apartmentNumber"
         }
 
     fun getCoachStatus(): String = if (hasCoach) "Yes" else "No"

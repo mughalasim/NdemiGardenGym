@@ -47,5 +47,7 @@ class ErrorCodeConverterImp (
             UiError.INVALID_LOGIN_CREDENTIALS -> application.resources.getString(R.string.error_invalid_credentials)
             UiError.REGISTRATION_FAILED -> application.resources.getString(R.string.error_registration_failed)
             UiError.INVALID_APARTMENT_NUMBER -> application.resources.getString(R.string.error_apartment_number)
+            UiError.INVALID_AMOUNT -> "Amount entered is invalid, set any number above 0"
+            UiError.INVALID_MONTH_DURATION -> "The month duration is invalid, set any number above 0"
         }
 }

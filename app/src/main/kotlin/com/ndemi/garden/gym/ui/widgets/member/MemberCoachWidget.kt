@@ -1,4 +1,4 @@
-package com.ndemi.garden.gym.ui.widgets
+package com.ndemi.garden.gym.ui.widgets.member
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +22,9 @@ import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
+import com.ndemi.garden.gym.ui.widgets.ButtonWidget
+import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.TextSmall
 import cv.domain.entities.MemberEntity
 
 @Composable

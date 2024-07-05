@@ -12,9 +12,10 @@ fun getMockActiveMemberEntity() = MemberEntity(
     registrationDateMillis = DateTime.now().millis,
     renewalFutureDateMillis = DateTime.now().plusDays(25).millis,
     activeNowDateMillis = DateTime.now().minusHours(1).minusMinutes(13).millis,
-    apartmentNumber = "",
+    apartmentNumber = "B903",
     profileImageUrl = "",
-    hasCoach = true
+    hasCoach = true,
+    amountDue = 1200.0
 )
 
 @Suppress("detekt.MagicNumber")
@@ -28,7 +29,8 @@ fun getMockRegisteredMemberEntity() = MemberEntity(
     activeNowDateMillis = null,
     apartmentNumber = "",
     profileImageUrl = "",
-    hasCoach = false
+    hasCoach = false,
+    amountDue = 3000.0
 )
 
 @Suppress("detekt.MagicNumber")

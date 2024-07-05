@@ -1,4 +1,4 @@
-package com.ndemi.garden.gym.ui.widgets
+package com.ndemi.garden.gym.ui.widgets.member
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
@@ -27,13 +29,18 @@ import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.icon_image_size_large
+import com.ndemi.garden.gym.ui.theme.icon_image_size
 import com.ndemi.garden.gym.ui.theme.line_thickness
-import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
-import com.ndemi.garden.gym.ui.utils.toDaysDuration
+import com.ndemi.garden.gym.ui.utils.toAmountString
+import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
+import com.ndemi.garden.gym.ui.widgets.ButtonOutlineWidget
+import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.TextRegularBold
+import com.ndemi.garden.gym.ui.widgets.TextSmall
 import cv.domain.entities.MemberEntity
 import org.joda.time.DateTime
 
@@ -44,6 +51,8 @@ fun MemberStatusWidget(
     memberEntity: MemberEntity,
     showDetails: Boolean = false,
     onMemberTapped: (memberEntity: MemberEntity) -> Unit = {},
+    onPaymentsTapped: (memberEntity: MemberEntity) -> Unit = {},
+    onAttendanceTapped: (memberEntity: MemberEntity) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -60,11 +69,12 @@ fun MemberStatusWidget(
                 color = AppTheme.colors.backgroundCardBorder,
                 shape = RoundedCornerShape(border_radius),
             )
-            .padding(padding_screen)
-            .clickable { if (showDetails) onMemberTapped.invoke(memberEntity) },
+            .padding(padding_screen_small),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { if (showDetails) onMemberTapped.invoke(memberEntity) },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -76,7 +86,7 @@ fun MemberStatusWidget(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = padding_screen)
+                    .padding(start = padding_screen_small)
             ) {
                 TextRegularBold(
                     text = memberEntity.getFullName(),
@@ -87,15 +97,22 @@ fun MemberStatusWidget(
                         startDate = DateTime(memberEntity.activeNowDateMillis)
                     )
                 )
+                if (showDetails) {
+                    TextSmall(
+                        color = AppTheme.colors.backgroundError,
+                        text = memberEntity.getResidentialStatus()
+                    )
+                }
             }
 
             if (showDetails) {
-                Column {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     if (memberEntity.isActiveNow()) {
                         Icon(
                             modifier = Modifier
-                                .width(icon_image_size_large)
-                                .height(icon_image_size_large),
+                                .padding(top = padding_screen_small)
+                                .width(icon_image_size)
+                                .height(icon_image_size),
                             imageVector = Icons.Rounded.RunCircle,
                             contentDescription = null,
                             tint = AppTheme.colors.highLight,
@@ -105,8 +122,9 @@ fun MemberStatusWidget(
                     if (memberEntity.hasCoach) {
                         Icon(
                             modifier = Modifier
-                                .width(icon_image_size_large)
-                                .height(icon_image_size_large),
+                                .padding(top = padding_screen_small)
+                                .width(icon_image_size)
+                                .height(icon_image_size),
                             imageVector = Icons.Rounded.Accessibility,
                             contentDescription = null,
                             tint = AppTheme.colors.highLight,
@@ -122,31 +140,66 @@ fun MemberStatusWidget(
 
 
         if (showDetails) {
-            TextRegular(
-                modifier = Modifier.padding(top = padding_screen_small),
-                text = "Email: " + memberEntity.email,
-            )
-            TextRegularBold(
-                modifier = Modifier.padding(top = padding_screen_small),
-                color = if (memberEntity.apartmentNumber.isNullOrEmpty()) {
-                    AppTheme.colors.backgroundError
-                } else {
-                    AppTheme.colors.highLight
-                },
-                text = memberEntity.getResidentialStatus(),
-            )
+            Row(
+                modifier = Modifier
+                    .padding(top = padding_screen_tiny)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                TextSmall(
+                    color = AppTheme.colors.highLight,
+                    text = stringResource(R.string.txt_membership_due_date)
+                )
+                TextRegular(
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.End,
+                    text = memberEntity.renewalFutureDateMillis.toMembershipStatusString()
+                )
+            }
+
             if (memberEntity.hasPaidMembership()) {
-                TextRegularBold(
-                    modifier = Modifier.padding(top = padding_screen_small),
-                    text = stringResource(R.string.txt_payment_due)
-                            + DateTime(memberEntity.renewalFutureDateMillis).toDaysDuration(),
-                )
-            } else {
-                TextRegularBold(
-                    modifier = Modifier.padding(top = padding_screen_small),
-                    text = stringResource(R.string.txt_membership_expired),
-                    color = AppTheme.colors.backgroundError
-                )
+                Row(
+                    modifier = Modifier
+                        .padding(top = padding_screen_tiny)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    TextSmall(
+                        color = AppTheme.colors.highLight,
+                        text = stringResource(R.string.txt_amount_due)
+                    )
+                    TextRegularBold(
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End,
+                        color = AppTheme.colors.backgroundError,
+                        text = memberEntity.amountDue.toAmountString()
+                    )
+                }
+            }
+
+            Spacer(
+                modifier = Modifier
+                    .padding(top = padding_screen_tiny)
+                    .fillMaxWidth()
+                    .height(line_thickness)
+                    .background(AppTheme.colors.highLight)
+            )
+
+            Row(
+                modifier = Modifier
+                    .padding(top = padding_screen_tiny)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                ButtonOutlineWidget(text = stringResource(R.string.txt_payments)) {
+                    onPaymentsTapped.invoke(memberEntity)
+                }
+                ButtonOutlineWidget(text = stringResource(R.string.txt_attendance)) {
+                    onAttendanceTapped.invoke(memberEntity)
+                }
             }
         }
     }

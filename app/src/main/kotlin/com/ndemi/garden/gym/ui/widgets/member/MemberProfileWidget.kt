@@ -1,4 +1,4 @@
-package com.ndemi.garden.gym.ui.widgets
+package com.ndemi.garden.gym.ui.widgets.member
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

@@ -9,6 +9,7 @@ import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.InsertChartOutlined
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.MonetizationOn
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -72,7 +73,7 @@ fun BottomNavigationWidget(
                     )
                 },
                 label = {
-                    Text(text = stringResource(id = item.label), style = AppTheme.textStyles.regularBold)
+                    Text(text = stringResource(id = item.label), style = AppTheme.textStyles.small)
                 },
                 colors = NavigationBarItemColors(
                     selectedIconColor = AppTheme.colors.backgroundScreen,
@@ -113,6 +114,10 @@ sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: I
         Route.LiveAttendanceScreen, Icons.Rounded.Groups, R.string.txt_live_view
     )
 
+    data object PaymentsScreen : BottomNavItem(
+        Route.PaymentsScreen(), Icons.Rounded.MonetizationOn, R.string.txt_payments
+    )
+
     data object MembersScreen : BottomNavItem(
         Route.MembersScreen, Icons.Rounded.Group, R.string.txt_members
     )
@@ -121,6 +126,7 @@ sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: I
         fun getMemberBottomItems() = listOf(
             ProfileScreen,
             AttendanceScreen,
+            PaymentsScreen,
             LiveAttendanceScreen,
         )
 

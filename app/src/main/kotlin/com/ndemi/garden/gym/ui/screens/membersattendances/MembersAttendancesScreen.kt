@@ -20,7 +20,7 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceListScreen
 import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.widgets.AttendanceDateSelectionWidget
+import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
@@ -46,7 +46,7 @@ fun MembersAttendancesScreen (
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
-        AttendanceDateSelectionWidget(selectedDate){
+        DateSelectionWidget(selectedDate, false){
             selectedDate = it
             viewModel.getAttendances(memberId, selectedDate)
         }
@@ -58,15 +58,17 @@ fun MembersAttendancesScreen (
         ) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 if (uiState.value is UiState.Success) {
-                    if ((uiState.value as UiState.Success).attendances.isEmpty()) {
+                    val result = (uiState.value as UiState.Success)
+                    if (result.attendances.isEmpty()) {
                         TextRegular(
                             modifier = Modifier.padding(padding_screen),
                             text = stringResource(R.string.txt_no_attendances)
                         )
                     } else {
                         AttendanceListScreen(
-                            attendances = (uiState.value as UiState.Success).attendances,
-                            canDeleteAttendance = true
+                            attendances = result.attendances,
+                            canDeleteAttendance = true,
+                            totalMinutes = result.totalMinutes
                         ){
                             viewModel.deleteAttendance(it)
                         }

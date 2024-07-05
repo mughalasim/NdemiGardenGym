@@ -12,32 +12,27 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockAttendanceEntity
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import com.ndemi.garden.gym.ui.widgets.TextRegular
-import com.ndemi.garden.gym.ui.widgets.attendanceWidget
+import com.ndemi.garden.gym.ui.widgets.attendance.AttendanceWidget
 import cv.domain.entities.AttendanceEntity
 import org.joda.time.DateTime
 
 @Composable
 fun AttendanceListScreen(
     attendances: List<AttendanceEntity>,
+    totalMinutes: Int,
     canDeleteAttendance: Boolean,
     onDeleteAttendance: (AttendanceEntity) -> Unit = {},
 ) {
     Column {
-        var totalMinutes  = 0
-        repeat(attendances.size) {
-            totalMinutes += attendanceWidget(
-                attendanceEntity = attendances[it],
-                canDeleteAttendance = canDeleteAttendance,
-                onDeleteAttendance = onDeleteAttendance
-            )
-        }
         Row {
             TextRegular(
                 modifier = Modifier
-                    .padding(padding_screen)
+                    .padding(horizontal = padding_screen)
+                    .padding(top = padding_screen_small)
                     .fillMaxWidth(),
                 text = stringResource(
                     R.string.txt_total_time_spent,
@@ -46,6 +41,13 @@ fun AttendanceListScreen(
                     )
                 ),
                 textAlign = TextAlign.End
+            )
+        }
+        repeat(attendances.size) {
+            AttendanceWidget(
+                attendanceEntity = attendances[it],
+                canDeleteAttendance = canDeleteAttendance,
+                onDeleteAttendance = onDeleteAttendance
             )
         }
     }
@@ -61,6 +63,7 @@ fun AttendanceScreenPreview() {
                 getMockAttendanceEntity(),
                 getMockAttendanceEntity(),
             ),
+            totalMinutes = 20,
             canDeleteAttendance = false
         )
     }
