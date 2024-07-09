@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,6 +31,7 @@ import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.icon_image_size
 import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
@@ -92,6 +94,7 @@ fun ButtonOutlineWidget(
     text: String,
     modifier: Modifier = Modifier,
     hasOutline: Boolean = true,
+    backgroundColor: Color = Color.Transparent,
     onButtonClicked: () -> Unit = {}
 ){
     OutlinedButton(
@@ -102,10 +105,11 @@ fun ButtonOutlineWidget(
             width = line_thickness,
             color = if (hasOutline) AppTheme.colors.highLight else Color.Transparent
         ),
+        contentPadding = PaddingValues(padding_screen_tiny),
         colors = ButtonDefaults.outlinedButtonColors()
-            .copy(containerColor = Color.Transparent)
+            .copy(containerColor = backgroundColor)
     ) {
-        TextRegular(text = text)
+        TextSmall(text = text)
     }
 }
 
@@ -117,6 +121,9 @@ fun ButtonWidgetPreview() {
             ButtonWidget(title = "Enabled button", isEnabled = true, isLoading = true) {}
             ButtonWidget(title = "Disabled button", isEnabled = false) {}
             ButtonOutlineWidget(text = "Text button") {}
+            ButtonOutlineWidget(text = "Text button",
+                hasOutline = false,
+                backgroundColor = AppTheme.colors.backgroundError) {}
         }
     }
 }

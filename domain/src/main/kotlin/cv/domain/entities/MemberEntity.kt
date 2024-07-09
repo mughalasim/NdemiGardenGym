@@ -12,7 +12,8 @@ data class MemberEntity(
     val profileImageUrl: String,
     val hasCoach: Boolean = false,
     val amountDue: Double = 0.0,
-){
+    val phoneNumber: String = "",
+) {
     fun getFullName(): String = "$firstName $lastName"
 
     fun hasPaidMembership(): Boolean = renewalFutureDateMillis != null
@@ -27,4 +28,12 @@ data class MemberEntity(
         }
 
     fun getCoachStatus(): String = if (hasCoach) "Yes" else "No"
+
+    fun isNotEqualTo(memberEntity: MemberEntity): Boolean {
+        return memberEntity.firstName != firstName ||
+                memberEntity.lastName != lastName ||
+                memberEntity.apartmentNumber != apartmentNumber ||
+                memberEntity.phoneNumber != phoneNumber ||
+                memberEntity.hasCoach != hasCoach
+    }
 }

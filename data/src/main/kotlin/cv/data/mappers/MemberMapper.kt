@@ -18,6 +18,7 @@ fun MemberEntity.toMemberModel() = MemberModel(
     profileImageUrl = profileImageUrl,
     hasCoach = hasCoach,
     amountDue = amountDue,
+    phoneNumber = phoneNumber,
 )
 
 
@@ -33,6 +34,7 @@ fun MemberModel.toMemberEntity() = MemberEntity(
     profileImageUrl = profileImageUrl.orEmpty(),
     hasCoach = hasCoach,
     amountDue = amountDue,
+    phoneNumber = phoneNumber,
 )
 
 private fun isAfterNow(millis: Long?): Long? {

@@ -16,6 +16,7 @@ fun MembersListScreen(
     onMemberTapped: (memberEntity: MemberEntity) -> Unit = {},
     onPaymentsTapped: (memberEntity: MemberEntity) -> Unit = {},
     onAttendanceTapped: (memberEntity: MemberEntity) -> Unit = {},
+    onSessionTapped: (memberEntity: MemberEntity) -> Unit = {},
 ) {
     Column {
         repeat(members.size) {
@@ -24,7 +25,8 @@ fun MembersListScreen(
                 showDetails = true,
                 onMemberTapped = onMemberTapped,
                 onPaymentsTapped = onPaymentsTapped,
-                onAttendanceTapped = onAttendanceTapped
+                onAttendanceTapped = onAttendanceTapped,
+                onSessionTapped = onSessionTapped,
             )
         }
     }

@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +32,7 @@ import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.padding_screen_large
-import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
@@ -48,7 +49,7 @@ fun EditTextWidget(
     OutlinedTextField(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = padding_screen_tiny),
+            .padding(top = padding_screen_small),
         value = text,
         enabled = isEnabled,
         isError = isError,
@@ -70,7 +71,7 @@ fun EditTextWidget(
                 )
             }
         },
-        label = { TextSmall(text = hint) },
+        label = { Text(text = hint, style = AppTheme.textStyles.small) },
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         colors = getAppTextColors(),
         shape = RoundedCornerShape(border_radius)
@@ -92,14 +93,14 @@ fun EditPasswordTextWidget(
     OutlinedTextField(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = padding_screen_tiny),
+            .padding(top = padding_screen_small),
         value = password,
         onValueChange = {
             password = it
             onValueChanged(password)
         },
         textStyle = AppTheme.textStyles.regular,
-        label = { TextSmall(text = hint) },
+        label = {Text(text = hint, style = AppTheme.textStyles.small) },
         singleLine = true,
         visualTransformation =
         if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -127,14 +128,17 @@ private fun getAppTextColors() = OutlinedTextFieldDefaults.colors(
     focusedTextColor = AppTheme.colors.textPrimary,
     focusedTrailingIconColor = AppTheme.colors.highLight,
     focusedBorderColor = AppTheme.colors.highLight,
+    focusedLabelColor = AppTheme.colors.highLight,
 
     unfocusedTextColor = AppTheme.colors.textPrimary,
     unfocusedTrailingIconColor = AppTheme.colors.backgroundButtonDisabled,
     unfocusedBorderColor = AppTheme.colors.backgroundButtonDisabled,
+    unfocusedLabelColor = AppTheme.colors.highLight,
 
     disabledTextColor = AppTheme.colors.textPrimary,
     disabledTrailingIconColor = Color.Transparent,
-    disabledBorderColor = Color.Transparent,
+    disabledBorderColor = AppTheme.colors.backgroundButtonDisabled,
+    disabledLabelColor = AppTheme.colors.backgroundButtonDisabled,
 
     errorTextColor = AppTheme.colors.backgroundError,
     errorTrailingIconColor = AppTheme.colors.backgroundError,

@@ -1,16 +1,20 @@
 package com.ndemi.garden.gym.ui.utils
 
 import android.content.res.Resources
+import android.telephony.PhoneNumberUtils
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.os.ConfigurationCompat
+import androidx.core.text.isDigitsOnly
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.utils.DateConstants.DAYS_IN_MONTH
 import com.ndemi.garden.gym.ui.utils.DateConstants.HOUR_IN_DAY
 import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
+import com.ndemi.garden.gym.ui.utils.DateConstants.PHONE_NUMBER_DIGITS
 import com.ndemi.garden.gym.ui.utils.DateConstants.SECONDS_IN_HOUR
+import com.ndemi.garden.gym.ui.utils.DateConstants.appLocale
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import org.joda.time.DateTime
 import org.joda.time.Days
@@ -21,6 +25,7 @@ import org.joda.time.Seconds
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import java.text.DecimalFormat
+import java.util.Locale
 
 @Composable
 fun Long?.toMembershipStatusString(): String {
@@ -124,9 +129,23 @@ fun DateTime.toPaymentPlanDuration(): String {
 fun Double.toAmountString(): String =
     DecimalFormat("${BuildConfig.CURRENCY_CODE} #,###").format(this)
 
+fun String.toPhoneNumberString(): String =
+    if (this.isEmpty()) {
+        ""
+    } else {
+        PhoneNumberUtils.formatNumber(this, appLocale.country)
+    }
+
+fun String.isValidApartmentNumber(): Boolean =
+    this.matches(Regex("^[A-Da-d](?:[1-9][0-4][0-4][0-4]?|1404)\$"))
+
+fun String.isValidPhoneNumber(): Boolean =
+    this.length == PHONE_NUMBER_DIGITS && this.isDigitsOnly() && this.first() == '0'
+
 object DateConstants {
-    private val appLocale =
+    val appLocale =
         ConfigurationCompat.getLocales(Resources.getSystem().configuration).get(0)
+            ?: Locale(Locale.ENGLISH.language)
 
     val formatDayMonthYear: DateTimeFormatter =
         DateTimeFormat.forPattern("dd MMMM yyyy").withLocale(appLocale)
@@ -148,4 +167,5 @@ object DateConstants {
     const val HOUR_IN_DAY = 12
     const val MINUTES_IN_HOUR = 60
     const val SECONDS_IN_HOUR = 3600
+    const val PHONE_NUMBER_DIGITS = 10
 }

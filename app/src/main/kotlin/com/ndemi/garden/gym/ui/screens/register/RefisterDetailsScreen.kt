@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -16,19 +17,22 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.InputData
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
+import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditPasswordTextWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextRegular
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun RegisterDetailScreen(
     uiState: State<UiState>,
-    inputData: InputData?,
-    hidePassword: Boolean,
-    onSetString: (String, InputType) -> Unit,
-    onRegisterTapped: () -> Unit,
+    inputData: InputData? = null,
+    hidePassword: Boolean = false,
+    onSetString: (String, InputType) -> Unit = {_,_ ->},
+    onRegisterTapped: () -> Unit = {},
 ) {
     val currentInputType = (uiState.value as? UiState.Error)?.inputType
     Column(
@@ -105,5 +109,16 @@ fun RegisterDetailScreen(
         ) {
             onRegisterTapped.invoke()
         }
+    }
+}
+
+@AppPreview
+@Composable
+fun RegisterDetailScreenPreview(){
+    AppThemeComposable {
+        RegisterDetailScreen(
+            uiState = MutableStateFlow(UiState.Ready)
+                .collectAsState(initial = UiState.Ready),
+        )
     }
 }

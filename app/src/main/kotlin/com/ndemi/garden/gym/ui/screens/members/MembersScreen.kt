@@ -56,7 +56,8 @@ fun MembersScreen (
                             members = (uiState.value as UiState.Success).members,
                             onMemberTapped = viewModel::onMemberTapped,
                             onPaymentsTapped = viewModel::onPaymentsTapped,
-                            onAttendanceTapped = viewModel::onAttendanceTapped
+                            onAttendanceTapped = viewModel::onAttendanceTapped,
+                            onSessionTapped = viewModel::onSessionTapped
                         )
                     }
                 }

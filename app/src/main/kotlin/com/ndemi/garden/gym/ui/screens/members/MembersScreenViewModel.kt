@@ -14,7 +14,9 @@ import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.usecase.MemberUseCase
+import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.launch
+import org.joda.time.DateTime
 
 class MembersScreenViewModel (
     private val errorCodeConverter: ErrorCodeConverter,
@@ -50,6 +52,30 @@ class MembersScreenViewModel (
 
     fun onAttendanceTapped(memberEntity: MemberEntity) {
         navigationService.open(Route.MembersAttendancesScreen(memberEntity.id, memberEntity.getFullName()))
+    }
+
+    fun onSessionTapped(memberEntity: MemberEntity) {
+        sendAction(Action.SetLoading)
+        // Attempt to register an attendance
+        if (memberEntity.isActiveNow()){
+            viewModelScope.launch {
+                memberUseCase.addAttendanceForMember(
+                    memberEntity.id,
+                    DateTime(memberEntity.activeNowDateMillis).toDate(),
+                    DateTime.now().toDate()
+                )
+            }
+        }
+
+        // Update the member model
+        viewModelScope.launch {
+            memberUseCase.updateMember(
+                memberEntity.copy(activeNowDateMillis =  if (memberEntity.isActiveNow()) null else DateTime.now().millis),
+                UpdateType.ACTIVE_SESSION
+            ).also {
+                getMembers()
+            }
+        }
     }
 
     @Immutable

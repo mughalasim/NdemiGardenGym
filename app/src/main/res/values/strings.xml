@@ -22,6 +22,9 @@
     <string name="error_workout_session_length">Cannot update your workout session as it is either too short or longer than a day</string>
     <string name="error_apartment_number">Apartment number is invalid, Leave blank if not a resident</string>
     <string name="error_past_date_set">You cannot set a date in the past</string>
+    <string name="error_invalid_amount">Amount entered is invalid, set any number above 0</string>
+    <string name="error_invalid_month_duration">The month duration is invalid, set any number above 0</string>
+    <string name="error_invalid_phone_number">The phone number is invalid, leave blank if not present</string>
 
     <!-- Text within screens-->
     <string name="txt_ok">OK</string>
@@ -50,7 +53,8 @@
     <string name="txt_email">Email</string>
     <string name="txt_password">Password</string>
     <string name="txt_confirm_password">Confirm password</string>
-    <string name="txt_apartment_number">Apartment Number</string>
+    <string name="txt_apartment_number">Apartment number</string>
+    <string name="txt_phone_number">Phone number</string>
 
     <string name="txt_total_amount">Total: %1$s</string>
     <string name="txt_total_time_spent">Total time spent: %1$s</string>

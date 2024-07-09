@@ -3,18 +3,17 @@ package cv.domain.usecase
 import cv.domain.DomainResult
 import cv.domain.Variables.EVENT_ACTIVE
 import cv.domain.Variables.EVENT_ATTENDANCE_DELETE
-import cv.domain.Variables.EVENT_HAS_COACH
 import cv.domain.Variables.EVENT_MEMBERSHIP
 import cv.domain.Variables.EVENT_MEMBER_DELETE
+import cv.domain.Variables.EVENT_MEMBER_UPDATE
 import cv.domain.Variables.EVENT_PHOTO
 import cv.domain.Variables.EVENT_REGISTRATION
 import cv.domain.Variables.PARAM_ACTIVE_SESSION_FALSE
 import cv.domain.Variables.PARAM_ACTIVE_SESSION_TRUE
 import cv.domain.Variables.PARAM_ATTENDANCE_DELETE
-import cv.domain.Variables.PARAM_HAS_COACH_NO
-import cv.domain.Variables.PARAM_HAS_COACH_YES
 import cv.domain.Variables.PARAM_MEMBERSHIP_ADDED
 import cv.domain.Variables.PARAM_MEMBER_DELETE
+import cv.domain.Variables.PARAM_MEMBER_UPDATE
 import cv.domain.Variables.PARAM_PHOTO_DELETE
 import cv.domain.Variables.PARAM_REGISTRATION_ADMIN
 import cv.domain.Variables.PARAM_REGISTRATION_SELF
@@ -120,15 +119,10 @@ class MemberUseCase(
                     params = listOf( Pair(paramName, memberEntity.id))
                 )
             }
-            UpdateType.HAS_COACH -> {
-                val paramName = if (memberEntity.hasCoach){
-                    PARAM_HAS_COACH_YES
-                } else {
-                    PARAM_HAS_COACH_NO
-                }
+            UpdateType.MEMBER -> {
                 analyticsRepository.logEvent(
-                    eventName = EVENT_HAS_COACH,
-                    params = listOf( Pair(paramName, memberEntity.id))
+                    eventName = EVENT_MEMBER_UPDATE,
+                    params = listOf( Pair(PARAM_MEMBER_UPDATE, memberEntity.id))
                 )
             }
         }
@@ -183,5 +177,5 @@ enum class UpdateType {
     MEMBERSHIP,
     PHOTO_DELETE,
     ACTIVE_SESSION,
-    HAS_COACH
+    MEMBER,
 }
