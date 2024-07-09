@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
@@ -53,6 +53,7 @@ fun MemberStatusWidget(
     onMemberTapped: (memberEntity: MemberEntity) -> Unit = {},
     onPaymentsTapped: (memberEntity: MemberEntity) -> Unit = {},
     onAttendanceTapped: (memberEntity: MemberEntity) -> Unit = {},
+    onSessionTapped: (memberEntity: MemberEntity) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -179,14 +180,6 @@ fun MemberStatusWidget(
                 }
             }
 
-            Spacer(
-                modifier = Modifier
-                    .padding(top = padding_screen_tiny)
-                    .fillMaxWidth()
-                    .height(line_thickness)
-                    .background(AppTheme.colors.highLight)
-            )
-
             Row(
                 modifier = Modifier
                     .padding(top = padding_screen_tiny)
@@ -199,6 +192,21 @@ fun MemberStatusWidget(
                 }
                 ButtonOutlineWidget(text = stringResource(R.string.txt_attendance)) {
                     onAttendanceTapped.invoke(memberEntity)
+                }
+                ButtonOutlineWidget(
+                    text = if (memberEntity.isActiveNow()) {
+                        stringResource(R.string.txt_end_session)
+                    } else {
+                        stringResource(R.string.txt_start_session)
+                    },
+                    hasOutline = !memberEntity.isActiveNow(),
+                    backgroundColor = if (memberEntity.isActiveNow()) {
+                        AppTheme.colors.backgroundError
+                    } else {
+                        Color.Transparent
+                    }
+                ) {
+                    onSessionTapped.invoke(memberEntity)
                 }
             }
         }

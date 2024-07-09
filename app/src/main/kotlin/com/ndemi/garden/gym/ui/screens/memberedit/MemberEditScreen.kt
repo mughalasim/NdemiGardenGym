@@ -40,49 +40,51 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun MemberEditScreen(
     memberId: String,
-    viewModel: MemberEditScreenViewModel = koinViewModel<MemberEditScreenViewModel>()
+    viewModel: MemberEditScreenViewModel = koinViewModel<MemberEditScreenViewModel>(),
 ) {
+    viewModel.setMemberId(memberId)
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
-    val sessionStartTime = viewModel.sessionStartTime.observeAsState().value
+    val memberEntity = viewModel.memberEntity.observeAsState()
     val context = LocalContext.current
-    val galleryLauncher =  rememberLauncherForActivityResult(GetContent()) { imageUri ->
+    val galleryLauncher = rememberLauncherForActivityResult(GetContent()) { imageUri ->
         imageUri?.let {
-            context.contentResolver.openInputStream(imageUri)?.use { it.buffered().readBytes()}?.let {
-                viewModel.updateMemberImage(it)
-            }
+            context.contentResolver.openInputStream(imageUri)?.use { it.buffered().readBytes() }
+                ?.let {
+                    viewModel.updateMemberImage(it)
+                }
         }
     }
     var showDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(true) { viewModel.getMemberForId(memberId) }
+    LaunchedEffect(true) { viewModel.getMemberForId() }
 
     Column {
         ToolBarWidget(
             title = stringResource(R.string.txt_edit_member),
             canNavigateBack = true,
             secondaryIcon = Icons.Default.DeleteForever,
-            onSecondaryIconPressed = {showDialog = true},
+            onSecondaryIconPressed = { showDialog = true },
             onBackPressed = viewModel::navigateBack
         )
 
-        if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
+        if (uiState.value is UiState.Error) {
+            WarningWidget((uiState.value as UiState.Error).message)
+        }
 
         PullToRefreshBox(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding_screen),
-            isRefreshing= (uiState.value is UiState.Loading),
-            onRefresh = { viewModel.getMemberForId(memberId) }
+            isRefreshing = (uiState.value is UiState.Loading),
+            onRefresh = { viewModel.getMemberForId() }
         ) {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (uiState.value is UiState.Success) {
-                    val memberEntity = (uiState.value as UiState.Success).memberEntity
-
+                memberEntity.value?.let {
                     MemberProfileWidget(
-                        imageUrl = memberEntity.profileImageUrl,
+                        imageUrl = it.profileImageUrl,
                         onImageSelect = {
                             galleryLauncher.launch("image/*")
                         },
@@ -92,20 +94,16 @@ fun MemberEditScreen(
                     )
 
                     MemberEditDetailsScreen(
-                        memberEntity = memberEntity,
-                        onCoachSetUpdate = {
-                          viewModel.onCoachSetUpdate(it)
-                        },
-                        sessionMessage = (uiState.value as UiState.Success).message,
-                        sessionStartTime = sessionStartTime,
-                        onSessionStarted = viewModel::setStartedSession,
-                        onSessionCompleted = viewModel::setAttendance
+                        uiState = uiState,
+                        memberEntity = it,
+                        onSetString = viewModel::setString,
+                        onUpdateTapped = viewModel::onUpdateTapped,
                     )
                 }
             }
         }
 
-        if (showDialog){
+        if (showDialog) {
             AlertDialog(
                 containerColor = AppTheme.colors.backgroundButtonDisabled,
                 title = { TextSmall(text = stringResource(R.string.txt_are_you_sure)) },

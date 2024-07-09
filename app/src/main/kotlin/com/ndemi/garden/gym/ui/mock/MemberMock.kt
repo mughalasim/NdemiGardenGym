@@ -30,7 +30,8 @@ fun getMockRegisteredMemberEntity() = MemberEntity(
     apartmentNumber = "",
     profileImageUrl = "",
     hasCoach = false,
-    amountDue = 3000.0
+    amountDue = 3000.0,
+    phoneNumber = "0722123456",
 )
 
 @Suppress("detekt.MagicNumber")
