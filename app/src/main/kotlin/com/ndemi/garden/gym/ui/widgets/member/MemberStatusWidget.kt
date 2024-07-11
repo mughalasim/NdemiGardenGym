@@ -50,6 +50,7 @@ fun MemberStatusWidget(
     modifier: Modifier = Modifier,
     memberEntity: MemberEntity,
     showDetails: Boolean = false,
+    hasAdminRights: Boolean = false,
     onMemberTapped: (memberEntity: MemberEntity) -> Unit = {},
     onPaymentsTapped: (memberEntity: MemberEntity) -> Unit = {},
     onAttendanceTapped: (memberEntity: MemberEntity) -> Unit = {},
@@ -193,20 +194,22 @@ fun MemberStatusWidget(
                 ButtonOutlineWidget(text = stringResource(R.string.txt_attendance)) {
                     onAttendanceTapped.invoke(memberEntity)
                 }
-                ButtonOutlineWidget(
-                    text = if (memberEntity.isActiveNow()) {
-                        stringResource(R.string.txt_end_session)
-                    } else {
-                        stringResource(R.string.txt_start_session)
-                    },
-                    hasOutline = !memberEntity.isActiveNow(),
-                    backgroundColor = if (memberEntity.isActiveNow()) {
-                        AppTheme.colors.backgroundError
-                    } else {
-                        Color.Transparent
+                if (hasAdminRights){
+                    ButtonOutlineWidget(
+                        text = if (memberEntity.isActiveNow()) {
+                            stringResource(R.string.txt_end_session)
+                        } else {
+                            stringResource(R.string.txt_start_session)
+                        },
+                        hasOutline = !memberEntity.isActiveNow(),
+                        backgroundColor = if (memberEntity.isActiveNow()) {
+                            AppTheme.colors.backgroundError
+                        } else {
+                            Color.Transparent
+                        }
+                    ) {
+                        onSessionTapped.invoke(memberEntity)
                     }
-                ) {
-                    onSessionTapped.invoke(memberEntity)
                 }
             }
         }

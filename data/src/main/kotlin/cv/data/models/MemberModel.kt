@@ -17,5 +17,6 @@ data class MemberModel(
     val profileImageUrl: String? = null,
     val hasCoach: Boolean = false,
     val amountDue: Double = 0.0,
-    val phoneNumber: String = ""
+    val phoneNumber: String = "",
+    val memberType: String = "",
 )

@@ -15,6 +15,7 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.PaymentEntity
+import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
@@ -22,6 +23,7 @@ import org.joda.time.DateTime
 class PaymentsScreenViewModel(
     private val errorCodeConverter: ErrorCodeConverter,
     private val membersUseCase: MemberUseCase,
+    private val authUseCase: AuthUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
 
@@ -79,6 +81,8 @@ class PaymentsScreenViewModel(
     fun navigateToPaymentAddScreen() {
         navigationService.open(Route.PaymentAddScreen(memberId))
     }
+
+    fun hasAdminRights() = authUseCase.hasAdminRights()
 
 
     @Immutable

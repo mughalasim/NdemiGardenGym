@@ -3,6 +3,7 @@ package cv.data.mappers
 import com.google.firebase.Timestamp
 import cv.data.models.MemberModel
 import cv.domain.entities.MemberEntity
+import cv.domain.entities.MemberType
 import org.joda.time.DateTime
 import java.util.Date
 
@@ -19,6 +20,7 @@ fun MemberEntity.toMemberModel() = MemberModel(
     hasCoach = hasCoach,
     amountDue = amountDue,
     phoneNumber = phoneNumber,
+    memberType = memberType.name
 )
 
 
@@ -35,7 +37,15 @@ fun MemberModel.toMemberEntity() = MemberEntity(
     hasCoach = hasCoach,
     amountDue = amountDue,
     phoneNumber = phoneNumber,
+    memberType = memberType.toMemberType()
 )
+
+private fun String.toMemberType(): MemberType =
+    when (this) {
+        "ADMIN" -> MemberType.ADMIN
+        "SUPERVISOR" -> MemberType.SUPERVISOR
+        else -> MemberType.MEMBER
+    }
 
 private fun isAfterNow(millis: Long?): Long? {
     if (millis == null) return null

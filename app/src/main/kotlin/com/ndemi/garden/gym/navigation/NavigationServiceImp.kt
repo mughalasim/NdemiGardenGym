@@ -18,7 +18,7 @@ class NavigationServiceImp(
 
     override fun setNavController(navController: NavController) {
         this.navController = navController
-        val initialRoute = Route.getInitialRoute(authUseCase.isAuthenticated(), authUseCase.isAdmin())
+        val initialRoute = Route.getInitialRoute(authUseCase.isAuthenticated(), authUseCase.isNotMember())
         this.initialRoute = initialRoute
     }
 
@@ -56,7 +56,7 @@ class NavigationServiceImp(
 
     override fun getCurrentRoute(): Route =
         navController.currentDestination?.route?.toRoute() ?:
-        Route.getInitialRoute(authUseCase.isAuthenticated(), authUseCase.isAdmin())
+        Route.getInitialRoute(authUseCase.isAuthenticated(), authUseCase.isNotMember())
 
     override fun getInitialRoute(): Route = initialRoute
 }

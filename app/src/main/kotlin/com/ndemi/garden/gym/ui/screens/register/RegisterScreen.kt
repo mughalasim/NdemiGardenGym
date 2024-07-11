@@ -17,9 +17,6 @@ fun RegisterScreen(
     val uiState = viewModel.uiStateFlow.collectAsState(
         initial = UiState.Waiting
     )
-    if (uiState.value is UiState.Success) {
-        viewModel.navigateLogInSuccess()
-    }
 
     Column {
         ToolBarWidget(title = stringResource(id = R.string.txt_register))

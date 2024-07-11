@@ -27,7 +27,7 @@ android {
     detekt {
         toolVersion = libs.versions.detekt.get()
         config.setFrom(rootProject.file("detekt.yml"))
-        buildUponDefaultConfig = true
+        buildUponDefaultConfig = false
     }
 }
 

@@ -12,6 +12,7 @@ import cv.domain.entities.MemberEntity
 
 @Composable
 fun MembersListScreen(
+    hasAdminRights: Boolean,
     members: List<MemberEntity>,
     onMemberTapped: (memberEntity: MemberEntity) -> Unit = {},
     onPaymentsTapped: (memberEntity: MemberEntity) -> Unit = {},
@@ -23,6 +24,7 @@ fun MembersListScreen(
             MemberStatusWidget(
                 memberEntity = members[it],
                 showDetails = true,
+                hasAdminRights = hasAdminRights,
                 onMemberTapped = onMemberTapped,
                 onPaymentsTapped = onPaymentsTapped,
                 onAttendanceTapped = onAttendanceTapped,
@@ -37,6 +39,7 @@ fun MembersListScreen(
 fun MembersListScreenPreview() {
     AppThemeComposable {
         MembersListScreen(
+            hasAdminRights = true,
             members =
             listOf(
                 getMockRegisteredMemberEntity(),

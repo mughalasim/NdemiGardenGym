@@ -20,6 +20,7 @@ import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.MemberEntity
+import cv.domain.entities.MemberType
 import cv.domain.entities.PaymentEntity
 import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
@@ -93,27 +94,19 @@ class MemberRepositoryImp(
             .addOnSuccessListener { document ->
                 logger.log("Data received: $document")
                 val response = document.toObjects<MemberModel>()
-                if (isLive) {
-                    completable.complete(DomainResult.Success(
-                        response.filter {
-                            it.activeNowDate != null
-                        }.map {
-                            it.toMemberEntity()
-                        }.sortedByDescending {
-                            it.registrationDateMillis
-                        })
-                    )
-                } else {
-                    completable.complete(DomainResult.Success(
-                        response.filter {
-                            it.id != Firebase.auth.currentUser?.uid
-                        }.map {
-                            it.toMemberEntity()
-                        }.sortedByDescending {
-                            it.registrationDateMillis
-                        })
-                    )
-                }
+                completable.complete(DomainResult.Success(
+                    response.map {
+                        it.toMemberEntity()
+                    }.filter {
+                        if (isLive) {
+                            it.activeNowDateMillis != null
+                        } else {
+                            it.memberType == MemberType.MEMBER
+                        }
+                    }.sortedByDescending {
+                        it.registrationDateMillis
+                    })
+                )
 
             }.addOnFailureListener {
                 logger.log("Exception: $it", AppLogLevel.ERROR)

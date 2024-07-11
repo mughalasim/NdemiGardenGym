@@ -15,7 +15,7 @@ val repositoryModule =
     module {
         single<AuthRepository> {
             AuthRepositoryImp(
-                adminEmails = listOf(BuildConfig.ADMIN_LIVE, BuildConfig.ADMIN_STAGING),
+                pathUser = BuildConfig.PATH_USER,
                 logger = get()
             )
         }

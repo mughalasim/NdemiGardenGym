@@ -12,6 +12,7 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
+import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
@@ -19,6 +20,7 @@ import org.joda.time.DateTime
 class MembersAttendancesScreenViewModel(
     private val errorCodeConverter: ErrorCodeConverter,
     private val membersUseCase: MemberUseCase,
+    private val authUseCase: AuthUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
 
@@ -67,6 +69,8 @@ class MembersAttendancesScreenViewModel(
     fun navigateBack() {
         navigationService.popBack()
     }
+
+    fun hasAdminRights() = authUseCase.hasAdminRights()
 
 
     @Immutable

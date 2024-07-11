@@ -36,9 +36,9 @@ fun LoginScreen(
         initial = UiState.Waiting
     )
 
-    if (uiState.value is UiState.Success){
-        viewModel.navigateLogInSuccess()
-    }
+//    if (uiState.value is UiState.Success){
+//        viewModel.navigateLogInSuccess()
+//    }
 
     Column(
         modifier = Modifier

@@ -53,7 +53,7 @@ fun PaymentsScreen(
             } else {
                 stringResource(R.string.txt_payments_by, memberName)
             },
-            secondaryIcon = if (memberId.isEmpty()) null else Icons.Default.AddCircle,
+            secondaryIcon = if (viewModel.hasAdminRights()) Icons.Default.AddCircle else null,
             onSecondaryIconPressed = {
                 if (canAddPayment.value == true){
                     viewModel.navigateToPaymentAddScreen()
@@ -90,7 +90,7 @@ fun PaymentsScreen(
                         PaymentsListScreen(
                             payments = result.payments,
                             totalAmount = result.totalAmount,
-                            canDeletePayment = memberId.isNotEmpty()
+                            canDeletePayment = viewModel.hasAdminRights()
                         ){
                             viewModel.deletePayment(it)
                         }

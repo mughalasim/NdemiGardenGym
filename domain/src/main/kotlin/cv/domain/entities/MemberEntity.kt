@@ -13,6 +13,7 @@ data class MemberEntity(
     val hasCoach: Boolean = false,
     val amountDue: Double = 0.0,
     val phoneNumber: String = "",
+    val memberType: MemberType = MemberType.MEMBER,
 ) {
     fun getFullName(): String = "$firstName $lastName"
 
@@ -36,4 +37,10 @@ data class MemberEntity(
                 memberEntity.phoneNumber != phoneNumber ||
                 memberEntity.hasCoach != hasCoach
     }
+}
+
+enum class MemberType {
+    ADMIN,
+    SUPERVISOR,
+    MEMBER,
 }

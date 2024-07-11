@@ -62,7 +62,7 @@ fun MemberEditScreen(
         ToolBarWidget(
             title = stringResource(R.string.txt_edit_member),
             canNavigateBack = true,
-            secondaryIcon = Icons.Default.DeleteForever,
+            secondaryIcon = if (viewModel.hasAdminRights()) Icons.Default.DeleteForever else null,
             onSecondaryIconPressed = { showDialog = true },
             onBackPressed = viewModel::navigateBack
         )
@@ -84,6 +84,7 @@ fun MemberEditScreen(
             ) {
                 memberEntity.value?.let {
                     MemberProfileWidget(
+                        isEnabled = viewModel.hasAdminRights(),
                         imageUrl = it.profileImageUrl,
                         onImageSelect = {
                             galleryLauncher.launch("image/*")
@@ -94,6 +95,7 @@ fun MemberEditScreen(
                     )
 
                     MemberEditDetailsScreen(
+                        hasAdminRights = viewModel.hasAdminRights(),
                         uiState = uiState,
                         memberEntity = it,
                         onSetString = viewModel::setString,

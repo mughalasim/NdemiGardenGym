@@ -150,13 +150,6 @@ class MemberUseCase(
         return memberRepository.deleteMember(memberEntity)
     }
 
-    suspend fun getAllPaymentPlans(year: Int) =
-        memberRepository.getPayments(
-            isMembersPayment = false,
-            memberId = "",
-            year = year
-        )
-
     suspend fun getPaymentPlanForMember(memberId: String, year: Int) =
         memberRepository.getPayments(
             isMembersPayment = true,

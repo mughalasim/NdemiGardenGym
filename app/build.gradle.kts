@@ -33,7 +33,6 @@ android {
 
         setConfigVariable(variableName = "CURRENCY_CODE", variableSource = "CURRENCY_CODE")
         setConfigVariable(variableName = "API_BASE_URL", variableSource = "API_BASE_URL")
-        setConfigVariable(variableName = "ADMIN_LIVE", variableSource = "ADMIN_LIVE")
         setConfigVariable(variableName = "ADMIN_STAGING", variableSource = "ADMIN_STAGING")
         setConfigVariable(variableName = "PATH_USER_IMAGES", variableSource = "PATH_USER_IMAGES")
         setConfigVariable(variableName = "PATH_PAYMENT", variableSource = "PATH_PAYMENT")
@@ -109,7 +108,7 @@ android {
     detekt {
         toolVersion = libs.versions.detekt.get()
         config.setFrom(rootProject.file("detekt.yml"))
-        buildUponDefaultConfig = true
+        buildUponDefaultConfig = false
     }
 
     packaging {

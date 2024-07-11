@@ -34,7 +34,7 @@ fun MembersScreen (
     Column {
         ToolBarWidget(
             title = stringResource(R.string.txt_members),
-            secondaryIcon = Icons.Default.PersonAdd,
+            secondaryIcon = if (viewModel.hasAdminRights()) Icons.Default.PersonAdd else null,
             onSecondaryIconPressed = viewModel::onRegisterMember
         )
 
@@ -53,6 +53,7 @@ fun MembersScreen (
                         TextRegular(text = stringResource(R.string.txt_no_members))
                     } else {
                         MembersListScreen(
+                            hasAdminRights = viewModel.hasAdminRights(),
                             members = (uiState.value as UiState.Success).members,
                             onMemberTapped = viewModel::onMemberTapped,
                             onPaymentsTapped = viewModel::onPaymentsTapped,

@@ -1,6 +1,7 @@
 package cv.domain.usecase
 
 import cv.domain.DomainResult
+import cv.domain.entities.MemberType
 import cv.domain.repositories.AuthRepository
 
 class AuthUseCase(
@@ -15,9 +16,16 @@ class AuthUseCase(
     fun resetPasswordForEmail(email: String, callback: (DomainResult<Unit>) -> Unit) =
         authRepository.resetPasswordForEmail(email, callback)
 
+    fun logOut() = authRepository.logOut()
+
+    suspend fun getLoggedInUser() = authRepository.getLoggedInUser()
+
+    suspend fun getAuthState() = authRepository.getAuthState()
+
     fun isAuthenticated() = authRepository.isAuthenticated()
 
-    fun isAdmin() = authRepository.isAdmin()
+    fun isNotMember() = authRepository.getMemberType() != MemberType.MEMBER
 
-    fun logOut() = authRepository.logOut()
+    fun hasAdminRights() = authRepository.getMemberType() == MemberType.ADMIN
+
 }

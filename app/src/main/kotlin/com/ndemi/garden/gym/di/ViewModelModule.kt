@@ -18,7 +18,7 @@ import org.koin.dsl.module
 val viewModelModule =
     module {
 
-        viewModel { MainScreenViewModel(get(), get()) }
+        viewModel { MainScreenViewModel(get(), get(), get()) }
 
         viewModel { LoginScreenViewModel(get(), get(), get()) }
 
@@ -26,17 +26,17 @@ val viewModelModule =
 
         viewModel { AttendanceScreenViewModel(get(), get()) }
 
-        viewModel { PaymentsScreenViewModel(get(), get(), get()) }
+        viewModel { PaymentsScreenViewModel(get(), get(), get(), get()) }
 
         viewModel { PaymentAddScreenViewModel(get(), get(), get()) }
 
         viewModel { LiveAttendanceScreenViewModel(get(), get()) }
 
-        viewModel { MembersScreenViewModel(get(), get(), get()) }
+        viewModel { MembersScreenViewModel(get(), get(), get(), get()) }
 
-        viewModel { MemberEditScreenViewModel(get(), get(), get(), get()) }
+        viewModel { MemberEditScreenViewModel(get(), get(), get(), get(), get()) }
 
-        viewModel { MembersAttendancesScreenViewModel(get(), get(), get()) }
+        viewModel { MembersAttendancesScreenViewModel(get(), get(), get(), get()) }
 
         viewModel { RegisterScreenViewModel(get(), get(), get(), get()) }
 

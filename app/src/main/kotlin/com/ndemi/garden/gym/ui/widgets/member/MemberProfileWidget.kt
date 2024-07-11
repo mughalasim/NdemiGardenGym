@@ -34,6 +34,7 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
 fun MemberProfileWidget(
+    isEnabled: Boolean = true,
     imageUrl: String,
     onImageSelect: () -> Unit = {},
     onImageDelete: () -> Unit = {},
@@ -51,25 +52,27 @@ fun MemberProfileWidget(
                 .width(icon_image_size_profile),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Image(
-                imageVector = Icons.Rounded.CameraAlt,
-                contentDescription = "Select Picture",
-                contentScale = ContentScale.Inside,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(border_radius))
-                    .border(
-                        border = BorderStroke(line_thickness, AppTheme.colors.highLight),
-                        shape = RoundedCornerShape(border_radius)
-                    )
-                    .background(AppTheme.colors.highLight)
-                    .width(icon_image_size_large)
-                    .height(icon_image_size_large)
-                    .clickable {
-                        onImageSelect.invoke()
-                    }
-            )
+            if (isEnabled) {
+                Image(
+                    imageVector = Icons.Rounded.CameraAlt,
+                    contentDescription = "Select Picture",
+                    contentScale = ContentScale.Inside,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(border_radius))
+                        .border(
+                            border = BorderStroke(line_thickness, AppTheme.colors.highLight),
+                            shape = RoundedCornerShape(border_radius)
+                        )
+                        .background(AppTheme.colors.highLight)
+                        .width(icon_image_size_large)
+                        .height(icon_image_size_large)
+                        .clickable {
+                            onImageSelect.invoke()
+                        }
+                )
+            }
 
-            if (imageUrl.isNotEmpty()) {
+            if (imageUrl.isNotEmpty() && isEnabled) {
                 Image(
                     imageVector = Icons.Rounded.DeleteForever,
                     contentDescription = "Delete Picture",

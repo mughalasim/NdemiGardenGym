@@ -13,6 +13,7 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ import org.joda.time.DateTime
 class MembersScreenViewModel (
     private val errorCodeConverter: ErrorCodeConverter,
     private val memberUseCase: MemberUseCase,
+    private val authUseCase: AuthUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
 
@@ -37,6 +39,8 @@ class MembersScreenViewModel (
             }
         }
     }
+
+    fun hasAdminRights() = authUseCase.hasAdminRights()
 
     fun onMemberTapped(memberEntity: MemberEntity) {
        navigationService.open(Route.MemberEditScreen(memberEntity.id))
