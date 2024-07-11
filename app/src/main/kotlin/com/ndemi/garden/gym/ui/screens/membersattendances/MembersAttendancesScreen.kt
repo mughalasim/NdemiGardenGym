@@ -67,7 +67,7 @@ fun MembersAttendancesScreen (
                     } else {
                         AttendanceListScreen(
                             attendances = result.attendances,
-                            canDeleteAttendance = true,
+                            canDeleteAttendance = viewModel.hasAdminRights(),
                             totalMinutes = result.totalMinutes
                         ){
                             viewModel.deleteAttendance(it)

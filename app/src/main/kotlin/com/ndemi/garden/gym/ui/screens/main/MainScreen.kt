@@ -1,30 +1,11 @@
 package com.ndemi.garden.gym.ui.screens.main
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageShader
-import androidx.compose.ui.graphics.ShaderBrush
-import androidx.compose.ui.graphics.TileMode
-import androidx.compose.ui.res.imageResource
-import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.compose.rememberNavController
-import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.navigation.NavigationHost
-import com.ndemi.garden.gym.navigation.Route
-import com.ndemi.garden.gym.navigation.Route.Companion.toRoute
-import com.ndemi.garden.gym.ui.theme.AppTheme
-import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.widgets.BottomNavItem
-import com.ndemi.garden.gym.ui.widgets.BottomNavigationWidget
+import com.ndemi.garden.gym.ui.widgets.LoadingScreenWidget
+import com.ndemi.garden.gym.ui.widgets.WarningWidget
+import cv.domain.entities.MemberType
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -33,45 +14,48 @@ fun MainScreen(
 ) {
     val navController = rememberNavController()
     viewModel.setNavController(navController)
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route?.toRoute()
+    val authState = viewModel.authState.observeAsState()
 
-    Scaffold(
-        topBar = {},
-        bottomBar = {
-            val bottomNavItems = when (currentRoute) {
-                Route.LoginScreen -> BottomNavItem.getLoginBottomItems()
-                else -> {
-                    if (viewModel.isAuthenticated() && viewModel.isAdmin()){
-                        BottomNavItem.getAdminBottomItems()
-                    } else if (viewModel.isAuthenticated()){
-                        BottomNavItem.getMemberBottomItems()
-                    } else {
-                        BottomNavItem.getLoginBottomItems()
-                    }
+    when(authState.value){
+        MainScreenViewModel.AuthState.Authorised -> {
+            val data = viewModel.loggedInMember.observeAsState()
+            when(val response = data.value){
+
+                is MainScreenViewModel.UiState.Error -> {
+                    WarningWidget(title = response.message)
+                }
+
+                MainScreenViewModel.UiState.Loading -> {
+                    LoadingScreenWidget()
+                }
+
+                is MainScreenViewModel.UiState.Success -> {
+                    MainDetailsScreen(
+                        isAuthenticated = true,
+                        isAdmin = response.member.memberType != MemberType.MEMBER,
+                        navController = navController,
+                        navigationService = viewModel.getNavigationService()
+                    )
+                }
+
+                null -> {
+                    LoadingScreenWidget()
                 }
             }
-            BottomNavigationWidget(
-                navController,
-                bottomNavItems
-            )
-        },
-    ) { innerPadding ->
-        val image = ImageBitmap.imageResource(R.drawable.bg_pattern)
-        val brush = remember(image) { ShaderBrush(ImageShader(image, TileMode.Repeated, TileMode.Repeated)) }
-        Column(
-            modifier =
-            Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .background(AppTheme.colors.backgroundScreen)
-                .background(brush, alpha = 0.05f),
-            verticalArrangement = Arrangement.spacedBy(padding_screen),
-        ) {
-            NavigationHost(
+        }
+
+        MainScreenViewModel.AuthState.UnAuthorised -> {
+            MainDetailsScreen(
+                isAuthenticated = false,
+                isAdmin = false,
                 navController = navController,
-                navigationService = viewModel.getNavigationService(),
+                navigationService = viewModel.getNavigationService()
             )
+        }
+
+        null -> {
+            LoadingScreenWidget()
         }
     }
 }
+

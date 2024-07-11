@@ -6,12 +6,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberInfoWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberSessionWidget
 import cv.domain.entities.MemberEntity
@@ -25,7 +22,6 @@ fun ProfileDetailsScreen(
     sessionStartTime: DateTime? = null,
     onSessionStarted: () -> Unit = {},
     onSessionCompleted: (DateTime, DateTime) -> Unit = { _, _ -> },
-    onRegisterMember: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -43,14 +39,6 @@ fun ProfileDetailsScreen(
                 onSessionCompleted = onSessionCompleted,
             )
         }
-
-        if (isAdmin){
-            ButtonWidget(
-                title = stringResource(R.string.txt_register_new_member),
-            ) {
-                onRegisterMember.invoke()
-            }
-        }
     }
 }
 
@@ -60,7 +48,7 @@ fun ProfileDetailsScreenPreview() {
     AppThemeComposable {
         ProfileDetailsScreen(
             memberEntity = getMockRegisteredMemberEntity(),
-            isAdmin = true
+            isAdmin = false
         )
     }
 }

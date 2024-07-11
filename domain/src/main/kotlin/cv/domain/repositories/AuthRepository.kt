@@ -1,11 +1,14 @@
 package cv.domain.repositories
 
 import cv.domain.DomainResult
+import cv.domain.entities.MemberEntity
+import cv.domain.entities.MemberType
+import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
     fun isAuthenticated(): Boolean
 
-    fun isAdmin(): Boolean
+    fun getMemberType(): MemberType
 
     fun logOut()
 
@@ -14,4 +17,8 @@ interface AuthRepository {
     fun login(email: String, password: String, callback: (DomainResult<Unit>) -> Unit)
 
     fun resetPasswordForEmail(email: String, callback: (DomainResult<Unit>) -> Unit)
+
+    suspend fun getLoggedInUser(): Flow<DomainResult<MemberEntity>>
+
+    suspend fun getAuthState(): Flow<DomainResult<Unit>>
 }

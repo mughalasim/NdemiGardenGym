@@ -77,7 +77,6 @@ fun ProfileScreen(
                         sessionStartTime = sessionStartTime,
                         onSessionStarted = viewModel::setStartedSession,
                         onSessionCompleted = viewModel::setAttendance,
-                        onRegisterMember = viewModel::onRegisterMember,
                     )
                     ButtonWidget(
                         title = stringResource(R.string.txt_logout),
@@ -89,4 +88,3 @@ fun ProfileScreen(
         }
     }
 }
-
