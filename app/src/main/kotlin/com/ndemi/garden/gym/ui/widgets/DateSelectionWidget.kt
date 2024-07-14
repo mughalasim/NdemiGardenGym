@@ -57,7 +57,7 @@ fun DateSelectionWidget(
         }
     }
 
-    MonthPicker(
+    MonthPickerWidget(
         visible = monthPickerVisibility,
         currentMonth = selectedDate.monthOfYear - 1,
         currentYear = selectedDate.year,

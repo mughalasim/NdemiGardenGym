@@ -22,7 +22,7 @@ class MainScreenViewModel(
     fun getNavigationService(): NavigationService = navigationService
 
     val authState = liveData(Dispatchers.IO) {
-        emit(AuthState.UnAuthorised)
+        emit(AuthState.Loading)
         authUseCase.getAuthState().collect{
             when(it){
                 is DomainResult.Success ->
@@ -32,7 +32,18 @@ class MainScreenViewModel(
                     emit(AuthState.UnAuthorised)
             }
         }
+    }
 
+    val appVersion = liveData(Dispatchers.IO) {
+        emit(VersionState.Loading)
+        authUseCase.getAppVersion().collect{
+            when(it){
+                is DomainResult.Success ->
+                    emit(VersionState.UpdateRequired(it.data))
+
+                is DomainResult.Error -> emit(VersionState.Success)
+            }
+        }
     }
 
     val loggedInMember = liveData(Dispatchers.IO) {
@@ -50,7 +61,18 @@ class MainScreenViewModel(
     }
 
     @Immutable
+    sealed interface VersionState {
+        data object Loading : VersionState
+
+        data object Success : VersionState
+
+        data class UpdateRequired(val url: String) : VersionState
+    }
+
+    @Immutable
     sealed interface AuthState {
+        data object Loading : AuthState
+
         data object Authorised : AuthState
 
         data object UnAuthorised : AuthState

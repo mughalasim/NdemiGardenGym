@@ -6,6 +6,7 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import cv.data.mappers.toMemberEntity
 import cv.data.models.MemberModel
+import cv.data.models.VersionModel
 import cv.data.retrofit.toDomainError
 import cv.domain.DomainError
 import cv.domain.DomainResult
@@ -20,6 +21,9 @@ import kotlinx.coroutines.flow.callbackFlow
 
 class AuthRepositoryImp(
     private val pathUser: String,
+    private val pathVersion: String,
+    private val pathVersionType: String,
+    private val currentAppVersion: Int,
     private val logger: AppLoggerRepository,
 ) : AuthRepository {
 
@@ -84,6 +88,30 @@ class AuthRepositoryImp(
         awaitClose { }
     }
 
+    override suspend fun getAppVersion() = callbackFlow {
+        val eventDocument = Firebase.firestore.collection(pathVersion).document(pathVersionType)
+
+        val subscription = eventDocument.addSnapshotListener { snapshot, error ->
+            snapshot?.let { response ->
+                logger.log("Data received: $response")
+                val versionModel = response.toObject<VersionModel>()
+                versionModel?.let {
+                    if (it.version > currentAppVersion) {
+                        trySend(DomainResult.Success(it.url)).isSuccess
+                    } else {
+                        trySend(DomainResult.Error(DomainError.NO_DATA)).isSuccess
+                    }
+                } ?: run {
+                    trySend(DomainResult.Error(DomainError.NO_DATA)).isSuccess
+                }
+            }
+            error?.let {
+                logger.log("Exception: $error", AppLogLevel.ERROR)
+                trySend(DomainResult.Error(error.toDomainError())).isSuccess
+            }
+        }
+        awaitClose{ subscription.remove() }
+    }
 
     override suspend fun getLoggedInUser(): Flow<DomainResult<MemberEntity>> = callbackFlow {
         Firebase.auth.currentUser?.uid?.let {
