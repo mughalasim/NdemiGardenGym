@@ -28,8 +28,10 @@ class MembersScreenViewModel (
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
 
+    private val _membersUnfiltered: MutableList<MemberEntity> = mutableListOf()
     private val _members = MutableLiveData<List<MemberEntity>>(listOf())
     val members: LiveData<List<MemberEntity>> = _members
+    var searchTerm: String = ""
 
     fun getMembers() {
         sendAction(Action.SetLoading)
@@ -39,7 +41,9 @@ class MembersScreenViewModel (
                     is DomainResult.Error ->
                         sendAction(Action.ShowDomainError(result.error, errorCodeConverter))
                     is DomainResult.Success -> {
-                        _members.value = result.data
+                        _membersUnfiltered.clear()
+                        _membersUnfiltered.addAll(result.data)
+                        filterResults()
                         sendAction(Action.Success)
                     }
                 }
@@ -86,6 +90,21 @@ class MembersScreenViewModel (
             ).also {
                 getMembers()
             }
+        }
+    }
+
+    fun onSearchTextChanged(searchTerm: String) {
+        this.searchTerm = searchTerm
+        filterResults()
+    }
+
+    private fun filterResults() {
+        if (searchTerm.isNotEmpty()){
+            _members.value = _membersUnfiltered.filter {
+                it.getFullName().lowercase().contains(searchTerm.lowercase())
+            }
+        } else {
+            _members.value = _membersUnfiltered
         }
     }
 

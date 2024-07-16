@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
+import com.ndemi.garden.gym.ui.widgets.SearchTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
@@ -55,11 +55,18 @@ fun MembersScreen(
         ) {
             LazyColumn {
                 item {
+                    SearchTextWidget(
+                        textInput = viewModel.searchTerm,
+                        hint = stringResource(R.string.txt_search_members),
+                        onValueChanged = viewModel::onSearchTextChanged
+                    )
+                }
+                item {
                     if (members.value.isEmpty() && uiState.value !is UiState.Loading) {
                         TextRegular(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(padding_screen_tiny),
+                                .padding(padding_screen),
                             textAlign = TextAlign.Center,
                             text = stringResource(R.string.txt_no_members)
                         )
