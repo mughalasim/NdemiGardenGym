@@ -21,4 +21,6 @@ interface AuthRepository {
     suspend fun getLoggedInUser(): Flow<DomainResult<MemberEntity>>
 
     suspend fun getAuthState(): Flow<DomainResult<Unit>>
+
+    suspend fun getAppVersion(): Flow<DomainResult<String>>
 }

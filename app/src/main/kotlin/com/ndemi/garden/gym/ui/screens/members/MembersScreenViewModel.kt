@@ -1,6 +1,8 @@
 package com.ndemi.garden.gym.ui.screens.members
 
 import androidx.compose.runtime.Immutable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
@@ -26,6 +28,11 @@ class MembersScreenViewModel (
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
 
+    private val _membersUnfiltered: MutableList<MemberEntity> = mutableListOf()
+    private val _members = MutableLiveData<List<MemberEntity>>(listOf())
+    val members: LiveData<List<MemberEntity>> = _members
+    var searchTerm: String = ""
+
     fun getMembers() {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
@@ -33,8 +40,12 @@ class MembersScreenViewModel (
                 when(result){
                     is DomainResult.Error ->
                         sendAction(Action.ShowDomainError(result.error, errorCodeConverter))
-                    is DomainResult.Success ->
-                        sendAction(Action.Success(result.data))
+                    is DomainResult.Success -> {
+                        _membersUnfiltered.clear()
+                        _membersUnfiltered.addAll(result.data)
+                        filterResults()
+                        sendAction(Action.Success)
+                    }
                 }
             }
         }
@@ -82,13 +93,28 @@ class MembersScreenViewModel (
         }
     }
 
+    fun onSearchTextChanged(searchTerm: String) {
+        this.searchTerm = searchTerm
+        filterResults()
+    }
+
+    private fun filterResults() {
+        if (searchTerm.isNotEmpty()){
+            _members.value = _membersUnfiltered.filter {
+                it.getFullName().lowercase().contains(searchTerm.lowercase())
+            }
+        } else {
+            _members.value = _membersUnfiltered
+        }
+    }
+
     @Immutable
     sealed interface UiState : BaseState {
         data object Loading : UiState
 
         data class Error(val message: String) : UiState
 
-        data class Success(val members: List<MemberEntity>) : UiState
+        data object Success : UiState
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -104,8 +130,8 @@ class MembersScreenViewModel (
                 UiState.Error(errorCodeConverter.getMessage(domainError))
         }
 
-        data class Success(val members: List<MemberEntity>) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Success(members)
+        data object Success : Action {
+            override fun reduce(state: UiState): UiState = UiState.Success
         }
     }
 }

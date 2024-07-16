@@ -4,34 +4,27 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 
-private val localFontFamily = FontFamily.Default
+private val localFontFamily = FontFamily.SansSerif
 
 data class AppTextStyles(
     val small: TextStyle =
         TextStyle(
             fontFamily = localFontFamily,
             fontWeight = FontWeight.Normal,
-            fontSize = 14.sp,
+            fontSize = text_size_small,
         ),
     val regular: TextStyle =
         TextStyle(
             fontFamily = localFontFamily,
             fontWeight = FontWeight.Normal,
-            fontSize = 18.sp,
+            fontSize = text_size_regular,
         ),
     val regularBold: TextStyle =
         TextStyle(
             fontFamily = localFontFamily,
             fontWeight = FontWeight.ExtraBold,
-            fontSize = 18.sp,
-        ),
-    val large: TextStyle =
-        TextStyle(
-            fontFamily = localFontFamily,
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
+            fontSize = text_size_regular,
         ),
 )
 

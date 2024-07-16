@@ -36,6 +36,7 @@ android {
         setConfigVariable(variableName = "ADMIN_STAGING", variableSource = "ADMIN_STAGING")
         setConfigVariable(variableName = "PATH_USER_IMAGES", variableSource = "PATH_USER_IMAGES")
         setConfigVariable(variableName = "PATH_PAYMENT", variableSource = "PATH_PAYMENT")
+        setConfigVariable(variableName = "PATH_APP_VERSION", variableSource = "PATH_APP_VERSION")
 
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         vectorDrawables { useSupportLibrary = true }
@@ -61,6 +62,7 @@ android {
             setConfigVariable(variableName = "PATH_USER", variableSource = "PATH_USER")
             setConfigVariable(variableName = "PATH_ATTENDANCE", variableSource = "PATH_ATTENDANCE")
             setConfigVariable(variableName = "PATH_PAYMENT_PLAN", variableSource = "PATH_PAYMENT_PLAN")
+            setConfigVariable(variableName = "PATH_APP_VERSION_TYPE", variableSource = "PATH_APP_VERSION_TYPE")
         }
 
         getByName("debug") {
@@ -71,6 +73,7 @@ android {
             setConfigVariable(variableName = "PATH_USER", variableSource = "DEBUG_PATH_USER")
             setConfigVariable(variableName = "PATH_ATTENDANCE", variableSource = "DEBUG_PATH_ATTENDANCE")
             setConfigVariable(variableName = "PATH_PAYMENT_PLAN", variableSource = "DEBUG_PATH_PAYMENT")
+            setConfigVariable(variableName = "PATH_APP_VERSION_TYPE", variableSource = "DEBUG_PATH_APP_VERSION_TYPE")
         }
     }
 

@@ -25,6 +25,7 @@
     <string name="error_invalid_amount">Amount entered is invalid, set any number above 0</string>
     <string name="error_invalid_month_duration">The month duration is invalid, set any number above 0</string>
     <string name="error_invalid_phone_number">The phone number is invalid, leave blank if not present</string>
+    <string name="error_failed_to_open_link">Failed to open link, please try again later</string>
 
     <!-- Text within screens-->
     <string name="txt_ok">OK</string>
@@ -110,6 +111,10 @@
     <string name="txt_amount">Amount</string>
     <string name="txt_add_payment">Add Payment</string>
     <string name="txt_amount_due">Amount due</string>
+    <string name="txt_app_update_title">App update required</string>
+    <string name="txt_app_update_desc">Looks like you are using an outdated version of the app, please tap the download button below to get redirected to the latest version</string>
+    <string name="txt_download">Download</string>
+    <string name="txt_search_members">Search members</string>
 
     <!-- Plurals-->
     <plurals name="plural_months">

@@ -16,6 +16,9 @@ val repositoryModule =
         single<AuthRepository> {
             AuthRepositoryImp(
                 pathUser = BuildConfig.PATH_USER,
+                pathVersion = BuildConfig.PATH_APP_VERSION,
+                pathVersionType = BuildConfig.PATH_APP_VERSION_TYPE,
+                currentAppVersion = BuildConfig.VERSION_CODE,
                 logger = get()
             )
         }

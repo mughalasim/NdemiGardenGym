@@ -42,7 +42,7 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MonthPicker(
+fun MonthPickerWidget(
     visible: Boolean,
     currentMonth: Int,
     currentYear: Int,
@@ -182,7 +182,7 @@ fun MonthPicker(
 @Composable
 fun MonthPickerPreview() {
     AppThemeComposable {
-        MonthPicker(
+        MonthPickerWidget(
             visible = true,
             currentMonth = 9,
             currentYear = 2024,

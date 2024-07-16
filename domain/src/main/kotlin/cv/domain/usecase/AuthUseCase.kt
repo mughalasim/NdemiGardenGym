@@ -7,14 +7,22 @@ import cv.domain.repositories.AuthRepository
 class AuthUseCase(
     private val authRepository: AuthRepository,
 ) {
-    fun register(email: String, password: String, callback: (DomainResult<String>) -> Unit) =
-        authRepository.register(email, password, callback)
+    fun register(
+        email: String,
+        password: String,
+        callback: (DomainResult<String>) -> Unit,
+    ) = authRepository.register(email, password, callback)
 
-    fun login(email: String, password: String, callback: (DomainResult<Unit>) -> Unit) =
-        authRepository.login(email, password, callback)
+    fun login(
+        email: String,
+        password: String,
+        callback: (DomainResult<Unit>) -> Unit,
+    ) = authRepository.login(email, password, callback)
 
-    fun resetPasswordForEmail(email: String, callback: (DomainResult<Unit>) -> Unit) =
-        authRepository.resetPasswordForEmail(email, callback)
+    fun resetPasswordForEmail(
+        email: String,
+        callback: (DomainResult<Unit>) -> Unit,
+    ) = authRepository.resetPasswordForEmail(email, callback)
 
     fun logOut() = authRepository.logOut()
 
@@ -24,8 +32,11 @@ class AuthUseCase(
 
     fun isAuthenticated() = authRepository.isAuthenticated()
 
-    fun isNotMember() = authRepository.getMemberType() != MemberType.MEMBER
+    fun isNotMember() =
+        authRepository.getMemberType() == MemberType.ADMIN ||
+            authRepository.getMemberType() == MemberType.SUPERVISOR
 
     fun hasAdminRights() = authRepository.getMemberType() == MemberType.ADMIN
 
+    suspend fun getAppVersion() = authRepository.getAppVersion()
 }
