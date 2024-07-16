@@ -16,14 +16,15 @@ Member types
 - Can view who is in the gym
 - Can view total time spent in the gym each month
 
-**Admins**
-- Can Register new members
-- Can delete a member
-- Can upload their profile picture
-- Can update each members membership renewal date, attendance, has a coach, active status and profile pictures
-- Can view and edit all members
-
 **Supervisor**
 - Can view all members
 - Can view each members attendance and payments
 - Can upload their profile picture
+- Can search membes by name
+
+**Admins**
+- Can do all a supervisor can do
+- Can Register new members
+- Can delete a member
+- Can update each members attendance and payment plans
+- Can edit all members details
