@@ -9,6 +9,8 @@ import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreen
 import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreen
 import com.ndemi.garden.gym.ui.screens.login.LoginScreen
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreen
+import com.ndemi.garden.gym.ui.screens.members.MembersActiveScreen
+import com.ndemi.garden.gym.ui.screens.members.MembersExpiredScreen
 import com.ndemi.garden.gym.ui.screens.members.MembersScreen
 import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreen
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreen
@@ -42,6 +44,10 @@ fun NavigationHost(
         composable<Route.LiveAttendanceScreen> { LiveAttendanceScreen() }
 
         composable<Route.MembersScreen> { MembersScreen() }
+
+        composable<Route.MembersActiveScreen> { MembersActiveScreen() }
+
+        composable<Route.MembersExpiredScreen> { MembersExpiredScreen() }
 
         composable<Route.MemberEditScreen> {
             val args = it.toRoute<Route.MemberEditScreen>()

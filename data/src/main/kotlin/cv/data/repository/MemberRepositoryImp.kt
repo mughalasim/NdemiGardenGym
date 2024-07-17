@@ -101,10 +101,37 @@ class MemberRepositoryImp(
                         if (isLive) {
                             it.activeNowDateMillis != null
                         } else {
-                            it.memberType == MemberType.MEMBER
+                            it.memberType == MemberType.MEMBER && it.hasPaidMembership()
                         }
                     }.sortedByDescending {
                         it.registrationDateMillis
+                    })
+                )
+
+            }.addOnFailureListener {
+                logger.log("Exception: $it", AppLogLevel.ERROR)
+                completable.complete(DomainResult.Error(it.toDomainError()))
+            }
+
+        return completable.await()
+    }
+
+    override suspend fun getExpiredMembers(): DomainResult<List<MemberEntity>> {
+        val completable: CompletableDeferred<DomainResult<List<MemberEntity>>> =
+            CompletableDeferred()
+        val collection = database.collection(pathUser)
+
+        collection.get()
+            .addOnSuccessListener { document ->
+                logger.log("Data received: $document")
+                val response = document.toObjects<MemberModel>()
+                completable.complete(DomainResult.Success(
+                    response.map {
+                        it.toMemberEntity()
+                    }.filter {
+                        !it.hasPaidMembership() && it.memberType == MemberType.MEMBER
+                    }.sortedByDescending {
+                        it.renewalFutureDateMillis
                     })
                 )
 

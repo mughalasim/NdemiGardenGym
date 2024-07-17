@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel.UiState
+import com.ndemi.garden.gym.ui.screens.members.MembersActiveScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.SearchTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextRegular
@@ -29,8 +29,8 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MembersScreen(
-    viewModel: MembersScreenViewModel = koinViewModel<MembersScreenViewModel>()
+fun MembersActiveScreen(
+    viewModel: MembersActiveScreenViewModel = koinViewModel<MembersActiveScreenViewModel>()
 ) {
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
     val members = viewModel.members.observeAsState(initial = listOf())
@@ -39,7 +39,7 @@ fun MembersScreen(
 
     Column {
         ToolBarWidget(
-            title = stringResource(R.string.txt_all_members),
+            title = stringResource(R.string.txt_who_is_in),
             secondaryIcon = if (viewModel.hasAdminRights()) Icons.Default.PersonAdd else null,
             onSecondaryIconPressed = viewModel::onRegisterMember
         )
@@ -68,7 +68,7 @@ fun MembersScreen(
                                 .fillMaxWidth()
                                 .padding(padding_screen),
                             textAlign = TextAlign.Center,
-                            text = stringResource(R.string.txt_no_members)
+                            text = stringResource(R.string.txt_no_active_members)
                         )
                     }
                 }

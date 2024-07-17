@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -20,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberProfileWidget
@@ -45,7 +46,11 @@ fun ProfileScreen(
     LaunchedEffect(true) { viewModel.getMember() }
 
     Column {
-        ToolBarWidget(title = stringResource(R.string.txt_profile))
+        ToolBarWidget(
+            title = stringResource(R.string.txt_profile),
+            secondaryIcon = Icons.AutoMirrored.Filled.Logout,
+            onSecondaryIconPressed = viewModel::onLogOutTapped
+        )
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
@@ -78,11 +83,6 @@ fun ProfileScreen(
                         onSessionStarted = viewModel::setStartedSession,
                         onSessionCompleted = viewModel::setAttendance,
                     )
-                    ButtonWidget(
-                        title = stringResource(R.string.txt_logout),
-                    ){
-                        viewModel.onLogOutTapped()
-                    }
                 }
             }
         }
