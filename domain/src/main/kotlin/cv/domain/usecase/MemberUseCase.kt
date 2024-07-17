@@ -40,6 +40,9 @@ class MemberUseCase(
     suspend fun getLiveMembers() =
         memberRepository.getAllMembers(isLive = true)
 
+    suspend fun getExpiredMembers() =
+        memberRepository.getExpiredMembers()
+
     suspend fun getMemberAttendances(year: Int, month: Int) =
         memberRepository.getAttendances(
             isMembersAttendances = true,

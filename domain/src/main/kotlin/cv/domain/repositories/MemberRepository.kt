@@ -13,6 +13,8 @@ interface MemberRepository {
 
     suspend fun getAllMembers(isLive: Boolean): DomainResult<List<MemberEntity>>
 
+    suspend fun getExpiredMembers(): DomainResult<List<MemberEntity>>
+
     suspend fun updateMember(memberEntity: MemberEntity): DomainResult<Boolean>
 
     suspend fun getAttendances(

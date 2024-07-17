@@ -119,7 +119,15 @@ sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: I
     )
 
     data object MembersScreen : BottomNavItem(
-        Route.MembersScreen, Icons.Rounded.Group, R.string.txt_members
+        Route.MembersScreen, Icons.Rounded.Group, R.string.txt_all_members
+    )
+
+    data object MembersExpiredScreen : BottomNavItem(
+        Route.MembersExpiredScreen, Icons.Rounded.Group, R.string.txt_expired_members
+    )
+
+    data object MembersActiveScreen : BottomNavItem(
+        Route.MembersActiveScreen, Icons.Rounded.Group, R.string.txt_active_members
     )
 
     companion object {
@@ -138,6 +146,8 @@ sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: I
 
         fun getAdminBottomItems() = listOf(
             MembersScreen,
+            MembersExpiredScreen,
+            MembersActiveScreen,
             ProfileScreen,
         )
     }
