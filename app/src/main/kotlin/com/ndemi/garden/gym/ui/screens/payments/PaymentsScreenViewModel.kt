@@ -16,13 +16,13 @@ import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.PaymentEntity
 import cv.domain.usecase.AuthUseCase
-import cv.domain.usecase.MemberUseCase
+import cv.domain.usecase.PaymentUseCase
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
 class PaymentsScreenViewModel(
-    private val errorCodeConverter: ErrorCodeConverter,
-    private val membersUseCase: MemberUseCase,
+    private val converter: ErrorCodeConverter,
+    private val paymentUseCase: PaymentUseCase,
     private val authUseCase: AuthUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
@@ -39,13 +39,13 @@ class PaymentsScreenViewModel(
         _canAddPayment.value = false
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            membersUseCase.getPaymentPlanForMember(
+            paymentUseCase.getPaymentPlanForMember(
                 year = selectedDate.year,
                 memberId = memberId
             ).also { result ->
                 when (result) {
                     is DomainResult.Error ->
-                        sendAction(Action.ShowDomainError(result.error, errorCodeConverter))
+                        sendAction(Action.ShowDomainError(result.error, converter))
 
                     is DomainResult.Success -> {
                         _canAddPayment.value = result.data.second
@@ -63,12 +63,12 @@ class PaymentsScreenViewModel(
     fun deletePayment(paymentEntity: PaymentEntity) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            membersUseCase.deletePaymentPlanForMember(paymentEntity).also { result ->
+            paymentUseCase.deletePaymentPlanForMember(paymentEntity).also { result ->
                 when (result) {
                     is DomainResult.Error -> sendAction(
                         Action.ShowDomainError(
                             result.error,
-                            errorCodeConverter
+                            converter
                         )
                     )
 

@@ -11,6 +11,6 @@ val line_thickness = 1.dp
 val icon_image_size = 25.dp
 val icon_image_size_large = 35.dp
 val icon_image_size_profile = 180.dp
-val icon_image_size_profile_small = 80.dp
+val icon_image_size_profile_small = 75.dp
 val text_size_small = 12.sp
 val text_size_regular = 14.sp

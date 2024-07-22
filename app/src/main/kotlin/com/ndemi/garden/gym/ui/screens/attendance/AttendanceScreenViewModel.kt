@@ -11,13 +11,13 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
-import cv.domain.usecase.MemberUseCase
+import cv.domain.usecase.AttendanceUseCase
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
 class AttendanceScreenViewModel(
-    private val errorCodeConverter: ErrorCodeConverter,
-    private val membersUseCase: MemberUseCase,
+    private val converter: ErrorCodeConverter,
+    private val attendanceUseCase: AttendanceUseCase,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
 
     private lateinit var selectedDate: DateTime
@@ -26,13 +26,13 @@ class AttendanceScreenViewModel(
         this.selectedDate = selectedDate
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            membersUseCase.getMemberAttendances(
+            attendanceUseCase.getMemberAttendances(
                 year = selectedDate.year,
                 month = selectedDate.monthOfYear
             ).also { result ->
                 when (result) {
                     is DomainResult.Error ->
-                        sendAction(Action.ShowDomainError(result.error, errorCodeConverter))
+                        sendAction(Action.ShowDomainError(result.error, converter))
 
                     is DomainResult.Success ->
                         sendAction(Action.Success(result.data.first, result.data.second))
@@ -44,12 +44,12 @@ class AttendanceScreenViewModel(
     fun deleteAttendance(attendanceEntity: AttendanceEntity) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            membersUseCase.deleteAttendance(attendanceEntity).also { result ->
+            attendanceUseCase.deleteAttendance(attendanceEntity).also { result ->
                 when (result) {
                     is DomainResult.Error -> sendAction(
                         Action.ShowDomainError(
                             result.error,
-                            errorCodeConverter
+                            converter
                         )
                     )
 

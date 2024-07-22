@@ -1,7 +1,6 @@
 package cv.data.repository
 
-import com.google.firebase.Firebase
-import com.google.firebase.storage.storage
+import com.google.firebase.storage.StorageReference
 import cv.data.retrofit.toDomainError
 import cv.domain.DomainError
 import cv.domain.DomainResult
@@ -12,11 +11,10 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.tasks.await
 
 class StorageRepositoryImp(
+    private val storageReference: StorageReference,
     private val pathUserImage: String,
     private val logger: AppLoggerRepository,
 ): StorageRepository  {
-    private val storageReference = Firebase.storage.reference
-
     override suspend fun updateImageForMember(memberId: String, byteArray: ByteArray): DomainResult<String> {
         if(memberId.isEmpty()){
             logger.log("Not Authorised", AppLogLevel.ERROR)

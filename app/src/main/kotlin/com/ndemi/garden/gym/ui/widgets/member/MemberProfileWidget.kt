@@ -29,6 +29,7 @@ import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.icon_image_size_large
 import com.ndemi.garden.gym.ui.theme.icon_image_size_profile
 import com.ndemi.garden.gym.ui.theme.line_thickness
+import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
@@ -41,7 +42,7 @@ fun MemberProfileWidget(
 ) {
     Box(
         modifier = Modifier
-            .padding(bottom = padding_screen_large)
+            .padding(bottom = padding_screen)
             .wrapContentHeight()
             .wrapContentWidth()
     ) {

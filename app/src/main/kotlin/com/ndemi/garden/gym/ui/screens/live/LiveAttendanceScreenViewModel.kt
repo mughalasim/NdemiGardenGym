@@ -15,7 +15,7 @@ import cv.domain.usecase.MemberUseCase
 import kotlinx.coroutines.launch
 
 class LiveAttendanceScreenViewModel (
-    private val errorCodeConverter: ErrorCodeConverter,
+    private val converter: ErrorCodeConverter,
     private val memberUseCase: MemberUseCase,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
 
@@ -25,7 +25,7 @@ class LiveAttendanceScreenViewModel (
             memberUseCase.getLiveMembers().also { result ->
                 when(result){
                     is DomainResult.Error ->
-                        sendAction(Action.ShowDomainError(result.error, errorCodeConverter))
+                        sendAction(Action.ShowDomainError(result.error, converter))
                     is DomainResult.Success ->
                         sendAction(Action.Success(result.data))
                 }

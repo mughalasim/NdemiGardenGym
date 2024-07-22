@@ -10,35 +10,31 @@ import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
+import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.Action
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
-import cv.domain.usecase.SharedPrefsUseCase
 import cv.domain.usecase.StorageUseCase
 import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
 class ProfileScreenViewModel(
-    private val errorCodeConverter: ErrorCodeConverter,
+    private val converter: ErrorCodeConverter,
     private val authUseCase: AuthUseCase,
     private val memberUseCase: MemberUseCase,
-    private val sharedPrefsUseCase: SharedPrefsUseCase,
+    private val attendanceUseCase: AttendanceUseCase,
     private val storageUseCase: StorageUseCase,
     private val navigationService: NavigationService,
-) : BaseViewModel<UiState, ProfileScreenViewModel.Action>(UiState.Loading) {
+) : BaseViewModel<UiState, Action>(UiState.Loading) {
 
     private lateinit var memberEntity: MemberEntity
     private val _sessionStartTime = MutableLiveData<DateTime?>()
     val sessionStartTime: LiveData<DateTime?> = _sessionStartTime
-
-    init {
-        val time = sharedPrefsUseCase.getStartedSession()
-        _sessionStartTime.value = if (time.isEmpty()) null else DateTime.parse(time)
-    }
 
     fun getMember() {
         sendAction(Action.SetLoading)
@@ -47,16 +43,15 @@ class ProfileScreenViewModel(
                 when (result) {
                     is DomainResult.Error ->{
                         if (result.error == DomainError.NO_DATA){
-                            sendAction(Action.ShowError(errorCodeConverter.getMessage(DomainError.USER_DISABLED)))
+                            sendAction(Action.ShowError(converter.getMessage(DomainError.USER_DISABLED)))
                         }else{
-                            sendAction(Action.ShowError(errorCodeConverter.getMessage(result.error)))
+                            sendAction(Action.ShowError(converter.getMessage(result.error)))
                         }
                     }
 
                     is DomainResult.Success -> {
                         if (result.data.activeNowDateMillis != null) {
                             _sessionStartTime.value = DateTime(result.data.activeNowDateMillis)
-                            sharedPrefsUseCase.setStartedSession(_sessionStartTime.value.toString())
                         }
                         memberEntity = result.data
                         sendAction(Action.Success(result.data))
@@ -68,13 +63,11 @@ class ProfileScreenViewModel(
 
     fun setStartedSession() {
         _sessionStartTime.value = DateTime.now()
-        sharedPrefsUseCase.setStartedSession(_sessionStartTime.value.toString())
         updateMemberLiveStatus()
     }
 
     private fun clearStartedSession() {
         _sessionStartTime.value = null
-        sharedPrefsUseCase.setStartedSession("")
         updateMemberLiveStatus()
     }
 
@@ -90,7 +83,7 @@ class ProfileScreenViewModel(
     fun setAttendance(startDateTime: DateTime, endDateTime: DateTime) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            memberUseCase.addAttendance(startDateTime.toDate(), endDateTime.toDate())
+            attendanceUseCase.addAttendance(startDateTime.toDate(), endDateTime.toDate())
                 .also { result ->
                     clearStartedSession()
                     when (result) {
@@ -98,7 +91,7 @@ class ProfileScreenViewModel(
                             sendAction(
                                 Action.Success(
                                     memberEntity,
-                                    errorCodeConverter.getMessage(result.error)
+                                    converter.getMessage(result.error)
                                 )
                             )
                         }

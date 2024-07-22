@@ -21,16 +21,34 @@ import org.koin.dsl.module
 
 val applicationModule =
     module {
-
         single { FirebaseApp.initializeApp(androidApplication()) }
 
-        single<AnalyticsRepository> { AnalyticsRepositoryImp(Firebase.analytics, get()) }
+        single<AnalyticsRepository> {
+            AnalyticsRepositoryImp(
+                firebaseAnalytics = Firebase.analytics,
+                logger = get()
+            )
+        }
 
-        single<ErrorCodeConverter> { ErrorCodeConverterImp(androidApplication(), get()) }
+        single<ErrorCodeConverter> {
+            ErrorCodeConverterImp(
+                application = androidApplication(),
+                analyticsRepository = get()
+            )
+        }
 
-        single<AppLoggerRepository> { AppLoggerRepositoryImp(isEnabled = BuildConfig.DEBUG) }
+        single<AppLoggerRepository> {
+            AppLoggerRepositoryImp(
+                isEnabled = BuildConfig.DEBUG
+            )
+        }
 
-        single<NavigationService> { NavigationServiceImp(get(), get()) }
+        single<NavigationService> {
+            NavigationServiceImp(
+                analyticsRepository = get(),
+                authUseCase = get()
+            )
+        }
 
         single<SharedPreferences> {
             androidApplication().getSharedPreferences(

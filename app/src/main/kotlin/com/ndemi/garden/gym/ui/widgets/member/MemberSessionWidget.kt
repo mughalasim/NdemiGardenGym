@@ -24,7 +24,6 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants
 import com.ndemi.garden.gym.ui.widgets.TextRegular
 import com.ndemi.garden.gym.ui.widgets.TextRegularBold
-import com.ndemi.garden.gym.ui.widgets.TextSmall
 import org.joda.time.DateTime
 
 @Composable
@@ -50,7 +49,7 @@ fun MemberSessionWidget(
             )
             .padding(padding_screen),
     ) {
-        TextSmall(
+        TextRegularBold(
             color = AppTheme.colors.highLight,
             text = stringResource(R.string.txt_workout_session)
         )
@@ -60,7 +59,7 @@ fun MemberSessionWidget(
                 modifier = Modifier.padding(top = padding_screen_small),
                 text = stringResource(R.string.txt_your_workout_session_is_in_progress)
             )
-            TextRegularBold(
+            TextRegular(
                 modifier = Modifier.padding(top = padding_screen_small),
                 text = stringResource(
                     R.string.txt_started_at,

@@ -12,14 +12,14 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
+import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.AuthUseCase
-import cv.domain.usecase.MemberUseCase
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
 class MembersAttendancesScreenViewModel(
-    private val errorCodeConverter: ErrorCodeConverter,
-    private val membersUseCase: MemberUseCase,
+    private val converter: ErrorCodeConverter,
+    private val attendanceUseCase: AttendanceUseCase,
     private val authUseCase: AuthUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
@@ -32,14 +32,14 @@ class MembersAttendancesScreenViewModel(
         this.memberId = memberId
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            membersUseCase.getMemberAttendancesForId(
+            attendanceUseCase.getMemberAttendancesForId(
                 memberId = memberId,
                 year = selectedDate.year,
                 month = selectedDate.monthOfYear
             ).also { result ->
                 when (result) {
                     is DomainResult.Error ->
-                        sendAction(Action.ShowDomainError(result.error, errorCodeConverter))
+                        sendAction(Action.ShowDomainError(result.error, converter))
 
                     is DomainResult.Success ->
                         sendAction(Action.Success(result.data.first, result.data.second))
@@ -51,12 +51,12 @@ class MembersAttendancesScreenViewModel(
     fun deleteAttendance(attendanceEntity: AttendanceEntity) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            membersUseCase.deleteAttendance(attendanceEntity).also { result ->
+            attendanceUseCase.deleteAttendance(attendanceEntity).also { result ->
                 when (result) {
                     is DomainResult.Error -> sendAction(
                         Action.ShowDomainError(
                             result.error,
-                            errorCodeConverter
+                            converter
                         )
                     )
 

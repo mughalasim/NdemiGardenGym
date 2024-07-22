@@ -52,7 +52,9 @@ fun BottomNavigationWidget(
 
         navBottomItems.forEach { item ->
             val isCurrentSelection =
-                currentDestination?.hierarchy?.any { it.route?.toRoute() == item.route } == true
+                currentDestination?.hierarchy?.any {
+                    it.route?.toRoute() == item.route
+                } == true
             NavigationBarItem(
                 selected = isCurrentSelection,
                 onClick = {

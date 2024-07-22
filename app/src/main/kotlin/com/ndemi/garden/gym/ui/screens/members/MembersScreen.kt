@@ -49,7 +49,7 @@ fun MembersScreen(
         PullToRefreshBox(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding_screen),
+                .padding(horizontal = padding_screen),
             isRefreshing = (uiState.value is UiState.Loading),
             onRefresh = { viewModel.getMembers() }
         ) {
