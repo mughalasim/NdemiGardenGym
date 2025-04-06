@@ -39,7 +39,7 @@ fun MembersScreen(
 
     Column {
         ToolBarWidget(
-            title = stringResource(R.string.txt_all_members),
+            title = stringResource(R.string.txt_active_members),
             secondaryIcon = if (viewModel.hasAdminRights()) Icons.Default.PersonAdd else null,
             onSecondaryIconPressed = viewModel::onRegisterMember
         )

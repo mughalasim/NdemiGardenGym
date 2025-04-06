@@ -39,10 +39,10 @@
     <string name="txt_your_attendances">Your Attendances</string>
 
     <string name="txt_profile">Profile</string>
-    <string name="txt_all_members">All members</string>
-    <string name="txt_expired_members">Expired</string>
+    <string name="txt_active_members">Active Members</string>
+    <string name="txt_inactive_members">Inactive Members</string>
     <string name="txt_expired_memberships">Expired memberships</string>
-    <string name="txt_active_members">In the Gym</string>
+    <string name="txt_in_the_gym">In the Gym</string>
     <string name="txt_edit_member">Edit Member</string>
     <string name="txt_attendance">Attendance</string>
     <string name="txt_live_view">Live view</string>
