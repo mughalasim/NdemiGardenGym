@@ -11,4 +11,5 @@ data class AttendanceModel(
     val endDate: Timestamp = Timestamp(Date()),
 ) {
     fun getAttendanceId(): String = "$memberId-$startDate"
+    fun setAttendanceId(id: String) = Unit
 }

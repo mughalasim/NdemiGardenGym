@@ -107,8 +107,8 @@ sealed class Route {
     @Keep
     @Serializable
     data class MembersAttendancesScreen(
-        val memberId: String,
-        val memberName: String,
+        val memberId: String = "",
+        val memberName: String = "",
     ) : Route()
 
     @Keep
@@ -121,13 +121,13 @@ sealed class Route {
     @Keep
     @Serializable
     data class PaymentAddScreen(
-        val memberId: String,
+        val memberId: String = "",
     ) : Route()
 
     @Keep
     @Serializable
     data class MemberEditScreen(
-        val memberId: String,
+        val memberId: String = "",
     ) : Route()
 
     companion object {
@@ -140,6 +140,7 @@ sealed class Route {
                 LoginScreen
             }
 
+        @Suppress("detekt.CyclomaticComplexMethod")
         fun String.toRoute(): Route {
             return when {
                 this.contains(ResetPasswordScreen.javaClass.simpleName) -> ResetPasswordScreen
@@ -151,10 +152,10 @@ sealed class Route {
                 this.contains(MembersScreen.javaClass.simpleName) -> MembersScreen
                 this.contains(MembersActiveScreen.javaClass.simpleName) -> MembersActiveScreen
                 this.contains(MembersExpiredScreen.javaClass.simpleName) -> MembersExpiredScreen
-                this.contains("MembersAttendancesScreen") -> MembersAttendancesScreen("", "")
+                this.contains("MembersAttendancesScreen") -> MembersAttendancesScreen()
                 this.contains("PaymentsScreen") -> PaymentsScreen()
-                this.contains("PaymentAddScreen") -> PaymentAddScreen("")
-                this.contains("MemberEditScreen") -> MemberEditScreen("")
+                this.contains("PaymentAddScreen") -> PaymentAddScreen()
+                this.contains("MemberEditScreen") -> MemberEditScreen()
                 else  -> LoginScreen
             }
         }

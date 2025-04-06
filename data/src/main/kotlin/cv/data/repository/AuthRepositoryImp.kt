@@ -1,9 +1,8 @@
 package cv.data.repository
 
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
-import com.google.firebase.ktx.Firebase
 import cv.data.mappers.toMemberEntity
 import cv.data.models.MemberModel
 import cv.data.models.VersionModel
@@ -20,6 +19,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
 class AuthRepositoryImp(
+    private val firebaseAuth: FirebaseAuth,
+    private val firebaseFirestore: FirebaseFirestore,
     private val pathUser: String,
     private val pathVersion: String,
     private val pathVersionType: String,
@@ -29,7 +30,7 @@ class AuthRepositoryImp(
 
     private lateinit var memberEntity: MemberEntity
 
-    override fun isAuthenticated() = Firebase.auth.currentUser != null
+    override fun isAuthenticated() = firebaseAuth.currentUser != null
 
     override fun getMemberType() = if (this::memberEntity.isInitialized) {
         memberEntity.memberType
@@ -37,10 +38,10 @@ class AuthRepositoryImp(
         MemberType.MEMBER
     }
 
-    override fun logOut() = Firebase.auth.signOut()
+    override fun logOut() = firebaseAuth.signOut()
 
     override fun register(email: String, password: String, callback: (DomainResult<String>) -> Unit) {
-        Firebase.auth.createUserWithEmailAndPassword(email, password)
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
                 result.user?.let {
                     callback.invoke(DomainResult.Success(it.uid))
@@ -54,7 +55,7 @@ class AuthRepositoryImp(
     }
 
     override fun login(email: String, password: String, callback: (DomainResult<Unit>) -> Unit) {
-        Firebase.auth.signInWithEmailAndPassword(email, password)
+        firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
                 result.user?.let {
                     callback.invoke(DomainResult.Success(Unit))
@@ -68,7 +69,7 @@ class AuthRepositoryImp(
     }
 
     override fun resetPasswordForEmail(email: String, callback: (DomainResult<Unit>) -> Unit){
-        Firebase.auth.sendPasswordResetEmail(email)
+        firebaseAuth.sendPasswordResetEmail(email)
             .addOnSuccessListener {
                 callback.invoke(DomainResult.Success(Unit))
             }.addOnFailureListener {
@@ -78,7 +79,7 @@ class AuthRepositoryImp(
     }
 
     override suspend fun getAuthState(): Flow<DomainResult<Unit>> = callbackFlow {
-        Firebase.auth.addAuthStateListener {
+        firebaseAuth.addAuthStateListener {
             if(it.uid.isNullOrEmpty()){
                 trySend(DomainResult.Error(DomainError.UNAUTHORISED)).isSuccess
             } else {
@@ -89,7 +90,7 @@ class AuthRepositoryImp(
     }
 
     override suspend fun getAppVersion() = callbackFlow {
-        val eventDocument = Firebase.firestore.collection(pathVersion).document(pathVersionType)
+        val eventDocument = firebaseFirestore.collection(pathVersion).document(pathVersionType)
 
         val subscription = eventDocument.addSnapshotListener { snapshot, error ->
             snapshot?.let { response ->
@@ -114,8 +115,8 @@ class AuthRepositoryImp(
     }
 
     override suspend fun getLoggedInUser(): Flow<DomainResult<MemberEntity>> = callbackFlow {
-        Firebase.auth.currentUser?.uid?.let {
-            val eventDocument = Firebase.firestore.collection(pathUser).document(it)
+        firebaseAuth.currentUser?.uid?.let {
+            val eventDocument = firebaseFirestore.collection(pathUser).document(it)
 
             val subscription = eventDocument.addSnapshotListener { snapshot, error ->
                 snapshot?.let { response ->

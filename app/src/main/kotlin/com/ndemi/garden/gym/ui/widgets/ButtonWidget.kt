@@ -98,7 +98,7 @@ fun ButtonOutlineWidget(
     onButtonClicked: () -> Unit = {}
 ){
     OutlinedButton(
-        modifier = modifier.wrapContentWidth(),
+        modifier = modifier,
         onClick = { onButtonClicked.invoke() },
         shape = RoundedCornerShape(border_radius),
         border = BorderStroke(

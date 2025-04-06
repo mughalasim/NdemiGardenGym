@@ -142,8 +142,13 @@ fun PaymentWidget(
 fun PaymentWidgetPreview() {
     AppThemeComposable {
         Column {
-            PaymentWidget(paymentEntity = getMockActivePaymentEntity())
-            PaymentWidget(paymentEntity = getMockExpiredPaymentEntity(), canDeletePayment = true)
+            PaymentWidget(
+                paymentEntity = getMockActivePaymentEntity()
+            )
+            PaymentWidget(
+                paymentEntity = getMockExpiredPaymentEntity(),
+                canDeletePayment = true
+            )
         }
     }
 }

@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 class MainScreenViewModel(
     private val navigationService: NavigationService,
     private val authUseCase: AuthUseCase,
-    private val errorCodeConverter: ErrorCodeConverter,
+    private val converter: ErrorCodeConverter,
 ) : ViewModel() {
     fun setNavController(navController: NavHostController) =
         navigationService.setNavController(navController)
@@ -55,7 +55,7 @@ class MainScreenViewModel(
                     emit(UiState.Success(it.data))
 
                 is DomainResult.Error ->
-                    emit(UiState.Error(errorCodeConverter.getMessage(it.error)))
+                    emit(UiState.Error(converter.getMessage(it.error)))
             }
         }
     }

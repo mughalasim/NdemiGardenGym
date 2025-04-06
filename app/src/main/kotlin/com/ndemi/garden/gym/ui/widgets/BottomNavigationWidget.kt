@@ -52,7 +52,9 @@ fun BottomNavigationWidget(
 
         navBottomItems.forEach { item ->
             val isCurrentSelection =
-                currentDestination?.hierarchy?.any { it.route?.toRoute() == item.route } == true
+                currentDestination?.hierarchy?.any {
+                    it.route?.toRoute() == item.route
+                } == true
             NavigationBarItem(
                 selected = isCurrentSelection,
                 onClick = {
@@ -119,15 +121,15 @@ sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: I
     )
 
     data object MembersScreen : BottomNavItem(
-        Route.MembersScreen, Icons.Rounded.Group, R.string.txt_all_members
+        Route.MembersScreen, Icons.Rounded.Group, R.string.txt_active_members
     )
 
     data object MembersExpiredScreen : BottomNavItem(
-        Route.MembersExpiredScreen, Icons.Rounded.Group, R.string.txt_expired_members
+        Route.MembersExpiredScreen, Icons.Rounded.Group, R.string.txt_inactive_members
     )
 
     data object MembersActiveScreen : BottomNavItem(
-        Route.MembersActiveScreen, Icons.Rounded.Group, R.string.txt_active_members
+        Route.MembersActiveScreen, Icons.Rounded.Group, R.string.txt_in_the_gym
     )
 
     companion object {

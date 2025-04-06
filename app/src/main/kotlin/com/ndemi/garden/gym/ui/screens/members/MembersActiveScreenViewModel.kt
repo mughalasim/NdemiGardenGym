@@ -15,6 +15,7 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.UpdateType
@@ -22,8 +23,9 @@ import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
 class MembersActiveScreenViewModel (
-    private val errorCodeConverter: ErrorCodeConverter,
+    private val converter: ErrorCodeConverter,
     private val memberUseCase: MemberUseCase,
+    private val attendanceUseCase: AttendanceUseCase,
     private val authUseCase: AuthUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
@@ -39,7 +41,7 @@ class MembersActiveScreenViewModel (
             memberUseCase.getLiveMembers().also { result ->
                 when(result){
                     is DomainResult.Error ->
-                        sendAction(Action.ShowDomainError(result.error, errorCodeConverter))
+                        sendAction(Action.ShowDomainError(result.error, converter))
                     is DomainResult.Success -> {
                         _membersUnfiltered.clear()
                         _membersUnfiltered.addAll(result.data)
@@ -74,7 +76,7 @@ class MembersActiveScreenViewModel (
         // Attempt to register an attendance
         if (memberEntity.isActiveNow()){
             viewModelScope.launch {
-                memberUseCase.addAttendanceForMember(
+                attendanceUseCase.addAttendanceForMember(
                     memberEntity.id,
                     DateTime(memberEntity.activeNowDateMillis).toDate(),
                     DateTime.now().toDate()

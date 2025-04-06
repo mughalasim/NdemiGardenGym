@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -94,33 +95,29 @@ fun MemberStatusWidget(
                     text = memberEntity.getFullName(),
                 )
 
-                TextSmall(
-                    text = DateTime.now().toActiveStatusDuration(
-                        startDate = DateTime(memberEntity.activeNowDateMillis)
-                    )
-                )
                 if (showDetails) {
-                    TextSmall(
+                    TextRegular(
+                        modifier = Modifier.padding(top = padding_screen_tiny),
                         color = AppTheme.colors.backgroundError,
                         text = memberEntity.getResidentialStatus()
                     )
+
+                    if (memberEntity.hasPaidMembership()) {
+                        TextRegular(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = memberEntity.renewalFutureDateMillis.toMembershipStatusString()
+                        )
+                        TextRegular(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = AppTheme.colors.backgroundError,
+                            text = memberEntity.amountDue.toAmountString()
+                        )
+                    }
                 }
             }
 
             if (showDetails) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    if (memberEntity.isActiveNow()) {
-                        Icon(
-                            modifier = Modifier
-                                .padding(top = padding_screen_small)
-                                .width(icon_image_size)
-                                .height(icon_image_size),
-                            imageVector = Icons.Rounded.RunCircle,
-                            contentDescription = null,
-                            tint = AppTheme.colors.highLight,
-                        )
-                    }
-
                     if (memberEntity.hasCoach) {
                         Icon(
                             modifier = Modifier
@@ -136,6 +133,7 @@ fun MemberStatusWidget(
                             color = AppTheme.colors.highLight
                         )
                     }
+
                 }
             }
         }
@@ -147,55 +145,24 @@ fun MemberStatusWidget(
                     .padding(top = padding_screen_tiny)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
             ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = stringResource(R.string.txt_membership_due_date)
-                )
-                TextRegular(
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.End,
-                    text = memberEntity.renewalFutureDateMillis.toMembershipStatusString()
-                )
-            }
-
-            if (memberEntity.hasPaidMembership()) {
-                Row(
-                    modifier = Modifier
-                        .padding(top = padding_screen_tiny)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
+                ButtonOutlineWidget(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.txt_payments)
                 ) {
-                    TextSmall(
-                        color = AppTheme.colors.highLight,
-                        text = stringResource(R.string.txt_amount_due)
-                    )
-                    TextRegularBold(
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.End,
-                        color = AppTheme.colors.backgroundError,
-                        text = memberEntity.amountDue.toAmountString()
-                    )
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .padding(top = padding_screen_tiny)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                ButtonOutlineWidget(text = stringResource(R.string.txt_payments)) {
                     onPaymentsTapped.invoke(memberEntity)
                 }
-                ButtonOutlineWidget(text = stringResource(R.string.txt_attendance)) {
+                Spacer(modifier = Modifier.width(padding_screen_small))
+                ButtonOutlineWidget(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.txt_attendance)
+                ) {
                     onAttendanceTapped.invoke(memberEntity)
                 }
-                if (hasAdminRights){
+                if (hasAdminRights && memberEntity.hasPaidMembership()){
+                    Spacer(modifier = Modifier.width(padding_screen_small))
                     ButtonOutlineWidget(
+                        modifier = Modifier.weight(1f),
                         text = if (memberEntity.isActiveNow()) {
                             stringResource(R.string.txt_end_session)
                         } else {
@@ -223,10 +190,12 @@ fun MemberWidgetPreview() {
         Column {
             MemberStatusWidget(
                 memberEntity = getMockRegisteredMemberEntity(),
+                hasAdminRights = true,
                 showDetails = true
             )
             MemberStatusWidget(
                 memberEntity = getMockActiveMemberEntity(),
+                hasAdminRights = true,
                 showDetails = true
             )
             MemberStatusWidget(

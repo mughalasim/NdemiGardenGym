@@ -19,32 +19,127 @@ import org.koin.dsl.module
 
 val viewModelModule =
     module {
+        viewModel {
+            MainScreenViewModel(
+                navigationService = get(),
+                authUseCase = get(),
+                converter = get()
+            )
+        }
 
-        viewModel { MainScreenViewModel(get(), get(), get()) }
+        viewModel {
+            LoginScreenViewModel(
+                converter = get(),
+                authUseCase = get(),
+                navigationService = get()
+            )
+        }
 
-        viewModel { LoginScreenViewModel(get(), get(), get()) }
+        viewModel {
+            ProfileScreenViewModel(
+                converter = get(),
+                authUseCase = get(),
+                memberUseCase = get(),
+                attendanceUseCase = get(),
+                storageUseCase = get(),
+                navigationService = get()
+            )
+        }
 
-        viewModel { ProfileScreenViewModel(get(), get(), get(), get(), get(), get()) }
+        viewModel {
+            AttendanceScreenViewModel(
+                converter = get(),
+                attendanceUseCase = get()
+            )
+        }
 
-        viewModel { AttendanceScreenViewModel(get(), get()) }
+        viewModel {
+            PaymentsScreenViewModel(
+                converter = get(),
+                paymentUseCase = get(),
+                authUseCase = get(),
+                navigationService = get()
+            )
+        }
 
-        viewModel { PaymentsScreenViewModel(get(), get(), get(), get()) }
+        viewModel {
+            PaymentAddScreenViewModel(
+                converter = get(),
+                memberUseCase = get(),
+                paymentUseCase = get(),
+                navigationService = get()
+            )
+        }
 
-        viewModel { PaymentAddScreenViewModel(get(), get(), get()) }
+        viewModel {
+            LiveAttendanceScreenViewModel(
+                converter = get(),
+                memberUseCase = get()
+            )
+        }
 
-        viewModel { LiveAttendanceScreenViewModel(get(), get()) }
+        viewModel {
+            MembersScreenViewModel(
+                converter = get(),
+                memberUseCase = get(),
+                attendanceUseCase = get(),
+                authUseCase = get(),
+                navigationService = get()
+            )
+        }
 
-        viewModel { MembersScreenViewModel(get(), get(), get(), get()) }
+        viewModel {
+            MembersExpiredScreenViewModel(
+                converter = get(),
+                memberUseCase = get(),
+                attendanceUseCase = get(),
+                authUseCase = get(),
+                navigationService = get()
+            )
+        }
 
-        viewModel { MembersExpiredScreenViewModel(get(), get(), get(), get()) }
+        viewModel {
+            MembersActiveScreenViewModel(
+                converter = get(),
+                memberUseCase = get(),
+                attendanceUseCase = get(),
+                authUseCase = get(),
+                navigationService = get()
+            )
+        }
 
-        viewModel { MembersActiveScreenViewModel(get(), get(), get(), get()) }
+        viewModel {
+            MemberEditScreenViewModel(
+                converter = get(),
+                memberUseCase = get(),
+                authUseCase = get(),
+                storageUseCase = get(),
+                navigationService = get()
+            )
+        }
 
-        viewModel { MemberEditScreenViewModel(get(), get(), get(), get(), get()) }
+        viewModel {
+            MembersAttendancesScreenViewModel(
+                converter = get(),
+                attendanceUseCase = get(),
+                authUseCase = get(),
+                navigationService = get()
+            )
+        }
 
-        viewModel { MembersAttendancesScreenViewModel(get(), get(), get(), get()) }
+        viewModel {
+            RegisterScreenViewModel(
+                converter = get(),
+                authUseCase = get(),
+                memberUseCase = get(),
+                navigationService = get()
+            )
+        }
 
-        viewModel { RegisterScreenViewModel(get(), get(), get(), get()) }
-
-        viewModel { ResetPasswordScreenViewModel(get(), get()) }
+        viewModel {
+            ResetPasswordScreenViewModel(
+                converter = get(),
+                authUseCase = get()
+            )
+        }
     }

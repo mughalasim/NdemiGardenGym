@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.navigation.NavigationService
-import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.UiError
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
@@ -187,10 +186,6 @@ class RegisterScreenViewModel(
                 }
             }
         }
-    }
-
-    fun navigateLogInSuccess() {
-        navigationService.open(Route.ProfileScreen, true)
     }
 
     fun navigateBack() {

@@ -39,7 +39,7 @@ fun MembersScreen(
 
     Column {
         ToolBarWidget(
-            title = stringResource(R.string.txt_all_members),
+            title = stringResource(R.string.txt_active_members),
             secondaryIcon = if (viewModel.hasAdminRights()) Icons.Default.PersonAdd else null,
             onSecondaryIconPressed = viewModel::onRegisterMember
         )
@@ -49,7 +49,7 @@ fun MembersScreen(
         PullToRefreshBox(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding_screen),
+                .padding(horizontal = padding_screen),
             isRefreshing = (uiState.value is UiState.Loading),
             onRefresh = { viewModel.getMembers() }
         ) {

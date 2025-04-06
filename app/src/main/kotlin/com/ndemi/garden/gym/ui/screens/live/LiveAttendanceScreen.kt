@@ -2,6 +2,7 @@ package com.ndemi.garden.gym.ui.screens.live
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -12,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
@@ -45,6 +47,8 @@ fun LiveAttendanceScreen(
                 if (uiState.value is UiState.Success) {
                     if ((uiState.value as UiState.Success).members.isEmpty()) {
                         TextRegular(
+                            modifier = Modifier.fillMaxWidth().padding(padding_screen),
+                            textAlign = TextAlign.Center,
                             text = stringResource(R.string.txt_no_one_is_in)
                         )
                     } else {

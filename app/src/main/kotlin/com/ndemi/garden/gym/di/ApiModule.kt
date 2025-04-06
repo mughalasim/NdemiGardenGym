@@ -14,14 +14,13 @@ import retrofit2.Retrofit
 
 val apiModule =
     module {
-
         single<OkHttpClient>() {
             OkHttpClient.Builder()
                 .addInterceptor(
                     HttpLoggingInterceptor { message ->
                         get<AppLoggerRepository>().log("Http: $message")
                     }.apply {
-                        level = if (BuildConfig.DEBUG){
+                        level = if (BuildConfig.DEBUG) {
                             HttpLoggingInterceptor.Level.BODY
                         } else {
                             HttpLoggingInterceptor.Level.NONE
@@ -36,7 +35,7 @@ val apiModule =
             kotlinx.serialization.json.Json {
                 ignoreUnknownKeys = true
                 isLenient = true
-            }.asConverterFactory(CONTENT_TYPE_APPLICATION.toMediaType())
+            }.asConverterFactory("application/json".toMediaType())
         }
 
         single<Retrofit> {
@@ -53,5 +52,3 @@ val apiModule =
             retrofit.create(ApiService::class.java)
         }
     }
-
-private const val CONTENT_TYPE_APPLICATION = "application/json"

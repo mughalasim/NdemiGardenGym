@@ -21,6 +21,7 @@ import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.PaymentEntity
 import cv.domain.usecase.MemberUseCase
+import cv.domain.usecase.PaymentUseCase
 import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
@@ -29,6 +30,7 @@ import java.util.UUID
 class PaymentAddScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val memberUseCase: MemberUseCase,
+    private val paymentUseCase: PaymentUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
 
@@ -103,7 +105,7 @@ class PaymentAddScreenViewModel(
         val amount = _inputData.value?.amount ?: 0.0
 
         viewModelScope.launch {
-            memberUseCase.addPaymentPlanForMember(
+            paymentUseCase.addPaymentPlanForMember(
                 PaymentEntity(
                     paymentId = memberId + UUID.randomUUID().toString(),
                     memberId = memberId,
