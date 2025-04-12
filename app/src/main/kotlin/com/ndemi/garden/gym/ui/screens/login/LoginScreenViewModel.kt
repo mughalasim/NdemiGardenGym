@@ -4,8 +4,6 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ndemi.garden.gym.BuildConfig
-import com.ndemi.garden.gym.navigation.NavigationService
-import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.UiError
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
@@ -19,37 +17,45 @@ import cv.domain.usecase.AuthUseCase
 class LoginScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val authUseCase: AuthUseCase,
-    private val navigationService: NavigationService,
-) :BaseViewModel<UiState, Action>(UiState.Waiting) {
-
-    data class InputData (
+) : BaseViewModel<UiState, Action>(UiState.Waiting) {
+    data class InputData(
         val email: String,
         val password: String,
     )
-    private val _inputData = MutableLiveData(
-        InputData(
-            email = if (BuildConfig.DEBUG) BuildConfig.ADMIN_STAGING else "",
-            password = ""
+
+    private val _inputData =
+        MutableLiveData(
+            InputData(
+                email = if (BuildConfig.DEBUG) BuildConfig.ADMIN_STAGING else "",
+                password = "",
+            ),
         )
-    )
     val inputData: LiveData<InputData> = _inputData
 
-    fun setString(value: String, inputType: InputType) {
-       _inputData.value =  when(inputType){
-            InputType.NONE -> _inputData.value
-            InputType.EMAIL -> _inputData.value?.copy(email = value)
-            InputType.PASSWORD -> _inputData.value?.copy(password = value)
-        }
+    fun setString(
+        value: String,
+        inputType: InputType,
+    ) {
+        _inputData.value =
+            when (inputType) {
+                InputType.NONE -> _inputData.value
+                InputType.EMAIL -> _inputData.value?.copy(email = value)
+                InputType.PASSWORD -> _inputData.value?.copy(password = value)
+            }
         validateInput()
     }
 
-    private fun validateInput(){
+    private fun validateInput() {
         val email = _inputData.value?.email.orEmpty()
         val password = _inputData.value?.password.orEmpty()
 
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        if (email.isEmpty() ||
+            !android.util.Patterns.EMAIL_ADDRESS
+                .matcher(email)
+                .matches()
+        ) {
             sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_EMAIL), InputType.EMAIL))
-        } else if (password.isEmpty()){
+        } else if (password.isEmpty()) {
             sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_PASSWORD), InputType.PASSWORD))
         } else {
             sendAction(Action.SetReady)
@@ -58,8 +64,8 @@ class LoginScreenViewModel(
 
     fun onLoginTapped() {
         sendAction(Action.SetLoading)
-        authUseCase.login(_inputData.value?.email.orEmpty(), _inputData.value?.password.orEmpty()){
-            when(it){
+        authUseCase.login(_inputData.value?.email.orEmpty(), _inputData.value?.password.orEmpty()) {
+            when (it) {
                 is DomainResult.Success ->
                     sendAction(Action.Success)
 
@@ -69,11 +75,6 @@ class LoginScreenViewModel(
         }
     }
 
-    fun navigateLogInSuccess() {
-        navigationService.open(Route.ProfileScreen, true)
-    }
-
-
     @Immutable
     sealed interface UiState : BaseState {
         data object Waiting : UiState
@@ -82,16 +83,18 @@ class LoginScreenViewModel(
 
         data object Loading : UiState
 
-        data class Error(val message: String, val inputType: InputType) : UiState
+        data class Error(
+            val message: String,
+            val inputType: InputType,
+        ) : UiState
 
         data object Success : UiState
-
     }
 
     enum class InputType {
         NONE,
         EMAIL,
-        PASSWORD
+        PASSWORD,
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -103,7 +106,10 @@ class LoginScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowError(val message: String, val inputType: InputType = InputType.NONE) : Action {
+        data class ShowError(
+            val message: String,
+            val inputType: InputType = InputType.NONE,
+        ) : Action {
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
 

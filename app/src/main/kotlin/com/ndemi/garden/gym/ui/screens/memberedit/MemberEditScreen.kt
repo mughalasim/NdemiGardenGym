@@ -48,10 +48,9 @@ fun MemberEditScreen(
     val context = LocalContext.current
     val galleryLauncher = rememberLauncherForActivityResult(GetContent()) { imageUri ->
         imageUri?.let {
-            context.contentResolver.openInputStream(imageUri)?.use { it.buffered().readBytes() }
-                ?.let {
-                    viewModel.updateMemberImage(it)
-                }
+            context.contentResolver.openInputStream(imageUri)
+                ?.use { inputStream -> inputStream.buffered().readBytes() }
+                ?.let { byteArray -> viewModel.updateMemberImage(byteArray) }
         }
     }
     var showDialog by remember { mutableStateOf(false) }

@@ -29,69 +29,72 @@ import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun LoginScreen(
-    viewModel: LoginScreenViewModel = koinViewModel<LoginScreenViewModel>()
-) {
-    val uiState = viewModel.uiStateFlow.collectAsState(
-        initial = UiState.Waiting
-    )
-
-//    if (uiState.value is UiState.Success){
-//        viewModel.navigateLogInSuccess()
-//    }
+fun LoginScreen(viewModel: LoginScreenViewModel = koinViewModel<LoginScreenViewModel>()) {
+    val uiState =
+        viewModel.uiStateFlow.collectAsState(
+            initial = UiState.Waiting,
+        )
 
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier =
+            Modifier
+                .fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         ToolBarWidget(title = stringResource(R.string.txt_login))
 
-        if (uiState.value is UiState.Error){
+        if (uiState.value is UiState.Error) {
             val message = (uiState.value as UiState.Error).message
             WarningWidget(message)
         }
 
         Column(
-            modifier = Modifier.padding(horizontal = padding_screen)
+            modifier = Modifier.padding(horizontal = padding_screen),
         ) {
             TextRegular(
                 modifier = Modifier.padding(top = padding_screen),
-                text = stringResource(
-                    R.string.txt_login_desc,
-                    LocalContext.current.getString(R.string.app_name)
-                )
+                text =
+                    stringResource(
+                        R.string.txt_login_desc,
+                        LocalContext.current.getString(R.string.app_name),
+                    ),
             )
 
             EditTextWidget(
                 hint = stringResource(R.string.txt_email),
-                textInput = viewModel.inputData.value?.email.orEmpty(),
+                textInput =
+                    viewModel.inputData.value
+                        ?.email
+                        .orEmpty(),
                 isError = (uiState.value as? UiState.Error)?.inputType == InputType.EMAIL,
-                keyboardType = KeyboardType.Email
-            ){
+                keyboardType = KeyboardType.Email,
+            ) {
                 viewModel.setString(it, InputType.EMAIL)
             }
 
             EditPasswordTextWidget(
                 hint = stringResource(R.string.txt_password),
-                textInput = viewModel.inputData.value?.password.orEmpty(),
-                isError = (uiState.value as? UiState.Error)?.inputType == InputType.PASSWORD
-            ){
+                textInput =
+                    viewModel.inputData.value
+                        ?.password
+                        .orEmpty(),
+                isError = (uiState.value as? UiState.Error)?.inputType == InputType.PASSWORD,
+            ) {
                 viewModel.setString(it, InputType.PASSWORD)
             }
 
             ButtonWidget(
                 title = stringResource(R.string.txt_login),
                 isEnabled = uiState.value is UiState.Ready,
-                isLoading = uiState.value is UiState.Loading
+                isLoading = uiState.value is UiState.Loading,
             ) {
                 viewModel.onLoginTapped()
             }
 
             TextSmall(
                 modifier = Modifier.padding(top = padding_screen_large),
-                text = stringResource(R.string.txt_app_version) + BuildConfig.VERSION_NAME
+                text = stringResource(R.string.txt_app_version) + BuildConfig.VERSION_NAME,
             )
         }
     }
@@ -100,7 +103,7 @@ fun LoginScreen(
 @AppPreview
 @Composable
 fun LoginScreenPreview() {
-    AppThemeComposable{
+    AppThemeComposable {
         LoginScreen()
     }
 }

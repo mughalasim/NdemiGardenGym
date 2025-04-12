@@ -22,19 +22,30 @@ keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 android {
     namespace = libs.versions.appNamespaceId.get()
-    compileSdk = libs.versions.appCompileSdk.get().toInt()
+    compileSdk =
+        libs.versions.appCompileSdk
+            .get()
+            .toInt()
 
     defaultConfig {
         applicationId = libs.versions.appNamespaceId.get()
-        minSdk = libs.versions.appMinSdk.get().toInt()
-        targetSdk = libs.versions.appTargetSdk.get().toInt()
-        versionCode = libs.versions.appVersionCode.get().toInt()
+        minSdk =
+            libs.versions.appMinSdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.appTargetSdk
+                .get()
+                .toInt()
+        versionCode =
+            libs.versions.appVersionCode
+                .get()
+                .toInt()
         versionName = libs.versions.appVersionName.get()
 
         setConfigVariable(variableName = "CURRENCY_CODE", variableSource = "CURRENCY_CODE")
         setConfigVariable(variableName = "API_BASE_URL", variableSource = "API_BASE_URL")
         setConfigVariable(variableName = "ADMIN_STAGING", variableSource = "ADMIN_STAGING")
-        setConfigVariable(variableName = "PATH_USER_IMAGES", variableSource = "PATH_USER_IMAGES")
         setConfigVariable(variableName = "PATH_PAYMENT", variableSource = "PATH_PAYMENT")
         setConfigVariable(variableName = "PATH_APP_VERSION", variableSource = "PATH_APP_VERSION")
 
@@ -63,6 +74,7 @@ android {
             setConfigVariable(variableName = "PATH_ATTENDANCE", variableSource = "PATH_ATTENDANCE")
             setConfigVariable(variableName = "PATH_PAYMENT_PLAN", variableSource = "PATH_PAYMENT_PLAN")
             setConfigVariable(variableName = "PATH_APP_VERSION_TYPE", variableSource = "PATH_APP_VERSION_TYPE")
+            setConfigVariable(variableName = "PATH_USER_IMAGES", variableSource = "PATH_USER_IMAGES")
         }
 
         getByName("debug") {
@@ -74,6 +86,7 @@ android {
             setConfigVariable(variableName = "PATH_ATTENDANCE", variableSource = "DEBUG_PATH_ATTENDANCE")
             setConfigVariable(variableName = "PATH_PAYMENT_PLAN", variableSource = "DEBUG_PATH_PAYMENT")
             setConfigVariable(variableName = "PATH_APP_VERSION_TYPE", variableSource = "DEBUG_PATH_APP_VERSION_TYPE")
+            setConfigVariable(variableName = "PATH_USER_IMAGES", variableSource = "DEBUG_PATH_USER_IMAGES")
         }
     }
 
@@ -120,11 +133,17 @@ android {
     }
 }
 
-fun ApplicationDefaultConfig.setConfigVariable(variableName: String, variableSource: String){
+fun ApplicationDefaultConfig.setConfigVariable(
+    variableName: String,
+    variableSource: String,
+) {
     buildConfigField("String", variableName, gradleLocalProperties(rootDir, providers).getProperty(variableSource))
 }
 
-fun ApplicationBuildType.setConfigVariable(variableName: String, variableSource: String){
+fun ApplicationBuildType.setConfigVariable(
+    variableName: String,
+    variableSource: String,
+) {
     buildConfigField("String", variableName, gradleLocalProperties(rootDir, providers).getProperty(variableSource))
 }
 

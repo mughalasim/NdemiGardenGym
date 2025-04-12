@@ -33,7 +33,7 @@ class MemberEditScreenViewModel(
 
     private var memberId: String = ""
     private lateinit var mutableMemberEntity: MemberEntity
-    private var _memberEntity = MutableLiveData<MemberEntity>(null)
+    private val _memberEntity = MutableLiveData<MemberEntity>(null)
     val memberEntity: LiveData<MemberEntity> = _memberEntity
 
     fun setMemberId(memberId: String){
@@ -89,7 +89,7 @@ class MemberEditScreenViewModel(
                     InputType.APARTMENT_NUMBER
                 )
             )
-        } else if (mutableMemberEntity.isNotEqualTo(_memberEntity.value!!)){
+        } else if (mutableMemberEntity.isNotEqualTo(_memberEntity.value)){
             sendAction(Action.SetReadyToUpdate)
         } else {
             sendAction(Action.Success)
@@ -115,22 +115,26 @@ class MemberEditScreenViewModel(
     }
 
     fun deleteMemberImage() {
-        sendAction(Action.SetLoading)
-        viewModelScope.launch {
-            memberUseCase
-                .updateMember(_memberEntity.value!!.copy(profileImageUrl = ""), UpdateType.PHOTO_DELETE)
-                .also { getMemberForId() }
+        _memberEntity.value?.let {
+            sendAction(Action.SetLoading)
+            viewModelScope.launch {
+                memberUseCase
+                    .updateMember(it.copy(profileImageUrl = ""), UpdateType.PHOTO_DELETE)
+                    .also { getMemberForId() }
+            }
         }
     }
 
     fun updateMemberImage(byteArray: ByteArray) {
-        sendAction(Action.SetLoading)
-        viewModelScope.launch {
-            val success = storageUseCase.updateImageForMember(_memberEntity.value!!, byteArray)
-            if (success){
-                getMemberForId()
-            } else {
-                sendAction(Action.Success)
+        _memberEntity.value?.let {
+            sendAction(Action.SetLoading)
+            viewModelScope.launch {
+                val success = storageUseCase.updateImageForMember(it, byteArray)
+                if (success){
+                    getMemberForId()
+                } else {
+                    sendAction(Action.Success)
+                }
             }
         }
     }
@@ -140,34 +144,30 @@ class MemberEditScreenViewModel(
     }
 
     fun deleteMember() {
-        sendAction(Action.SetLoading)
-        viewModelScope.launch {
-            memberUseCase.deleteMember(_memberEntity.value!!).also {
-                when(it){
-                    is DomainResult.Error -> Action.ShowError(
-                        converter.getMessage(it.error)
-                    )
-                    is DomainResult.Success -> navigationService.popBack()
+        _memberEntity.value?.let {
+            sendAction(Action.SetLoading)
+            viewModelScope.launch {
+                memberUseCase.deleteMember(it).also {
+                    when(it){
+                        is DomainResult.Error -> Action.ShowError(
+                            converter.getMessage(it.error)
+                        )
+                        is DomainResult.Success -> navigationService.popBack()
+                    }
                 }
             }
         }
     }
 
     fun onUpdateTapped() {
-        sendAction(Action.SetLoading)
-        viewModelScope.launch {
-            memberUseCase.updateMember(memberEntity.value!!.copy(
-                firstName = mutableMemberEntity.firstName
-                    .replaceFirstChar(Char::uppercase)
-                    .trim(),
-                lastName = mutableMemberEntity.lastName
-                    .replaceFirstChar(Char::uppercase)
-                    .trim(),
-                apartmentNumber = mutableMemberEntity.apartmentNumber
-                    ?.replaceFirstChar(Char::uppercase),
-                phoneNumber = mutableMemberEntity.phoneNumber,
-                hasCoach = mutableMemberEntity.hasCoach,
-            ), UpdateType.MEMBER).also { getMemberForId() }
+        if (uiStateFlow.value == UiState.ReadyToUpdate){
+            sendAction(Action.SetLoading)
+            viewModelScope.launch {
+                memberUseCase.updateMember(
+                    memberEntity = mutableMemberEntity,
+                    updateType = UpdateType.MEMBER
+                ).also { getMemberForId() }
+            }
         }
     }
 

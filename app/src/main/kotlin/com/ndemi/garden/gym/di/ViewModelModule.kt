@@ -23,7 +23,8 @@ val viewModelModule =
             MainScreenViewModel(
                 navigationService = get(),
                 authUseCase = get(),
-                converter = get()
+                converter = get(),
+                dispatcher = get(),
             )
         }
 
@@ -31,7 +32,6 @@ val viewModelModule =
             LoginScreenViewModel(
                 converter = get(),
                 authUseCase = get(),
-                navigationService = get()
             )
         }
 
@@ -42,14 +42,14 @@ val viewModelModule =
                 memberUseCase = get(),
                 attendanceUseCase = get(),
                 storageUseCase = get(),
-                navigationService = get()
+                navigationService = get(),
             )
         }
 
         viewModel {
             AttendanceScreenViewModel(
                 converter = get(),
-                attendanceUseCase = get()
+                attendanceUseCase = get(),
             )
         }
 
@@ -58,7 +58,7 @@ val viewModelModule =
                 converter = get(),
                 paymentUseCase = get(),
                 authUseCase = get(),
-                navigationService = get()
+                navigationService = get(),
             )
         }
 
@@ -67,14 +67,14 @@ val viewModelModule =
                 converter = get(),
                 memberUseCase = get(),
                 paymentUseCase = get(),
-                navigationService = get()
+                navigationService = get(),
             )
         }
 
         viewModel {
             LiveAttendanceScreenViewModel(
                 converter = get(),
-                memberUseCase = get()
+                memberUseCase = get(),
             )
         }
 
@@ -84,7 +84,7 @@ val viewModelModule =
                 memberUseCase = get(),
                 attendanceUseCase = get(),
                 authUseCase = get(),
-                navigationService = get()
+                navigationService = get(),
             )
         }
 
@@ -94,7 +94,7 @@ val viewModelModule =
                 memberUseCase = get(),
                 attendanceUseCase = get(),
                 authUseCase = get(),
-                navigationService = get()
+                navigationService = get(),
             )
         }
 
@@ -104,7 +104,7 @@ val viewModelModule =
                 memberUseCase = get(),
                 attendanceUseCase = get(),
                 authUseCase = get(),
-                navigationService = get()
+                navigationService = get(),
             )
         }
 
@@ -114,7 +114,7 @@ val viewModelModule =
                 memberUseCase = get(),
                 authUseCase = get(),
                 storageUseCase = get(),
-                navigationService = get()
+                navigationService = get(),
             )
         }
 
@@ -123,7 +123,7 @@ val viewModelModule =
                 converter = get(),
                 attendanceUseCase = get(),
                 authUseCase = get(),
-                navigationService = get()
+                navigationService = get(),
             )
         }
 
@@ -132,14 +132,14 @@ val viewModelModule =
                 converter = get(),
                 authUseCase = get(),
                 memberUseCase = get(),
-                navigationService = get()
+                navigationService = get(),
             )
         }
 
         viewModel {
             ResetPasswordScreenViewModel(
                 converter = get(),
-                authUseCase = get()
+                authUseCase = get(),
             )
         }
     }

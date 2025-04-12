@@ -47,7 +47,7 @@ fun PaymentWidget(
     modifier: Modifier = Modifier,
     paymentEntity: PaymentEntity,
     canDeletePayment: Boolean = false,
-    onDeletePayment: (PaymentEntity)-> Unit = {},
+    onDeletePayment: (PaymentEntity) -> Unit = {},
 ) {
     val startDate = DateTime(paymentEntity.startDateMillis)
     val endDate = DateTime(paymentEntity.endDateMillis)
@@ -55,49 +55,48 @@ fun PaymentWidget(
 
     Column(
         modifier =
-        modifier
-            .padding(horizontal = padding_screen)
-            .padding(top = padding_screen_small)
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .background(
-                color = AppTheme.colors.backgroundCard,
-                shape = RoundedCornerShape(border_radius)
-            )
-            .border(
-                width = line_thickness,
-                color = AppTheme.colors.backgroundCardBorder,
-                shape = RoundedCornerShape(border_radius),
-            )
-            .padding(padding_screen_small),
+            modifier
+                .padding(horizontal = padding_screen)
+                .padding(top = padding_screen_small)
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(
+                    color = AppTheme.colors.backgroundCard,
+                    shape = RoundedCornerShape(border_radius),
+                ).border(
+                    width = line_thickness,
+                    color = AppTheme.colors.backgroundCardBorder,
+                    shape = RoundedCornerShape(border_radius),
+                ).padding(padding_screen_small),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             TextRegularBold(
                 text = endDate.toPaymentPlanDuration(),
-                color = AppTheme.colors.highLight
+                color = AppTheme.colors.highLight,
             )
             if (canDeletePayment) {
                 Icon(
                     modifier = Modifier.clickable { showDialog = !showDialog },
                     imageVector = Icons.Default.Clear,
                     tint = AppTheme.colors.highLight,
-                    contentDescription = stringResource(id = R.string.txt_delete)
+                    contentDescription = stringResource(id = R.string.txt_delete),
                 )
             }
         }
         Row(
-            modifier = Modifier
-                .padding(top = padding_screen_small)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(top = padding_screen_small)
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-
             Column {
                 TextSmall(text = "Start Date")
                 TextRegular(text = startDate.toString(formatDayMonthYear))
@@ -112,13 +111,13 @@ fun PaymentWidget(
             }
         }
 
-        if (showDialog){
+        if (showDialog) {
             AlertDialog(
                 containerColor = AppTheme.colors.backgroundButtonDisabled,
                 title = { TextSmall(text = stringResource(R.string.txt_are_you_sure)) },
                 text = {
                     TextRegular(
-                        text = stringResource(R.string.txt_are_you_sure_delete_payment)
+                        text = stringResource(R.string.txt_are_you_sure_delete_payment),
                     )
                 },
                 onDismissRequest = { showDialog = !showDialog },
@@ -132,7 +131,8 @@ fun PaymentWidget(
                     ButtonWidget(title = stringResource(R.string.txt_cancel)) {
                         showDialog = !showDialog
                     }
-                })
+                },
+            )
         }
     }
 }
@@ -143,11 +143,11 @@ fun PaymentWidgetPreview() {
     AppThemeComposable {
         Column {
             PaymentWidget(
-                paymentEntity = getMockActivePaymentEntity()
+                paymentEntity = getMockActivePaymentEntity(),
             )
             PaymentWidget(
                 paymentEntity = getMockExpiredPaymentEntity(),
-                canDeletePayment = true
+                canDeletePayment = true,
             )
         }
     }

@@ -30,7 +30,6 @@ import com.ndemi.garden.gym.ui.theme.icon_image_size_large
 import com.ndemi.garden.gym.ui.theme.icon_image_size_profile
 import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
@@ -41,35 +40,37 @@ fun MemberProfileWidget(
     onImageDelete: () -> Unit = {},
 ) {
     Box(
-        modifier = Modifier
-            .padding(bottom = padding_screen)
-            .wrapContentHeight()
-            .wrapContentWidth()
+        modifier =
+            Modifier
+                .padding(bottom = padding_screen)
+                .wrapContentHeight()
+                .wrapContentWidth(),
     ) {
         AsyncImageWidget(profileImageUrl = imageUrl, isLarge = true)
         Row(
-            modifier = Modifier
-                .align(alignment = Alignment.BottomCenter)
-                .width(icon_image_size_profile),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier =
+                Modifier
+                    .align(alignment = Alignment.BottomCenter)
+                    .width(icon_image_size_profile),
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             if (isEnabled) {
                 Image(
                     imageVector = Icons.Rounded.CameraAlt,
                     contentDescription = "Select Picture",
                     contentScale = ContentScale.Inside,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(border_radius))
-                        .border(
-                            border = BorderStroke(line_thickness, AppTheme.colors.highLight),
-                            shape = RoundedCornerShape(border_radius)
-                        )
-                        .background(AppTheme.colors.highLight)
-                        .width(icon_image_size_large)
-                        .height(icon_image_size_large)
-                        .clickable {
-                            onImageSelect.invoke()
-                        }
+                    modifier =
+                        Modifier
+                            .clip(RoundedCornerShape(border_radius))
+                            .border(
+                                border = BorderStroke(line_thickness, AppTheme.colors.highLight),
+                                shape = RoundedCornerShape(border_radius),
+                            ).background(AppTheme.colors.highLight)
+                            .width(icon_image_size_large)
+                            .height(icon_image_size_large)
+                            .clickable {
+                                onImageSelect.invoke()
+                            },
                 )
             }
 
@@ -79,24 +80,23 @@ fun MemberProfileWidget(
                     contentDescription = "Delete Picture",
                     contentScale = ContentScale.Inside,
                     colorFilter = ColorFilter.tint(AppTheme.colors.backgroundError),
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(border_radius))
-                        .border(
-                            border = BorderStroke(line_thickness, AppTheme.colors.highLight),
-                            shape = RoundedCornerShape(border_radius)
-                        )
-                        .background(AppTheme.colors.highLight)
-                        .width(icon_image_size_large)
-                        .height(icon_image_size_large)
-                        .clickable {
-                            onImageDelete.invoke()
-                        }
+                    modifier =
+                        Modifier
+                            .clip(RoundedCornerShape(border_radius))
+                            .border(
+                                border = BorderStroke(line_thickness, AppTheme.colors.highLight),
+                                shape = RoundedCornerShape(border_radius),
+                            ).background(AppTheme.colors.highLight)
+                            .width(icon_image_size_large)
+                            .height(icon_image_size_large)
+                            .clickable {
+                                onImageDelete.invoke()
+                            },
                 )
             }
         }
     }
 }
-
 
 @AppPreview
 @Composable
