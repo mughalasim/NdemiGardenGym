@@ -9,19 +9,20 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.usecase.AuthUseCase
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 
 class MainScreenViewModel(
     private val navigationService: NavigationService,
     private val authUseCase: AuthUseCase,
     private val converter: ErrorCodeConverter,
+    dispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     fun setNavController(navController: NavHostController) =
         navigationService.setNavController(navController)
 
     fun getNavigationService(): NavigationService = navigationService
 
-    val authState = liveData(Dispatchers.IO) {
+    val authState = liveData(dispatcher) {
         emit(AuthState.Loading)
         authUseCase.getAuthState().collect{
             when(it){
@@ -34,7 +35,7 @@ class MainScreenViewModel(
         }
     }
 
-    val appVersion = liveData(Dispatchers.IO) {
+    val appVersion = liveData(dispatcher) {
         emit(VersionState.Loading)
         authUseCase.getAppVersion().collect{
             when(it){
@@ -46,7 +47,7 @@ class MainScreenViewModel(
         }
     }
 
-    val loggedInMember = liveData(Dispatchers.IO) {
+    val loggedInMember = liveData(dispatcher) {
         emit(UiState.Loading)
         authUseCase.getLoggedInUser().collect {
 

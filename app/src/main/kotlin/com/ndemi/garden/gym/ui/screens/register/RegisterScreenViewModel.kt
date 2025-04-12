@@ -30,7 +30,6 @@ class RegisterScreenViewModel(
     private val memberUseCase: MemberUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
-
     data class InputData(
         val firstName: String,
         val lastName: String,
@@ -40,28 +39,33 @@ class RegisterScreenViewModel(
         val confirmPassword: String,
     )
 
-    private val _inputData = MutableLiveData(
-        InputData(
-            firstName = "",
-            lastName = "",
-            email = if (BuildConfig.DEBUG) BuildConfig.ADMIN_STAGING else "",
-            apartmentNumber = "",
-            password = "",
-            confirmPassword = "",
+    private val _inputData =
+        MutableLiveData(
+            InputData(
+                firstName = "",
+                lastName = "",
+                email = if (BuildConfig.DEBUG) BuildConfig.ADMIN_STAGING else "",
+                apartmentNumber = "",
+                password = "",
+                confirmPassword = "",
+            ),
         )
-    )
     val inputData: LiveData<InputData> = _inputData
 
-    fun setString(value: String, inPutType: InputType) {
-        _inputData.value = when (inPutType) {
-            InputType.FIRST_NAME -> _inputData.value?.copy(firstName = value)
-            InputType.LAST_NAME -> _inputData.value?.copy(lastName = value)
-            InputType.EMAIL -> _inputData.value?.copy(email = value)
-            InputType.APARTMENT_NUMBER -> _inputData.value?.copy(apartmentNumber = value)
-            InputType.PASSWORD -> _inputData.value?.copy(password = value)
-            InputType.CONFIRM_PASSWORD -> _inputData.value?.copy(confirmPassword = value)
-            InputType.NONE -> _inputData.value
-        }
+    fun setString(
+        value: String,
+        inPutType: InputType,
+    ) {
+        _inputData.value =
+            when (inPutType) {
+                InputType.FIRST_NAME -> _inputData.value?.copy(firstName = value)
+                InputType.LAST_NAME -> _inputData.value?.copy(lastName = value)
+                InputType.EMAIL -> _inputData.value?.copy(email = value)
+                InputType.APARTMENT_NUMBER -> _inputData.value?.copy(apartmentNumber = value)
+                InputType.PASSWORD -> _inputData.value?.copy(password = value)
+                InputType.CONFIRM_PASSWORD -> _inputData.value?.copy(confirmPassword = value)
+                InputType.NONE -> _inputData.value
+            }
         validateInput()
     }
 
@@ -77,60 +81,55 @@ class RegisterScreenViewModel(
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiError.INVALID_FIRST_NAME),
-                    InputType.FIRST_NAME
-                )
+                    InputType.FIRST_NAME,
+                ),
             )
-
         } else if (lastName.isEmpty() || lastName.isDigitsOnly()) {
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiError.INVALID_LAST_NAME),
-                    InputType.LAST_NAME
-                )
+                    InputType.LAST_NAME,
+                ),
             )
-
-        } else if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email)
+        } else if (email.isEmpty() ||
+            !android.util.Patterns.EMAIL_ADDRESS
+                .matcher(email)
                 .matches()
         ) {
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiError.INVALID_EMAIL),
-                    InputType.EMAIL
-                )
+                    InputType.EMAIL,
+                ),
             )
-
         } else if (password.isEmpty()) {
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiError.INVALID_PASSWORD),
-                    InputType.PASSWORD
-                )
+                    InputType.PASSWORD,
+                ),
             )
-
         } else if (confirmPassword.isEmpty()) {
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiError.INVALID_PASSWORD_CONFIRM),
-                    InputType.CONFIRM_PASSWORD
-                )
+                    InputType.CONFIRM_PASSWORD,
+                ),
             )
-
         } else if (password != confirmPassword) {
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiError.INVALID_PASSWORD_MATCH),
-                    InputType.CONFIRM_PASSWORD
-                )
+                    InputType.CONFIRM_PASSWORD,
+                ),
             )
-
         } else if (apartmentNumber.isNotEmpty() && !apartmentNumber.isValidApartmentNumber()) {
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiError.INVALID_APARTMENT_NUMBER),
-                    InputType.APARTMENT_NUMBER
-                )
+                    InputType.APARTMENT_NUMBER,
+                ),
             )
-
         } else {
             sendAction(Action.SetReady)
         }
@@ -140,7 +139,7 @@ class RegisterScreenViewModel(
         sendAction(Action.SetLoading)
         authUseCase.register(
             inputData.value?.email.orEmpty(),
-            inputData.value?.password.orEmpty()
+            inputData.value?.password.orEmpty(),
         ) {
             when (it) {
                 is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
@@ -153,45 +152,48 @@ class RegisterScreenViewModel(
         updateMember(UUID.randomUUID().toString(), UpdateType.ADMIN_REGISTRATION)
     }
 
-    private fun updateMember(memberId: String, updateType: UpdateType) {
+    private fun updateMember(
+        memberId: String,
+        updateType: UpdateType,
+    ) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            memberUseCase.updateMember(
-                MemberEntity(
-                    id = memberId,
-                    firstName =
-                    (inputData.value?.firstName.orEmpty())
-                        .replaceFirstChar(Char::uppercase)
-                        .trim(),
-                    lastName =
-                    (inputData.value?.lastName.orEmpty())
-                        .replaceFirstChar(Char::uppercase)
-                        .trim(),
-                    email =
-                    (inputData.value?.email.orEmpty())
-                        .trim(),
-                    registrationDateMillis = DateTime.now().millis,
-                    apartmentNumber =
-                    (inputData.value?.apartmentNumber.orEmpty())
-                        .replaceFirstChar(Char::uppercase),
-                    profileImageUrl = ""
-                ),
-                updateType
-            ).also { result ->
-                when (result) {
-                    is DomainResult.Error ->
-                        sendAction(Action.ShowError(converter.getMessage(UiError.REGISTRATION_FAILED)))
+            memberUseCase
+                .updateMember(
+                    MemberEntity(
+                        id = memberId,
+                        firstName =
+                            (inputData.value?.firstName.orEmpty())
+                                .replaceFirstChar(Char::uppercase)
+                                .trim(),
+                        lastName =
+                            (inputData.value?.lastName.orEmpty())
+                                .replaceFirstChar(Char::uppercase)
+                                .trim(),
+                        email =
+                            (inputData.value?.email.orEmpty())
+                                .trim(),
+                        registrationDateMillis = DateTime.now().millis,
+                        apartmentNumber =
+                            (inputData.value?.apartmentNumber.orEmpty())
+                                .replaceFirstChar(Char::uppercase),
+                        profileImageUrl = "",
+                    ),
+                    updateType,
+                ).also { result ->
+                    when (result) {
+                        is DomainResult.Error ->
+                            sendAction(Action.ShowError(converter.getMessage(UiError.REGISTRATION_FAILED)))
 
-                    is DomainResult.Success -> sendAction(Action.Success)
+                        is DomainResult.Success -> sendAction(Action.Success)
+                    }
                 }
-            }
         }
     }
 
     fun navigateBack() {
         navigationService.popBack()
     }
-
 
     @Immutable
     sealed interface UiState : BaseState {
@@ -201,10 +203,12 @@ class RegisterScreenViewModel(
 
         data object Loading : UiState
 
-        data class Error(val message: String, val inputType: InputType) : UiState
+        data class Error(
+            val message: String,
+            val inputType: InputType,
+        ) : UiState
 
         data object Success : UiState
-
     }
 
     enum class InputType {
@@ -214,7 +218,7 @@ class RegisterScreenViewModel(
         EMAIL,
         APARTMENT_NUMBER,
         PASSWORD,
-        CONFIRM_PASSWORD
+        CONFIRM_PASSWORD,
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -230,8 +234,7 @@ class RegisterScreenViewModel(
             val message: String,
             val inputType: InputType = InputType.NONE,
         ) : Action {
-            override fun reduce(state: UiState): UiState =
-                UiState.Error(message, inputType)
+            override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
 
         data object Success : Action {

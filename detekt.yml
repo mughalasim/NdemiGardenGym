@@ -120,10 +120,14 @@ complexity:
   LongMethod:
     active: true
     threshold: 200
+    ignoreAnnotated:
+      - 'Preview'
+      - 'AppPreview'
+      - 'AppSimplePreview'
   LongParameterList:
     active: true
     functionThreshold: 10
-    constructorThreshold: 10
+    constructorThreshold: 7
     ignoreDefaultParameters: true
     ignoreDataClasses: true
     ignoreAnnotatedParameter: [ ]
@@ -158,11 +162,11 @@ complexity:
   TooManyFunctions:
     active: true
     excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**' ]
-    thresholdInFiles: 15
-    thresholdInClasses: 15
-    thresholdInInterfaces: 15
+    thresholdInFiles: 11
+    thresholdInClasses: 11
+    thresholdInInterfaces: 11
     thresholdInObjects: 11
-    thresholdInEnums: 15
+    thresholdInEnums: 11
     ignoreDeprecated: false
     ignorePrivate: false
     ignoreOverridden: false
@@ -318,11 +322,11 @@ naming:
     active: false
     minimumFunctionNameLength: 3
   FunctionNaming:
-    active: false
+    active: true
     excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**' ]
     functionPattern: '[a-z][a-zA-Z0-9]*'
     excludeClassPattern: '$^'
-    ignoreAnnotated: [ ]
+    ignoreAnnotated: [ 'Composable' ]
   FunctionParameterNaming:
     active: true
     parameterPattern: '[a-z][A-Za-z0-9]*'
@@ -596,6 +600,8 @@ style:
     active: true
   OptionalUnit:
     active: false
+  OptionalWhenBraces:
+    active: false
   PreferToOverPairSyntax:
     active: false
   ProtectedMemberInFinalClass:
@@ -608,7 +614,7 @@ style:
     active: false
   ReturnCount:
     active: true
-    max: 4
+    max: 3
     excludedFunctions: [ 'equals' ]
     excludeLabeled: false
     excludeReturnFromLambda: true
@@ -650,14 +656,16 @@ style:
   UntilInsteadOfRangeTo:
     active: false
   UnusedImports:
-    active: false
+    active: true
   UnusedPrivateClass:
     active: true
   UnusedPrivateMember:
     active: true
     allowedNames: '(_|ignored|expected|serialVersionUID)'
     ignoreAnnotated:
-      [ 'Preview', 'Composable' ]
+      - 'Preview'
+      - 'AppPreview'
+      - 'AppSimplePreview'
   UseAnyOrNoneInsteadOfFind:
     active: true
   UseArrayLiteralsInAnnotations:

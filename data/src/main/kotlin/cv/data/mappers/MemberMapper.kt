@@ -9,13 +9,13 @@ import java.util.Date
 
 fun MemberEntity.toMemberModel() = MemberModel(
     id = id,
-    firstName = firstName,
-    lastName = lastName,
+    firstName = firstName.replaceFirstChar(Char::uppercase).trim(),
+    lastName = lastName.replaceFirstChar(Char::uppercase).trim(),
     email = email,
     activeNowDate = activeNowDateMillis?.let { Timestamp(Date(it)) } ?: run { null },
     renewalFutureDate = renewalFutureDateMillis?.let { Timestamp(Date(it)) } ?: run { null },
     registrationDate = Timestamp(Date(registrationDateMillis)),
-    apartmentNumber = apartmentNumber,
+    apartmentNumber = apartmentNumber?.replaceFirstChar(Char::uppercase)?.trim(),
     profileImageUrl = profileImageUrl,
     hasCoach = hasCoach,
     amountDue = amountDue,

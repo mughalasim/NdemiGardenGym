@@ -15,6 +15,8 @@ import cv.data.repository.AnalyticsRepositoryImp
 import cv.data.repository.AppLoggerRepositoryImp
 import cv.domain.repositories.AnalyticsRepository
 import cv.domain.repositories.AppLoggerRepository
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -26,27 +28,27 @@ val applicationModule =
         single<AnalyticsRepository> {
             AnalyticsRepositoryImp(
                 firebaseAnalytics = Firebase.analytics,
-                logger = get()
+                logger = get(),
             )
         }
 
         single<ErrorCodeConverter> {
             ErrorCodeConverterImp(
                 application = androidApplication(),
-                analyticsRepository = get()
+                analyticsRepository = get(),
             )
         }
 
         single<AppLoggerRepository> {
             AppLoggerRepositoryImp(
-                isEnabled = BuildConfig.DEBUG
+                isEnabled = BuildConfig.DEBUG,
             )
         }
 
         single<NavigationService> {
             NavigationServiceImp(
                 analyticsRepository = get(),
-                authUseCase = get()
+                authUseCase = get(),
             )
         }
 
@@ -55,5 +57,10 @@ val applicationModule =
                 androidContext().getString(R.string.app_name),
                 Context.MODE_PRIVATE,
             )
+        }
+
+        @Suppress("InjectDispatcher")
+        single<CoroutineDispatcher> {
+            Dispatchers.IO
         }
     }

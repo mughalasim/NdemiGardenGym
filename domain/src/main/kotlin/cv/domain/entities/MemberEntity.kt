@@ -30,7 +30,8 @@ data class MemberEntity(
 
     fun getCoachStatus(): String = if (hasCoach) "Yes" else "No"
 
-    fun isNotEqualTo(memberEntity: MemberEntity): Boolean {
+    fun isNotEqualTo(memberEntity: MemberEntity?): Boolean {
+        if (memberEntity == null) return true
         return memberEntity.firstName != firstName ||
                 memberEntity.lastName != lastName ||
                 memberEntity.apartmentNumber != apartmentNumber ||
