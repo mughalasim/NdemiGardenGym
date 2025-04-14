@@ -19,21 +19,23 @@ import com.ndemi.garden.gym.ui.screens.profile.ProfileScreen
 import com.ndemi.garden.gym.ui.screens.register.RegisterNewScreen
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreen
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreen
+import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 
 @Composable
 fun NavigationHost(
     navController: NavHostController,
     navigationService: NavigationService,
+    snackbarHostState: AppSnackbarHostState,
 ) {
     NavHost(
         navController = navController,
         startDestination = navigationService.getInitialRoute(),
     ) {
-        composable<Route.LoginScreen> { LoginScreen() }
+        composable<Route.LoginScreen> { LoginScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.ResetPasswordScreen> { ResetPasswordScreen() }
+        composable<Route.ResetPasswordScreen> { ResetPasswordScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.RegisterScreen> { RegisterScreen() }
+        composable<Route.RegisterScreen> { RegisterScreen(snackbarHostState = snackbarHostState) }
 
         composable<Route.RegisterNewScreen> { RegisterNewScreen() }
 

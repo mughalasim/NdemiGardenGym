@@ -9,6 +9,9 @@ val orange = Color(0xFFF65E69)
 val red = Color(0xFFC90C0C)
 
 @Suppress("detekt.MagicNumber")
+val green = Color(0xFF368139)
+
+@Suppress("detekt.MagicNumber")
 val lightBlue = Color(0xFFC0CADA)
 
 @Suppress("detekt.MagicNumber")
@@ -35,6 +38,7 @@ val DarkAppColors =
         backgroundCard = darkerGrey,
         border = darkGrey,
         error = red,
+        success = green,
         backgroundButtonDisabled = darkGrey,
         backgroundButtonEnabled = Color.White,
     )
@@ -48,6 +52,7 @@ val LightAppColors =
         backgroundCard = lighterBlue,
         border = lightGrey,
         error = red,
+        success = green,
         backgroundButtonDisabled = lightBlue,
         backgroundButtonEnabled = darkBlue,
     )
@@ -61,6 +66,7 @@ class AppColors(
     val backgroundCard: Color,
     val border: Color,
     val error: Color,
+    val success: Color,
     val backgroundButtonDisabled: Color,
     val backgroundButtonEnabled: Color,
 )

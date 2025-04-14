@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -40,6 +41,7 @@ fun ButtonWidget(
     title: String,
     isEnabled: Boolean = true,
     isLoading: Boolean = false,
+    hideKeyboardOnClick: Boolean = false,
     onButtonClicked: () -> Unit,
 ) {
     val bgColor: Color by animateColorAsState(
@@ -51,6 +53,7 @@ fun ButtonWidget(
         animationSpec = tween(1000, easing = FastOutSlowInEasing),
         label = ""
     )
+    val keyboardController =  LocalSoftwareKeyboardController.current
     Row(
         modifier =
             modifier
@@ -62,6 +65,7 @@ fun ButtonWidget(
                 )
                 .padding(padding_screen)
                 .clickable {
+                    if (hideKeyboardOnClick) keyboardController?.hide()
                     if (isEnabled && !isLoading) onButtonClicked()
                 },
         verticalAlignment = Alignment.CenterVertically,
