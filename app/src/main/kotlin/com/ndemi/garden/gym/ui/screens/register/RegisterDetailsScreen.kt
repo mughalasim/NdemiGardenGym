@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,18 +21,35 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditPasswordTextWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
-import com.ndemi.garden.gym.ui.widgets.TextRegular
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.ndemi.garden.gym.ui.widgets.TextWidget
 
 @Composable
 fun RegisterDetailScreen(
-    uiState: State<UiState>,
-    inputData: InputData? = null,
+    uiState: UiState,
+    inputData: InputData = InputData(),
     hidePassword: Boolean = false,
-    onSetString: (String, InputType) -> Unit = {_,_ ->},
+    onSetString: (String, InputType) -> Unit = { _, _ -> },
     onRegisterTapped: () -> Unit = {},
 ) {
-    val currentInputType = (uiState.value as? UiState.Error)?.inputType
+    var errorFirstName = ""
+    var errorLastName = ""
+    var errorEmail = ""
+    var errorApartmentNumber = ""
+    var errorPassword = ""
+    var errorConfirmPassword = ""
+
+    if (uiState is UiState.Error) {
+        when (uiState.inputType) {
+            InputType.FIRST_NAME -> errorFirstName = uiState.message
+            InputType.LAST_NAME -> errorLastName = uiState.message
+            InputType.EMAIL -> errorEmail = uiState.message
+            InputType.APARTMENT_NUMBER -> errorApartmentNumber = uiState.message
+            InputType.PASSWORD -> errorPassword = uiState.message
+            InputType.CONFIRM_PASSWORD -> errorConfirmPassword = uiState.message
+            else -> Unit
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -43,31 +58,31 @@ fun RegisterDetailScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        TextRegular(
+        TextWidget(
             modifier = Modifier.padding(top = padding_screen),
             text = stringResource(R.string.txt_register_info)
         )
 
         EditTextWidget(
             hint = stringResource(R.string.txt_first_name),
-            textInput = inputData?.firstName.orEmpty(),
-            isError = currentInputType == InputType.FIRST_NAME
+            textInput = inputData.firstName,
+            errorText = errorFirstName
         ) {
             onSetString.invoke(it, InputType.FIRST_NAME)
         }
 
         EditTextWidget(
             hint = stringResource(R.string.txt_last_name),
-            textInput = inputData?.lastName.orEmpty(),
-            isError = currentInputType == InputType.LAST_NAME
+            textInput = inputData.lastName,
+            errorText = errorLastName
         ) {
             onSetString.invoke(it, InputType.LAST_NAME)
         }
 
         EditTextWidget(
             hint = stringResource(R.string.txt_email),
-            textInput = inputData?.email.orEmpty(),
-            isError = currentInputType == InputType.EMAIL,
+            textInput = inputData.email,
+            errorText = errorEmail,
             keyboardType = KeyboardType.Email
         ) {
             onSetString.invoke(it, InputType.EMAIL)
@@ -75,25 +90,25 @@ fun RegisterDetailScreen(
 
         EditTextWidget(
             hint = stringResource(R.string.txt_apartment_number),
-            textInput = inputData?.apartmentNumber.orEmpty(),
-            isError = currentInputType == InputType.APARTMENT_NUMBER
+            textInput = inputData.apartmentNumber,
+            errorText = errorApartmentNumber
         ) {
             onSetString.invoke(it, InputType.APARTMENT_NUMBER)
         }
 
-        if (!hidePassword){
+        if (!hidePassword) {
             EditPasswordTextWidget(
                 hint = stringResource(id = R.string.txt_password),
-                textInput = inputData?.password.orEmpty(),
-                isError = currentInputType == InputType.PASSWORD
+                textInput = inputData.password,
+                errorText = errorPassword
             ) {
                 onSetString.invoke(it, InputType.PASSWORD)
             }
 
             EditPasswordTextWidget(
                 hint = stringResource(R.string.txt_confirm_password),
-                textInput = inputData?.confirmPassword.orEmpty(),
-                isError = currentInputType == InputType.CONFIRM_PASSWORD
+                textInput = inputData.confirmPassword,
+                errorText = errorConfirmPassword
             ) {
                 onSetString.invoke(it, InputType.CONFIRM_PASSWORD)
             }
@@ -104,8 +119,8 @@ fun RegisterDetailScreen(
 
         ButtonWidget(
             title = stringResource(R.string.txt_register),
-            isEnabled = uiState.value is UiState.Ready,
-            isLoading = uiState.value is UiState.Loading
+            isEnabled = uiState is UiState.Ready,
+            isLoading = uiState is UiState.Loading
         ) {
             onRegisterTapped.invoke()
         }
@@ -114,11 +129,10 @@ fun RegisterDetailScreen(
 
 @AppPreview
 @Composable
-fun RegisterDetailScreenPreview(){
+private fun RegisterDetailScreenPreview() {
     AppThemeComposable {
         RegisterDetailScreen(
-            uiState = MutableStateFlow(UiState.Ready)
-                .collectAsState(initial = UiState.Ready),
+            uiState = UiState.Ready,
         )
     }
 }

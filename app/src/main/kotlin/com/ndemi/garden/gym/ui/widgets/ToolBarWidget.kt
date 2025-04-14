@@ -56,11 +56,12 @@ fun ToolBarWidget(
             },
             contentDescription = null
         )
-        TextRegularBold(
+        TextWidget(
             modifier = Modifier.weight(1f),
             text = title,
             color = AppTheme.colors.textPrimary,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            style = AppTheme.textStyles.regularBold,
         )
         Icon(
             modifier = Modifier
@@ -80,7 +81,7 @@ fun ToolBarWidget(
 
 @AppPreview
 @Composable
-fun ToolBarWidgetPreview() {
+private fun ToolBarWidgetPreview() {
     AppThemeComposable {
         Column {
             ToolBarWidget(

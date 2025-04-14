@@ -38,7 +38,7 @@ fun DateSelectionWidget(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        TextRegular(
+        TextWidget(
             text = if (hideMonthSelection) {
                 stringResource(R.string.txt_select_year)
             } else {
@@ -73,7 +73,7 @@ fun DateSelectionWidget(
 
 @AppPreview
 @Composable
-fun AttendanceDateSelectionWidgetPreview() {
+private fun AttendanceDateSelectionWidgetPreview() {
     AppThemeComposable {
         DateSelectionWidget(
             selectedDate = DateTime.now(),

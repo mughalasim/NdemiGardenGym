@@ -2,8 +2,6 @@ package com.ndemi.garden.gym.ui.screens.register
 
 import androidx.compose.runtime.Immutable
 import androidx.core.text.isDigitsOnly
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.navigation.NavigationService
@@ -20,6 +18,8 @@ import cv.domain.entities.MemberEntity
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.UpdateType
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import java.util.UUID
@@ -30,27 +30,18 @@ class RegisterScreenViewModel(
     private val memberUseCase: MemberUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
+
     data class InputData(
-        val firstName: String,
-        val lastName: String,
-        val email: String,
-        val apartmentNumber: String,
-        val password: String,
-        val confirmPassword: String,
+        val firstName: String = "",
+        val lastName: String = "",
+        val email: String = if (BuildConfig.DEBUG) BuildConfig.ADMIN_STAGING else "",
+        val apartmentNumber: String = "",
+        val password: String = "",
+        val confirmPassword: String = "",
     )
 
-    private val _inputData =
-        MutableLiveData(
-            InputData(
-                firstName = "",
-                lastName = "",
-                email = if (BuildConfig.DEBUG) BuildConfig.ADMIN_STAGING else "",
-                apartmentNumber = "",
-                password = "",
-                confirmPassword = "",
-            ),
-        )
-    val inputData: LiveData<InputData> = _inputData
+    private val _inputData = MutableStateFlow(InputData())
+    val inputData: StateFlow<InputData> = _inputData
 
     fun setString(
         value: String,
@@ -58,24 +49,24 @@ class RegisterScreenViewModel(
     ) {
         _inputData.value =
             when (inPutType) {
-                InputType.FIRST_NAME -> _inputData.value?.copy(firstName = value)
-                InputType.LAST_NAME -> _inputData.value?.copy(lastName = value)
-                InputType.EMAIL -> _inputData.value?.copy(email = value)
-                InputType.APARTMENT_NUMBER -> _inputData.value?.copy(apartmentNumber = value)
-                InputType.PASSWORD -> _inputData.value?.copy(password = value)
-                InputType.CONFIRM_PASSWORD -> _inputData.value?.copy(confirmPassword = value)
+                InputType.FIRST_NAME -> _inputData.value.copy(firstName = value)
+                InputType.LAST_NAME -> _inputData.value.copy(lastName = value)
+                InputType.EMAIL -> _inputData.value.copy(email = value)
+                InputType.APARTMENT_NUMBER -> _inputData.value.copy(apartmentNumber = value)
+                InputType.PASSWORD -> _inputData.value.copy(password = value)
+                InputType.CONFIRM_PASSWORD -> _inputData.value.copy(confirmPassword = value)
                 InputType.NONE -> _inputData.value
             }
         validateInput()
     }
 
     private fun validateInput() {
-        val email = _inputData.value?.email.orEmpty()
-        val password = _inputData.value?.password.orEmpty()
-        val confirmPassword = _inputData.value?.confirmPassword.orEmpty()
-        val firstName = _inputData.value?.firstName.orEmpty()
-        val lastName = _inputData.value?.lastName.orEmpty()
-        val apartmentNumber = _inputData.value?.apartmentNumber.orEmpty()
+        val email = _inputData.value.email
+        val password = _inputData.value.password
+        val confirmPassword = _inputData.value.confirmPassword
+        val firstName = _inputData.value.firstName
+        val lastName = _inputData.value.lastName
+        val apartmentNumber = _inputData.value.apartmentNumber
 
         if (firstName.isEmpty() || firstName.isDigitsOnly()) {
             sendAction(
@@ -138,8 +129,8 @@ class RegisterScreenViewModel(
     fun onRegisterTapped() {
         sendAction(Action.SetLoading)
         authUseCase.register(
-            inputData.value?.email.orEmpty(),
-            inputData.value?.password.orEmpty(),
+            inputData.value.email,
+            inputData.value.password,
         ) {
             when (it) {
                 is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
@@ -163,19 +154,19 @@ class RegisterScreenViewModel(
                     MemberEntity(
                         id = memberId,
                         firstName =
-                            (inputData.value?.firstName.orEmpty())
+                            (inputData.value.firstName)
                                 .replaceFirstChar(Char::uppercase)
                                 .trim(),
                         lastName =
-                            (inputData.value?.lastName.orEmpty())
+                            (inputData.value.lastName)
                                 .replaceFirstChar(Char::uppercase)
                                 .trim(),
                         email =
-                            (inputData.value?.email.orEmpty())
+                            (inputData.value.email)
                                 .trim(),
                         registrationDateMillis = DateTime.now().millis,
                         apartmentNumber =
-                            (inputData.value?.apartmentNumber.orEmpty())
+                            (inputData.value.apartmentNumber)
                                 .replaceFirstChar(Char::uppercase),
                         profileImageUrl = "",
                     ),

@@ -10,8 +10,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,30 +27,41 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
-import com.ndemi.garden.gym.ui.widgets.TextRegular
-import com.ndemi.garden.gym.ui.widgets.TextSmall
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.ndemi.garden.gym.ui.widgets.TextWidget
 import org.joda.time.DateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentAddDetailsScreen(
     startDate: DateTime? = null,
-    uiState: State<UiState>,
+    uiState: UiState,
     onSetData: (DateTime, String, String, InputType) -> Unit,
     onPaymentAddTapped: () -> Unit = {},
 ) {
     val state = rememberDatePickerState(initialDisplayMode = DisplayMode.Picker)
     var datePickerVisibility by remember { mutableStateOf(false) }
+    var errorMonthDuration = ""
+    var errorAmount = ""
+    var errorStartDate = ""
 
-    TextRegular(
+    if (uiState is UiState.Error) {
+        when(uiState.inputType){
+            InputType.START_DATE -> errorStartDate = uiState.message
+            InputType.MONTH_DURATION -> errorMonthDuration = uiState.message
+            InputType.AMOUNT -> errorAmount = uiState.message
+            else -> Unit
+        }
+    }
+
+    TextWidget(
         modifier = Modifier.padding(top = padding_screen),
         text = stringResource(R.string.txt_payments_add_desc)
     )
 
-    TextSmall(
+    TextWidget(
         modifier = Modifier.padding(top = padding_screen),
-        text = stringResource(R.string.txt_payments_add_select_date)
+        text = stringResource(R.string.txt_payments_add_select_date),
+        style = AppTheme.textStyles.small,
     )
 
     ButtonWidget(
@@ -61,28 +70,35 @@ fun PaymentAddDetailsScreen(
         datePickerVisibility = !datePickerVisibility
     }
 
+    TextWidget(
+        style = AppTheme.textStyles.small,
+        color = AppTheme.colors.error,
+        text = errorStartDate
+    )
 
-    TextSmall(
+    TextWidget(
         modifier = Modifier.padding(top = padding_screen),
-        text = stringResource(R.string.txt_payments_add_select_duration)
+        text = stringResource(R.string.txt_payments_add_select_duration),
+        style = AppTheme.textStyles.small,
     )
 
     EditTextWidget(
         hint = stringResource(R.string.txt_payments_add_month_duration),
-        isError = (uiState.value as? UiState.Error)?.inputType == InputType.MONTH_DURATION,
+        errorText = errorMonthDuration,
         keyboardType = KeyboardType.Number
     ) {
         onSetData.invoke(DateTime.now(), it, it, InputType.MONTH_DURATION)
     }
 
-    TextSmall(
+    TextWidget(
         modifier = Modifier.padding(top = padding_screen),
-        text = stringResource(R.string.txt_payments_add_amount_paid)
+        text = stringResource(R.string.txt_payments_add_amount_paid),
+        style = AppTheme.textStyles.small,
     )
 
     EditTextWidget(
         hint = stringResource(R.string.txt_amount),
-        isError = (uiState.value as? UiState.Error)?.inputType == InputType.AMOUNT,
+        errorText = errorAmount,
         keyboardType = KeyboardType.Number
     ) {
         onSetData.invoke(DateTime.now(), it, it, InputType.AMOUNT)
@@ -90,8 +106,8 @@ fun PaymentAddDetailsScreen(
 
     ButtonWidget(
         title = stringResource(id = R.string.txt_update),
-        isEnabled = uiState.value is UiState.Ready,
-        isLoading = uiState.value is UiState.Loading
+        isEnabled = uiState is UiState.Ready,
+        isLoading = uiState is UiState.Loading
     ) {
         onPaymentAddTapped.invoke()
     }
@@ -135,7 +151,7 @@ fun PaymentAddDetailsScreen(
 
 @AppPreview
 @Composable
-fun PaymentAddDetailsScreenPreview() {
+private fun PaymentAddDetailsScreenPreview() {
     AppThemeComposable{
         Column(
             modifier = Modifier
@@ -144,9 +160,7 @@ fun PaymentAddDetailsScreenPreview() {
             PaymentAddDetailsScreen(
                 startDate = DateTime.now(),
                 onSetData = {_,_,_,_ -> },
-                uiState = MutableStateFlow(UiState.Ready).collectAsState(
-                    initial = UiState.Ready
-                )
+                uiState = UiState.Ready,
             )
         }
     }

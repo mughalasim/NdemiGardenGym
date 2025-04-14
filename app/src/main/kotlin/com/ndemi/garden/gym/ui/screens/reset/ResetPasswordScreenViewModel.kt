@@ -10,21 +10,24 @@ import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiStat
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.usecase.AuthUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class ResetPasswordScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val authUseCase: AuthUseCase,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
-    private var email: String = ""
+
+    private val _inputData: MutableStateFlow<String> = MutableStateFlow("")
+    val inputData: StateFlow<String> = _inputData
 
     fun setEmail(email: String) {
-        this.email = email
+        _inputData.value = email
         validateInput()
     }
 
-
     private fun validateInput(){
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        if (_inputData.value.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(_inputData.value).matches()){
             sendAction(Action.ShowError(
                 converter.getMessage(UiError.INVALID_EMAIL),
                 InputType.EMAIL)
@@ -36,14 +39,13 @@ class ResetPasswordScreenViewModel(
 
     fun onResetPasswordTapped() {
         sendAction(Action.SetLoading)
-        authUseCase.resetPasswordForEmail(email){
+        authUseCase.resetPasswordForEmail(_inputData.value){
             when(it){
                 is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
-                is DomainResult.Success -> sendAction(Action.Success)
+                is DomainResult.Success -> sendAction(Action.Success(_inputData.value))
             }
         }
     }
-
 
     @Immutable
     sealed interface UiState : BaseState {
@@ -55,7 +57,7 @@ class ResetPasswordScreenViewModel(
 
         data class Error(val message: String, val inputType: InputType) : UiState
 
-        data object Success : UiState
+        data class Success(val email: String) : UiState
 
     }
 
@@ -77,8 +79,8 @@ class ResetPasswordScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
 
-        data object Success : Action {
-            override fun reduce(state: UiState): UiState = UiState.Success
+        data class Success(val email: String) : Action {
+            override fun reduce(state: UiState): UiState = UiState.Success(email)
         }
     }
 }

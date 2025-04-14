@@ -82,12 +82,12 @@ fun MonthPickerWidget(
                                     year--
                                 }
                             ),
-                        tint = AppTheme.colors.highLight,
+                        tint = AppTheme.colors.primary,
                         imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
                         contentDescription = null
                     )
 
-                    TextRegular(
+                    TextWidget(
                         modifier = Modifier.padding(horizontal = padding_screen),
                         text = year.toString(),
                     )
@@ -102,7 +102,7 @@ fun MonthPickerWidget(
                                     year++
                                 }
                             ),
-                        tint = AppTheme.colors.highLight,
+                        tint = AppTheme.colors.primary,
                         imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                         contentDescription = null
                     )
@@ -145,9 +145,10 @@ fun MonthPickerWidget(
                                         )
                                 )
 
-                                TextSmall(
+                                TextWidget(
                                     text = it,
-                                    color = AppTheme.colors.textPrimary
+                                    color = AppTheme.colors.textPrimary,
+                                    style = AppTheme.textStyles.small,
                                 )
                             }
                         }
@@ -180,7 +181,7 @@ fun MonthPickerWidget(
 
 @AppPreview
 @Composable
-fun MonthPickerPreview() {
+private fun MonthPickerPreview() {
     AppThemeComposable {
         MonthPickerWidget(
             visible = true,

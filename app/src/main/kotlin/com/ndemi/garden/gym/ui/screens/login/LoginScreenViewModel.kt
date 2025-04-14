@@ -1,8 +1,6 @@
 package com.ndemi.garden.gym.ui.screens.login
 
 import androidx.compose.runtime.Immutable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.ui.UiError
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
@@ -13,6 +11,8 @@ import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.usecase.AuthUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class LoginScreenViewModel(
     private val converter: ErrorCodeConverter,
@@ -24,13 +24,13 @@ class LoginScreenViewModel(
     )
 
     private val _inputData =
-        MutableLiveData(
+        MutableStateFlow(
             InputData(
                 email = if (BuildConfig.DEBUG) BuildConfig.ADMIN_STAGING else "",
                 password = "",
             ),
         )
-    val inputData: LiveData<InputData> = _inputData
+    val inputData: StateFlow<InputData> = _inputData
 
     fun setString(
         value: String,
@@ -39,15 +39,15 @@ class LoginScreenViewModel(
         _inputData.value =
             when (inputType) {
                 InputType.NONE -> _inputData.value
-                InputType.EMAIL -> _inputData.value?.copy(email = value)
-                InputType.PASSWORD -> _inputData.value?.copy(password = value)
+                InputType.EMAIL -> _inputData.value.copy(email = value)
+                InputType.PASSWORD -> _inputData.value.copy(password = value)
             }
         validateInput()
     }
 
     private fun validateInput() {
-        val email = _inputData.value?.email.orEmpty()
-        val password = _inputData.value?.password.orEmpty()
+        val email = _inputData.value.email
+        val password = _inputData.value.password
 
         if (email.isEmpty() ||
             !android.util.Patterns.EMAIL_ADDRESS
@@ -64,7 +64,7 @@ class LoginScreenViewModel(
 
     fun onLoginTapped() {
         sendAction(Action.SetLoading)
-        authUseCase.login(_inputData.value?.email.orEmpty(), _inputData.value?.password.orEmpty()) {
+        authUseCase.login(_inputData.value.email, _inputData.value.password) {
             when (it) {
                 is DomainResult.Success ->
                     sendAction(Action.Success)

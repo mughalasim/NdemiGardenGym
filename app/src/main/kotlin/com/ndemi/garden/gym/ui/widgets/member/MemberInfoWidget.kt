@@ -29,9 +29,9 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants
 import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
-import com.ndemi.garden.gym.ui.widgets.TextRegular
-import com.ndemi.garden.gym.ui.widgets.TextRegularBold
-import com.ndemi.garden.gym.ui.widgets.TextSmall
+import com.ndemi.garden.gym.ui.widgets.TextWidget
+
+
 import cv.domain.entities.MemberEntity
 import org.joda.time.DateTime
 
@@ -50,7 +50,7 @@ fun MemberInfoWidget(
             )
             .border(
                 width = line_thickness,
-                color = AppTheme.colors.backgroundCardBorder,
+                color = AppTheme.colors.border,
                 shape = RoundedCornerShape(border_radius),
             )
             .padding(padding_screen_small),
@@ -62,14 +62,16 @@ fun MemberInfoWidget(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            TextSmall(
-                color = AppTheme.colors.highLight,
-                text = stringResource(R.string.txt_full_name)
+            TextWidget(
+                color = AppTheme.colors.primary,
+                text = stringResource(R.string.txt_full_name),
+                style = AppTheme.textStyles.small,
             )
-            TextRegularBold(
+            TextWidget(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.End,
-                text = memberEntity.getFullName()
+                text = memberEntity.getFullName(),
+                style = AppTheme.textStyles.regularBold,
             )
         }
 
@@ -80,11 +82,12 @@ fun MemberInfoWidget(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            TextSmall(
-                color = AppTheme.colors.highLight,
-                text = stringResource(id = R.string.txt_email)
+            TextWidget(
+                color = AppTheme.colors.primary,
+                text = stringResource(id = R.string.txt_email),
+                style = AppTheme.textStyles.small,
             )
-            TextRegular(
+            TextWidget(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.End,
                 text = memberEntity.email
@@ -97,7 +100,7 @@ fun MemberInfoWidget(
                     .padding(top = padding_screen_small)
                     .fillMaxWidth()
                     .height(line_thickness)
-                    .background(AppTheme.colors.highLight)
+                    .background(AppTheme.colors.primary)
             )
 
             Row(
@@ -107,11 +110,12 @@ fun MemberInfoWidget(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = stringResource(R.string.txt_residence)
+                TextWidget(
+                    color = AppTheme.colors.primary,
+                    text = stringResource(R.string.txt_residence),
+                    style = AppTheme.textStyles.small,
                 )
-                TextRegular(
+                TextWidget(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
                     text = memberEntity.getResidentialStatus()
@@ -125,15 +129,17 @@ fun MemberInfoWidget(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = stringResource(R.string.txt_training_coach_assigned)
+                TextWidget(
+                    color = AppTheme.colors.primary,
+                    text = stringResource(R.string.txt_training_coach_assigned),
+                    style = AppTheme.textStyles.small,
                 )
-                TextRegularBold(
-                    color = if(memberEntity.hasCoach) AppTheme.colors.highLight else AppTheme.colors.backgroundError,
+                TextWidget(
+                    color = if(memberEntity.hasCoach) AppTheme.colors.primary else AppTheme.colors.error,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
-                    text = memberEntity.getCoachStatus()
+                    text = memberEntity.getCoachStatus(),
+                    style = AppTheme.textStyles.regularBold,
                 )
             }
 
@@ -142,7 +148,7 @@ fun MemberInfoWidget(
                     .padding(top = padding_screen_small)
                     .fillMaxWidth()
                     .height(line_thickness)
-                    .background(AppTheme.colors.highLight)
+                    .background(AppTheme.colors.primary)
             )
 
             Row(
@@ -152,11 +158,12 @@ fun MemberInfoWidget(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = stringResource(R.string.txt_registration_date)
+                TextWidget(
+                    color = AppTheme.colors.primary,
+                    text = stringResource(R.string.txt_registration_date),
+                    style = AppTheme.textStyles.small,
                 )
-                TextRegular(
+                TextWidget(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
                     text = DateTime(memberEntity.registrationDateMillis).toString(
@@ -172,11 +179,12 @@ fun MemberInfoWidget(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = stringResource(R.string.txt_membership_due_date)
+                TextWidget(
+                    color = AppTheme.colors.primary,
+                    text = stringResource(R.string.txt_membership_due_date),
+                    style = AppTheme.textStyles.small,
                 )
-                TextRegular(
+                TextWidget(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
                     text = memberEntity.renewalFutureDateMillis.toMembershipStatusString()
@@ -190,15 +198,17 @@ fun MemberInfoWidget(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
-                    TextSmall(
-                        color = AppTheme.colors.highLight,
-                        text = "Amount due"
+                    TextWidget(
+                        color = AppTheme.colors.primary,
+                        text = "Amount due",
+                        style = AppTheme.textStyles.small,
                     )
-                    TextRegularBold(
+                    TextWidget(
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.End,
-                        color = AppTheme.colors.backgroundError,
-                        text = memberEntity.amountDue.toAmountString()
+                        color = AppTheme.colors.error,
+                        text = memberEntity.amountDue.toAmountString(),
+                        style = AppTheme.textStyles.regularBold,
                     )
                 }
             }
@@ -208,7 +218,7 @@ fun MemberInfoWidget(
 
 @AppPreview
 @Composable
-fun MemberInfoWidgetPreview() {
+private fun MemberInfoWidgetPreview() {
     AppThemeComposable {
         Column {
             MemberInfoWidget(memberEntity = getMockRegisteredMemberEntity())

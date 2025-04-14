@@ -63,9 +63,9 @@ fun MemberProfileWidget(
                         Modifier
                             .clip(RoundedCornerShape(border_radius))
                             .border(
-                                border = BorderStroke(line_thickness, AppTheme.colors.highLight),
+                                border = BorderStroke(line_thickness, AppTheme.colors.primary),
                                 shape = RoundedCornerShape(border_radius),
-                            ).background(AppTheme.colors.highLight)
+                            ).background(AppTheme.colors.primary)
                             .width(icon_image_size_large)
                             .height(icon_image_size_large)
                             .clickable {
@@ -79,14 +79,14 @@ fun MemberProfileWidget(
                     imageVector = Icons.Rounded.DeleteForever,
                     contentDescription = "Delete Picture",
                     contentScale = ContentScale.Inside,
-                    colorFilter = ColorFilter.tint(AppTheme.colors.backgroundError),
+                    colorFilter = ColorFilter.tint(AppTheme.colors.error),
                     modifier =
                         Modifier
                             .clip(RoundedCornerShape(border_radius))
                             .border(
-                                border = BorderStroke(line_thickness, AppTheme.colors.highLight),
+                                border = BorderStroke(line_thickness, AppTheme.colors.primary),
                                 shape = RoundedCornerShape(border_radius),
-                            ).background(AppTheme.colors.highLight)
+                            ).background(AppTheme.colors.primary)
                             .width(icon_image_size_large)
                             .height(icon_image_size_large)
                             .clickable {
@@ -100,7 +100,7 @@ fun MemberProfileWidget(
 
 @AppPreview
 @Composable
-fun MemberProfileWidgetPreview() {
+private fun MemberProfileWidgetPreview() {
     AppThemeComposable {
         MemberProfileWidget(imageUrl = "some url goes here")
     }

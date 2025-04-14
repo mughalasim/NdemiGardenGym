@@ -15,28 +15,31 @@ import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
-fun WarningWidget(title: String) {
-    TextRegular(
-        modifier = Modifier
+fun WarningWidget(
+    message: String,
+    modifier: Modifier = Modifier,
+) {
+    TextWidget(
+        modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight(Alignment.Top)
             .background(
                 brush = Brush.horizontalGradient(
                     listOf(
-                        AppTheme.colors.backgroundError,
+                        AppTheme.colors.error,
                         AppTheme.colors.backgroundButtonDisabled,
                         )
                 ),
             )
             .padding(padding_screen_small),
-        text = title,
+        text = message,
         color = Color.White,
     )
 }
 
 @AppPreview
 @Composable
-fun WarningWidgetPreview() {
+private fun WarningWidgetPreview() {
     AppThemeComposable {
         WarningWidget("Warning message will be placed here!, This message could overflow")
     }

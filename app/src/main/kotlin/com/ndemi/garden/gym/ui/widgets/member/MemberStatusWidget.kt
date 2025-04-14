@@ -36,9 +36,9 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import com.ndemi.garden.gym.ui.widgets.ButtonOutlineWidget
-import com.ndemi.garden.gym.ui.widgets.TextRegular
-import com.ndemi.garden.gym.ui.widgets.TextRegularBold
-import com.ndemi.garden.gym.ui.widgets.TextSmall
+import com.ndemi.garden.gym.ui.widgets.TextWidget
+
+
 import cv.domain.entities.MemberEntity
 
 @Suppress("detekt.MagicNumber")
@@ -64,7 +64,7 @@ fun MemberStatusWidget(
                     shape = RoundedCornerShape(border_radius),
                 ).border(
                     width = line_thickness,
-                    color = AppTheme.colors.backgroundCardBorder,
+                    color = AppTheme.colors.border,
                     shape = RoundedCornerShape(border_radius),
                 ).padding(padding_screen_small),
     ) {
@@ -87,25 +87,26 @@ fun MemberStatusWidget(
                         .weight(1f)
                         .padding(start = padding_screen_small),
             ) {
-                TextRegularBold(
+                TextWidget(
                     text = memberEntity.getFullName(),
+                    style = AppTheme.textStyles.regularBold,
                 )
 
                 if (showDetails) {
-                    TextRegular(
+                    TextWidget(
                         modifier = Modifier.padding(top = padding_screen_tiny),
-                        color = AppTheme.colors.backgroundError,
+                        color = AppTheme.colors.error,
                         text = memberEntity.getResidentialStatus(),
                     )
 
                     if (memberEntity.hasPaidMembership()) {
-                        TextRegular(
+                        TextWidget(
                             modifier = Modifier.fillMaxWidth(),
                             text = memberEntity.renewalFutureDateMillis.toMembershipStatusString(),
                         )
-                        TextRegular(
+                        TextWidget(
                             modifier = Modifier.fillMaxWidth(),
-                            color = AppTheme.colors.backgroundError,
+                            color = AppTheme.colors.error,
                             text = memberEntity.amountDue.toAmountString(),
                         )
                     }
@@ -123,11 +124,12 @@ fun MemberStatusWidget(
                                     .height(icon_image_size),
                             imageVector = Icons.Rounded.Accessibility,
                             contentDescription = null,
-                            tint = AppTheme.colors.highLight,
+                            tint = AppTheme.colors.primary,
                         )
-                        TextSmall(
+                        TextWidget(
                             text = stringResource(R.string.txt_coach),
-                            color = AppTheme.colors.highLight,
+                            color = AppTheme.colors.primary,
+                            style = AppTheme.textStyles.small,
                         )
                     }
                 }
@@ -168,7 +170,7 @@ fun MemberStatusWidget(
                         hasOutline = !memberEntity.isActiveNow(),
                         backgroundColor =
                             if (memberEntity.isActiveNow()) {
-                                AppTheme.colors.backgroundError
+                                AppTheme.colors.error
                             } else {
                                 Color.Transparent
                             },
@@ -183,7 +185,7 @@ fun MemberStatusWidget(
 
 @AppPreview
 @Composable
-fun MemberWidgetPreview() {
+private fun MemberWidgetPreview() {
     AppThemeComposable {
         Column {
             MemberStatusWidget(

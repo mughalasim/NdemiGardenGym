@@ -31,15 +31,15 @@ fun AsyncImageWidget(
             .data(profileImageUrl)
             .crossfade(true)
             .build(),
-        placeholder = painterResource(R.drawable.ic_app_foreground),
-        fallback = painterResource(R.drawable.ic_app_foreground),
-        error = painterResource(R.drawable.ic_app_foreground),
+        placeholder = painterResource(R.drawable.ic_app),
+        fallback = painterResource(R.drawable.ic_app),
+        error = painterResource(R.drawable.ic_app),
         contentDescription = "profile picture",
         contentScale = ContentScale.Crop,
         modifier = Modifier
             .clip(RoundedCornerShape(border_radius))
             .border(
-                border = BorderStroke(line_thickness, AppTheme.colors.backgroundCardBorder),
+                border = BorderStroke(line_thickness, AppTheme.colors.border),
                 shape = RoundedCornerShape(border_radius)
             )
             .width(dimen)

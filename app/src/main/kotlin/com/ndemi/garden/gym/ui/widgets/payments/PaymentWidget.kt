@@ -36,9 +36,9 @@ import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toPaymentPlanDuration
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
-import com.ndemi.garden.gym.ui.widgets.TextRegular
-import com.ndemi.garden.gym.ui.widgets.TextRegularBold
-import com.ndemi.garden.gym.ui.widgets.TextSmall
+import com.ndemi.garden.gym.ui.widgets.TextWidget
+
+
 import cv.domain.entities.PaymentEntity
 import org.joda.time.DateTime
 
@@ -65,7 +65,7 @@ fun PaymentWidget(
                     shape = RoundedCornerShape(border_radius),
                 ).border(
                     width = line_thickness,
-                    color = AppTheme.colors.backgroundCardBorder,
+                    color = AppTheme.colors.border,
                     shape = RoundedCornerShape(border_radius),
                 ).padding(padding_screen_small),
     ) {
@@ -76,15 +76,16 @@ fun PaymentWidget(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            TextRegularBold(
+            TextWidget(
                 text = endDate.toPaymentPlanDuration(),
-                color = AppTheme.colors.highLight,
+                color = AppTheme.colors.primary,
+                style = AppTheme.textStyles.regularBold,
             )
             if (canDeletePayment) {
                 Icon(
                     modifier = Modifier.clickable { showDialog = !showDialog },
                     imageVector = Icons.Default.Clear,
-                    tint = AppTheme.colors.highLight,
+                    tint = AppTheme.colors.primary,
                     contentDescription = stringResource(id = R.string.txt_delete),
                 )
             }
@@ -98,25 +99,29 @@ fun PaymentWidget(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column {
-                TextSmall(text = "Start Date")
-                TextRegular(text = startDate.toString(formatDayMonthYear))
+                TextWidget(text = "Start Date",
+                    style = AppTheme.textStyles.small,)
+                TextWidget(text = startDate.toString(formatDayMonthYear))
             }
             Column {
-                TextSmall(text = "End Date")
-                TextRegular(text = endDate.toString(formatDayMonthYear))
+                TextWidget(text = "End Date",
+                    style = AppTheme.textStyles.small,)
+                TextWidget(text = endDate.toString(formatDayMonthYear))
             }
             Column {
-                TextSmall(text = "Total")
-                TextRegular(text = paymentEntity.amount.toAmountString())
+                TextWidget(text = "Total",
+                    style = AppTheme.textStyles.small,)
+                TextWidget(text = paymentEntity.amount.toAmountString())
             }
         }
 
         if (showDialog) {
             AlertDialog(
                 containerColor = AppTheme.colors.backgroundButtonDisabled,
-                title = { TextSmall(text = stringResource(R.string.txt_are_you_sure)) },
+                title = { TextWidget(text = stringResource(R.string.txt_are_you_sure),
+                    style = AppTheme.textStyles.small,) },
                 text = {
-                    TextRegular(
+                    TextWidget(
                         text = stringResource(R.string.txt_are_you_sure_delete_payment),
                     )
                 },
@@ -139,7 +144,7 @@ fun PaymentWidget(
 
 @AppPreview
 @Composable
-fun PaymentWidgetPreview() {
+private fun PaymentWidgetPreview() {
     AppThemeComposable {
         Column {
             PaymentWidget(

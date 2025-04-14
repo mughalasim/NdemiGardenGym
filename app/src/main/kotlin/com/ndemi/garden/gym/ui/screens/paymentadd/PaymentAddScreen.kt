@@ -55,7 +55,7 @@ fun PaymentAddScreen(
         ) {
             PaymentAddDetailsScreen(
                 startDate = inputData.value?.startDate,
-                uiState = uiState,
+                uiState = uiState.value,
                 onSetData = viewModel::setData,
                 onPaymentAddTapped = viewModel::onPaymentAddTapped
             )

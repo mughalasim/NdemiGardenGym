@@ -22,8 +22,8 @@ import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants
-import com.ndemi.garden.gym.ui.widgets.TextRegular
-import com.ndemi.garden.gym.ui.widgets.TextRegularBold
+import com.ndemi.garden.gym.ui.widgets.TextWidget
+
 import org.joda.time.DateTime
 
 @Composable
@@ -44,22 +44,23 @@ fun MemberSessionWidget(
             )
             .border(
                 width = line_thickness,
-                color = AppTheme.colors.backgroundCardBorder,
+                color = AppTheme.colors.border,
                 shape = RoundedCornerShape(border_radius),
             )
             .padding(padding_screen),
     ) {
-        TextRegularBold(
-            color = AppTheme.colors.highLight,
-            text = stringResource(R.string.txt_workout_session)
+        TextWidget(
+            color = AppTheme.colors.primary,
+            text = stringResource(R.string.txt_workout_session),
+            style = AppTheme.textStyles.regularBold,
         )
 
         if (sessionStartTime != null) {
-            TextRegular(
+            TextWidget(
                 modifier = Modifier.padding(top = padding_screen_small),
                 text = stringResource(R.string.txt_your_workout_session_is_in_progress)
             )
-            TextRegular(
+            TextWidget(
                 modifier = Modifier.padding(top = padding_screen_small),
                 text = stringResource(
                     R.string.txt_started_at,
@@ -67,22 +68,22 @@ fun MemberSessionWidget(
                 )
             )
         } else {
-            TextRegular(
+            TextWidget(
                 modifier = Modifier.padding(top = padding_screen_small),
                 text = stringResource(R.string.txt_workout_session_desc)
             )
         }
 
-        TextRegularBold(
+        TextWidget(
             modifier = Modifier
                 .padding(top = padding_screen)
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .background(
                     color = if (sessionStartTime != null) {
-                        AppTheme.colors.backgroundError
+                        AppTheme.colors.error
                     } else {
-                        AppTheme.colors.highLight
+                        AppTheme.colors.primary
                     },
                     shape = RoundedCornerShape(border_radius)
                 )
@@ -100,14 +101,15 @@ fun MemberSessionWidget(
                 stringResource(R.string.txt_start_session)
             },
             textAlign = TextAlign.Center,
-            color = Color.Black
+            color = Color.Black,
+            style = AppTheme.textStyles.regularBold,
         )
 
         if (sessionStartTime == null) {
-            TextRegular(
+            TextWidget(
                 modifier = Modifier.padding(top = padding_screen),
                 text = message,
-                color = AppTheme.colors.backgroundError
+                color = AppTheme.colors.error
             )
         }
     }
@@ -115,7 +117,7 @@ fun MemberSessionWidget(
 
 @AppPreview
 @Composable
-fun MemberSessionWidgetPreview(){
+private fun MemberSessionWidgetPreview(){
     AppThemeComposable {
         Column {
             MemberSessionWidget(sessionStartTime = DateTime.now().minusHours(2))

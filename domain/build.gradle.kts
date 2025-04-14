@@ -4,15 +4,11 @@ plugins {
     alias(libs.plugins.spotless)
 }
 
+apply(from = "${rootProject.projectDir}/lint.gradle")
+
 java {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
-}
-
-detekt {
-    toolVersion = libs.versions.detekt.get()
-    config.setFrom(rootProject.file("detekt.yml"))
-    buildUponDefaultConfig = false
 }
 
 dependencies {

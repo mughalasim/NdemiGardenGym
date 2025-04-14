@@ -29,8 +29,8 @@ import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiSt
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
-import com.ndemi.garden.gym.ui.widgets.TextRegular
-import com.ndemi.garden.gym.ui.widgets.TextSmall
+import com.ndemi.garden.gym.ui.widgets.TextWidget
+
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberProfileWidget
@@ -95,7 +95,7 @@ fun MemberEditScreen(
 
                     MemberEditDetailsScreen(
                         hasAdminRights = viewModel.hasAdminRights(),
-                        uiState = uiState,
+                        uiState = uiState.value,
                         memberEntity = it,
                         onSetString = viewModel::setString,
                         onUpdateTapped = viewModel::onUpdateTapped,
@@ -107,9 +107,14 @@ fun MemberEditScreen(
         if (showDialog) {
             AlertDialog(
                 containerColor = AppTheme.colors.backgroundButtonDisabled,
-                title = { TextSmall(text = stringResource(R.string.txt_are_you_sure)) },
+                title = {
+                    TextWidget(
+                        text = stringResource(R.string.txt_are_you_sure),
+                        style = AppTheme.textStyles.regularBold,
+                    )
+                },
                 text = {
-                    TextRegular(
+                    TextWidget(
                         text = stringResource(R.string.txt_are_you_sure_delete_member)
                     )
                 },

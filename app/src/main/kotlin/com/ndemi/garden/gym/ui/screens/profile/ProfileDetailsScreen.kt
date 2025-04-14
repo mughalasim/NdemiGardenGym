@@ -44,7 +44,7 @@ fun ProfileDetailsScreen(
 
 @AppPreview
 @Composable
-fun ProfileDetailsScreenPreview() {
+private fun ProfileDetailsScreenPreview() {
     AppThemeComposable {
         ProfileDetailsScreen(
             memberEntity = getMockRegisteredMemberEntity(),

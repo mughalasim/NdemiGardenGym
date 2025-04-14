@@ -16,6 +16,8 @@ plugins {
     alias(libs.plugins.spotless)
 }
 
+apply(from = "${rootProject.projectDir}/lint.gradle")
+
 val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
@@ -72,9 +74,18 @@ android {
             resValue("string", "app_name", libs.versions.appName.get())
             setConfigVariable(variableName = "PATH_USER", variableSource = "PATH_USER")
             setConfigVariable(variableName = "PATH_ATTENDANCE", variableSource = "PATH_ATTENDANCE")
-            setConfigVariable(variableName = "PATH_PAYMENT_PLAN", variableSource = "PATH_PAYMENT_PLAN")
-            setConfigVariable(variableName = "PATH_APP_VERSION_TYPE", variableSource = "PATH_APP_VERSION_TYPE")
-            setConfigVariable(variableName = "PATH_USER_IMAGES", variableSource = "PATH_USER_IMAGES")
+            setConfigVariable(
+                variableName = "PATH_PAYMENT_PLAN",
+                variableSource = "PATH_PAYMENT_PLAN"
+            )
+            setConfigVariable(
+                variableName = "PATH_APP_VERSION_TYPE",
+                variableSource = "PATH_APP_VERSION_TYPE"
+            )
+            setConfigVariable(
+                variableName = "PATH_USER_IMAGES",
+                variableSource = "PATH_USER_IMAGES"
+            )
         }
 
         getByName("debug") {
@@ -83,10 +94,22 @@ android {
             isDebuggable = true
             resValue("string", "app_name", "${libs.versions.appName.get()} (Debug)")
             setConfigVariable(variableName = "PATH_USER", variableSource = "DEBUG_PATH_USER")
-            setConfigVariable(variableName = "PATH_ATTENDANCE", variableSource = "DEBUG_PATH_ATTENDANCE")
-            setConfigVariable(variableName = "PATH_PAYMENT_PLAN", variableSource = "DEBUG_PATH_PAYMENT")
-            setConfigVariable(variableName = "PATH_APP_VERSION_TYPE", variableSource = "DEBUG_PATH_APP_VERSION_TYPE")
-            setConfigVariable(variableName = "PATH_USER_IMAGES", variableSource = "DEBUG_PATH_USER_IMAGES")
+            setConfigVariable(
+                variableName = "PATH_ATTENDANCE",
+                variableSource = "DEBUG_PATH_ATTENDANCE"
+            )
+            setConfigVariable(
+                variableName = "PATH_PAYMENT_PLAN",
+                variableSource = "DEBUG_PATH_PAYMENT"
+            )
+            setConfigVariable(
+                variableName = "PATH_APP_VERSION_TYPE",
+                variableSource = "DEBUG_PATH_APP_VERSION_TYPE"
+            )
+            setConfigVariable(
+                variableName = "PATH_USER_IMAGES",
+                variableSource = "DEBUG_PATH_USER_IMAGES"
+            )
         }
     }
 
@@ -108,7 +131,10 @@ android {
     productFlavors {
         create("App") {
             dimension = "version"
-            setProperty("archivesBaseName", "${libs.versions.appName.get()} (${libs.versions.appVersionName.get()})")
+            setProperty(
+                "archivesBaseName",
+                "${libs.versions.appName.get()} (${libs.versions.appVersionName.get()})"
+            )
         }
     }
 
@@ -121,12 +147,6 @@ android {
         nativeSymbolUploadEnabled = false
     }
 
-    detekt {
-        toolVersion = libs.versions.detekt.get()
-        config.setFrom(rootProject.file("detekt.yml"))
-        buildUponDefaultConfig = false
-    }
-
     packaging {
         resources.excludes.add("META-INF/LICENSE.txt")
         resources.excludes.add("META-INF/NOTICE.txt")
@@ -137,14 +157,22 @@ fun ApplicationDefaultConfig.setConfigVariable(
     variableName: String,
     variableSource: String,
 ) {
-    buildConfigField("String", variableName, gradleLocalProperties(rootDir, providers).getProperty(variableSource))
+    buildConfigField(
+        "String",
+        variableName,
+        gradleLocalProperties(rootDir, providers).getProperty(variableSource)
+    )
 }
 
 fun ApplicationBuildType.setConfigVariable(
     variableName: String,
     variableSource: String,
 ) {
-    buildConfigField("String", variableName, gradleLocalProperties(rootDir, providers).getProperty(variableSource))
+    buildConfigField(
+        "String",
+        variableName,
+        gradleLocalProperties(rootDir, providers).getProperty(variableSource)
+    )
 }
 
 dependencies {

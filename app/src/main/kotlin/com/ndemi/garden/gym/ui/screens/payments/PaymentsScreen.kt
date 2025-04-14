@@ -26,7 +26,7 @@ import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
-import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.joda.time.DateTime
@@ -82,7 +82,7 @@ fun PaymentsScreen(
                 if (uiState.value is UiState.Success) {
                     val result = (uiState.value as UiState.Success)
                     if (result.payments.isEmpty()) {
-                        TextRegular(
+                        TextWidget(
                             modifier = Modifier.padding(padding_screen),
                             text = stringResource(R.string.txt_no_payments)
                         )
@@ -104,7 +104,7 @@ fun PaymentsScreen(
         AlertDialog(
             containerColor = AppTheme.colors.backgroundButtonDisabled,
             text = {
-                TextRegular(
+                TextWidget(
                     text = stringResource(R.string.txt_cannot_add_payment)
                 )
             },

@@ -27,7 +27,7 @@ fun LoadingScreenWidget() {
                 .width(icon_image_size)
                 .height(icon_image_size)
         )
-        TextRegular(
+        TextWidget(
             modifier = Modifier.padding(top = padding_screen),
             text = "Loading... Please wait..."
         )
@@ -37,7 +37,7 @@ fun LoadingScreenWidget() {
 
 @AppPreview
 @Composable
-fun LoadingScreenWidgetPreview() {
+private fun LoadingScreenWidgetPreview() {
     AppThemeComposable {
         LoadingScreenWidget()
     }

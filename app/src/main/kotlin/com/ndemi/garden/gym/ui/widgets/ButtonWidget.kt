@@ -53,31 +53,31 @@ fun ButtonWidget(
     )
     Row(
         modifier =
-        modifier
-            .fillMaxWidth()
-            .padding(top = padding_screen)
-            .background(
-                bgColor,
-                shape = RoundedCornerShape(border_radius),
-            )
-            .padding(padding_screen)
-            .clickable {
-                if (isEnabled && !isLoading) onButtonClicked()
-            },
+            modifier
+                .fillMaxWidth()
+                .padding(top = padding_screen)
+                .background(
+                    bgColor,
+                    shape = RoundedCornerShape(border_radius),
+                )
+                .padding(padding_screen)
+                .clickable {
+                    if (isEnabled && !isLoading) onButtonClicked()
+                },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        if (isLoading){
+        if (isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier
                     .padding(end = padding_screen)
                     .width(icon_image_size)
                     .height(icon_image_size),
                 strokeCap = StrokeCap.Round,
-                trackColor = AppTheme.colors.highLight
+                trackColor = AppTheme.colors.primary
             )
         }
-        TextRegular(
+        TextWidget(
             modifier = Modifier.wrapContentWidth(),
             text = title,
             color = if (isEnabled && !isLoading) {
@@ -96,34 +96,39 @@ fun ButtonOutlineWidget(
     hasOutline: Boolean = true,
     backgroundColor: Color = Color.Transparent,
     onButtonClicked: () -> Unit = {}
-){
+) {
     OutlinedButton(
         modifier = modifier,
         onClick = { onButtonClicked.invoke() },
         shape = RoundedCornerShape(border_radius),
         border = BorderStroke(
             width = line_thickness,
-            color = if (hasOutline) AppTheme.colors.highLight else Color.Transparent
+            color = if (hasOutline) AppTheme.colors.primary else Color.Transparent
         ),
         contentPadding = PaddingValues(padding_screen_tiny),
         colors = ButtonDefaults.outlinedButtonColors()
             .copy(containerColor = backgroundColor)
     ) {
-        TextSmall(text = text)
+        TextWidget(
+            text = text,
+            style = AppTheme.textStyles.small,
+        )
     }
 }
 
 @AppPreview
 @Composable
-fun ButtonWidgetPreview() {
+private fun ButtonWidgetPreview() {
     AppThemeComposable {
         Column {
             ButtonWidget(title = "Enabled button", isEnabled = true, isLoading = true) {}
             ButtonWidget(title = "Disabled button", isEnabled = false) {}
             ButtonOutlineWidget(text = "Text button") {}
-            ButtonOutlineWidget(text = "Text button",
+            ButtonOutlineWidget(
+                text = "Text button",
                 hasOutline = false,
-                backgroundColor = AppTheme.colors.backgroundError) {}
+                backgroundColor = AppTheme.colors.error
+            ) {}
         }
     }
 }

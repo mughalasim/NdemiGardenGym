@@ -14,12 +14,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
-import com.ndemi.garden.gym.ui.widgets.TextRegular
-import com.ndemi.garden.gym.ui.widgets.TextRegularBold
+import com.ndemi.garden.gym.ui.widgets.TextWidget
+
 
 @Composable
 fun NewVersionScreen(
@@ -34,10 +35,11 @@ fun NewVersionScreen(
     ) {
         val uriHandler = LocalUriHandler.current
         val context = LocalContext.current
-        TextRegularBold(
-            text = stringResource(R.string.txt_app_update_title)
+        TextWidget(
+            text = stringResource(R.string.txt_app_update_title),
+            style = AppTheme.textStyles.regularBold,
         )
-        TextRegular(
+        TextWidget(
             modifier = Modifier.padding(top = padding_screen),
             text =
             stringResource(R.string.txt_app_update_desc)
@@ -68,7 +70,7 @@ fun isValidUri(uriString: String): Boolean {
 
 @AppPreview
 @Composable
-fun NewVersionScreenPreview() {
+private fun NewVersionScreenPreview() {
     AppThemeComposable {
         NewVersionScreen(url = "SampleUrl")
     }

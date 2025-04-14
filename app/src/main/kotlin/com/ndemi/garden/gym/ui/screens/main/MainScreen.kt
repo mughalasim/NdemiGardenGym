@@ -48,7 +48,7 @@ fun MainScreen(
                         MainScreenViewModel.UiState.Loading -> LoadingScreenWidget()
 
                         is MainScreenViewModel.UiState.Error ->
-                            WarningWidget(title = response.message)
+                            WarningWidget(message = response.message)
 
 
                         is MainScreenViewModel.UiState.Success ->

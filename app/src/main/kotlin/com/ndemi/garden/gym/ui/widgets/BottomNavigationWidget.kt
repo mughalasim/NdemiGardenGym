@@ -81,8 +81,8 @@ fun BottomNavigationWidget(
                     selectedIconColor = AppTheme.colors.backgroundScreen,
                     selectedTextColor = AppTheme.colors.textPrimary,
                     selectedIndicatorColor = AppTheme.colors.textPrimary,
-                    disabledIconColor = AppTheme.colors.backgroundError,
-                    disabledTextColor = AppTheme.colors.backgroundError,
+                    disabledIconColor = AppTheme.colors.error,
+                    disabledTextColor = AppTheme.colors.error,
                     unselectedIconColor = AppTheme.colors.textSecondary,
                     unselectedTextColor = AppTheme.colors.textSecondary
                 )
@@ -157,7 +157,7 @@ sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: I
 
 @AppPreview
 @Composable
-fun BottomNavigationWidgetPreview() {
+private fun BottomNavigationWidgetPreview() {
     AppThemeComposable {
         Column {
             BottomNavigationWidget(

@@ -17,6 +17,7 @@ fun RegisterScreen(
     val uiState = viewModel.uiStateFlow.collectAsState(
         initial = UiState.Waiting
     )
+    val inputData = viewModel.inputData.collectAsState()
 
     Column {
         ToolBarWidget(title = stringResource(id = R.string.txt_register))
@@ -26,8 +27,8 @@ fun RegisterScreen(
         }
 
         RegisterDetailScreen(
-            uiState = uiState,
-            inputData = viewModel.inputData.value,
+            uiState = uiState.value,
+            inputData = inputData.value,
             hidePassword = false,
             onSetString = viewModel::setString,
             onRegisterTapped = viewModel::onRegisterTapped,

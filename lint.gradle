@@ -1,0 +1,17 @@
+spotless {
+    kotlin {
+        target("**/*.kt", "**/*.kts")
+        ktlint()
+        .setEditorConfigPath("${rootProject.projectDir}/.editorconfig")
+
+        trimTrailingWhitespace()
+        indentWithSpaces()
+        endWithNewline()
+    }
+}
+
+detekt {
+    toolVersion = libs.versions.detekt.get()
+    config.setFrom(rootProject.file("detekt.yml"))
+    buildUponDefaultConfig = false
+}

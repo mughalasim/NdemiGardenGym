@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.koin.androidx.compose.koinViewModel
@@ -46,7 +46,7 @@ fun LiveAttendanceScreen(
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 if (uiState.value is UiState.Success) {
                     if ((uiState.value as UiState.Success).members.isEmpty()) {
-                        TextRegular(
+                        TextWidget(
                             modifier = Modifier.fillMaxWidth().padding(padding_screen),
                             textAlign = TextAlign.Center,
                             text = stringResource(R.string.txt_no_one_is_in)

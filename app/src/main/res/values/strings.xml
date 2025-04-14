@@ -66,7 +66,7 @@
     <string name="txt_no_attendances">No Attendances for the selected month</string>
     <string name="txt_who_is_in">Who\'s in the Gym today?</string>
     <string name="txt_no_one_is_in">Oh no! No one\'s in, why don\'t you be the first?</string>
-    <string name="txt_login_desc">Welcome to %1$s App, Please enter your login details to proceed</string>
+    <string name="txt_login_desc">Hi there! Nice to see you again.</string>
     <string name="txt_app_version">"App version: "</string>
     <string name="txt_view_payments">View Payments</string>
     <string name="txt_view_attendance">View Attendance</string>

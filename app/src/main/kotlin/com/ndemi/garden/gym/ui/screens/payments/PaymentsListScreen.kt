@@ -16,7 +16,7 @@ import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAmountString
-import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.payments.PaymentWidget
 import cv.domain.entities.PaymentEntity
 
@@ -29,7 +29,7 @@ fun PaymentsListScreen(
 ) {
     Column {
         Row {
-            TextRegular(
+            TextWidget(
                 modifier = Modifier
                     .padding(horizontal = padding_screen)
                     .padding(top = padding_screen_small)
@@ -53,7 +53,7 @@ fun PaymentsListScreen(
 
 @AppPreview
 @Composable
-fun PaymentPlanListScreenPreview() {
+private fun PaymentPlanListScreenPreview() {
     AppThemeComposable {
         PaymentsListScreen(
             payments = listOf(

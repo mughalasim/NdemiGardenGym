@@ -35,8 +35,8 @@ import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
-import com.ndemi.garden.gym.ui.widgets.TextRegular
-import com.ndemi.garden.gym.ui.widgets.TextSmall
+import com.ndemi.garden.gym.ui.widgets.TextWidget
+
 import cv.domain.entities.AttendanceEntity
 import org.joda.time.DateTime
 
@@ -64,7 +64,7 @@ fun AttendanceWidget(
             )
             .border(
                 width = line_thickness,
-                color = AppTheme.colors.backgroundCardBorder,
+                color = AppTheme.colors.border,
                 shape = RoundedCornerShape(border_radius),
             )
             .padding(padding_screen_small),
@@ -75,14 +75,15 @@ fun AttendanceWidget(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextSmall(
+            TextWidget(
                 text = startDate.toString(formatDateDay),
+                style = AppTheme.textStyles.small,
             )
             if (canDeleteAttendance) {
                 Icon(
                     modifier = Modifier.clickable { showDialog = !showDialog },
                     imageVector = Icons.Default.Clear,
-                    tint = AppTheme.colors.highLight,
+                    tint = AppTheme.colors.primary,
                     contentDescription = stringResource(id = R.string.txt_delete)
                 )
             }
@@ -94,22 +95,27 @@ fun AttendanceWidget(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextRegular(
+            TextWidget(
                 text = startDate.toString(formatTime)
                         + " - "
                         + endDate.toString(formatTime),
             )
 
-            TextRegular(
+            TextWidget(
                 text = endDate.toActiveStatusDuration(startDate),
             )
 
             if (showDialog){
                 AlertDialog(
                     containerColor = AppTheme.colors.backgroundButtonDisabled,
-                    title = { TextSmall(text = stringResource(R.string.txt_are_you_sure)) },
+                    title = {
+                        TextWidget(
+                            text = stringResource(R.string.txt_are_you_sure),
+                            style = AppTheme.textStyles.regularBold,
+                            )
+                        },
                     text = {
-                        TextRegular(
+                        TextWidget(
                             text = stringResource(R.string.txt_are_you_sure_delete_attendance)
                         )
                     },
@@ -133,7 +139,7 @@ fun AttendanceWidget(
 
 @AppPreview
 @Composable
-fun AttendanceWidgetPreview() {
+private fun AttendanceWidgetPreview() {
     AppThemeComposable {
         AttendanceWidget(attendanceEntity = getMockAttendanceEntity())
     }

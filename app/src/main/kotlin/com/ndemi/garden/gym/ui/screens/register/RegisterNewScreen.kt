@@ -27,6 +27,7 @@ fun RegisterNewScreen(
     if (uiState.value is UiState.Success){
         viewModel.navigateBack()
     }
+    val inputData = viewModel.inputData.collectAsState()
 
     Column {
         ToolBarWidget(title = stringResource(id = R.string.txt_register_new_member), canNavigateBack = true){
@@ -43,13 +44,13 @@ fun RegisterNewScreen(
                     .padding(padding_screen)
                     .align(Alignment.CenterHorizontally),
                 strokeCap = StrokeCap.Round,
-                trackColor = AppTheme.colors.highLight
+                trackColor = AppTheme.colors.primary
             )
         } else {
             RegisterDetailScreen(
-                uiState = uiState,
-                inputData = viewModel.inputData.value,
-                hidePassword = true,
+                uiState = uiState.value,
+                inputData = inputData.value,
+                hidePassword = true, // TODO - the viewModel needs to determine what type of registration this is
                 onSetString = viewModel::setString,
                 onRegisterTapped = viewModel::onRegisterNewTapped,
             )

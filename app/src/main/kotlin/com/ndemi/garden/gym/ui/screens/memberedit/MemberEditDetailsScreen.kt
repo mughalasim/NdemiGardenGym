@@ -10,8 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,21 +29,33 @@ import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.utils.toPhoneNumberString
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
-import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.MemberEntity
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.joda.time.DateTime
 
 @Composable
 fun MemberEditDetailsScreen(
     hasAdminRights: Boolean,
-    uiState: State<UiState>,
+    uiState: UiState,
     memberEntity: MemberEntity,
     onSetString: (String, InputType) -> Unit = { _, _ -> },
     onUpdateTapped: () -> Unit = {},
 ) {
-    val currentInputType = (uiState.value as? UiState.Error)?.inputType
     var initialHasCoach by remember { mutableStateOf(memberEntity.hasCoach) }
+    var errorFirstName = ""
+    var errorLastName = ""
+    var errorApartmentNumber = ""
+    var errorPhoneNumber = ""
+
+    if (uiState is UiState.Error){
+        when(uiState.inputType){
+            InputType.FIRST_NAME -> errorFirstName = uiState.message
+            InputType.LAST_NAME -> errorLastName = uiState.message
+            InputType.APARTMENT_NUMBER -> errorApartmentNumber = uiState.message
+            InputType.PHONE_NUMBER -> errorPhoneNumber = uiState.message
+            else -> Unit
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -67,7 +77,7 @@ fun MemberEditDetailsScreen(
         EditTextWidget(
             hint = stringResource(R.string.txt_first_name),
             textInput = memberEntity.firstName,
-            isError = currentInputType == InputType.FIRST_NAME,
+            errorText = errorFirstName,
             isEnabled = hasAdminRights
         ) {
             onSetString.invoke(it, InputType.FIRST_NAME)
@@ -76,7 +86,7 @@ fun MemberEditDetailsScreen(
         EditTextWidget(
             hint = stringResource(R.string.txt_last_name),
             textInput = memberEntity.lastName,
-            isError = currentInputType == InputType.LAST_NAME,
+            errorText = errorLastName,
             isEnabled = hasAdminRights
         ) {
             onSetString.invoke(it, InputType.LAST_NAME)
@@ -85,7 +95,7 @@ fun MemberEditDetailsScreen(
         EditTextWidget(
             hint = stringResource(R.string.txt_apartment_number),
             textInput = memberEntity.apartmentNumber.orEmpty(),
-            isError = currentInputType == InputType.APARTMENT_NUMBER,
+            errorText = errorApartmentNumber,
             isEnabled = hasAdminRights
         ) {
             onSetString.invoke(it, InputType.APARTMENT_NUMBER)
@@ -94,7 +104,7 @@ fun MemberEditDetailsScreen(
         EditTextWidget(
             hint = stringResource(R.string.txt_phone_number),
             textInput = memberEntity.phoneNumber.toPhoneNumberString(),
-            isError = currentInputType == InputType.PHONE_NUMBER,
+            errorText = errorPhoneNumber,
             keyboardType = KeyboardType.Phone,
             isEnabled = hasAdminRights
         ) {
@@ -110,7 +120,7 @@ fun MemberEditDetailsScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextRegular(text = stringResource(id = R.string.txt_training_coach_assigned))
+            TextWidget(text = stringResource(id = R.string.txt_training_coach_assigned))
             Switch(
                 checked = initialHasCoach,
                 enabled = hasAdminRights,
@@ -123,8 +133,8 @@ fun MemberEditDetailsScreen(
 
         ButtonWidget(
             title = stringResource(R.string.txt_update),
-            isEnabled = uiState.value is UiState.ReadyToUpdate && hasAdminRights,
-            isLoading = uiState.value is UiState.Loading
+            isEnabled = uiState is UiState.ReadyToUpdate && hasAdminRights,
+            isLoading = uiState is UiState.Loading
         ) {
             onUpdateTapped.invoke()
         }
@@ -134,14 +144,13 @@ fun MemberEditDetailsScreen(
 
 @AppPreview
 @Composable
-fun MemberEditDetailsScreenPreview() {
+private fun MemberEditDetailsScreenPreview() {
     AppThemeComposable {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             MemberEditDetailsScreen(
                 hasAdminRights = false,
                 memberEntity = getMockRegisteredMemberEntity(),
-                uiState = MutableStateFlow(UiState.Loading)
-                    .collectAsState(initial = UiState.Loading),
+                uiState = UiState.Loading,
             )
         }
     }
