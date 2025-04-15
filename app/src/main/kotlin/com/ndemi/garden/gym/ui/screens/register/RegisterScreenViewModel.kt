@@ -30,7 +30,6 @@ class RegisterScreenViewModel(
     private val memberUseCase: MemberUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
-
     data class InputData(
         val firstName: String = "",
         val lastName: String = "",

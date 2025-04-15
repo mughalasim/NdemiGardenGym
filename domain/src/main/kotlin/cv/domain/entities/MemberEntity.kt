@@ -33,10 +33,10 @@ data class MemberEntity(
     fun isNotEqualTo(memberEntity: MemberEntity?): Boolean {
         if (memberEntity == null) return true
         return memberEntity.firstName != firstName ||
-                memberEntity.lastName != lastName ||
-                memberEntity.apartmentNumber != apartmentNumber ||
-                memberEntity.phoneNumber != phoneNumber ||
-                memberEntity.hasCoach != hasCoach
+            memberEntity.lastName != lastName ||
+            memberEntity.apartmentNumber != apartmentNumber ||
+            memberEntity.phoneNumber != phoneNumber ||
+            memberEntity.hasCoach != hasCoach
     }
 }
 

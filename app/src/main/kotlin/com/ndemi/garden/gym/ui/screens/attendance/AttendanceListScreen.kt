@@ -30,24 +30,26 @@ fun AttendanceListScreen(
     Column {
         Row {
             TextWidget(
-                modifier = Modifier
-                    .padding(horizontal = padding_screen)
-                    .padding(top = padding_screen_small)
-                    .fillMaxWidth(),
-                text = stringResource(
-                    R.string.txt_total_time_spent,
-                    DateTime.now().plusMinutes(totalMinutes).toActiveStatusDuration(
-                        startDate = DateTime.now()
-                    )
-                ),
-                textAlign = TextAlign.End
+                modifier =
+                    Modifier
+                        .padding(horizontal = padding_screen)
+                        .padding(top = padding_screen_small)
+                        .fillMaxWidth(),
+                text =
+                    stringResource(
+                        R.string.txt_total_time_spent,
+                        DateTime.now().plusMinutes(totalMinutes).toActiveStatusDuration(
+                            startDate = DateTime.now(),
+                        ),
+                    ),
+                textAlign = TextAlign.End,
             )
         }
         repeat(attendances.size) {
             AttendanceWidget(
                 attendanceEntity = attendances[it],
                 canDeleteAttendance = canDeleteAttendance,
-                onDeleteAttendance = onDeleteAttendance
+                onDeleteAttendance = onDeleteAttendance,
             )
         }
     }
@@ -58,13 +60,14 @@ fun AttendanceListScreen(
 private fun AttendanceScreenPreview() {
     AppThemeComposable {
         AttendanceListScreen(
-            attendances = listOf(
-                getMockAttendanceEntity(),
-                getMockAttendanceEntity(),
-                getMockAttendanceEntity(),
-            ),
+            attendances =
+                listOf(
+                    getMockAttendanceEntity(),
+                    getMockAttendanceEntity(),
+                    getMockAttendanceEntity(),
+                ),
             totalMinutes = 20,
-            canDeleteAttendance = false
+            canDeleteAttendance = false,
         )
     }
 }

@@ -29,19 +29,18 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(
-    viewModel: ProfileScreenViewModel = koinViewModel<ProfileScreenViewModel>()
-) {
+fun ProfileScreen(viewModel: ProfileScreenViewModel = koinViewModel<ProfileScreenViewModel>()) {
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
     val sessionStartTime = viewModel.sessionStartTime.observeAsState().value
     val context = LocalContext.current
-    val galleryLauncher =  rememberLauncherForActivityResult(GetContent()) { imageUri ->
-        imageUri?.let {
-            context.contentResolver.openInputStream(imageUri)
-                ?.use { inputStream -> inputStream.buffered().readBytes()}
-                ?.let { byteArray -> viewModel.updateMemberImage(byteArray) }
+    val galleryLauncher =
+        rememberLauncherForActivityResult(GetContent()) { imageUri ->
+            imageUri?.let {
+                context.contentResolver.openInputStream(imageUri)
+                    ?.use { inputStream -> inputStream.buffered().readBytes() }
+                    ?.let { byteArray -> viewModel.updateMemberImage(byteArray) }
+            }
         }
-    }
 
     LaunchedEffect(true) { viewModel.getMember() }
 
@@ -49,21 +48,22 @@ fun ProfileScreen(
         ToolBarWidget(
             title = stringResource(R.string.txt_profile),
             secondaryIcon = Icons.AutoMirrored.Filled.Logout,
-            onSecondaryIconPressed = viewModel::onLogOutTapped
+            onSecondaryIconPressed = viewModel::onLogOutTapped,
         )
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
         PullToRefreshBox(
             modifier = Modifier.fillMaxSize(),
-            isRefreshing= (uiState.value is UiState.Loading),
-            onRefresh = { viewModel.getMember() }
+            isRefreshing = (uiState.value is UiState.Loading),
+            onRefresh = { viewModel.getMember() },
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(padding_screen),
+                modifier =
+                    Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(padding_screen),
             ) {
                 if (uiState.value is UiState.Success) {
                     MemberProfileWidget(
@@ -73,7 +73,7 @@ fun ProfileScreen(
                         },
                         onImageSelect = {
                             galleryLauncher.launch("image/*")
-                        }
+                        },
                     )
                     ProfileDetailsScreen(
                         memberEntity = (uiState.value as UiState.Success).memberEntity,

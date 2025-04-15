@@ -55,8 +55,8 @@ class NavigationServiceImp(
     }
 
     override fun getCurrentRoute(): Route =
-        navController.currentDestination?.route?.toRoute() ?:
-        Route.getInitialRoute(authUseCase.isAuthenticated(), authUseCase.isNotMember())
+        navController.currentDestination?.route?.toRoute()
+            ?: Route.getInitialRoute(authUseCase.isAuthenticated(), authUseCase.isNotMember())
 
     override fun getInitialRoute(): Route = initialRoute
 }
@@ -131,10 +131,13 @@ sealed class Route {
     ) : Route()
 
     companion object {
-        fun getInitialRoute(isAuthenticated: Boolean, isAdmin: Boolean): Route =
+        fun getInitialRoute(
+            isAuthenticated: Boolean,
+            isAdmin: Boolean,
+        ): Route =
             if (isAuthenticated && isAdmin) {
                 MembersScreen
-            } else if (isAuthenticated){
+            } else if (isAuthenticated) {
                 ProfileScreen
             } else {
                 LoginScreen
@@ -144,7 +147,7 @@ sealed class Route {
         fun String.toRoute(): Route {
             return when {
                 this.contains(ResetPasswordScreen.javaClass.simpleName) -> ResetPasswordScreen
-                this.contains(RegisterScreen.javaClass.simpleName)-> RegisterScreen
+                this.contains(RegisterScreen.javaClass.simpleName) -> RegisterScreen
                 this.contains(RegisterNewScreen.javaClass.simpleName) -> RegisterNewScreen
                 this.contains(ProfileScreen.javaClass.simpleName) -> ProfileScreen
                 this.contains(LiveAttendanceScreen.javaClass.simpleName) -> LiveAttendanceScreen
@@ -156,7 +159,7 @@ sealed class Route {
                 this.contains("PaymentsScreen") -> PaymentsScreen()
                 this.contains("PaymentAddScreen") -> PaymentAddScreen()
                 this.contains("MemberEditScreen") -> MemberEditScreen()
-                else  -> LoginScreen
+                else -> LoginScreen
             }
         }
     }

@@ -11,9 +11,10 @@ fun RegisterScreen(
     viewModel: RegisterScreenViewModel = koinViewModel<RegisterScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    val uiState = viewModel.uiStateFlow.collectAsState(
-        initial = UiState.Waiting
-    )
+    val uiState =
+        viewModel.uiStateFlow.collectAsState(
+            initial = UiState.Waiting,
+        )
     val inputData = viewModel.inputData.collectAsState()
 
     RegisterDetailScreen(
@@ -24,5 +25,4 @@ fun RegisterScreen(
         onRegisterTapped = viewModel::onRegisterTapped,
         snackbarHostState = snackbarHostState,
     )
-
 }

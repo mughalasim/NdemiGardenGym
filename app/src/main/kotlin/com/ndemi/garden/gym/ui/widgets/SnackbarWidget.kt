@@ -57,7 +57,7 @@ data class AppSnackbarHostState(
     val hostState: SnackbarHostState = SnackbarHostState(),
 ) {
     @Composable
-    fun Show (
+    fun Show(
         type: SnackbarType,
         title: String = "",
         message: String,

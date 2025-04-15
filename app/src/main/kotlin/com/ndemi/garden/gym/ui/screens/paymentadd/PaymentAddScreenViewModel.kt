@@ -33,8 +33,7 @@ class PaymentAddScreenViewModel(
     private val paymentUseCase: PaymentUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
-
-    private val dateTimeNow = DateTime.now().withTime(0,0,0,0)
+    private val dateTimeNow = DateTime.now().withTime(0, 0, 0, 0)
     private var memberId = ""
 
     data class InputData(
@@ -43,13 +42,14 @@ class PaymentAddScreenViewModel(
         val amount: Double = 0.0,
     )
 
-    private val _inputData = MutableLiveData(
-        InputData(
-            startDate = dateTimeNow,
-            monthDuration = 0,
-            amount = 0.0
+    private val _inputData =
+        MutableLiveData(
+            InputData(
+                startDate = dateTimeNow,
+                monthDuration = 0,
+                amount = 0.0,
+            ),
         )
-    )
     val inputData: LiveData<InputData> = _inputData
 
     fun setData(
@@ -58,24 +58,25 @@ class PaymentAddScreenViewModel(
         amount: String = "",
         inputType: InputType,
     ) {
-        _inputData.value = when (inputType) {
-            NONE -> _inputData.value
-            START_DATE -> _inputData.value?.copy(startDate = startDate)
-            MONTH_DURATION -> {
-                if (monthDuration.isNotEmpty() && monthDuration.isDigitsOnly()){
-                    _inputData.value?.copy(monthDuration = monthDuration.toInt())
-                } else {
-                    _inputData.value
+        _inputData.value =
+            when (inputType) {
+                NONE -> _inputData.value
+                START_DATE -> _inputData.value?.copy(startDate = startDate)
+                MONTH_DURATION -> {
+                    if (monthDuration.isNotEmpty() && monthDuration.isDigitsOnly()) {
+                        _inputData.value?.copy(monthDuration = monthDuration.toInt())
+                    } else {
+                        _inputData.value
+                    }
+                }
+                AMOUNT -> {
+                    if (amount.isNotEmpty() && amount.isDigitsOnly()) {
+                        _inputData.value?.copy(amount = amount.toDouble())
+                    } else {
+                        _inputData.value
+                    }
                 }
             }
-            AMOUNT -> {
-                if (amount.isNotEmpty() && amount.isDigitsOnly()){
-                    _inputData.value?.copy(amount = amount.toDouble())
-                } else {
-                    _inputData.value
-                }
-            }
-        }
         validateInput()
     }
 
@@ -88,7 +89,8 @@ class PaymentAddScreenViewModel(
         val amount = _inputData.value?.amount ?: 0.0
 
         if (monthDuration < 1) {
-            sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_MONTH_DURATION), MONTH_DURATION)
+            sendAction(
+                Action.ShowError(converter.getMessage(UiError.INVALID_MONTH_DURATION), MONTH_DURATION),
             )
         } else if (amount < 1) {
             sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_AMOUNT), AMOUNT))
@@ -111,22 +113,23 @@ class PaymentAddScreenViewModel(
                     memberId = memberId,
                     startDateMillis = startDate.millis,
                     endDateMillis = startDate.plusMonths(monthDuration).millis,
-                    amount = amount
-                )
+                    amount = amount,
+                ),
             ).also {
                 when (it) {
-                    is DomainResult.Error -> sendAction(
-                        Action.ShowError(
-                            converter.getMessage(it.error),
-                            AMOUNT
+                    is DomainResult.Error ->
+                        sendAction(
+                            Action.ShowError(
+                                converter.getMessage(it.error),
+                                AMOUNT,
+                            ),
                         )
-                    )
 
                     is DomainResult.Success -> {
-                        if (startDate.plusMonths(monthDuration).isAfterNow){
+                        if (startDate.plusMonths(monthDuration).isAfterNow) {
                             getMember(
                                 endDate = startDate.plusMonths(monthDuration),
-                                amount = amount
+                                amount = amount,
                             )
                         } else {
                             navigationService.popBack()
@@ -137,7 +140,10 @@ class PaymentAddScreenViewModel(
         }
     }
 
-    private fun getMember(endDate: DateTime, amount: Double) {
+    private fun getMember(
+        endDate: DateTime,
+        amount: Double,
+    ) {
         viewModelScope.launch {
             memberUseCase.getMemberById(memberId).also { result ->
                 when (result) {
@@ -152,11 +158,15 @@ class PaymentAddScreenViewModel(
         }
     }
 
-    private fun updateMembershipRegistration(memberEntity: MemberEntity, endDate: DateTime, amount: Double) {
+    private fun updateMembershipRegistration(
+        memberEntity: MemberEntity,
+        endDate: DateTime,
+        amount: Double,
+    ) {
         viewModelScope.launch {
             memberUseCase.updateMember(
                 memberEntity.copy(renewalFutureDateMillis = endDate.millis, amountDue = amount),
-                UpdateType.MEMBERSHIP
+                UpdateType.MEMBERSHIP,
             ).also { result ->
                 when (result) {
                     is DomainResult.Error -> {
@@ -183,7 +193,6 @@ class PaymentAddScreenViewModel(
         data object Loading : UiState
 
         data class Error(val message: String, val inputType: InputType) : UiState
-
     }
 
     enum class InputType {

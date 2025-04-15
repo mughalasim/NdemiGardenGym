@@ -17,7 +17,7 @@ enum class ApiError {
 }
 
 fun ApiError.toDomainError(): DomainError =
-    when(this){
+    when (this) {
         ApiError.UNKNOWN -> DomainError.UNKNOWN
         ApiError.NETWORK -> DomainError.NETWORK
         ApiError.UNAUTHORISED -> DomainError.UNAUTHORISED
@@ -25,15 +25,15 @@ fun ApiError.toDomainError(): DomainError =
     }
 
 @Suppress("detekt.CyclomaticComplexMethod")
-fun Exception.toDomainError(): DomainError{
-    return when(this){
+fun Exception.toDomainError(): DomainError {
+    return when (this) {
         is FirebaseAuthWeakPasswordException -> DomainError.INVALID_PASSWORD_LENGTH
         is FirebaseAuthInvalidCredentialsException -> DomainError.INVALID_LOGIN_CREDENTIALS
         is FirebaseAuthEmailException -> DomainError.INVALID_LOGIN_CREDENTIALS
         is FirebaseAuthInvalidUserException -> DomainError.USER_DISABLED
         is FirebaseAuthException -> DomainError.UNKNOWN
         is FirebaseFirestoreException -> {
-            return when(this.code){
+            return when (this.code) {
                 FirebaseFirestoreException.Code.UNKNOWN -> DomainError.NETWORK
                 FirebaseFirestoreException.Code.INVALID_ARGUMENT -> DomainError.INVALID_ARGUMENT
                 FirebaseFirestoreException.Code.NOT_FOUND -> DomainError.NO_DATA

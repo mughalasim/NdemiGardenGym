@@ -20,20 +20,20 @@ fun LoadingScreenWidget() {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         CircularProgressIndicator(
-            modifier = Modifier
-                .width(icon_image_size)
-                .height(icon_image_size)
+            modifier =
+                Modifier
+                    .width(icon_image_size)
+                    .height(icon_image_size),
         )
         TextWidget(
             modifier = Modifier.padding(top = padding_screen),
-            text = "Loading... Please wait..."
+            text = "Loading... Please wait...",
         )
     }
 }
-
 
 @AppPreview
 @Composable

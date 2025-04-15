@@ -18,19 +18,18 @@ import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun RegisterNewScreen(
-    viewModel: RegisterScreenViewModel = koinViewModel<RegisterScreenViewModel>()
-) {
-    val uiState = viewModel.uiStateFlow.collectAsState(
-        initial = UiState.Waiting
-    )
-    if (uiState.value is UiState.Success){
+fun RegisterNewScreen(viewModel: RegisterScreenViewModel = koinViewModel<RegisterScreenViewModel>()) {
+    val uiState =
+        viewModel.uiStateFlow.collectAsState(
+            initial = UiState.Waiting,
+        )
+    if (uiState.value is UiState.Success) {
         viewModel.navigateBack()
     }
     val inputData = viewModel.inputData.collectAsState()
 
     Column {
-        ToolBarWidget(title = stringResource(id = R.string.txt_register_new_member), canNavigateBack = true){
+        ToolBarWidget(title = stringResource(id = R.string.txt_register_new_member), canNavigateBack = true) {
             viewModel.navigateBack()
         }
 
@@ -38,19 +37,21 @@ fun RegisterNewScreen(
             WarningWidget((uiState.value as UiState.Error).message)
         }
 
-        if (uiState.value is UiState.Loading){
+        if (uiState.value is UiState.Loading) {
             CircularProgressIndicator(
-                modifier = Modifier
-                    .padding(padding_screen)
-                    .align(Alignment.CenterHorizontally),
+                modifier =
+                    Modifier
+                        .padding(padding_screen)
+                        .align(Alignment.CenterHorizontally),
                 strokeCap = StrokeCap.Round,
-                trackColor = AppTheme.colors.primary
+                trackColor = AppTheme.colors.primary,
             )
         } else {
+            // TODO - the viewModel needs to determine what type of registration this is
             RegisterDetailScreen(
                 uiState = uiState.value,
                 inputData = inputData.value,
-                hidePassword = true, // TODO - the viewModel needs to determine what type of registration this is
+                hidePassword = true,
                 onSetString = viewModel::setString,
                 onRegisterTapped = viewModel::onRegisterNewTapped,
             )

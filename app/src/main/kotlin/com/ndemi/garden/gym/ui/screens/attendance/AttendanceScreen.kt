@@ -28,9 +28,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AttendanceScreen(
-    viewModel: AttendanceScreenViewModel = koinViewModel<AttendanceScreenViewModel>()
-) {
+fun AttendanceScreen(viewModel: AttendanceScreenViewModel = koinViewModel<AttendanceScreenViewModel>()) {
     var selectedDate by remember { mutableStateOf(DateTime.now()) }
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
 
@@ -41,31 +39,32 @@ fun AttendanceScreen(
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
-        DateSelectionWidget(selectedDate, false){
+        DateSelectionWidget(selectedDate, false) {
             selectedDate = it
             viewModel.getAttendances(selectedDate)
         }
 
         PullToRefreshBox(
             modifier = Modifier.fillMaxSize(),
-            isRefreshing= (uiState.value is UiState.Loading),
-            onRefresh = { viewModel.getAttendances(selectedDate) }
+            isRefreshing = (uiState.value is UiState.Loading),
+            onRefresh = { viewModel.getAttendances(selectedDate) },
         ) {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
             ) {
                 if (uiState.value is UiState.Success) {
                     val result = (uiState.value as UiState.Success)
                     if (result.attendances.isEmpty()) {
                         TextWidget(
                             modifier = Modifier.padding(padding_screen),
-                            text = stringResource(R.string.txt_no_attendances)
+                            text = stringResource(R.string.txt_no_attendances),
                         )
                     } else {
                         AttendanceListScreen(
                             attendances = result.attendances,
                             canDeleteAttendance = false,
-                            totalMinutes = result.totalMinutes
-                        ){
+                            totalMinutes = result.totalMinutes,
+                        ) {
                             viewModel.deleteAttendance(it)
                         }
                     }

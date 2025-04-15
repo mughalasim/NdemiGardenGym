@@ -22,42 +22,46 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun PaymentAddScreen(
     memberId: String,
-    viewModel: PaymentAddScreenViewModel = koinViewModel<PaymentAddScreenViewModel>()
+    viewModel: PaymentAddScreenViewModel = koinViewModel<PaymentAddScreenViewModel>(),
 ) {
     viewModel.setMemberId(memberId)
 
-    val uiState = viewModel.uiStateFlow.collectAsState(
-        initial = UiState.Waiting
-    )
+    val uiState =
+        viewModel.uiStateFlow.collectAsState(
+            initial = UiState.Waiting,
+        )
 
     val inputData = viewModel.inputData.observeAsState()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        ToolBarWidget(title = stringResource(R.string.txt_add_payment),
+        ToolBarWidget(
+            title = stringResource(R.string.txt_add_payment),
             canNavigateBack = true,
-            onBackPressed = viewModel::navigateBack
+            onBackPressed = viewModel::navigateBack,
         )
 
-        if (uiState.value is UiState.Error){
+        if (uiState.value is UiState.Error) {
             val message = (uiState.value as UiState.Error).message
             WarningWidget(message)
         }
 
         Column(
-            modifier = Modifier
-                .padding(horizontal = padding_screen)
+            modifier =
+                Modifier
+                    .padding(horizontal = padding_screen),
         ) {
             PaymentAddDetailsScreen(
                 startDate = inputData.value?.startDate,
                 uiState = uiState.value,
                 onSetData = viewModel::setData,
-                onPaymentAddTapped = viewModel::onPaymentAddTapped
+                onPaymentAddTapped = viewModel::onPaymentAddTapped,
             )
         }
     }

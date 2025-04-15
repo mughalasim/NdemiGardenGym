@@ -22,15 +22,14 @@ import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
-class MembersScreenViewModel (
+class MembersScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val memberUseCase: MemberUseCase,
     private val attendanceUseCase: AttendanceUseCase,
     private val authUseCase: AuthUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-
-    private val _membersUnfiltered: MutableList<MemberEntity> = mutableListOf()
+    private val membersUnfiltered: MutableList<MemberEntity> = mutableListOf()
     private val _members = MutableLiveData<List<MemberEntity>>(listOf())
     val members: LiveData<List<MemberEntity>> = _members
     var searchTerm: String = ""
@@ -39,12 +38,12 @@ class MembersScreenViewModel (
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             memberUseCase.getAllMembers().also { result ->
-                when(result){
+                when (result) {
                     is DomainResult.Error ->
                         sendAction(Action.ShowDomainError(result.error, converter))
                     is DomainResult.Success -> {
-                        _membersUnfiltered.clear()
-                        _membersUnfiltered.addAll(result.data)
+                        membersUnfiltered.clear()
+                        membersUnfiltered.addAll(result.data)
                         filterResults()
                         sendAction(Action.Success)
                     }
@@ -56,7 +55,7 @@ class MembersScreenViewModel (
     fun hasAdminRights() = authUseCase.hasAdminRights()
 
     fun onMemberTapped(memberEntity: MemberEntity) {
-       navigationService.open(Route.MemberEditScreen(memberEntity.id))
+        navigationService.open(Route.MemberEditScreen(memberEntity.id))
     }
 
     fun onRegisterMember() {
@@ -74,12 +73,12 @@ class MembersScreenViewModel (
     fun onSessionTapped(memberEntity: MemberEntity) {
         sendAction(Action.SetLoading)
         // Attempt to register an attendance
-        if (memberEntity.isActiveNow()){
+        if (memberEntity.isActiveNow()) {
             viewModelScope.launch {
                 attendanceUseCase.addAttendanceForMember(
                     memberEntity.id,
                     DateTime(memberEntity.activeNowDateMillis).toDate(),
-                    DateTime.now().toDate()
+                    DateTime.now().toDate(),
                 )
             }
         }
@@ -87,8 +86,8 @@ class MembersScreenViewModel (
         // Update the member model
         viewModelScope.launch {
             memberUseCase.updateMember(
-                memberEntity.copy(activeNowDateMillis =  if (memberEntity.isActiveNow()) null else DateTime.now().millis),
-                UpdateType.ACTIVE_SESSION
+                memberEntity.copy(activeNowDateMillis = if (memberEntity.isActiveNow()) null else DateTime.now().millis),
+                UpdateType.ACTIVE_SESSION,
             ).also {
                 getMembers()
             }
@@ -101,12 +100,13 @@ class MembersScreenViewModel (
     }
 
     private fun filterResults() {
-        if (searchTerm.isNotEmpty()){
-            _members.value = _membersUnfiltered.filter {
-                it.getFullName().lowercase().contains(searchTerm.lowercase())
-            }
+        if (searchTerm.isNotEmpty()) {
+            _members.value =
+                membersUnfiltered.filter {
+                    it.getFullName().lowercase().contains(searchTerm.lowercase())
+                }
         } else {
-            _members.value = _membersUnfiltered
+            _members.value = membersUnfiltered
         }
     }
 
@@ -128,8 +128,7 @@ class MembersScreenViewModel (
             val domainError: DomainError,
             val errorCodeConverter: ErrorCodeConverter,
         ) : Action {
-            override fun reduce(state: UiState): UiState =
-                UiState.Error(errorCodeConverter.getMessage(domainError))
+            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainError))
         }
 
         data object Success : Action {

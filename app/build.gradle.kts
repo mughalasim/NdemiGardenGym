@@ -76,15 +76,15 @@ android {
             setConfigVariable(variableName = "PATH_ATTENDANCE", variableSource = "PATH_ATTENDANCE")
             setConfigVariable(
                 variableName = "PATH_PAYMENT_PLAN",
-                variableSource = "PATH_PAYMENT_PLAN"
+                variableSource = "PATH_PAYMENT_PLAN",
             )
             setConfigVariable(
                 variableName = "PATH_APP_VERSION_TYPE",
-                variableSource = "PATH_APP_VERSION_TYPE"
+                variableSource = "PATH_APP_VERSION_TYPE",
             )
             setConfigVariable(
                 variableName = "PATH_USER_IMAGES",
-                variableSource = "PATH_USER_IMAGES"
+                variableSource = "PATH_USER_IMAGES",
             )
         }
 
@@ -96,19 +96,19 @@ android {
             setConfigVariable(variableName = "PATH_USER", variableSource = "DEBUG_PATH_USER")
             setConfigVariable(
                 variableName = "PATH_ATTENDANCE",
-                variableSource = "DEBUG_PATH_ATTENDANCE"
+                variableSource = "DEBUG_PATH_ATTENDANCE",
             )
             setConfigVariable(
                 variableName = "PATH_PAYMENT_PLAN",
-                variableSource = "DEBUG_PATH_PAYMENT"
+                variableSource = "DEBUG_PATH_PAYMENT",
             )
             setConfigVariable(
                 variableName = "PATH_APP_VERSION_TYPE",
-                variableSource = "DEBUG_PATH_APP_VERSION_TYPE"
+                variableSource = "DEBUG_PATH_APP_VERSION_TYPE",
             )
             setConfigVariable(
                 variableName = "PATH_USER_IMAGES",
-                variableSource = "DEBUG_PATH_USER_IMAGES"
+                variableSource = "DEBUG_PATH_USER_IMAGES",
             )
         }
     }
@@ -133,7 +133,7 @@ android {
             dimension = "version"
             setProperty(
                 "archivesBaseName",
-                "${libs.versions.appName.get()} (${libs.versions.appVersionName.get()})"
+                "${libs.versions.appName.get()} (${libs.versions.appVersionName.get()})",
             )
         }
     }
@@ -160,7 +160,7 @@ fun ApplicationDefaultConfig.setConfigVariable(
     buildConfigField(
         "String",
         variableName,
-        gradleLocalProperties(rootDir, providers).getProperty(variableSource)
+        gradleLocalProperties(rootDir, providers).getProperty(variableSource),
     )
 }
 
@@ -171,7 +171,7 @@ fun ApplicationBuildType.setConfigVariable(
     buildConfigField(
         "String",
         variableName,
-        gradleLocalProperties(rootDir, providers).getProperty(variableSource)
+        gradleLocalProperties(rootDir, providers).getProperty(variableSource),
     )
 }
 

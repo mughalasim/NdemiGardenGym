@@ -37,8 +37,6 @@ import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import com.ndemi.garden.gym.ui.widgets.ButtonOutlineWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
-
-
 import cv.domain.entities.MemberEntity
 
 @Suppress("detekt.MagicNumber")

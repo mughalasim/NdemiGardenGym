@@ -17,7 +17,6 @@ class ResetPasswordScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val authUseCase: AuthUseCase,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
-
     private val _inputData: MutableStateFlow<String> = MutableStateFlow("")
     val inputData: StateFlow<String> = _inputData
 
@@ -26,11 +25,13 @@ class ResetPasswordScreenViewModel(
         validateInput()
     }
 
-    private fun validateInput(){
-        if (_inputData.value.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(_inputData.value).matches()){
-            sendAction(Action.ShowError(
-                converter.getMessage(UiError.INVALID_EMAIL),
-                InputType.EMAIL)
+    private fun validateInput() {
+        if (_inputData.value.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(_inputData.value).matches()) {
+            sendAction(
+                Action.ShowError(
+                    converter.getMessage(UiError.INVALID_EMAIL),
+                    InputType.EMAIL,
+                ),
             )
         } else {
             sendAction(Action.SetReady)
@@ -39,8 +40,8 @@ class ResetPasswordScreenViewModel(
 
     fun onResetPasswordTapped() {
         sendAction(Action.SetLoading)
-        authUseCase.resetPasswordForEmail(_inputData.value){
-            when(it){
+        authUseCase.resetPasswordForEmail(_inputData.value) {
+            when (it) {
                 is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
                 is DomainResult.Success -> sendAction(Action.Success(_inputData.value))
             }
@@ -58,12 +59,11 @@ class ResetPasswordScreenViewModel(
         data class Error(val message: String, val inputType: InputType) : UiState
 
         data class Success(val email: String) : UiState
-
     }
 
     enum class InputType {
         NONE,
-        EMAIL
+        EMAIL,
     }
 
     sealed interface Action : BaseAction<UiState> {

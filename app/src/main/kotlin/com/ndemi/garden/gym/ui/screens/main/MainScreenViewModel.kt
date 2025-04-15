@@ -17,49 +17,51 @@ class MainScreenViewModel(
     private val converter: ErrorCodeConverter,
     dispatcher: CoroutineDispatcher,
 ) : ViewModel() {
-    fun setNavController(navController: NavHostController) =
-        navigationService.setNavController(navController)
+    fun setNavController(navController: NavHostController) = navigationService.setNavController(navController)
 
     fun getNavigationService(): NavigationService = navigationService
 
-    val authState = liveData(dispatcher) {
-        emit(AuthState.Loading)
-        authUseCase.getAuthState().collect{
-            when(it){
-                is DomainResult.Success ->
-                    emit(AuthState.Authorised)
+    val authState =
+        liveData(dispatcher) {
+            emit(AuthState.Loading)
+            authUseCase.getAuthState().collect {
+                when (it) {
+                    is DomainResult.Success ->
+                        emit(AuthState.Authorised)
 
-                is DomainResult.Error ->
-                    emit(AuthState.UnAuthorised)
+                    is DomainResult.Error ->
+                        emit(AuthState.UnAuthorised)
+                }
             }
         }
-    }
 
-    val appVersion = liveData(dispatcher) {
-        emit(VersionState.Loading)
-        authUseCase.getAppVersion().collect{
-            when(it){
-                is DomainResult.Success ->
-                    emit(VersionState.UpdateRequired(it.data))
+    val appVersion =
+        liveData(dispatcher) {
+            emit(VersionState.Loading)
+            authUseCase.getAppVersion().collect {
+                when (it) {
+                    is DomainResult.Success ->
+                        emit(VersionState.UpdateRequired(it.data))
 
-                is DomainResult.Error -> emit(VersionState.Success)
+                    is DomainResult.Error -> emit(VersionState.Success)
+                }
             }
         }
-    }
 
-    val loggedInMember = liveData(dispatcher) {
-        emit(UiState.Loading)
-        authUseCase.getLoggedInUser().collect {
+    val loggedInMember =
+        liveData(dispatcher) {
+            emit(UiState.Loading)
+            authUseCase.getLoggedInUser().collect {
 
-            when (it) {
-                is DomainResult.Success ->
-                    emit(UiState.Success(it.data))
+                when (it) {
+                    is DomainResult.Success ->
+                        emit(UiState.Success(it.data))
 
-                is DomainResult.Error ->
-                    emit(UiState.Error(converter.getMessage(it.error)))
+                    is DomainResult.Error ->
+                        emit(UiState.Error(converter.getMessage(it.error)))
+                }
             }
         }
-    }
 
     @Immutable
     sealed interface VersionState {

@@ -45,7 +45,7 @@ fun PaymentAddDetailsScreen(
     var errorStartDate = ""
 
     if (uiState is UiState.Error) {
-        when(uiState.inputType){
+        when (uiState.inputType) {
             InputType.START_DATE -> errorStartDate = uiState.message
             InputType.MONTH_DURATION -> errorMonthDuration = uiState.message
             InputType.AMOUNT -> errorAmount = uiState.message
@@ -55,7 +55,7 @@ fun PaymentAddDetailsScreen(
 
     TextWidget(
         modifier = Modifier.padding(top = padding_screen),
-        text = stringResource(R.string.txt_payments_add_desc)
+        text = stringResource(R.string.txt_payments_add_desc),
     )
 
     TextWidget(
@@ -73,7 +73,7 @@ fun PaymentAddDetailsScreen(
     TextWidget(
         style = AppTheme.textStyles.small,
         color = AppTheme.colors.error,
-        text = errorStartDate
+        text = errorStartDate,
     )
 
     TextWidget(
@@ -85,7 +85,7 @@ fun PaymentAddDetailsScreen(
     EditTextWidget(
         hint = stringResource(R.string.txt_payments_add_month_duration),
         errorText = errorMonthDuration,
-        keyboardType = KeyboardType.Number
+        keyboardType = KeyboardType.Number,
     ) {
         onSetData.invoke(DateTime.now(), it, it, InputType.MONTH_DURATION)
     }
@@ -99,7 +99,7 @@ fun PaymentAddDetailsScreen(
     EditTextWidget(
         hint = stringResource(R.string.txt_amount),
         errorText = errorAmount,
-        keyboardType = KeyboardType.Number
+        keyboardType = KeyboardType.Number,
     ) {
         onSetData.invoke(DateTime.now(), it, it, InputType.AMOUNT)
     }
@@ -107,11 +107,10 @@ fun PaymentAddDetailsScreen(
     ButtonWidget(
         title = stringResource(id = R.string.txt_update),
         isEnabled = uiState is UiState.Ready,
-        isLoading = uiState is UiState.Loading
+        isLoading = uiState is UiState.Loading,
     ) {
         onPaymentAddTapped.invoke()
     }
-
 
     if (datePickerVisibility) {
         DatePickerDialog(
@@ -122,27 +121,29 @@ fun PaymentAddDetailsScreen(
                 Text(
                     text = stringResource(R.string.txt_update),
                     style = AppTheme.textStyles.regularBold,
-                    modifier = Modifier
-                        .padding(padding_screen)
-                        .clickable {
-                            datePickerVisibility = !datePickerVisibility
-                            state.selectedDateMillis?.let {
-                                onSetData.invoke(DateTime(it), "", "", InputType.START_DATE)
-                            }
-                        }
+                    modifier =
+                        Modifier
+                            .padding(padding_screen)
+                            .clickable {
+                                datePickerVisibility = !datePickerVisibility
+                                state.selectedDateMillis?.let {
+                                    onSetData.invoke(DateTime(it), "", "", InputType.START_DATE)
+                                }
+                            },
                 )
             },
             dismissButton = {
                 Text(
                     text = stringResource(id = R.string.txt_cancel),
                     style = AppTheme.textStyles.regular,
-                    modifier = Modifier
-                        .padding(padding_screen)
-                        .clickable {
-                            datePickerVisibility = !datePickerVisibility
-                        }
+                    modifier =
+                        Modifier
+                            .padding(padding_screen)
+                            .clickable {
+                                datePickerVisibility = !datePickerVisibility
+                            },
                 )
-            }
+            },
         ) {
             DatePicker(state = state, showModeToggle = false, headline = null, title = null)
         }
@@ -152,14 +153,15 @@ fun PaymentAddDetailsScreen(
 @AppPreview
 @Composable
 private fun PaymentAddDetailsScreenPreview() {
-    AppThemeComposable{
+    AppThemeComposable {
         Column(
-            modifier = Modifier
-                .padding(horizontal = padding_screen)
+            modifier =
+                Modifier
+                    .padding(horizontal = padding_screen),
         ) {
             PaymentAddDetailsScreen(
                 startDate = DateTime.now(),
-                onSetData = {_,_,_,_ -> },
+                onSetData = { _, _, _, _ -> },
                 uiState = UiState.Ready,
             )
         }

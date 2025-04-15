@@ -24,11 +24,12 @@ fun LiveAttendanceListScreen(members: List<MemberEntity>) {
 private fun LiveAttendanceListScreenPreview() {
     AppThemeComposable {
         LiveAttendanceListScreen(
-            members = listOf(
-                getMockRegisteredMemberEntity(),
-                getMockActiveMemberEntity(),
-                getMockExpiredMemberEntity(),
-            )
+            members =
+                listOf(
+                    getMockRegisteredMemberEntity(),
+                    getMockActiveMemberEntity(),
+                    getMockExpiredMemberEntity(),
+                ),
         )
     }
 }

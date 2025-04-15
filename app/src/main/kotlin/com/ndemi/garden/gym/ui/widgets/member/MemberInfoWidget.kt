@@ -30,8 +30,6 @@ import com.ndemi.garden.gym.ui.utils.DateConstants
 import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import com.ndemi.garden.gym.ui.widgets.TextWidget
-
-
 import cv.domain.entities.MemberEntity
 import org.joda.time.DateTime
 
@@ -41,26 +39,28 @@ fun MemberInfoWidget(
     showExtraInfo: Boolean = true,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .background(
-                color = AppTheme.colors.backgroundCard,
-                shape = RoundedCornerShape(border_radius)
-            )
-            .border(
-                width = line_thickness,
-                color = AppTheme.colors.border,
-                shape = RoundedCornerShape(border_radius),
-            )
-            .padding(padding_screen_small),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(
+                    color = AppTheme.colors.backgroundCard,
+                    shape = RoundedCornerShape(border_radius),
+                )
+                .border(
+                    width = line_thickness,
+                    color = AppTheme.colors.border,
+                    shape = RoundedCornerShape(border_radius),
+                )
+                .padding(padding_screen_small),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.Start,
         ) {
             TextWidget(
                 color = AppTheme.colors.primary,
@@ -76,11 +76,12 @@ fun MemberInfoWidget(
         }
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = padding_screen_small),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = padding_screen_small),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.Start,
         ) {
             TextWidget(
                 color = AppTheme.colors.primary,
@@ -90,25 +91,27 @@ fun MemberInfoWidget(
             TextWidget(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.End,
-                text = memberEntity.email
+                text = memberEntity.email,
             )
         }
 
-        if (showExtraInfo){
+        if (showExtraInfo) {
             Spacer(
-                modifier = Modifier
-                    .padding(top = padding_screen_small)
-                    .fillMaxWidth()
-                    .height(line_thickness)
-                    .background(AppTheme.colors.primary)
+                modifier =
+                    Modifier
+                        .padding(top = padding_screen_small)
+                        .fillMaxWidth()
+                        .height(line_thickness)
+                        .background(AppTheme.colors.primary),
             )
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding_screen_small),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.Start,
             ) {
                 TextWidget(
                     color = AppTheme.colors.primary,
@@ -118,16 +121,17 @@ fun MemberInfoWidget(
                 TextWidget(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
-                    text = memberEntity.getResidentialStatus()
+                    text = memberEntity.getResidentialStatus(),
                 )
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding_screen_small),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.Start,
             ) {
                 TextWidget(
                     color = AppTheme.colors.primary,
@@ -135,7 +139,7 @@ fun MemberInfoWidget(
                     style = AppTheme.textStyles.small,
                 )
                 TextWidget(
-                    color = if(memberEntity.hasCoach) AppTheme.colors.primary else AppTheme.colors.error,
+                    color = if (memberEntity.hasCoach) AppTheme.colors.primary else AppTheme.colors.error,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
                     text = memberEntity.getCoachStatus(),
@@ -144,19 +148,21 @@ fun MemberInfoWidget(
             }
 
             Spacer(
-                modifier = Modifier
-                    .padding(top = padding_screen_small)
-                    .fillMaxWidth()
-                    .height(line_thickness)
-                    .background(AppTheme.colors.primary)
+                modifier =
+                    Modifier
+                        .padding(top = padding_screen_small)
+                        .fillMaxWidth()
+                        .height(line_thickness)
+                        .background(AppTheme.colors.primary),
             )
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding_screen_small),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.Start,
             ) {
                 TextWidget(
                     color = AppTheme.colors.primary,
@@ -166,18 +172,20 @@ fun MemberInfoWidget(
                 TextWidget(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
-                    text = DateTime(memberEntity.registrationDateMillis).toString(
-                        DateConstants.formatDayMonthYear
-                    )
+                    text =
+                        DateTime(memberEntity.registrationDateMillis).toString(
+                            DateConstants.formatDayMonthYear,
+                        ),
                 )
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding_screen_small),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.Start,
             ) {
                 TextWidget(
                     color = AppTheme.colors.primary,
@@ -187,16 +195,17 @@ fun MemberInfoWidget(
                 TextWidget(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
-                    text = memberEntity.renewalFutureDateMillis.toMembershipStatusString()
+                    text = memberEntity.renewalFutureDateMillis.toMembershipStatusString(),
                 )
             }
             if (memberEntity.hasPaidMembership()) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = padding_screen_small),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = padding_screen_small),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
+                    horizontalArrangement = Arrangement.Start,
                 ) {
                     TextWidget(
                         color = AppTheme.colors.primary,

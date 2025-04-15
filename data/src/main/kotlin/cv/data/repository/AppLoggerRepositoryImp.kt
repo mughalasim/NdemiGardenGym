@@ -4,21 +4,20 @@ import android.util.Log
 import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 
-class AppLoggerRepositoryImp(val isEnabled: Boolean): AppLoggerRepository {
-
+class AppLoggerRepositoryImp(val isEnabled: Boolean) : AppLoggerRepository {
     override fun log(
         message: String,
         appLogLevel: AppLogLevel,
     ) {
-        if (isEnabled){
-            when(appLogLevel){
-                AppLogLevel.ANALYTICS ->{
+        if (isEnabled) {
+            when (appLogLevel) {
+                AppLogLevel.ANALYTICS -> {
                     Log.i(AppLogLevel.ANALYTICS.name, message)
                 }
-                AppLogLevel.DEBUG ->{
+                AppLogLevel.DEBUG -> {
                     Log.d(javaClass.simpleName, message)
                 }
-                AppLogLevel.ERROR ->{
+                AppLogLevel.ERROR -> {
                     Log.e(javaClass.simpleName, message)
                 }
             }

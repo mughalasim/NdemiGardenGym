@@ -68,7 +68,7 @@ fun NavigationHost(
 
         composable<Route.PaymentAddScreen> {
             val args = it.toRoute<Route.PaymentAddScreen>()
-           PaymentAddScreen(args.memberId)
+            PaymentAddScreen(args.memberId)
         }
     }
 }

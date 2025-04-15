@@ -36,7 +36,6 @@ import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
-
 import cv.domain.entities.AttendanceEntity
 import org.joda.time.DateTime
 
@@ -45,7 +44,7 @@ fun AttendanceWidget(
     modifier: Modifier = Modifier,
     attendanceEntity: AttendanceEntity,
     canDeleteAttendance: Boolean = false,
-    onDeleteAttendance: (AttendanceEntity)-> Unit = {},
+    onDeleteAttendance: (AttendanceEntity) -> Unit = {},
 ) {
     val startDate = DateTime(attendanceEntity.startDateMillis)
     val endDate = DateTime(attendanceEntity.endDateMillis)
@@ -53,27 +52,28 @@ fun AttendanceWidget(
 
     Column(
         modifier =
-        modifier
-            .padding(horizontal = padding_screen)
-            .padding(top = padding_screen_small)
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .background(
-                color = AppTheme.colors.backgroundCard,
-                shape = RoundedCornerShape(border_radius)
-            )
-            .border(
-                width = line_thickness,
-                color = AppTheme.colors.border,
-                shape = RoundedCornerShape(border_radius),
-            )
-            .padding(padding_screen_small),
+            modifier
+                .padding(horizontal = padding_screen)
+                .padding(top = padding_screen_small)
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(
+                    color = AppTheme.colors.backgroundCard,
+                    shape = RoundedCornerShape(border_radius),
+                )
+                .border(
+                    width = line_thickness,
+                    color = AppTheme.colors.border,
+                    shape = RoundedCornerShape(border_radius),
+                )
+                .padding(padding_screen_small),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             TextWidget(
                 text = startDate.toString(formatDateDay),
@@ -84,39 +84,41 @@ fun AttendanceWidget(
                     modifier = Modifier.clickable { showDialog = !showDialog },
                     imageVector = Icons.Default.Clear,
                     tint = AppTheme.colors.primary,
-                    contentDescription = stringResource(id = R.string.txt_delete)
+                    contentDescription = stringResource(id = R.string.txt_delete),
                 )
             }
         }
         Row(
-            modifier = Modifier
-                .padding(top = padding_screen_small)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(top = padding_screen_small)
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             TextWidget(
-                text = startDate.toString(formatTime)
-                        + " - "
-                        + endDate.toString(formatTime),
+                text =
+                    startDate.toString(formatTime) +
+                        " - " +
+                        endDate.toString(formatTime),
             )
 
             TextWidget(
                 text = endDate.toActiveStatusDuration(startDate),
             )
 
-            if (showDialog){
+            if (showDialog) {
                 AlertDialog(
                     containerColor = AppTheme.colors.backgroundButtonDisabled,
                     title = {
                         TextWidget(
                             text = stringResource(R.string.txt_are_you_sure),
                             style = AppTheme.textStyles.regularBold,
-                            )
-                        },
+                        )
+                    },
                     text = {
                         TextWidget(
-                            text = stringResource(R.string.txt_are_you_sure_delete_attendance)
+                            text = stringResource(R.string.txt_are_you_sure_delete_attendance),
                         )
                     },
                     onDismissRequest = { showDialog = !showDialog },
@@ -130,7 +132,7 @@ fun AttendanceWidget(
                         ButtonWidget(title = stringResource(R.string.txt_cancel)) {
                             showDialog = !showDialog
                         }
-                    }
+                    },
                 )
             }
         }

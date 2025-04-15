@@ -29,9 +29,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MembersScreen(
-    viewModel: MembersScreenViewModel = koinViewModel<MembersScreenViewModel>()
-) {
+fun MembersScreen(viewModel: MembersScreenViewModel = koinViewModel<MembersScreenViewModel>()) {
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
     val members = viewModel.members.observeAsState(initial = listOf())
 
@@ -41,34 +39,36 @@ fun MembersScreen(
         ToolBarWidget(
             title = stringResource(R.string.txt_active_members),
             secondaryIcon = if (viewModel.hasAdminRights()) Icons.Default.PersonAdd else null,
-            onSecondaryIconPressed = viewModel::onRegisterMember
+            onSecondaryIconPressed = viewModel::onRegisterMember,
         )
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
         PullToRefreshBox(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = padding_screen),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = padding_screen),
             isRefreshing = (uiState.value is UiState.Loading),
-            onRefresh = { viewModel.getMembers() }
+            onRefresh = { viewModel.getMembers() },
         ) {
             LazyColumn {
                 item {
                     EditTextWidget(
                         textInput = viewModel.searchTerm,
                         hint = stringResource(R.string.txt_search_members),
-                        onValueChanged = viewModel::onSearchTextChanged
+                        onValueChanged = viewModel::onSearchTextChanged,
                     )
                 }
                 item {
                     if (members.value.isEmpty() && uiState.value !is UiState.Loading) {
                         TextWidget(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(padding_screen),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(padding_screen),
                             textAlign = TextAlign.Center,
-                            text = stringResource(R.string.txt_no_members)
+                            text = stringResource(R.string.txt_no_members),
                         )
                     }
                 }

@@ -43,16 +43,16 @@ fun LoginScreenDetails(
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-
         var emailError = ""
         var passwordError = ""
 
         if (uiState is UiState.Error) {
             when (uiState.inputType) {
-                InputType.NONE -> snackbarHostState.Show(
-                    type = SnackbarType.ERROR,
-                    message = uiState.message,
-                )
+                InputType.NONE ->
+                    snackbarHostState.Show(
+                        type = SnackbarType.ERROR,
+                        message = uiState.message,
+                    )
 
                 InputType.EMAIL -> emailError = uiState.message
 
@@ -60,33 +60,35 @@ fun LoginScreenDetails(
             }
         }
 
-
         Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .requiredWidth(page_width)
-                .align(Alignment.TopCenter),
+            modifier =
+                Modifier
+                    .verticalScroll(rememberScrollState())
+                    .requiredWidth(page_width)
+                    .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-
             Image(
-                modifier = Modifier
-                    .size(icon_image_size_profile),
+                modifier =
+                    Modifier
+                        .size(icon_image_size_profile),
                 imageVector = ImageVector.vectorResource(R.drawable.ic_app),
-                contentDescription = ""
+                contentDescription = "",
             )
 
             TextWidget(
-                modifier = Modifier
-                    .padding(horizontal = padding_screen),
+                modifier =
+                    Modifier
+                        .padding(horizontal = padding_screen),
                 style = AppTheme.textStyles.large,
                 text = stringResource(R.string.app_name),
             )
 
             TextWidget(
-                modifier = Modifier
-                    .padding(top = padding_screen_large)
-                    .padding(horizontal = padding_screen),
+                modifier =
+                    Modifier
+                        .padding(top = padding_screen_large)
+                        .padding(horizontal = padding_screen),
                 style = AppTheme.textStyles.regular,
                 text = stringResource(R.string.txt_login_desc),
             )
@@ -111,9 +113,10 @@ fun LoginScreenDetails(
             }
 
             ButtonWidget(
-                modifier = Modifier
-                    .padding(top = padding_screen_large)
-                    .padding(horizontal = padding_screen),
+                modifier =
+                    Modifier
+                        .padding(top = padding_screen_large)
+                        .padding(horizontal = padding_screen),
                 title = stringResource(R.string.txt_login),
                 isEnabled = uiState is UiState.Ready,
                 isLoading = uiState is UiState.Loading,
@@ -122,9 +125,10 @@ fun LoginScreenDetails(
             )
 
             TextWidget(
-                modifier = Modifier
-                    .padding(top = padding_screen_large)
-                    .padding(horizontal = padding_screen),
+                modifier =
+                    Modifier
+                        .padding(top = padding_screen_large)
+                        .padding(horizontal = padding_screen),
                 text = stringResource(R.string.txt_app_version) + BuildConfig.VERSION_NAME,
                 style = AppTheme.textStyles.small,
             )
@@ -137,9 +141,10 @@ fun LoginScreenDetails(
 private fun LoginDetailsScreenPreview() =
     AppThemeComposable {
         LoginScreenDetails(
-            uiState = UiState.Error(
-                message = "Invalid email address",
-                InputType.EMAIL
-            )
+            uiState =
+                UiState.Error(
+                    message = "Invalid email address",
+                    InputType.EMAIL,
+                ),
         )
     }

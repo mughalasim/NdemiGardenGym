@@ -25,37 +25,38 @@ fun MainDetailsScreen(
     isAdmin: Boolean,
     navController: NavHostController,
     navigationService: NavigationService,
-){
+) {
     val snackbarHostState = remember { AppSnackbarHostState() }
     Scaffold(
         topBar = {},
         bottomBar = {
-            val bottomNavItems = if (isAuthenticated) {
-                if (isAdmin) {
-                    BottomNavItem.getAdminBottomItems()
+            val bottomNavItems =
+                if (isAuthenticated) {
+                    if (isAdmin) {
+                        BottomNavItem.getAdminBottomItems()
+                    } else {
+                        BottomNavItem.getMemberBottomItems()
+                    }
                 } else {
-                    BottomNavItem.getMemberBottomItems()
+                    BottomNavItem.getLoginBottomItems()
                 }
-            } else {
-                BottomNavItem.getLoginBottomItems()
-            }
             BottomNavigationWidget(
                 navController,
-                bottomNavItems
+                bottomNavItems,
             )
         },
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState.hostState){
+            SnackbarHost(hostState = snackbarHostState.hostState) {
                 snackbarHostState.SnackbarContent(snackbarData = it)
             }
-        }
+        },
     ) { innerPadding ->
         Column(
             modifier =
-            Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .background(AppTheme.colors.backgroundScreen),
+                Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .background(AppTheme.colors.backgroundScreen),
             verticalArrangement = Arrangement.spacedBy(padding_screen),
         ) {
             NavigationHost(

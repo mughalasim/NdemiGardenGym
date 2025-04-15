@@ -21,17 +21,15 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 
-
 @Composable
-fun NewVersionScreen(
-    url: String,
-) {
+fun NewVersionScreen(url: String) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding_screen),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(padding_screen),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val uriHandler = LocalUriHandler.current
         val context = LocalContext.current
@@ -42,7 +40,7 @@ fun NewVersionScreen(
         TextWidget(
             modifier = Modifier.padding(top = padding_screen),
             text =
-            stringResource(R.string.txt_app_update_desc)
+                stringResource(R.string.txt_app_update_desc),
         )
         ButtonWidget(title = stringResource(R.string.txt_download)) {
             if (isValidUri(url)) {
@@ -50,7 +48,8 @@ fun NewVersionScreen(
             } else {
                 Toast.makeText(
                     context,
-                    context.getString(R.string.error_failed_to_open_link), Toast.LENGTH_LONG
+                    context.getString(R.string.error_failed_to_open_link),
+                    Toast.LENGTH_LONG,
                 ).show()
             }
         }
@@ -63,7 +62,7 @@ fun isValidUri(uriString: String): Boolean {
         val uri = Uri.parse(uriString)
         uri.scheme != null && uri.host != null
     } catch (e: Exception) {
-        Log.e("isValidUri", e.message?: "IllegalArgumentException")
+        Log.e("isValidUri", e.message ?: "IllegalArgumentException")
         false
     }
 }

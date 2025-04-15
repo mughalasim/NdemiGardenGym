@@ -24,25 +24,29 @@ class AuthRepositoryImp(
     private val repositoryUrls: AuthRepositoryUrls,
     private val logger: AppLoggerRepository,
 ) : AuthRepository {
-
     private lateinit var memberEntity: MemberEntity
 
     override fun isAuthenticated() = firebaseAuth.currentUser != null
 
-    override fun getMemberType() = if (this::memberEntity.isInitialized) {
-        memberEntity.memberType
-    } else {
-        MemberType.MEMBER
-    }
+    override fun getMemberType() =
+        if (this::memberEntity.isInitialized) {
+            memberEntity.memberType
+        } else {
+            MemberType.MEMBER
+        }
 
     override fun logOut() = firebaseAuth.signOut()
 
-    override fun register(email: String, password: String, callback: (DomainResult<String>) -> Unit) {
+    override fun register(
+        email: String,
+        password: String,
+        callback: (DomainResult<String>) -> Unit,
+    ) {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
                 result.user?.let {
                     callback.invoke(DomainResult.Success(it.uid))
-                } ?: run{
+                } ?: run {
                     callback.invoke(DomainResult.Error(DomainError.NO_DATA))
                 }
             }.addOnFailureListener {
@@ -51,12 +55,16 @@ class AuthRepositoryImp(
             }
     }
 
-    override fun login(email: String, password: String, callback: (DomainResult<Unit>) -> Unit) {
+    override fun login(
+        email: String,
+        password: String,
+        callback: (DomainResult<Unit>) -> Unit,
+    ) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
                 result.user?.let {
                     callback.invoke(DomainResult.Success(Unit))
-                } ?: run{
+                } ?: run {
                     callback.invoke(DomainResult.Error(DomainError.NO_DATA))
                 }
             }.addOnFailureListener {
@@ -65,7 +73,10 @@ class AuthRepositoryImp(
             }
     }
 
-    override fun resetPasswordForEmail(email: String, callback: (DomainResult<Unit>) -> Unit){
+    override fun resetPasswordForEmail(
+        email: String,
+        callback: (DomainResult<Unit>) -> Unit,
+    ) {
         firebaseAuth.sendPasswordResetEmail(email)
             .addOnSuccessListener {
                 callback.invoke(DomainResult.Success(Unit))
@@ -75,73 +86,78 @@ class AuthRepositoryImp(
             }
     }
 
-    override suspend fun getAuthState(): Flow<DomainResult<Unit>> = callbackFlow {
-        firebaseAuth.addAuthStateListener {
-            if(it.uid.isNullOrEmpty()){
+    override suspend fun getAuthState(): Flow<DomainResult<Unit>> =
+        callbackFlow {
+            firebaseAuth.addAuthStateListener {
+                if (it.uid.isNullOrEmpty()) {
+                    trySend(DomainResult.Error(DomainError.UNAUTHORISED)).isSuccess
+                } else {
+                    trySend(DomainResult.Success(Unit)).isSuccess
+                }
+            }
+            awaitClose { }
+        }
+
+    override suspend fun getAppVersion() =
+        callbackFlow {
+            val eventDocument = firebaseFirestore.collection(repositoryUrls.pathVersion).document(repositoryUrls.pathVersionType)
+
+            val subscription =
+                eventDocument.addSnapshotListener { snapshot, error ->
+                    snapshot?.let { response ->
+                        logger.log("Data received: $response")
+                        val versionModel = response.toObject<VersionModel>()
+                        versionModel?.let {
+                            if (it.version > repositoryUrls.currentAppVersion) {
+                                trySend(DomainResult.Success(it.url)).isSuccess
+                            } else {
+                                trySend(DomainResult.Error(DomainError.NO_DATA)).isSuccess
+                            }
+                        } ?: run {
+                            trySend(DomainResult.Error(DomainError.NO_DATA)).isSuccess
+                        }
+                    }
+                    error?.let {
+                        logger.log("Exception: $error", AppLogLevel.ERROR)
+                        trySend(DomainResult.Error(error.toDomainError())).isSuccess
+                    }
+                }
+            awaitClose { subscription.remove() }
+        }
+
+    override suspend fun getLoggedInUser(): Flow<DomainResult<MemberEntity>> =
+        callbackFlow {
+            firebaseAuth.currentUser?.uid?.let {
+                val eventDocument = firebaseFirestore.collection(repositoryUrls.pathUser).document(it)
+
+                val subscription =
+                    eventDocument.addSnapshotListener { snapshot, error ->
+                        snapshot?.let { response ->
+                            logger.log("Data received: $response")
+                            val memberModel = response.toObject<MemberModel>()
+                            memberModel?.let {
+                                memberEntity = memberModel.toMemberEntity()
+                                trySend(DomainResult.Success(memberEntity)).isSuccess
+                            } ?: run {
+                                trySend(DomainResult.Error(DomainError.UNAUTHORISED)).isSuccess
+                            }
+                        }
+                        error?.let {
+                            logger.log("Exception: $error", AppLogLevel.ERROR)
+                            trySend(DomainResult.Error(error.toDomainError())).isSuccess
+                        }
+                    }
+
+                awaitClose { subscription.remove() }
+            }.run {
+                logger.log("Member UID is null or empty", AppLogLevel.ERROR)
                 trySend(DomainResult.Error(DomainError.UNAUTHORISED)).isSuccess
-            } else {
-                trySend(DomainResult.Success(Unit)).isSuccess
+                awaitClose { }
             }
         }
-        awaitClose { }
-    }
-
-    override suspend fun getAppVersion() = callbackFlow {
-        val eventDocument = firebaseFirestore.collection(repositoryUrls.pathVersion).document(repositoryUrls.pathVersionType)
-
-        val subscription = eventDocument.addSnapshotListener { snapshot, error ->
-            snapshot?.let { response ->
-                logger.log("Data received: $response")
-                val versionModel = response.toObject<VersionModel>()
-                versionModel?.let {
-                    if (it.version > repositoryUrls.currentAppVersion) {
-                        trySend(DomainResult.Success(it.url)).isSuccess
-                    } else {
-                        trySend(DomainResult.Error(DomainError.NO_DATA)).isSuccess
-                    }
-                } ?: run {
-                    trySend(DomainResult.Error(DomainError.NO_DATA)).isSuccess
-                }
-            }
-            error?.let {
-                logger.log("Exception: $error", AppLogLevel.ERROR)
-                trySend(DomainResult.Error(error.toDomainError())).isSuccess
-            }
-        }
-        awaitClose{ subscription.remove() }
-    }
-
-    override suspend fun getLoggedInUser(): Flow<DomainResult<MemberEntity>> = callbackFlow {
-        firebaseAuth.currentUser?.uid?.let {
-            val eventDocument = firebaseFirestore.collection(repositoryUrls.pathUser).document(it)
-
-            val subscription = eventDocument.addSnapshotListener { snapshot, error ->
-                snapshot?.let { response ->
-                    logger.log("Data received: $response")
-                    val memberModel = response.toObject<MemberModel>()
-                    memberModel?.let {
-                        memberEntity = memberModel.toMemberEntity()
-                        trySend(DomainResult.Success(memberEntity)).isSuccess
-                    } ?: run {
-                        trySend(DomainResult.Error(DomainError.UNAUTHORISED)).isSuccess
-                    }
-                }
-                error?.let {
-                    logger.log("Exception: $error", AppLogLevel.ERROR)
-                    trySend(DomainResult.Error(error.toDomainError())).isSuccess
-                }
-            }
-
-            awaitClose{subscription.remove()}
-        }.run {
-            logger.log("Member UID is null or empty", AppLogLevel.ERROR)
-            trySend(DomainResult.Error(DomainError.UNAUTHORISED)).isSuccess
-            awaitClose {  }
-        }
-    }
 }
 
-data class AuthRepositoryUrls (
+data class AuthRepositoryUrls(
     val pathUser: String,
     val pathVersion: String,
     val pathVersionType: String,

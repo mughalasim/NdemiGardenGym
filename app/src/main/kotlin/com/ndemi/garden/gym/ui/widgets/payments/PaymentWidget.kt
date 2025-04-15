@@ -37,8 +37,6 @@ import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toPaymentPlanDuration
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
-
-
 import cv.domain.entities.PaymentEntity
 import org.joda.time.DateTime
 
@@ -99,18 +97,24 @@ fun PaymentWidget(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column {
-                TextWidget(text = "Start Date",
-                    style = AppTheme.textStyles.small,)
+                TextWidget(
+                    text = "Start Date",
+                    style = AppTheme.textStyles.small,
+                )
                 TextWidget(text = startDate.toString(formatDayMonthYear))
             }
             Column {
-                TextWidget(text = "End Date",
-                    style = AppTheme.textStyles.small,)
+                TextWidget(
+                    text = "End Date",
+                    style = AppTheme.textStyles.small,
+                )
                 TextWidget(text = endDate.toString(formatDayMonthYear))
             }
             Column {
-                TextWidget(text = "Total",
-                    style = AppTheme.textStyles.small,)
+                TextWidget(
+                    text = "Total",
+                    style = AppTheme.textStyles.small,
+                )
                 TextWidget(text = paymentEntity.amount.toAmountString())
             }
         }
@@ -118,8 +122,12 @@ fun PaymentWidget(
         if (showDialog) {
             AlertDialog(
                 containerColor = AppTheme.colors.backgroundButtonDisabled,
-                title = { TextWidget(text = stringResource(R.string.txt_are_you_sure),
-                    style = AppTheme.textStyles.small,) },
+                title = {
+                    TextWidget(
+                        text = stringResource(R.string.txt_are_you_sure),
+                        style = AppTheme.textStyles.small,
+                    )
+                },
                 text = {
                     TextWidget(
                         text = stringResource(R.string.txt_are_you_sure_delete_payment),

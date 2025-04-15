@@ -33,7 +33,6 @@ import com.ndemi.garden.gym.ui.widgets.EditTextWidget
 import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 
-
 @Composable
 fun ResetPasswordDetailsScreen(
     uiState: UiState,
@@ -45,9 +44,10 @@ fun ResetPasswordDetailsScreen(
     var errorEmail = ""
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -60,61 +60,68 @@ fun ResetPasswordDetailsScreen(
 
         if (uiState is UiState.Error) {
             when (uiState.inputType) {
-                InputType.NONE -> snackbarHostState.Show(
-                    type = SnackbarType.ERROR,
-                    message = uiState.message,
-                )
+                InputType.NONE ->
+                    snackbarHostState.Show(
+                        type = SnackbarType.ERROR,
+                        message = uiState.message,
+                    )
 
                 InputType.EMAIL -> errorEmail = uiState.message
             }
         }
 
         Column(
-            modifier = Modifier
-                .requiredWidth(page_width),
+            modifier =
+                Modifier
+                    .requiredWidth(page_width),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
-                modifier = Modifier
-                    .size(icon_image_size_profile),
+                modifier =
+                    Modifier
+                        .size(icon_image_size_profile),
                 imageVector = ImageVector.vectorResource(R.drawable.ic_app),
-                contentDescription = ""
+                contentDescription = "",
             )
 
             TextWidget(
-                modifier = Modifier
-                    .padding(horizontal = padding_screen),
+                modifier =
+                    Modifier
+                        .padding(horizontal = padding_screen),
                 style = AppTheme.textStyles.large,
                 text = stringResource(R.string.txt_password_reset),
             )
 
             TextWidget(
-                modifier = Modifier
-                    .padding(horizontal = padding_screen)
-                    .padding(top = padding_screen_large),
+                modifier =
+                    Modifier
+                        .padding(horizontal = padding_screen)
+                        .padding(top = padding_screen_large),
                 textAlign = TextAlign.Center,
-                text = stringResource(R.string.txt_reset_desc)
+                text = stringResource(R.string.txt_reset_desc),
             )
 
             EditTextWidget(
-                modifier = Modifier
-                    .padding(top = padding_screen),
+                modifier =
+                    Modifier
+                        .padding(top = padding_screen),
                 textInput = email,
                 hint = stringResource(id = R.string.txt_email),
                 errorText = errorEmail,
                 keyboardType = KeyboardType.Email,
-                onValueChanged = setEmail
+                onValueChanged = setEmail,
             )
 
             ButtonWidget(
-                modifier = Modifier
-                    .padding(top = padding_screen_large)
-                    .padding(horizontal = padding_screen),
+                modifier =
+                    Modifier
+                        .padding(top = padding_screen_large)
+                        .padding(horizontal = padding_screen),
                 title = stringResource(R.string.txt_reset),
                 isEnabled = uiState is UiState.Ready,
                 isLoading = uiState is UiState.Loading,
                 hideKeyboardOnClick = true,
-                onButtonClicked = onResetPasswordTapped
+                onButtonClicked = onResetPasswordTapped,
             )
         }
     }

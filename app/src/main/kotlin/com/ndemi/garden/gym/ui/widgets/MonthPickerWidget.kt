@@ -58,33 +58,35 @@ fun MonthPickerWidget(
 
     if (visible) {
         BasicAlertDialog(
-            modifier = Modifier
-                .background(
-                    color = AppTheme.colors.backgroundButtonDisabled,
-                    shape = RoundedCornerShape(border_radius)
-                )
-                .padding(padding_screen),
-            onDismissRequest = {}
+            modifier =
+                Modifier
+                    .background(
+                        color = AppTheme.colors.backgroundButtonDisabled,
+                        shape = RoundedCornerShape(border_radius),
+                    )
+                    .padding(padding_screen),
+            onDismissRequest = {},
         ) {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
-                        modifier = Modifier
-                            .size(icon_image_size_large)
-                            .clickable(
-                                indication = null,
-                                interactionSource = interactionSource,
-                                onClick = {
-                                    year--
-                                }
-                            ),
+                        modifier =
+                            Modifier
+                                .size(icon_image_size_large)
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = interactionSource,
+                                    onClick = {
+                                        year--
+                                    },
+                                ),
                         tint = AppTheme.colors.primary,
                         imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
-                        contentDescription = null
+                        contentDescription = null,
                     )
 
                     TextWidget(
@@ -93,56 +95,61 @@ fun MonthPickerWidget(
                     )
 
                     Icon(
-                        modifier = Modifier
-                            .size(icon_image_size_large)
-                            .clickable(
-                                indication = null,
-                                interactionSource = interactionSource,
-                                onClick = {
-                                    year++
-                                }
-                            ),
+                        modifier =
+                            Modifier
+                                .size(icon_image_size_large)
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = interactionSource,
+                                    onClick = {
+                                        year++
+                                    },
+                                ),
                         tint = AppTheme.colors.primary,
                         imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                        contentDescription = null
+                        contentDescription = null,
                     )
                 }
 
                 if (!hideMonthSelection) {
                     FlowRow(
-                        modifier = Modifier.padding(vertical = padding_screen)
+                        modifier = Modifier.padding(vertical = padding_screen),
                     ) {
                         months.forEach {
                             Box(
-                                modifier = Modifier
-                                    .size(60.dp)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = interactionSource,
-                                        onClick = { month = it }
-                                    ),
-                                contentAlignment = Alignment.Center
+                                modifier =
+                                    Modifier
+                                        .size(60.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = interactionSource,
+                                            onClick = { month = it },
+                                        ),
+                                contentAlignment = Alignment.Center,
                             ) {
-
                                 val animatedSize by animateDpAsState(
                                     targetValue = if (month == it) 60.dp else 0.dp,
-                                    animationSpec = tween(
-                                        durationMillis = 300,
-                                        easing = LinearOutSlowInEasing
-                                    ), label = ""
+                                    animationSpec =
+                                        tween(
+                                            durationMillis = 300,
+                                            easing = LinearOutSlowInEasing,
+                                        ),
+                                    label = "",
                                 )
 
                                 Box(
-                                    modifier = Modifier
-                                        .size(animatedSize)
-                                        .background(
-                                            color = if (month == it) {
-                                                AppTheme.colors.backgroundScreen
-                                            } else {
-                                                Color.Transparent
-                                            },
-                                            shape = RoundedCornerShape(border_radius)
-                                        )
+                                    modifier =
+                                        Modifier
+                                            .size(animatedSize)
+                                            .background(
+                                                color =
+                                                    if (month == it) {
+                                                        AppTheme.colors.backgroundScreen
+                                                    } else {
+                                                        Color.Transparent
+                                                    },
+                                                shape = RoundedCornerShape(border_radius),
+                                            ),
                                 )
 
                                 TextWidget(
@@ -170,7 +177,7 @@ fun MonthPickerWidget(
                     ) {
                         confirmButtonCLicked(
                             months.indexOf(month) + 1,
-                            year
+                            year,
                         )
                     }
                 }
@@ -189,7 +196,7 @@ private fun MonthPickerPreview() {
             currentYear = 2024,
             hideMonthSelection = true,
             confirmButtonCLicked = { _, _ -> },
-            cancelClicked = {}
+            cancelClicked = {},
         )
     }
 }

@@ -47,8 +47,8 @@ fun MemberEditDetailsScreen(
     var errorApartmentNumber = ""
     var errorPhoneNumber = ""
 
-    if (uiState is UiState.Error){
-        when(uiState.inputType){
+    if (uiState is UiState.Error) {
+        when (uiState.inputType) {
             InputType.FIRST_NAME -> errorFirstName = uiState.message
             InputType.LAST_NAME -> errorLastName = uiState.message
             InputType.APARTMENT_NUMBER -> errorApartmentNumber = uiState.message
@@ -78,7 +78,7 @@ fun MemberEditDetailsScreen(
             hint = stringResource(R.string.txt_first_name),
             textInput = memberEntity.firstName,
             errorText = errorFirstName,
-            isEnabled = hasAdminRights
+            isEnabled = hasAdminRights,
         ) {
             onSetString.invoke(it, InputType.FIRST_NAME)
         }
@@ -87,7 +87,7 @@ fun MemberEditDetailsScreen(
             hint = stringResource(R.string.txt_last_name),
             textInput = memberEntity.lastName,
             errorText = errorLastName,
-            isEnabled = hasAdminRights
+            isEnabled = hasAdminRights,
         ) {
             onSetString.invoke(it, InputType.LAST_NAME)
         }
@@ -96,7 +96,7 @@ fun MemberEditDetailsScreen(
             hint = stringResource(R.string.txt_apartment_number),
             textInput = memberEntity.apartmentNumber.orEmpty(),
             errorText = errorApartmentNumber,
-            isEnabled = hasAdminRights
+            isEnabled = hasAdminRights,
         ) {
             onSetString.invoke(it, InputType.APARTMENT_NUMBER)
         }
@@ -106,19 +106,19 @@ fun MemberEditDetailsScreen(
             textInput = memberEntity.phoneNumber.toPhoneNumberString(),
             errorText = errorPhoneNumber,
             keyboardType = KeyboardType.Phone,
-            isEnabled = hasAdminRights
+            isEnabled = hasAdminRights,
         ) {
             onSetString.invoke(it, InputType.PHONE_NUMBER)
         }
 
-
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = padding_screen_small)
-                .padding(top = padding_screen_small),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = padding_screen_small)
+                    .padding(top = padding_screen_small),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             TextWidget(text = stringResource(id = R.string.txt_training_coach_assigned))
             Switch(
@@ -127,18 +127,17 @@ fun MemberEditDetailsScreen(
                 onCheckedChange = {
                     initialHasCoach = it
                     onSetString.invoke(initialHasCoach.toString(), InputType.HAS_COACH)
-                }
+                },
             )
         }
 
         ButtonWidget(
             title = stringResource(R.string.txt_update),
             isEnabled = uiState is UiState.ReadyToUpdate && hasAdminRights,
-            isLoading = uiState is UiState.Loading
+            isLoading = uiState is UiState.Loading,
         ) {
             onUpdateTapped.invoke()
         }
-
     }
 }
 

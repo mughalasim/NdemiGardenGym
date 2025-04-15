@@ -18,7 +18,5 @@ interface AttendanceRepository {
         endDate: Date,
     ): DomainResult<Unit>
 
-    suspend fun deleteAttendance(
-        attendanceEntity: AttendanceEntity
-    ): DomainResult<Unit>
+    suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit>
 }

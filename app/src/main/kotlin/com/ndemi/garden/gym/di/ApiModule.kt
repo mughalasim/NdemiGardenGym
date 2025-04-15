@@ -14,17 +14,18 @@ import retrofit2.Retrofit
 
 val apiModule =
     module {
-        single<OkHttpClient>() {
+        single<OkHttpClient> {
             OkHttpClient.Builder()
                 .addInterceptor(
                     HttpLoggingInterceptor { message ->
                         get<AppLoggerRepository>().log("Http: $message")
                     }.apply {
-                        level = if (BuildConfig.DEBUG) {
-                            HttpLoggingInterceptor.Level.BODY
-                        } else {
-                            HttpLoggingInterceptor.Level.NONE
-                        }
+                        level =
+                            if (BuildConfig.DEBUG) {
+                                HttpLoggingInterceptor.Level.BODY
+                            } else {
+                                HttpLoggingInterceptor.Level.NONE
+                            }
                     },
                 )
                 .build()

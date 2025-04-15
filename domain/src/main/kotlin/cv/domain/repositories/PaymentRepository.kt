@@ -10,9 +10,7 @@ interface PaymentRepository {
         year: Int,
     ): DomainResult<Triple<List<PaymentEntity>, Boolean, Double>>
 
-    suspend fun addPaymentPlan(
-        paymentEntity: PaymentEntity
-    ): DomainResult<Unit>
+    suspend fun addPaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit>
 
     suspend fun deletePaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit>
 }

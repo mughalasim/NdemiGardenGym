@@ -30,7 +30,6 @@ import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
-
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberProfileWidget
@@ -46,13 +45,14 @@ fun MemberEditScreen(
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
     val memberEntity = viewModel.memberEntity.observeAsState()
     val context = LocalContext.current
-    val galleryLauncher = rememberLauncherForActivityResult(GetContent()) { imageUri ->
-        imageUri?.let {
-            context.contentResolver.openInputStream(imageUri)
-                ?.use { inputStream -> inputStream.buffered().readBytes() }
-                ?.let { byteArray -> viewModel.updateMemberImage(byteArray) }
+    val galleryLauncher =
+        rememberLauncherForActivityResult(GetContent()) { imageUri ->
+            imageUri?.let {
+                context.contentResolver.openInputStream(imageUri)
+                    ?.use { inputStream -> inputStream.buffered().readBytes() }
+                    ?.let { byteArray -> viewModel.updateMemberImage(byteArray) }
+            }
         }
-    }
     var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(true) { viewModel.getMemberForId() }
@@ -63,7 +63,7 @@ fun MemberEditScreen(
             canNavigateBack = true,
             secondaryIcon = if (viewModel.hasAdminRights()) Icons.Default.DeleteForever else null,
             onSecondaryIconPressed = { showDialog = true },
-            onBackPressed = viewModel::navigateBack
+            onBackPressed = viewModel::navigateBack,
         )
 
         if (uiState.value is UiState.Error) {
@@ -71,15 +71,16 @@ fun MemberEditScreen(
         }
 
         PullToRefreshBox(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding_screen),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding_screen),
             isRefreshing = (uiState.value is UiState.Loading),
-            onRefresh = { viewModel.getMemberForId() }
+            onRefresh = { viewModel.getMemberForId() },
         ) {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 memberEntity.value?.let {
                     MemberProfileWidget(
@@ -90,7 +91,7 @@ fun MemberEditScreen(
                         },
                         onImageDelete = {
                             viewModel.deleteMemberImage()
-                        }
+                        },
                     )
 
                     MemberEditDetailsScreen(
@@ -115,7 +116,7 @@ fun MemberEditScreen(
                 },
                 text = {
                     TextWidget(
-                        text = stringResource(R.string.txt_are_you_sure_delete_member)
+                        text = stringResource(R.string.txt_are_you_sure_delete_member),
                     )
                 },
                 onDismissRequest = { showDialog = !showDialog },
@@ -129,7 +130,8 @@ fun MemberEditScreen(
                     ButtonWidget(title = stringResource(R.string.txt_cancel)) {
                         showDialog = !showDialog
                     }
-                })
+                },
+            )
         }
     }
 }

@@ -30,22 +30,24 @@ fun PaymentsListScreen(
     Column {
         Row {
             TextWidget(
-                modifier = Modifier
-                    .padding(horizontal = padding_screen)
-                    .padding(top = padding_screen_small)
-                    .fillMaxWidth(),
-                text = stringResource(
-                    R.string.txt_total_amount,
-                    totalAmount.toAmountString()
-                ),
-                textAlign = TextAlign.End
+                modifier =
+                    Modifier
+                        .padding(horizontal = padding_screen)
+                        .padding(top = padding_screen_small)
+                        .fillMaxWidth(),
+                text =
+                    stringResource(
+                        R.string.txt_total_amount,
+                        totalAmount.toAmountString(),
+                    ),
+                textAlign = TextAlign.End,
             )
         }
         repeat(payments.size) {
             PaymentWidget(
                 paymentEntity = payments[it],
                 canDeletePayment = canDeletePayment,
-                onDeletePayment = onDeletePayment
+                onDeletePayment = onDeletePayment,
             )
         }
     }
@@ -56,13 +58,14 @@ fun PaymentsListScreen(
 private fun PaymentPlanListScreenPreview() {
     AppThemeComposable {
         PaymentsListScreen(
-            payments = listOf(
-                getMockActivePaymentEntity(),
-                getMockActivePaymentEntity(),
-                getMockExpiredPaymentEntity()
-            ),
+            payments =
+                listOf(
+                    getMockActivePaymentEntity(),
+                    getMockActivePaymentEntity(),
+                    getMockExpiredPaymentEntity(),
+                ),
             totalAmount = 1200.0,
-            canDeletePayment = false
+            canDeletePayment = false,
         )
     }
 }

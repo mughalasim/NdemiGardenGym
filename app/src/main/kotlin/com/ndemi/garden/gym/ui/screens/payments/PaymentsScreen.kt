@@ -37,7 +37,7 @@ import org.koin.androidx.compose.koinViewModel
 fun PaymentsScreen(
     memberId: String,
     memberName: String,
-    viewModel: PaymentsScreenViewModel = koinViewModel<PaymentsScreenViewModel>()
+    viewModel: PaymentsScreenViewModel = koinViewModel<PaymentsScreenViewModel>(),
 ) {
     var selectedDate by remember { mutableStateOf(DateTime.now()) }
     val canAddPayment = viewModel.canAddPayment.observeAsState()
@@ -48,50 +48,52 @@ fun PaymentsScreen(
 
     Column {
         ToolBarWidget(
-            title = if (memberName.isEmpty()) {
-                stringResource(R.string.txt_payments)
-            } else {
-                stringResource(R.string.txt_payments_by, memberName)
-            },
+            title =
+                if (memberName.isEmpty()) {
+                    stringResource(R.string.txt_payments)
+                } else {
+                    stringResource(R.string.txt_payments_by, memberName)
+                },
             secondaryIcon = if (viewModel.hasAdminRights()) Icons.Default.AddCircle else null,
             onSecondaryIconPressed = {
-                if (canAddPayment.value == true){
+                if (canAddPayment.value == true) {
                     viewModel.navigateToPaymentAddScreen()
                 } else {
-                  showDialog = true
+                    showDialog = true
                 }
             },
             canNavigateBack = memberId.isNotEmpty(),
-            onBackPressed = viewModel::navigateBack
+            onBackPressed = viewModel::navigateBack,
         )
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
-        DateSelectionWidget(selectedDate, true){
+        DateSelectionWidget(selectedDate, true) {
             selectedDate = it
             viewModel.getPaymentsForMember(memberId, selectedDate)
         }
 
         PullToRefreshBox(
             modifier = Modifier.fillMaxSize(),
-            isRefreshing= (uiState.value is UiState.Loading),
-            onRefresh = { viewModel.getPaymentsForMember(memberId, selectedDate) }
+            isRefreshing = (uiState.value is UiState.Loading),
+            onRefresh = { viewModel.getPaymentsForMember(memberId, selectedDate) },
         ) {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
             ) {
                 if (uiState.value is UiState.Success) {
                     val result = (uiState.value as UiState.Success)
                     if (result.payments.isEmpty()) {
                         TextWidget(
                             modifier = Modifier.padding(padding_screen),
-                            text = stringResource(R.string.txt_no_payments)
+                            text = stringResource(R.string.txt_no_payments),
                         )
                     } else {
                         PaymentsListScreen(
                             payments = result.payments,
                             totalAmount = result.totalAmount,
-                            canDeletePayment = viewModel.hasAdminRights()
-                        ){
+                            canDeletePayment = viewModel.hasAdminRights(),
+                        ) {
                             viewModel.deletePayment(it)
                         }
                     }
@@ -100,12 +102,12 @@ fun PaymentsScreen(
         }
     }
 
-    if (showDialog){
+    if (showDialog) {
         AlertDialog(
             containerColor = AppTheme.colors.backgroundButtonDisabled,
             text = {
                 TextWidget(
-                    text = stringResource(R.string.txt_cannot_add_payment)
+                    text = stringResource(R.string.txt_cannot_add_payment),
                 )
             },
             onDismissRequest = { showDialog = !showDialog },

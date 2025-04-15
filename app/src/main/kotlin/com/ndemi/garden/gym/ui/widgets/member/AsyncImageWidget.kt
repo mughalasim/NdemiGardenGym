@@ -27,22 +27,24 @@ fun AsyncImageWidget(
 ) {
     val dimen = if (isLarge) icon_image_size_profile else icon_image_size_profile_small
     AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(profileImageUrl)
-            .crossfade(true)
-            .build(),
+        model =
+            ImageRequest.Builder(LocalContext.current)
+                .data(profileImageUrl)
+                .crossfade(true)
+                .build(),
         placeholder = painterResource(R.drawable.ic_app),
         fallback = painterResource(R.drawable.ic_app),
         error = painterResource(R.drawable.ic_app),
         contentDescription = "profile picture",
         contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .clip(RoundedCornerShape(border_radius))
-            .border(
-                border = BorderStroke(line_thickness, AppTheme.colors.border),
-                shape = RoundedCornerShape(border_radius)
-            )
-            .width(dimen)
-            .height(dimen)
+        modifier =
+            Modifier
+                .clip(RoundedCornerShape(border_radius))
+                .border(
+                    border = BorderStroke(line_thickness, AppTheme.colors.border),
+                    shape = RoundedCornerShape(border_radius),
+                )
+                .width(dimen)
+                .height(dimen),
     )
 }

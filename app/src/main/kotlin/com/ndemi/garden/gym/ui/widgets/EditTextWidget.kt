@@ -50,8 +50,9 @@ fun EditTextWidget(
 
     Column {
         OutlinedTextField(
-            modifier = modifier
-                .fillMaxWidth(),
+            modifier =
+                modifier
+                    .fillMaxWidth(),
             value = textInput,
             enabled = isEnabled,
             isError = errorText.isNotEmpty(),
@@ -65,19 +66,21 @@ fun EditTextWidget(
                     Icon(
                         Icons.Default.Clear,
                         contentDescription = hint,
-                        modifier = Modifier.clickable {
-                            onValueChanged("")
-                        },
-                        tint = if (errorText.isNotEmpty()) AppTheme.colors.error else AppTheme.colors.border
+                        modifier =
+                            Modifier.clickable {
+                                onValueChanged("")
+                            },
+                        tint = if (errorText.isNotEmpty()) AppTheme.colors.error else AppTheme.colors.border,
                     )
                 }
             },
             label = { Text(text = hint, style = AppTheme.textStyles.regular) },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-            keyboardActions = KeyboardActions {
-                onValueChanged.invoke(textInput)
-                keyboardController?.hide()
-            },
+            keyboardActions =
+                KeyboardActions {
+                    onValueChanged.invoke(textInput)
+                    keyboardController?.hide()
+                },
             colors = getAppTextColors(),
         )
         EditTextWidgetBottom(errorText)
@@ -96,8 +99,9 @@ fun EditPasswordTextWidget(
     var passwordVisible: Boolean by rememberSaveable { mutableStateOf(false) }
     Column {
         OutlinedTextField(
-            modifier = modifier
-                .fillMaxWidth(),
+            modifier =
+                modifier
+                    .fillMaxWidth(),
             value = textInput,
             onValueChange = {
                 onValueChanged(it)
@@ -109,17 +113,18 @@ fun EditPasswordTextWidget(
                 if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
-                val image = if (passwordVisible) {
-                    Icons.Outlined.Lock
-                } else {
-                    Icons.Filled.Lock
-                }
+                val image =
+                    if (passwordVisible) {
+                        Icons.Outlined.Lock
+                    } else {
+                        Icons.Filled.Lock
+                    }
 
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
                         imageVector = image,
                         contentDescription = hint,
-                        tint = if (errorText.isNotEmpty()) AppTheme.colors.error else AppTheme.colors.border
+                        tint = if (errorText.isNotEmpty()) AppTheme.colors.error else AppTheme.colors.border,
                     )
                 }
             },
@@ -134,16 +139,18 @@ fun EditPasswordTextWidget(
 @Composable
 private fun EditTextWidgetBottom(errorText: String) {
     Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(line_thickness)
-            .padding(horizontal = padding_screen)
-            .background(if (errorText.isNotEmpty()) AppTheme.colors.error else AppTheme.colors.border)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(line_thickness)
+                .padding(horizontal = padding_screen)
+                .background(if (errorText.isNotEmpty()) AppTheme.colors.error else AppTheme.colors.border),
     )
     TextWidget(
-        modifier = Modifier
-            .padding(horizontal = padding_screen)
-            .padding(top = padding_screen_tiny),
+        modifier =
+            Modifier
+                .padding(horizontal = padding_screen)
+                .padding(top = padding_screen_tiny),
         style = AppTheme.textStyles.small,
         color = AppTheme.colors.error,
         text = errorText,
@@ -151,31 +158,28 @@ private fun EditTextWidgetBottom(errorText: String) {
 }
 
 @Composable
-private fun getAppTextColors() = OutlinedTextFieldDefaults.colors(
-    focusedTextColor = AppTheme.colors.textPrimary,
-    focusedTrailingIconColor = AppTheme.colors.primary,
-    focusedBorderColor = Color.Transparent,
-    focusedLabelColor = AppTheme.colors.primary,
-
-    unfocusedTextColor = AppTheme.colors.textPrimary,
-    unfocusedTrailingIconColor = AppTheme.colors.backgroundButtonDisabled,
-    unfocusedBorderColor = Color.Transparent,
-    unfocusedLabelColor = AppTheme.colors.primary,
-
-    disabledTextColor = AppTheme.colors.textSecondary,
-    disabledTrailingIconColor = Color.Transparent,
-    disabledBorderColor = Color.Transparent,
-    disabledLabelColor = AppTheme.colors.textSecondary,
-
-    errorTextColor = AppTheme.colors.error,
-    errorTrailingIconColor = AppTheme.colors.error,
-    errorBorderColor = Color.Transparent,
-
-    focusedContainerColor = Color.Transparent,
-    unfocusedContainerColor = Color.Transparent,
-    disabledContainerColor = Color.Transparent,
-    errorContainerColor = Color.Transparent,
-)
+private fun getAppTextColors() =
+    OutlinedTextFieldDefaults.colors(
+        focusedTextColor = AppTheme.colors.textPrimary,
+        focusedTrailingIconColor = AppTheme.colors.primary,
+        focusedBorderColor = Color.Transparent,
+        focusedLabelColor = AppTheme.colors.primary,
+        unfocusedTextColor = AppTheme.colors.textPrimary,
+        unfocusedTrailingIconColor = AppTheme.colors.backgroundButtonDisabled,
+        unfocusedBorderColor = Color.Transparent,
+        unfocusedLabelColor = AppTheme.colors.primary,
+        disabledTextColor = AppTheme.colors.textSecondary,
+        disabledTrailingIconColor = Color.Transparent,
+        disabledBorderColor = Color.Transparent,
+        disabledLabelColor = AppTheme.colors.textSecondary,
+        errorTextColor = AppTheme.colors.error,
+        errorTrailingIconColor = AppTheme.colors.error,
+        errorBorderColor = Color.Transparent,
+        focusedContainerColor = Color.Transparent,
+        unfocusedContainerColor = Color.Transparent,
+        disabledContainerColor = Color.Transparent,
+        errorContainerColor = Color.Transparent,
+    )
 
 @AppPreview
 @Composable
@@ -186,7 +190,7 @@ private fun EditTextWidgetPreview() {
             EditTextWidget(textInput = "Normal")
             EditTextWidget(
                 textInput = "Error",
-                errorText = "Some error is shown here"
+                errorText = "Some error is shown here",
             )
             EditTextWidget(textInput = "Disabled", isEnabled = false)
         }

@@ -26,14 +26,16 @@ class PaymentsScreenViewModel(
     private val authUseCase: AuthUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-
     private lateinit var selectedDate: DateTime
     private lateinit var memberId: String
 
     private val _canAddPayment = MutableLiveData<Boolean>()
     val canAddPayment: LiveData<Boolean> = _canAddPayment
 
-    fun getPaymentsForMember(memberId: String, selectedDate: DateTime) {
+    fun getPaymentsForMember(
+        memberId: String,
+        selectedDate: DateTime,
+    ) {
         this.selectedDate = selectedDate
         this.memberId = memberId
         _canAddPayment.value = false
@@ -41,7 +43,7 @@ class PaymentsScreenViewModel(
         viewModelScope.launch {
             paymentUseCase.getPaymentPlanForMember(
                 year = selectedDate.year,
-                memberId = memberId
+                memberId = memberId,
             ).also { result ->
                 when (result) {
                     is DomainResult.Error ->
@@ -65,12 +67,13 @@ class PaymentsScreenViewModel(
         viewModelScope.launch {
             paymentUseCase.deletePaymentPlanForMember(paymentEntity).also { result ->
                 when (result) {
-                    is DomainResult.Error -> sendAction(
-                        Action.ShowDomainError(
-                            result.error,
-                            converter
+                    is DomainResult.Error ->
+                        sendAction(
+                            Action.ShowDomainError(
+                                result.error,
+                                converter,
+                            ),
                         )
-                    )
 
                     is DomainResult.Success -> getPaymentsForMember(memberId, selectedDate)
                 }
@@ -84,7 +87,6 @@ class PaymentsScreenViewModel(
 
     fun hasAdminRights() = authUseCase.hasAdminRights()
 
-
     @Immutable
     sealed interface UiState : BaseState {
         data object Loading : UiState
@@ -92,7 +94,6 @@ class PaymentsScreenViewModel(
         data class Error(val message: String) : UiState
 
         data class Success(val payments: List<PaymentEntity>, val totalAmount: Double) : UiState
-
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -104,8 +105,7 @@ class PaymentsScreenViewModel(
             val domainError: DomainError,
             val errorCodeConverter: ErrorCodeConverter,
         ) : Action {
-            override fun reduce(state: UiState): UiState =
-                UiState.Error(errorCodeConverter.getMessage(domainError))
+            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainError))
         }
 
         data class Success(val payments: List<PaymentEntity>, val totalAmount: Double) : Action {

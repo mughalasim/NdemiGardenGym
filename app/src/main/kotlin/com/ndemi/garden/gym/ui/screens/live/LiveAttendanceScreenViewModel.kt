@@ -14,16 +14,15 @@ import cv.domain.entities.MemberEntity
 import cv.domain.usecase.MemberUseCase
 import kotlinx.coroutines.launch
 
-class LiveAttendanceScreenViewModel (
+class LiveAttendanceScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val memberUseCase: MemberUseCase,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-
     fun getLiveMembers() {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             memberUseCase.getLiveMembers().also { result ->
-                when(result){
+                when (result) {
                     is DomainResult.Error ->
                         sendAction(Action.ShowDomainError(result.error, converter))
                     is DomainResult.Success ->
@@ -51,8 +50,7 @@ class LiveAttendanceScreenViewModel (
             val domainError: DomainError,
             val errorCodeConverter: ErrorCodeConverter,
         ) : Action {
-            override fun reduce(state: UiState): UiState =
-                UiState.Error(errorCodeConverter.getMessage(domainError))
+            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainError))
         }
 
         data class Success(val members: List<MemberEntity>) : Action {

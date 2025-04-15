@@ -8,18 +8,20 @@ import cv.domain.Variables.EVENT_ERROR
 import cv.domain.Variables.PARAM_DOMAIN
 import cv.domain.repositories.AnalyticsRepository
 
-interface ErrorCodeConverter{
+interface ErrorCodeConverter {
     fun getMessage(domainError: DomainError): String
+
     fun getMessage(uiError: UiError): String
 }
 
-class ErrorCodeConverterImp (
+class ErrorCodeConverterImp(
     private val application: Application,
     private val analyticsRepository: AnalyticsRepository,
-): ErrorCodeConverter {
+) : ErrorCodeConverter {
     override fun getMessage(domainError: DomainError): String {
-        analyticsRepository.logEvent(EVENT_ERROR,
-            listOf( Pair (PARAM_DOMAIN, domainError.name))
+        analyticsRepository.logEvent(
+            EVENT_ERROR,
+            listOf(Pair(PARAM_DOMAIN, domainError.name)),
         )
         return when (domainError) {
             DomainError.UNKNOWN -> application.resources.getString(R.string.error_unknown)

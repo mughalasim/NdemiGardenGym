@@ -11,27 +11,27 @@ val useCaseModule =
     module {
         single {
             AuthUseCase(
-                authRepository = get()
+                authRepository = get(),
             )
         }
 
         single {
             MemberUseCase(
                 memberRepository = get(),
-                analyticsRepository = get()
+                analyticsRepository = get(),
             )
         }
 
         single {
             AttendanceUseCase(
                 attendanceRepository = get(),
-                analyticsRepository = get()
+                analyticsRepository = get(),
             )
         }
 
         single {
             PaymentUseCase(
-                paymentRepository = get()
+                paymentRepository = get(),
             )
         }
 
@@ -39,7 +39,7 @@ val useCaseModule =
             StorageUseCase(
                 storageRepository = get(),
                 memberRepository = get(),
-                analyticsRepository = get()
+                analyticsRepository = get(),
             )
         }
     }

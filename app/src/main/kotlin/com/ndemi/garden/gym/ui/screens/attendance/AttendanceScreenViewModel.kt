@@ -19,7 +19,6 @@ class AttendanceScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val attendanceUseCase: AttendanceUseCase,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-
     private lateinit var selectedDate: DateTime
 
     fun getAttendances(selectedDate: DateTime) {
@@ -28,7 +27,7 @@ class AttendanceScreenViewModel(
         viewModelScope.launch {
             attendanceUseCase.getMemberAttendances(
                 year = selectedDate.year,
-                month = selectedDate.monthOfYear
+                month = selectedDate.monthOfYear,
             ).also { result ->
                 when (result) {
                     is DomainResult.Error ->
@@ -46,19 +45,19 @@ class AttendanceScreenViewModel(
         viewModelScope.launch {
             attendanceUseCase.deleteAttendance(attendanceEntity).also { result ->
                 when (result) {
-                    is DomainResult.Error -> sendAction(
-                        Action.ShowDomainError(
-                            result.error,
-                            converter
+                    is DomainResult.Error ->
+                        sendAction(
+                            Action.ShowDomainError(
+                                result.error,
+                                converter,
+                            ),
                         )
-                    )
 
                     is DomainResult.Success -> getAttendances(selectedDate)
                 }
             }
         }
     }
-
 
     @Immutable
     sealed interface UiState : BaseState {
@@ -67,7 +66,6 @@ class AttendanceScreenViewModel(
         data class Error(val message: String) : UiState
 
         data class Success(val attendances: List<AttendanceEntity>, val totalMinutes: Int) : UiState
-
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -79,8 +77,7 @@ class AttendanceScreenViewModel(
             val domainError: DomainError,
             val errorCodeConverter: ErrorCodeConverter,
         ) : Action {
-            override fun reduce(state: UiState): UiState =
-                UiState.Error(errorCodeConverter.getMessage(domainError))
+            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainError))
         }
 
         data class Success(val attendances: List<AttendanceEntity>, val totalMinutes: Int) : Action {

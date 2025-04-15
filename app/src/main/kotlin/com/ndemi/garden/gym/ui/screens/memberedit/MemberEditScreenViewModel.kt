@@ -30,25 +30,28 @@ class MemberEditScreenViewModel(
     private val storageUseCase: StorageUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-
     private var memberId: String = ""
     private lateinit var mutableMemberEntity: MemberEntity
     private val _memberEntity = MutableLiveData<MemberEntity>(null)
     val memberEntity: LiveData<MemberEntity> = _memberEntity
 
-    fun setMemberId(memberId: String){
+    fun setMemberId(memberId: String) {
         this.memberId = memberId
     }
 
-    fun setString(value: String, inPutType: InputType) {
-        mutableMemberEntity = when (inPutType) {
-            InputType.FIRST_NAME -> mutableMemberEntity.copy(firstName = value)
-            InputType.LAST_NAME -> mutableMemberEntity.copy(lastName = value)
-            InputType.APARTMENT_NUMBER -> mutableMemberEntity.copy(apartmentNumber = value)
-            InputType.PHONE_NUMBER -> mutableMemberEntity.copy(phoneNumber = value)
-            InputType.HAS_COACH -> mutableMemberEntity.copy(hasCoach = value.toBoolean())
-            InputType.NONE -> mutableMemberEntity
-        }
+    fun setString(
+        value: String,
+        inPutType: InputType,
+    ) {
+        mutableMemberEntity =
+            when (inPutType) {
+                InputType.FIRST_NAME -> mutableMemberEntity.copy(firstName = value)
+                InputType.LAST_NAME -> mutableMemberEntity.copy(lastName = value)
+                InputType.APARTMENT_NUMBER -> mutableMemberEntity.copy(apartmentNumber = value)
+                InputType.PHONE_NUMBER -> mutableMemberEntity.copy(phoneNumber = value)
+                InputType.HAS_COACH -> mutableMemberEntity.copy(hasCoach = value.toBoolean())
+                InputType.NONE -> mutableMemberEntity
+            }
         validateInput()
     }
 
@@ -62,34 +65,31 @@ class MemberEditScreenViewModel(
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiError.INVALID_FIRST_NAME),
-                    InputType.FIRST_NAME
-                )
+                    InputType.FIRST_NAME,
+                ),
             )
-
         } else if (lastName.isEmpty() || lastName.isDigitsOnly()) {
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiError.INVALID_LAST_NAME),
-                    InputType.LAST_NAME
-                )
+                    InputType.LAST_NAME,
+                ),
             )
-
         } else if (phoneNumber.isNotEmpty() && !phoneNumber.isValidPhoneNumber()) {
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiError.INVALID_PHONE_NUMBER),
-                    InputType.PHONE_NUMBER
-                )
+                    InputType.PHONE_NUMBER,
+                ),
             )
-
         } else if (apartmentNumber.isNotEmpty() && !apartmentNumber.isValidApartmentNumber()) {
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiError.INVALID_APARTMENT_NUMBER),
-                    InputType.APARTMENT_NUMBER
-                )
+                    InputType.APARTMENT_NUMBER,
+                ),
             )
-        } else if (mutableMemberEntity.isNotEqualTo(_memberEntity.value)){
+        } else if (mutableMemberEntity.isNotEqualTo(_memberEntity.value)) {
             sendAction(Action.SetReadyToUpdate)
         } else {
             sendAction(Action.Success)
@@ -130,7 +130,7 @@ class MemberEditScreenViewModel(
             sendAction(Action.SetLoading)
             viewModelScope.launch {
                 val success = storageUseCase.updateImageForMember(it, byteArray)
-                if (success){
+                if (success) {
                     getMemberForId()
                 } else {
                     sendAction(Action.Success)
@@ -148,10 +148,11 @@ class MemberEditScreenViewModel(
             sendAction(Action.SetLoading)
             viewModelScope.launch {
                 memberUseCase.deleteMember(it).also {
-                    when(it){
-                        is DomainResult.Error -> Action.ShowError(
-                            converter.getMessage(it.error)
-                        )
+                    when (it) {
+                        is DomainResult.Error ->
+                            Action.ShowError(
+                                converter.getMessage(it.error),
+                            )
                         is DomainResult.Success -> navigationService.popBack()
                     }
                 }
@@ -160,18 +161,18 @@ class MemberEditScreenViewModel(
     }
 
     fun onUpdateTapped() {
-        if (uiStateFlow.value == UiState.ReadyToUpdate){
+        if (uiStateFlow.value == UiState.ReadyToUpdate) {
             sendAction(Action.SetLoading)
             viewModelScope.launch {
                 memberUseCase.updateMember(
                     memberEntity = mutableMemberEntity,
-                    updateType = UpdateType.MEMBER
+                    updateType = UpdateType.MEMBER,
                 ).also { getMemberForId() }
             }
         }
     }
 
-    fun hasAdminRights() =  authUseCase.hasAdminRights()
+    fun hasAdminRights() = authUseCase.hasAdminRights()
 
     enum class InputType {
         NONE,
@@ -191,11 +192,10 @@ class MemberEditScreenViewModel(
         data class Error(val message: String, val inputType: InputType) : UiState
 
         data object Success : UiState
-
     }
 
     sealed interface Action : BaseAction<UiState> {
-        data object SetReadyToUpdate: Action {
+        data object SetReadyToUpdate : Action {
             override fun reduce(state: UiState) = UiState.ReadyToUpdate
         }
 

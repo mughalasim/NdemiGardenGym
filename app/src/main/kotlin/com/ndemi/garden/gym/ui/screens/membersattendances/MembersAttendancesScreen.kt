@@ -29,10 +29,10 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MembersAttendancesScreen (
+fun MembersAttendancesScreen(
     memberId: String,
     memberName: String,
-    viewModel: MembersAttendancesScreenViewModel = koinViewModel<MembersAttendancesScreenViewModel>()
+    viewModel: MembersAttendancesScreenViewModel = koinViewModel<MembersAttendancesScreenViewModel>(),
 ) {
     var selectedDate by remember { mutableStateOf(DateTime.now()) }
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
@@ -40,21 +40,21 @@ fun MembersAttendancesScreen (
     LaunchedEffect(true) { viewModel.getAttendances(memberId, selectedDate) }
 
     Column {
-        ToolBarWidget(title = stringResource(R.string.txt_attendance_for, memberName), canNavigateBack = true){
+        ToolBarWidget(title = stringResource(R.string.txt_attendance_for, memberName), canNavigateBack = true) {
             viewModel.navigateBack()
         }
 
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
-        DateSelectionWidget(selectedDate, false){
+        DateSelectionWidget(selectedDate, false) {
             selectedDate = it
             viewModel.getAttendances(memberId, selectedDate)
         }
 
         PullToRefreshBox(
             modifier = Modifier.fillMaxSize(),
-            isRefreshing= (uiState.value is UiState.Loading),
-            onRefresh = { viewModel.getAttendances(memberId, selectedDate) }
+            isRefreshing = (uiState.value is UiState.Loading),
+            onRefresh = { viewModel.getAttendances(memberId, selectedDate) },
         ) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 if (uiState.value is UiState.Success) {
@@ -62,14 +62,14 @@ fun MembersAttendancesScreen (
                     if (result.attendances.isEmpty()) {
                         TextWidget(
                             modifier = Modifier.padding(padding_screen),
-                            text = stringResource(R.string.txt_no_attendances)
+                            text = stringResource(R.string.txt_no_attendances),
                         )
                     } else {
                         AttendanceListScreen(
                             attendances = result.attendances,
                             canDeleteAttendance = viewModel.hasAdminRights(),
-                            totalMinutes = result.totalMinutes
-                        ){
+                            totalMinutes = result.totalMinutes,
+                        ) {
                             viewModel.deleteAttendance(it)
                         }
                     }

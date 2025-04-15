@@ -58,103 +58,112 @@ fun RegisterDetailScreen(
             InputType.APARTMENT_NUMBER -> errorApartmentNumber = uiState.message
             InputType.PASSWORD -> errorPassword = uiState.message
             InputType.CONFIRM_PASSWORD -> errorConfirmPassword = uiState.message
-            InputType.NONE -> snackbarHostState.Show(
-                type = SnackbarType.ERROR,
-                message = uiState.message,
-            )
+            InputType.NONE ->
+                snackbarHostState.Show(
+                    type = SnackbarType.ERROR,
+                    message = uiState.message,
+                )
         }
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .requiredWidth(page_width)
-            .verticalScroll(rememberScrollState()),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .requiredWidth(page_width)
+                .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
         Image(
-            modifier = Modifier
-                .size(icon_image_size_profile),
+            modifier =
+                Modifier
+                    .size(icon_image_size_profile),
             imageVector = ImageVector.vectorResource(R.drawable.ic_app),
-            contentDescription = ""
+            contentDescription = "",
         )
 
         TextWidget(
-            modifier = Modifier
-                .padding(horizontal = padding_screen),
+            modifier =
+                Modifier
+                    .padding(horizontal = padding_screen),
             style = AppTheme.textStyles.large,
             text = stringResource(R.string.txt_register),
         )
 
-
         TextWidget(
-            modifier = Modifier
-                .padding(top = padding_screen)
-                .padding(horizontal = padding_screen),
+            modifier =
+                Modifier
+                    .padding(top = padding_screen)
+                    .padding(horizontal = padding_screen),
             textAlign = TextAlign.Center,
-            text = stringResource(R.string.txt_register_info)
+            text = stringResource(R.string.txt_register_info),
         )
 
         EditTextWidget(
-            modifier = Modifier
-                .padding(top = padding_screen),
+            modifier =
+                Modifier
+                    .padding(top = padding_screen),
             hint = stringResource(R.string.txt_first_name),
             textInput = inputData.firstName,
-            errorText = errorFirstName
+            errorText = errorFirstName,
         ) {
             onSetString.invoke(it, InputType.FIRST_NAME)
         }
 
         EditTextWidget(
-            modifier = Modifier
-                .padding(top = padding_screen),
+            modifier =
+                Modifier
+                    .padding(top = padding_screen),
             hint = stringResource(R.string.txt_last_name),
             textInput = inputData.lastName,
-            errorText = errorLastName
+            errorText = errorLastName,
         ) {
             onSetString.invoke(it, InputType.LAST_NAME)
         }
 
         EditTextWidget(
-            modifier = Modifier
-                .padding(top = padding_screen),
+            modifier =
+                Modifier
+                    .padding(top = padding_screen),
             hint = stringResource(R.string.txt_email),
             textInput = inputData.email,
             errorText = errorEmail,
-            keyboardType = KeyboardType.Email
+            keyboardType = KeyboardType.Email,
         ) {
             onSetString.invoke(it, InputType.EMAIL)
         }
 
         EditTextWidget(
-            modifier = Modifier
-                .padding(top = padding_screen),
+            modifier =
+                Modifier
+                    .padding(top = padding_screen),
             hint = stringResource(R.string.txt_apartment_number),
             textInput = inputData.apartmentNumber,
-            errorText = errorApartmentNumber
+            errorText = errorApartmentNumber,
         ) {
             onSetString.invoke(it, InputType.APARTMENT_NUMBER)
         }
 
         if (!hidePassword) {
             EditPasswordTextWidget(
-                modifier = Modifier
-                    .padding(top = padding_screen),
+                modifier =
+                    Modifier
+                        .padding(top = padding_screen),
                 hint = stringResource(id = R.string.txt_password),
                 textInput = inputData.password,
-                errorText = errorPassword
+                errorText = errorPassword,
             ) {
                 onSetString.invoke(it, InputType.PASSWORD)
             }
 
             EditPasswordTextWidget(
-                modifier = Modifier
-                    .padding(top = padding_screen),
+                modifier =
+                    Modifier
+                        .padding(top = padding_screen),
                 hint = stringResource(R.string.txt_confirm_password),
                 textInput = inputData.confirmPassword,
-                errorText = errorConfirmPassword
+                errorText = errorConfirmPassword,
             ) {
                 onSetString.invoke(it, InputType.CONFIRM_PASSWORD)
             }
@@ -164,12 +173,13 @@ fun RegisterDetailScreen(
         }
 
         ButtonWidget(
-            modifier = Modifier
-                .padding(vertical = padding_screen)
-                .padding(horizontal = padding_screen),
+            modifier =
+                Modifier
+                    .padding(vertical = padding_screen)
+                    .padding(horizontal = padding_screen),
             title = stringResource(R.string.txt_register),
             isEnabled = uiState is UiState.Ready,
-            isLoading = uiState is UiState.Loading
+            isLoading = uiState is UiState.Loading,
         ) {
             onRegisterTapped.invoke()
         }

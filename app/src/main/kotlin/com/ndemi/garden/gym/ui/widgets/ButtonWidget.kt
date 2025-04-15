@@ -45,15 +45,16 @@ fun ButtonWidget(
     onButtonClicked: () -> Unit,
 ) {
     val bgColor: Color by animateColorAsState(
-        targetValue = if (isEnabled && !isLoading) {
-            AppTheme.colors.backgroundButtonEnabled
-        } else {
-            AppTheme.colors.backgroundButtonDisabled
-        },
+        targetValue =
+            if (isEnabled && !isLoading) {
+                AppTheme.colors.backgroundButtonEnabled
+            } else {
+                AppTheme.colors.backgroundButtonDisabled
+            },
         animationSpec = tween(1000, easing = FastOutSlowInEasing),
-        label = ""
+        label = "",
     )
-    val keyboardController =  LocalSoftwareKeyboardController.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     Row(
         modifier =
             modifier
@@ -69,26 +70,28 @@ fun ButtonWidget(
                     if (isEnabled && !isLoading) onButtonClicked()
                 },
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
     ) {
         if (isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier
-                    .padding(end = padding_screen)
-                    .width(icon_image_size)
-                    .height(icon_image_size),
+                modifier =
+                    Modifier
+                        .padding(end = padding_screen)
+                        .width(icon_image_size)
+                        .height(icon_image_size),
                 strokeCap = StrokeCap.Round,
-                trackColor = AppTheme.colors.primary
+                trackColor = AppTheme.colors.primary,
             )
         }
         TextWidget(
             modifier = Modifier.wrapContentWidth(),
             text = title,
-            color = if (isEnabled && !isLoading) {
-                AppTheme.colors.backgroundScreen
-            } else {
-                AppTheme.colors.textSecondary
-            },
+            color =
+                if (isEnabled && !isLoading) {
+                    AppTheme.colors.backgroundScreen
+                } else {
+                    AppTheme.colors.textSecondary
+                },
         )
     }
 }
@@ -99,19 +102,21 @@ fun ButtonOutlineWidget(
     modifier: Modifier = Modifier,
     hasOutline: Boolean = true,
     backgroundColor: Color = Color.Transparent,
-    onButtonClicked: () -> Unit = {}
+    onButtonClicked: () -> Unit = {},
 ) {
     OutlinedButton(
         modifier = modifier,
         onClick = { onButtonClicked.invoke() },
         shape = RoundedCornerShape(border_radius),
-        border = BorderStroke(
-            width = line_thickness,
-            color = if (hasOutline) AppTheme.colors.primary else Color.Transparent
-        ),
+        border =
+            BorderStroke(
+                width = line_thickness,
+                color = if (hasOutline) AppTheme.colors.primary else Color.Transparent,
+            ),
         contentPadding = PaddingValues(padding_screen_tiny),
-        colors = ButtonDefaults.outlinedButtonColors()
-            .copy(containerColor = backgroundColor)
+        colors =
+            ButtonDefaults.outlinedButtonColors()
+                .copy(containerColor = backgroundColor),
     ) {
         TextWidget(
             text = text,
@@ -131,7 +136,7 @@ private fun ButtonWidgetPreview() {
             ButtonOutlineWidget(
                 text = "Text button",
                 hasOutline = false,
-                backgroundColor = AppTheme.colors.error
+                backgroundColor = AppTheme.colors.error,
             ) {}
         }
     }

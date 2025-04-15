@@ -23,7 +23,6 @@ import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants
 import com.ndemi.garden.gym.ui.widgets.TextWidget
-
 import org.joda.time.DateTime
 
 @Composable
@@ -32,22 +31,23 @@ fun MemberSessionWidget(
     sessionStartTime: DateTime?,
     onSessionStarted: () -> Unit = {},
     onSessionCompleted: (DateTime, DateTime) -> Unit = { _, _ -> },
-){
+) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(top = padding_screen)
-            .background(
-                color = AppTheme.colors.backgroundCard,
-                shape = RoundedCornerShape(border_radius)
-            )
-            .border(
-                width = line_thickness,
-                color = AppTheme.colors.border,
-                shape = RoundedCornerShape(border_radius),
-            )
-            .padding(padding_screen),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(top = padding_screen)
+                .background(
+                    color = AppTheme.colors.backgroundCard,
+                    shape = RoundedCornerShape(border_radius),
+                )
+                .border(
+                    width = line_thickness,
+                    color = AppTheme.colors.border,
+                    shape = RoundedCornerShape(border_radius),
+                )
+                .padding(padding_screen),
     ) {
         TextWidget(
             color = AppTheme.colors.primary,
@@ -58,48 +58,52 @@ fun MemberSessionWidget(
         if (sessionStartTime != null) {
             TextWidget(
                 modifier = Modifier.padding(top = padding_screen_small),
-                text = stringResource(R.string.txt_your_workout_session_is_in_progress)
+                text = stringResource(R.string.txt_your_workout_session_is_in_progress),
             )
             TextWidget(
                 modifier = Modifier.padding(top = padding_screen_small),
-                text = stringResource(
-                    R.string.txt_started_at,
-                    sessionStartTime.toString(DateConstants.formatTime)
-                )
+                text =
+                    stringResource(
+                        R.string.txt_started_at,
+                        sessionStartTime.toString(DateConstants.formatTime),
+                    ),
             )
         } else {
             TextWidget(
                 modifier = Modifier.padding(top = padding_screen_small),
-                text = stringResource(R.string.txt_workout_session_desc)
+                text = stringResource(R.string.txt_workout_session_desc),
             )
         }
 
         TextWidget(
-            modifier = Modifier
-                .padding(top = padding_screen)
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .background(
-                    color = if (sessionStartTime != null) {
-                        AppTheme.colors.error
-                    } else {
-                        AppTheme.colors.primary
+            modifier =
+                Modifier
+                    .padding(top = padding_screen)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .background(
+                        color =
+                            if (sessionStartTime != null) {
+                                AppTheme.colors.error
+                            } else {
+                                AppTheme.colors.primary
+                            },
+                        shape = RoundedCornerShape(border_radius),
+                    )
+                    .padding(padding_screen)
+                    .clickable {
+                        if (sessionStartTime != null) {
+                            onSessionCompleted.invoke(sessionStartTime, DateTime.now())
+                        } else {
+                            onSessionStarted.invoke()
+                        }
                     },
-                    shape = RoundedCornerShape(border_radius)
-                )
-                .padding(padding_screen)
-                .clickable {
-                    if (sessionStartTime != null) {
-                        onSessionCompleted.invoke(sessionStartTime, DateTime.now())
-                    } else {
-                        onSessionStarted.invoke()
-                    }
+            text =
+                if (sessionStartTime != null) {
+                    stringResource(R.string.txt_end_session)
+                } else {
+                    stringResource(R.string.txt_start_session)
                 },
-            text = if (sessionStartTime != null) {
-                stringResource(R.string.txt_end_session)
-            } else {
-                stringResource(R.string.txt_start_session)
-            },
             textAlign = TextAlign.Center,
             color = Color.Black,
             style = AppTheme.textStyles.regularBold,
@@ -109,7 +113,7 @@ fun MemberSessionWidget(
             TextWidget(
                 modifier = Modifier.padding(top = padding_screen),
                 text = message,
-                color = AppTheme.colors.error
+                color = AppTheme.colors.error,
             )
         }
     }
@@ -117,7 +121,7 @@ fun MemberSessionWidget(
 
 @AppPreview
 @Composable
-private fun MemberSessionWidgetPreview(){
+private fun MemberSessionWidgetPreview() {
     AppThemeComposable {
         Column {
             MemberSessionWidget(sessionStartTime = DateTime.now().minusHours(2))

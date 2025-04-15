@@ -24,13 +24,14 @@ val repositoryModule =
             AuthRepositoryImp(
                 firebaseAuth = Firebase.auth,
                 firebaseFirestore = Firebase.firestore,
-                repositoryUrls = AuthRepositoryUrls(
-                    pathUser = BuildConfig.PATH_USER,
-                    pathVersion = BuildConfig.PATH_APP_VERSION,
-                    pathVersionType = BuildConfig.PATH_APP_VERSION_TYPE,
-                    currentAppVersion = BuildConfig.VERSION_CODE,
-                ),
-                logger = get()
+                repositoryUrls =
+                    AuthRepositoryUrls(
+                        pathUser = BuildConfig.PATH_USER,
+                        pathVersion = BuildConfig.PATH_APP_VERSION,
+                        pathVersionType = BuildConfig.PATH_APP_VERSION_TYPE,
+                        currentAppVersion = BuildConfig.VERSION_CODE,
+                    ),
+                logger = get(),
             )
         }
 
@@ -39,7 +40,7 @@ val repositoryModule =
                 firebaseAuth = Firebase.auth,
                 firebaseFirestore = Firebase.firestore,
                 pathUser = BuildConfig.PATH_USER,
-                logger = get()
+                logger = get(),
             )
         }
 
@@ -48,7 +49,7 @@ val repositoryModule =
                 firebaseAuth = Firebase.auth,
                 firebaseFirestore = Firebase.firestore,
                 pathAttendance = BuildConfig.PATH_ATTENDANCE,
-                logger = get()
+                logger = get(),
             )
         }
 
@@ -58,7 +59,7 @@ val repositoryModule =
                 firebaseFirestore = Firebase.firestore,
                 pathPayment = BuildConfig.PATH_PAYMENT,
                 pathPaymentPlan = BuildConfig.PATH_PAYMENT_PLAN,
-                logger = get()
+                logger = get(),
             )
         }
 
@@ -66,7 +67,7 @@ val repositoryModule =
             StorageRepositoryImp(
                 storageReference = Firebase.storage.reference,
                 pathUserImage = BuildConfig.PATH_USER_IMAGES,
-                logger = get()
+                logger = get(),
             )
         }
     }

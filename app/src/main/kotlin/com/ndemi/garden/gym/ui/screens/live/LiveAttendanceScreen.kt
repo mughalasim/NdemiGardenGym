@@ -24,9 +24,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LiveAttendanceScreen(
-    viewModel: LiveAttendanceScreenViewModel = koinViewModel<LiveAttendanceScreenViewModel>()
-) {
+fun LiveAttendanceScreen(viewModel: LiveAttendanceScreenViewModel = koinViewModel<LiveAttendanceScreenViewModel>()) {
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
 
     LaunchedEffect(true) { viewModel.getLiveMembers() }
@@ -37,11 +35,12 @@ fun LiveAttendanceScreen(
         if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
 
         PullToRefreshBox(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding_screen),
-            isRefreshing= (uiState.value is UiState.Loading),
-            onRefresh = { viewModel.getLiveMembers() }
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding_screen),
+            isRefreshing = (uiState.value is UiState.Loading),
+            onRefresh = { viewModel.getLiveMembers() },
         ) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 if (uiState.value is UiState.Success) {
@@ -49,7 +48,7 @@ fun LiveAttendanceScreen(
                         TextWidget(
                             modifier = Modifier.fillMaxWidth().padding(padding_screen),
                             textAlign = TextAlign.Center,
-                            text = stringResource(R.string.txt_no_one_is_in)
+                            text = stringResource(R.string.txt_no_one_is_in),
                         )
                     } else {
                         LiveAttendanceListScreen(members = (uiState.value as UiState.Success).members)

@@ -11,9 +11,10 @@ fun ResetPasswordScreen(
     viewModel: ResetPasswordScreenViewModel = koinViewModel<ResetPasswordScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    val uiState = viewModel.uiStateFlow.collectAsState(
-        initial = UiState.Waiting
-    )
+    val uiState =
+        viewModel.uiStateFlow.collectAsState(
+            initial = UiState.Waiting,
+        )
     val inputData = viewModel.inputData.collectAsState()
 
     ResetPasswordDetailsScreen(

@@ -14,9 +14,12 @@ class StorageRepositoryImp(
     private val storageReference: StorageReference,
     private val pathUserImage: String,
     private val logger: AppLoggerRepository,
-): StorageRepository  {
-    override suspend fun updateImageForMember(memberId: String, byteArray: ByteArray): DomainResult<String> {
-        if(memberId.isEmpty()){
+) : StorageRepository {
+    override suspend fun updateImageForMember(
+        memberId: String,
+        byteArray: ByteArray,
+    ): DomainResult<String> {
+        if (memberId.isEmpty()) {
             logger.log("Not Authorised", AppLogLevel.ERROR)
             return DomainResult.Error(DomainError.UNAUTHORISED)
         }

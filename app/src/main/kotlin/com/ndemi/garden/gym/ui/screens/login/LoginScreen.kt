@@ -20,10 +20,11 @@ fun LoginScreen(
 
     LoginScreenDetails(
         uiState = uiState.value,
-        listeners = LoginScreenListeners(
-            onValueChanged = viewModel::setString,
-            onLoginTapped = viewModel::onLoginTapped
-        ),
+        listeners =
+            LoginScreenListeners(
+                onValueChanged = viewModel::setString,
+                onLoginTapped = viewModel::onLoginTapped,
+            ),
         email = inputData.value.email,
         password = inputData.value.password,
         snackbarHostState = snackbarHostState,
@@ -32,5 +33,5 @@ fun LoginScreen(
 
 data class LoginScreenListeners(
     val onValueChanged: (String, InputType) -> Unit = { _, _ -> },
-    val onLoginTapped: () -> Unit = {}
+    val onLoginTapped: () -> Unit = {},
 )
