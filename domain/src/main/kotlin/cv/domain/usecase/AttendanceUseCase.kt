@@ -1,28 +1,11 @@
 package cv.domain.usecase
 
 import cv.domain.DomainResult
-import cv.domain.Variables.EVENT_ACTIVE
 import cv.domain.Variables.EVENT_ATTENDANCE_DELETE
-import cv.domain.Variables.EVENT_MEMBERSHIP
-import cv.domain.Variables.EVENT_MEMBER_DELETE
-import cv.domain.Variables.EVENT_MEMBER_UPDATE
-import cv.domain.Variables.EVENT_PHOTO
-import cv.domain.Variables.EVENT_REGISTRATION
-import cv.domain.Variables.PARAM_ACTIVE_SESSION_FALSE
-import cv.domain.Variables.PARAM_ACTIVE_SESSION_TRUE
 import cv.domain.Variables.PARAM_ATTENDANCE_DELETE
-import cv.domain.Variables.PARAM_MEMBERSHIP_ADDED
-import cv.domain.Variables.PARAM_MEMBER_DELETE
-import cv.domain.Variables.PARAM_MEMBER_UPDATE
-import cv.domain.Variables.PARAM_PHOTO_DELETE
-import cv.domain.Variables.PARAM_REGISTRATION_ADMIN
-import cv.domain.Variables.PARAM_REGISTRATION_SELF
 import cv.domain.entities.AttendanceEntity
-import cv.domain.entities.MemberEntity
-import cv.domain.entities.PaymentEntity
 import cv.domain.repositories.AnalyticsRepository
 import cv.domain.repositories.AttendanceRepository
-import cv.domain.repositories.MemberRepository
 import java.util.Date
 
 class AttendanceUseCase(

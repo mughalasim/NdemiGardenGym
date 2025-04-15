@@ -21,10 +21,7 @@ import kotlinx.coroutines.flow.callbackFlow
 class AuthRepositoryImp(
     private val firebaseAuth: FirebaseAuth,
     private val firebaseFirestore: FirebaseFirestore,
-    private val pathUser: String,
-    private val pathVersion: String,
-    private val pathVersionType: String,
-    private val currentAppVersion: Int,
+    private val repositoryUrls: AuthRepositoryUrls,
     private val logger: AppLoggerRepository,
 ) : AuthRepository {
 
@@ -90,14 +87,14 @@ class AuthRepositoryImp(
     }
 
     override suspend fun getAppVersion() = callbackFlow {
-        val eventDocument = firebaseFirestore.collection(pathVersion).document(pathVersionType)
+        val eventDocument = firebaseFirestore.collection(repositoryUrls.pathVersion).document(repositoryUrls.pathVersionType)
 
         val subscription = eventDocument.addSnapshotListener { snapshot, error ->
             snapshot?.let { response ->
                 logger.log("Data received: $response")
                 val versionModel = response.toObject<VersionModel>()
                 versionModel?.let {
-                    if (it.version > currentAppVersion) {
+                    if (it.version > repositoryUrls.currentAppVersion) {
                         trySend(DomainResult.Success(it.url)).isSuccess
                     } else {
                         trySend(DomainResult.Error(DomainError.NO_DATA)).isSuccess
@@ -116,7 +113,7 @@ class AuthRepositoryImp(
 
     override suspend fun getLoggedInUser(): Flow<DomainResult<MemberEntity>> = callbackFlow {
         firebaseAuth.currentUser?.uid?.let {
-            val eventDocument = firebaseFirestore.collection(pathUser).document(it)
+            val eventDocument = firebaseFirestore.collection(repositoryUrls.pathUser).document(it)
 
             val subscription = eventDocument.addSnapshotListener { snapshot, error ->
                 snapshot?.let { response ->
@@ -143,3 +140,10 @@ class AuthRepositoryImp(
         }
     }
 }
+
+data class AuthRepositoryUrls (
+    val pathUser: String,
+    val pathVersion: String,
+    val pathVersionType: String,
+    val currentAppVersion: Int,
+)

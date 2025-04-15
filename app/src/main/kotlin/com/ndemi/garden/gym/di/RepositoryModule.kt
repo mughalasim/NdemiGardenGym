@@ -7,6 +7,7 @@ import com.google.firebase.storage.ktx.storage
 import com.ndemi.garden.gym.BuildConfig
 import cv.data.repository.AttendanceRepositoryImp
 import cv.data.repository.AuthRepositoryImp
+import cv.data.repository.AuthRepositoryUrls
 import cv.data.repository.MemberRepositoryImp
 import cv.data.repository.PaymentRepositoryImp
 import cv.data.repository.StorageRepositoryImp
@@ -23,10 +24,12 @@ val repositoryModule =
             AuthRepositoryImp(
                 firebaseAuth = Firebase.auth,
                 firebaseFirestore = Firebase.firestore,
-                pathUser = BuildConfig.PATH_USER,
-                pathVersion = BuildConfig.PATH_APP_VERSION,
-                pathVersionType = BuildConfig.PATH_APP_VERSION_TYPE,
-                currentAppVersion = BuildConfig.VERSION_CODE,
+                repositoryUrls = AuthRepositoryUrls(
+                    pathUser = BuildConfig.PATH_USER,
+                    pathVersion = BuildConfig.PATH_APP_VERSION,
+                    pathVersionType = BuildConfig.PATH_APP_VERSION_TYPE,
+                    currentAppVersion = BuildConfig.VERSION_CODE,
+                ),
                 logger = get()
             )
         }

@@ -1,10 +1,7 @@
 package cv.domain.repositories
 
 import cv.domain.DomainResult
-import cv.domain.entities.AttendanceEntity
-import cv.domain.entities.MemberEntity
 import cv.domain.entities.PaymentEntity
-import java.util.Date
 
 interface PaymentRepository {
     suspend fun getPayments(
