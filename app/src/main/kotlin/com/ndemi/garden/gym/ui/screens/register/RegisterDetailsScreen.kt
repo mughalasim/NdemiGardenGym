@@ -75,30 +75,32 @@ fun RegisterDetailScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Image(
-            modifier =
-                Modifier
-                    .size(icon_image_size_profile),
-            imageVector = ImageVector.vectorResource(R.drawable.ic_app),
-            contentDescription = "",
-        )
+        if (!hidePassword) {
+            Image(
+                modifier =
+                    Modifier
+                        .size(icon_image_size_profile),
+                imageVector = ImageVector.vectorResource(R.drawable.ic_app),
+                contentDescription = "",
+            )
 
-        TextWidget(
-            modifier =
-                Modifier
-                    .padding(horizontal = padding_screen),
-            style = AppTheme.textStyles.large,
-            text = stringResource(R.string.txt_register),
-        )
+            TextWidget(
+                modifier =
+                    Modifier
+                        .padding(horizontal = padding_screen),
+                style = AppTheme.textStyles.large,
+                text = stringResource(R.string.txt_register),
+            )
 
-        TextWidget(
-            modifier =
-                Modifier
-                    .padding(top = padding_screen)
-                    .padding(horizontal = padding_screen),
-            textAlign = TextAlign.Center,
-            text = stringResource(R.string.txt_register_info),
-        )
+            TextWidget(
+                modifier =
+                    Modifier
+                        .padding(top = padding_screen)
+                        .padding(horizontal = padding_screen),
+                textAlign = TextAlign.Center,
+                text = stringResource(R.string.txt_register_info),
+            )
+        }
 
         EditTextWidget(
             modifier =

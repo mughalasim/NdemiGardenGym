@@ -3,6 +3,9 @@ package com.ndemi.garden.gym.ui.screens.paymentadd
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DisplayMode
@@ -23,19 +26,23 @@ import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.UiSt
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.page_width
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
+import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
+import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import org.joda.time.DateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentAddDetailsScreen(
-    startDate: DateTime? = null,
-    uiState: UiState,
-    onSetData: (DateTime, String, String, InputType) -> Unit,
+    inputData: PaymentAddScreenViewModel.InputData = PaymentAddScreenViewModel.InputData(),
+    uiState: UiState = UiState.Ready,
+    onSetData: (DateTime, String, String, InputType) -> Unit = { _, _, _, _ -> },
+    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
     onPaymentAddTapped: () -> Unit = {},
 ) {
     val state = rememberDatePickerState(initialDisplayMode = DisplayMode.Picker)
@@ -49,67 +56,75 @@ fun PaymentAddDetailsScreen(
             InputType.START_DATE -> errorStartDate = uiState.message
             InputType.MONTH_DURATION -> errorMonthDuration = uiState.message
             InputType.AMOUNT -> errorAmount = uiState.message
-            else -> Unit
+            InputType.NONE ->
+                snackbarHostState.Show(
+                    type = SnackbarType.ERROR,
+                    message = uiState.message,
+                )
         }
     }
 
-    TextWidget(
-        modifier = Modifier.padding(top = padding_screen),
-        text = stringResource(R.string.txt_payments_add_desc),
-    )
-
-    TextWidget(
-        modifier = Modifier.padding(top = padding_screen),
-        text = stringResource(R.string.txt_payments_add_select_date),
-        style = AppTheme.textStyles.small,
-    )
-
-    ButtonWidget(
-        title = startDate?.toString(formatDayMonthYear).orEmpty(),
+    Column(
+        modifier =
+            Modifier
+                .requiredWidth(page_width)
+                .verticalScroll(rememberScrollState()),
     ) {
-        datePickerVisibility = !datePickerVisibility
-    }
+        TextWidget(
+            style = AppTheme.textStyles.large,
+            modifier = Modifier.padding(padding_screen),
+            text = stringResource(R.string.txt_payments_add_desc),
+        )
 
-    TextWidget(
-        style = AppTheme.textStyles.small,
-        color = AppTheme.colors.error,
-        text = errorStartDate,
-    )
+        TextWidget(
+            modifier = Modifier.padding(horizontal = padding_screen),
+            text = stringResource(R.string.txt_payments_add_select_date),
+        )
 
-    TextWidget(
-        modifier = Modifier.padding(top = padding_screen),
-        text = stringResource(R.string.txt_payments_add_select_duration),
-        style = AppTheme.textStyles.small,
-    )
+        ButtonWidget(
+            modifier =
+                Modifier
+                    .padding(horizontal = padding_screen),
+            title = inputData.startDate.toString(formatDayMonthYear).orEmpty(),
+        ) {
+            datePickerVisibility = !datePickerVisibility
+        }
 
-    EditTextWidget(
-        hint = stringResource(R.string.txt_payments_add_month_duration),
-        errorText = errorMonthDuration,
-        keyboardType = KeyboardType.Number,
-    ) {
-        onSetData.invoke(DateTime.now(), it, it, InputType.MONTH_DURATION)
-    }
+        TextWidget(
+            modifier = Modifier.padding(padding_screen),
+            style = AppTheme.textStyles.small,
+            color = AppTheme.colors.error,
+            text = errorStartDate,
+        )
 
-    TextWidget(
-        modifier = Modifier.padding(top = padding_screen),
-        text = stringResource(R.string.txt_payments_add_amount_paid),
-        style = AppTheme.textStyles.small,
-    )
+        EditTextWidget(
+            modifier = Modifier.padding(top = padding_screen),
+            hint = stringResource(R.string.txt_payments_add_select_duration),
+            textInput = inputData.monthDuration.toString(),
+            errorText = errorMonthDuration,
+            keyboardType = KeyboardType.Number,
+        ) {
+            onSetData.invoke(DateTime.now(), it, it, InputType.MONTH_DURATION)
+        }
 
-    EditTextWidget(
-        hint = stringResource(R.string.txt_amount),
-        errorText = errorAmount,
-        keyboardType = KeyboardType.Number,
-    ) {
-        onSetData.invoke(DateTime.now(), it, it, InputType.AMOUNT)
-    }
+        EditTextWidget(
+            modifier = Modifier.padding(top = padding_screen),
+            hint = stringResource(R.string.txt_payments_add_amount_paid),
+            textInput = inputData.amount.toString(),
+            errorText = errorAmount,
+            keyboardType = KeyboardType.Number,
+        ) {
+            onSetData.invoke(DateTime.now(), it, it, InputType.AMOUNT)
+        }
 
-    ButtonWidget(
-        title = stringResource(id = R.string.txt_update),
-        isEnabled = uiState is UiState.Ready,
-        isLoading = uiState is UiState.Loading,
-    ) {
-        onPaymentAddTapped.invoke()
+        ButtonWidget(
+            modifier = Modifier.padding(padding_screen),
+            title = stringResource(id = R.string.txt_update),
+            isEnabled = uiState is UiState.Ready,
+            isLoading = uiState is UiState.Loading,
+        ) {
+            onPaymentAddTapped.invoke()
+        }
     }
 
     if (datePickerVisibility) {
@@ -152,18 +167,7 @@ fun PaymentAddDetailsScreen(
 
 @AppPreview
 @Composable
-private fun PaymentAddDetailsScreenPreview() {
+private fun PaymentAddDetailsScreenPreview() =
     AppThemeComposable {
-        Column(
-            modifier =
-                Modifier
-                    .padding(horizontal = padding_screen),
-        ) {
-            PaymentAddDetailsScreen(
-                startDate = DateTime.now(),
-                onSetData = { _, _, _, _ -> },
-                uiState = UiState.Ready,
-            )
-        }
+        PaymentAddDetailsScreen()
     }
-}

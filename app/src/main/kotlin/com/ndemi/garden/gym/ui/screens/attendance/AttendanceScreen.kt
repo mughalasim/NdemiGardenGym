@@ -19,16 +19,21 @@ import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
+import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.joda.time.DateTime
 import org.koin.androidx.compose.koinViewModel
 
+// TODO - Make this screen show all attendances by Year rather than by month
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AttendanceScreen(viewModel: AttendanceScreenViewModel = koinViewModel<AttendanceScreenViewModel>()) {
+fun AttendanceScreen(
+    viewModel: AttendanceScreenViewModel = koinViewModel<AttendanceScreenViewModel>(),
+    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
+) {
     var selectedDate by remember { mutableStateOf(DateTime.now()) }
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
 
@@ -37,7 +42,12 @@ fun AttendanceScreen(viewModel: AttendanceScreenViewModel = koinViewModel<Attend
     Column {
         ToolBarWidget(title = stringResource(R.string.txt_your_attendances))
 
-        if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
+        if (uiState.value is UiState.Error) {
+            snackbarHostState.Show(
+                type = SnackbarType.ERROR,
+                message = (uiState.value as UiState.Error).message,
+            )
+        }
 
         DateSelectionWidget(selectedDate, false) {
             selectedDate = it

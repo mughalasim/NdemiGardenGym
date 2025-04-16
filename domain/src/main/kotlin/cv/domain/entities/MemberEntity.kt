@@ -1,15 +1,15 @@
 package cv.domain.entities
 
 data class MemberEntity(
-    val id: String,
-    val firstName: String,
-    val lastName: String,
-    val email: String,
-    val registrationDateMillis: Long,
+    val id: String = "",
+    val firstName: String = "",
+    val lastName: String = "",
+    val email: String = "",
+    val registrationDateMillis: Long = 0L,
     val renewalFutureDateMillis: Long? = null,
     val activeNowDateMillis: Long? = null,
     val apartmentNumber: String? = null,
-    val profileImageUrl: String,
+    val profileImageUrl: String = "",
     val hasCoach: Boolean = false,
     val amountDue: Double = 0.0,
     val phoneNumber: String = "",

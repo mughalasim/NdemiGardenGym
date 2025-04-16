@@ -17,14 +17,18 @@ import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
+import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LiveAttendanceScreen(viewModel: LiveAttendanceScreenViewModel = koinViewModel<LiveAttendanceScreenViewModel>()) {
+fun LiveAttendanceScreen(
+    viewModel: LiveAttendanceScreenViewModel = koinViewModel<LiveAttendanceScreenViewModel>(),
+    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
+) {
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
 
     LaunchedEffect(true) { viewModel.getLiveMembers() }
@@ -32,7 +36,12 @@ fun LiveAttendanceScreen(viewModel: LiveAttendanceScreenViewModel = koinViewMode
     Column {
         ToolBarWidget(title = stringResource(R.string.txt_who_is_in))
 
-        if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
+        if (uiState.value is UiState.Error) {
+            snackbarHostState.Show(
+                type = SnackbarType.ERROR,
+                message = (uiState.value as UiState.Error).message,
+            )
+        }
 
         PullToRefreshBox(
             modifier =
@@ -46,7 +55,10 @@ fun LiveAttendanceScreen(viewModel: LiveAttendanceScreenViewModel = koinViewMode
                 if (uiState.value is UiState.Success) {
                     if ((uiState.value as UiState.Success).members.isEmpty()) {
                         TextWidget(
-                            modifier = Modifier.fillMaxWidth().padding(padding_screen),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(padding_screen),
                             textAlign = TextAlign.Center,
                             text = stringResource(R.string.txt_no_one_is_in),
                         )

@@ -3,7 +3,6 @@ package com.ndemi.garden.gym.ui.screens.memberedit
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -23,12 +22,14 @@ import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.utils.toPhoneNumberString
+import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
+import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.MemberEntity
 import org.joda.time.DateTime
@@ -39,6 +40,7 @@ fun MemberEditDetailsScreen(
     uiState: UiState,
     memberEntity: MemberEntity,
     onSetString: (String, InputType) -> Unit = { _, _ -> },
+    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
     onUpdateTapped: () -> Unit = {},
 ) {
     var initialHasCoach by remember { mutableStateOf(memberEntity.hasCoach) }
@@ -53,28 +55,34 @@ fun MemberEditDetailsScreen(
             InputType.LAST_NAME -> errorLastName = uiState.message
             InputType.APARTMENT_NUMBER -> errorApartmentNumber = uiState.message
             InputType.PHONE_NUMBER -> errorPhoneNumber = uiState.message
+            InputType.NONE ->
+                snackbarHostState.Show(
+                    type = SnackbarType.ERROR,
+                    message = uiState.message,
+                )
             else -> Unit
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
+        modifier = Modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         EditTextWidget(
             hint = stringResource(R.string.txt_email),
             textInput = memberEntity.email,
             isEnabled = false,
-        ) {}
+        )
 
         EditTextWidget(
+            modifier = Modifier.padding(top = padding_screen),
             hint = stringResource(R.string.txt_registration_date),
             textInput = DateTime(memberEntity.registrationDateMillis).toString(formatDayMonthYear),
             isEnabled = false,
-        ) {}
+        )
 
         EditTextWidget(
+            modifier = Modifier.padding(top = padding_screen),
             hint = stringResource(R.string.txt_first_name),
             textInput = memberEntity.firstName,
             errorText = errorFirstName,
@@ -84,6 +92,7 @@ fun MemberEditDetailsScreen(
         }
 
         EditTextWidget(
+            modifier = Modifier.padding(top = padding_screen),
             hint = stringResource(R.string.txt_last_name),
             textInput = memberEntity.lastName,
             errorText = errorLastName,
@@ -93,6 +102,7 @@ fun MemberEditDetailsScreen(
         }
 
         EditTextWidget(
+            modifier = Modifier.padding(top = padding_screen),
             hint = stringResource(R.string.txt_apartment_number),
             textInput = memberEntity.apartmentNumber.orEmpty(),
             errorText = errorApartmentNumber,
@@ -102,6 +112,7 @@ fun MemberEditDetailsScreen(
         }
 
         EditTextWidget(
+            modifier = Modifier.padding(top = padding_screen),
             hint = stringResource(R.string.txt_phone_number),
             textInput = memberEntity.phoneNumber.toPhoneNumberString(),
             errorText = errorPhoneNumber,
@@ -115,8 +126,8 @@ fun MemberEditDetailsScreen(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = padding_screen_small)
-                    .padding(top = padding_screen_small),
+                    .padding(horizontal = padding_screen)
+                    .padding(top = padding_screen),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -132,9 +143,11 @@ fun MemberEditDetailsScreen(
         }
 
         ButtonWidget(
+            modifier = Modifier.padding(padding_screen),
             title = stringResource(R.string.txt_update),
             isEnabled = uiState is UiState.ReadyToUpdate && hasAdminRights,
             isLoading = uiState is UiState.Loading,
+            hideKeyboardOnClick = true,
         ) {
             onUpdateTapped.invoke()
         }

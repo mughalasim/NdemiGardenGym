@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,11 +23,12 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
+import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.joda.time.DateTime
 import org.koin.androidx.compose.koinViewModel
 
@@ -38,9 +38,10 @@ fun PaymentsScreen(
     memberId: String,
     memberName: String,
     viewModel: PaymentsScreenViewModel = koinViewModel<PaymentsScreenViewModel>(),
+    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
     var selectedDate by remember { mutableStateOf(DateTime.now()) }
-    val canAddPayment = viewModel.canAddPayment.observeAsState()
+    val canAddPayment = viewModel.canAddPayment.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
 
@@ -56,7 +57,7 @@ fun PaymentsScreen(
                 },
             secondaryIcon = if (viewModel.hasAdminRights()) Icons.Default.AddCircle else null,
             onSecondaryIconPressed = {
-                if (canAddPayment.value == true) {
+                if (canAddPayment.value) {
                     viewModel.navigateToPaymentAddScreen()
                 } else {
                     showDialog = true
@@ -66,7 +67,12 @@ fun PaymentsScreen(
             onBackPressed = viewModel::navigateBack,
         )
 
-        if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
+        if (uiState.value is UiState.Error) {
+            snackbarHostState.Show(
+                type = SnackbarType.ERROR,
+                message = (uiState.value as UiState.Error).message,
+            )
+        }
 
         DateSelectionWidget(selectedDate, true) {
             selectedDate = it

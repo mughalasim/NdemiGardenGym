@@ -50,17 +50,21 @@ fun EditTextWidget(
 
     Column {
         OutlinedTextField(
-            modifier =
-                modifier
-                    .fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             value = textInput,
             enabled = isEnabled,
             isError = errorText.isNotEmpty(),
             singleLine = true,
-            onValueChange = {
-                onValueChanged(it)
-            },
+            onValueChange = { onValueChanged(it) },
+            label = { Text(text = hint, style = AppTheme.textStyles.regular) },
             textStyle = AppTheme.textStyles.regular,
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            colors = getAppTextColors(),
+            keyboardActions =
+                KeyboardActions {
+                    onValueChanged.invoke(textInput)
+                    keyboardController?.hide()
+                },
             trailingIcon = {
                 if (textInput.isNotEmpty()) {
                     Icon(
@@ -74,16 +78,8 @@ fun EditTextWidget(
                     )
                 }
             },
-            label = { Text(text = hint, style = AppTheme.textStyles.regular) },
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-            keyboardActions =
-                KeyboardActions {
-                    onValueChanged.invoke(textInput)
-                    keyboardController?.hide()
-                },
-            colors = getAppTextColors(),
         )
-        EditTextWidgetBottom(errorText)
+        EditTextBottomComponent(errorText)
     }
 }
 
@@ -99,19 +95,18 @@ fun EditPasswordTextWidget(
     var passwordVisible: Boolean by rememberSaveable { mutableStateOf(false) }
     Column {
         OutlinedTextField(
-            modifier =
-                modifier
-                    .fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             value = textInput,
-            onValueChange = {
-                onValueChanged(it)
-            },
+            onValueChange = { onValueChanged(it) },
             textStyle = AppTheme.textStyles.regular,
             label = { Text(text = hint, style = AppTheme.textStyles.regular) },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            isError = errorText.isNotEmpty(),
+            enabled = isEnabled,
+            colors = getAppTextColors(),
             visualTransformation =
                 if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
                 val image =
                     if (passwordVisible) {
@@ -128,16 +123,13 @@ fun EditPasswordTextWidget(
                     )
                 }
             },
-            isError = errorText.isNotEmpty(),
-            enabled = isEnabled,
-            colors = getAppTextColors(),
         )
-        EditTextWidgetBottom(errorText)
+        EditTextBottomComponent(errorText)
     }
 }
 
 @Composable
-private fun EditTextWidgetBottom(errorText: String) {
+private fun EditTextBottomComponent(errorText: String) {
     Spacer(
         modifier =
             Modifier

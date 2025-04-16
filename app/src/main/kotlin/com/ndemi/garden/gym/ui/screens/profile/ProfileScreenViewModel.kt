@@ -1,8 +1,6 @@
 package com.ndemi.garden.gym.ui.screens.profile
 
 import androidx.compose.runtime.Immutable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
@@ -20,6 +18,8 @@ import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.StorageUseCase
 import cv.domain.usecase.UpdateType
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
@@ -31,9 +31,10 @@ class ProfileScreenViewModel(
     private val storageUseCase: StorageUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-    private lateinit var memberEntity: MemberEntity
-    private val _sessionStartTime = MutableLiveData<DateTime?>()
-    val sessionStartTime: LiveData<DateTime?> = _sessionStartTime
+    private val memberEntity = MutableStateFlow(MemberEntity())
+
+    private val _sessionStartTime = MutableStateFlow<DateTime?>(null)
+    val sessionStartTime: StateFlow<DateTime?> = _sessionStartTime
 
     fun getMember() {
         sendAction(Action.SetLoading)
@@ -52,7 +53,7 @@ class ProfileScreenViewModel(
                         if (result.data.activeNowDateMillis != null) {
                             _sessionStartTime.value = DateTime(result.data.activeNowDateMillis)
                         }
-                        memberEntity = result.data
+                        memberEntity.value = result.data
                         sendAction(Action.Success(result.data))
                     }
                 }
@@ -73,7 +74,7 @@ class ProfileScreenViewModel(
     private fun updateMemberLiveStatus() {
         viewModelScope.launch {
             memberUseCase.updateMember(
-                memberEntity.copy(activeNowDateMillis = _sessionStartTime.value?.millis),
+                memberEntity.value.copy(activeNowDateMillis = _sessionStartTime.value?.millis),
                 UpdateType.ACTIVE_SESSION,
             )
         }
@@ -92,14 +93,14 @@ class ProfileScreenViewModel(
                         is DomainResult.Error -> {
                             sendAction(
                                 Action.Success(
-                                    memberEntity,
+                                    memberEntity.value,
                                     converter.getMessage(result.error),
                                 ),
                             )
                         }
 
                         is DomainResult.Success ->
-                            sendAction(Action.Success(memberEntity))
+                            sendAction(Action.Success(memberEntity.value))
                     }
                 }
         }
@@ -117,7 +118,7 @@ class ProfileScreenViewModel(
         viewModelScope.launch {
             memberUseCase
                 .updateMember(
-                    memberEntity.copy(profileImageUrl = ""),
+                    memberEntity.value.copy(profileImageUrl = ""),
                     UpdateType.PHOTO_DELETE,
                 )
                 .also { getMember() }
@@ -127,11 +128,11 @@ class ProfileScreenViewModel(
     fun updateMemberImage(byteArray: ByteArray) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            val success = storageUseCase.updateImageForMember(memberEntity, byteArray)
+            val success = storageUseCase.updateImageForMember(memberEntity.value, byteArray)
             if (success) {
                 getMember()
             } else {
-                sendAction(Action.Success(memberEntity))
+                sendAction(Action.Success(memberEntity.value))
             }
         }
     }

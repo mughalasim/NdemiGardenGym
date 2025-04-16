@@ -1,8 +1,6 @@
 package com.ndemi.garden.gym.ui.screens.payments
 
 import androidx.compose.runtime.Immutable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
@@ -17,6 +15,8 @@ import cv.domain.DomainResult
 import cv.domain.entities.PaymentEntity
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.PaymentUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
@@ -29,8 +29,8 @@ class PaymentsScreenViewModel(
     private lateinit var selectedDate: DateTime
     private lateinit var memberId: String
 
-    private val _canAddPayment = MutableLiveData<Boolean>()
-    val canAddPayment: LiveData<Boolean> = _canAddPayment
+    private val _canAddPayment = MutableStateFlow(false)
+    val canAddPayment: StateFlow<Boolean> = _canAddPayment
 
     fun getPaymentsForMember(
         memberId: String,

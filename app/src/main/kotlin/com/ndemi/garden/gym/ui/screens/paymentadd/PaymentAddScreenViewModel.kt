@@ -2,8 +2,6 @@ package com.ndemi.garden.gym.ui.screens.paymentadd
 
 import androidx.compose.runtime.Immutable
 import androidx.core.text.isDigitsOnly
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.ui.UiError
@@ -23,6 +21,8 @@ import cv.domain.entities.PaymentEntity
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.PaymentUseCase
 import cv.domain.usecase.UpdateType
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import java.util.UUID
@@ -33,27 +33,19 @@ class PaymentAddScreenViewModel(
     private val paymentUseCase: PaymentUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
-    private val dateTimeNow = DateTime.now().withTime(0, 0, 0, 0)
     private var memberId = ""
 
     data class InputData(
-        val startDate: DateTime,
+        val startDate: DateTime = DateTime.now().withTime(0, 0, 0, 0),
         val monthDuration: Int = 0,
         val amount: Double = 0.0,
     )
 
-    private val _inputData =
-        MutableLiveData(
-            InputData(
-                startDate = dateTimeNow,
-                monthDuration = 0,
-                amount = 0.0,
-            ),
-        )
-    val inputData: LiveData<InputData> = _inputData
+    private val _inputData = MutableStateFlow(InputData())
+    val inputData: StateFlow<InputData> = _inputData
 
     fun setData(
-        startDate: DateTime = dateTimeNow,
+        startDate: DateTime = _inputData.value.startDate,
         monthDuration: String = "",
         amount: String = "",
         inputType: InputType,
@@ -61,17 +53,17 @@ class PaymentAddScreenViewModel(
         _inputData.value =
             when (inputType) {
                 NONE -> _inputData.value
-                START_DATE -> _inputData.value?.copy(startDate = startDate)
+                START_DATE -> _inputData.value.copy(startDate = startDate)
                 MONTH_DURATION -> {
                     if (monthDuration.isNotEmpty() && monthDuration.isDigitsOnly()) {
-                        _inputData.value?.copy(monthDuration = monthDuration.toInt())
+                        _inputData.value.copy(monthDuration = monthDuration.toInt())
                     } else {
                         _inputData.value
                     }
                 }
                 AMOUNT -> {
                     if (amount.isNotEmpty() && amount.isDigitsOnly()) {
-                        _inputData.value?.copy(amount = amount.toDouble())
+                        _inputData.value.copy(amount = amount.toDouble())
                     } else {
                         _inputData.value
                     }
@@ -85,8 +77,8 @@ class PaymentAddScreenViewModel(
     }
 
     private fun validateInput() {
-        val monthDuration = _inputData.value?.monthDuration ?: 0
-        val amount = _inputData.value?.amount ?: 0.0
+        val monthDuration = _inputData.value.monthDuration
+        val amount = _inputData.value.amount
 
         if (monthDuration < 1) {
             sendAction(
@@ -102,9 +94,9 @@ class PaymentAddScreenViewModel(
     fun onPaymentAddTapped() {
         sendAction(Action.SetLoading)
 
-        val startDate = _inputData.value?.startDate ?: dateTimeNow
-        val monthDuration = _inputData.value?.monthDuration ?: 0
-        val amount = _inputData.value?.amount ?: 0.0
+        val startDate = _inputData.value.startDate
+        val monthDuration = _inputData.value.monthDuration
+        val amount = _inputData.value.amount
 
         viewModelScope.launch {
             paymentUseCase.addPaymentPlanForMember(

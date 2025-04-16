@@ -1,8 +1,6 @@
 package com.ndemi.garden.gym.ui.screens.members
 
 import androidx.compose.runtime.Immutable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
@@ -19,6 +17,8 @@ import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.UpdateType
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
@@ -29,21 +29,32 @@ class MembersScreenViewModel(
     private val authUseCase: AuthUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-    private val membersUnfiltered: MutableList<MemberEntity> = mutableListOf()
-    private val _members = MutableLiveData<List<MemberEntity>>(listOf())
-    val members: LiveData<List<MemberEntity>> = _members
-    var searchTerm: String = ""
+    private val membersUnfiltered = MutableStateFlow<MutableList<MemberEntity>>(mutableListOf())
+    private var screenType: MemberScreenType = MemberScreenType.ALL_MEMBERS
 
-    fun getMembers() {
+    private val _members = MutableStateFlow<List<MemberEntity>>(listOf())
+    val members: StateFlow<List<MemberEntity>> = _members
+
+    private val _searchTerm = MutableStateFlow("")
+    val searchTerm: StateFlow<String> = _searchTerm
+
+    fun getMembers(memberScreenType: MemberScreenType) {
+        screenType = memberScreenType
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            memberUseCase.getAllMembers().also { result ->
+            val useCaseAction =
+                when (memberScreenType) {
+                    MemberScreenType.ALL_MEMBERS -> memberUseCase.getAllMembers()
+                    MemberScreenType.EXPIRED_MEMBERS -> memberUseCase.getExpiredMembers()
+                    MemberScreenType.LIVE_MEMBERS -> memberUseCase.getLiveMembers()
+                }
+            useCaseAction.also { result ->
                 when (result) {
                     is DomainResult.Error ->
                         sendAction(Action.ShowDomainError(result.error, converter))
                     is DomainResult.Success -> {
-                        membersUnfiltered.clear()
-                        membersUnfiltered.addAll(result.data)
+                        membersUnfiltered.value.clear()
+                        membersUnfiltered.value.addAll(result.data)
                         filterResults()
                         sendAction(Action.Success)
                     }
@@ -89,24 +100,24 @@ class MembersScreenViewModel(
                 memberEntity.copy(activeNowDateMillis = if (memberEntity.isActiveNow()) null else DateTime.now().millis),
                 UpdateType.ACTIVE_SESSION,
             ).also {
-                getMembers()
+                getMembers(screenType)
             }
         }
     }
 
     fun onSearchTextChanged(searchTerm: String) {
-        this.searchTerm = searchTerm
+        _searchTerm.value = searchTerm
         filterResults()
     }
 
     private fun filterResults() {
-        if (searchTerm.isNotEmpty()) {
+        if (_searchTerm.value.isNotEmpty()) {
             _members.value =
-                membersUnfiltered.filter {
-                    it.getFullName().lowercase().contains(searchTerm.lowercase())
+                membersUnfiltered.value.filter {
+                    it.getFullName().lowercase().contains(_searchTerm.value.lowercase())
                 }
         } else {
-            _members.value = membersUnfiltered
+            _members.value = membersUnfiltered.value
         }
     }
 

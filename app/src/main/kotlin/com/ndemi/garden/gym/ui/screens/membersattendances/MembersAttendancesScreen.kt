@@ -20,10 +20,11 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceListScreen
 import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
+import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import com.ndemi.garden.gym.ui.widgets.WarningWidget
 import org.joda.time.DateTime
 import org.koin.androidx.compose.koinViewModel
 
@@ -33,6 +34,7 @@ fun MembersAttendancesScreen(
     memberId: String,
     memberName: String,
     viewModel: MembersAttendancesScreenViewModel = koinViewModel<MembersAttendancesScreenViewModel>(),
+    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
     var selectedDate by remember { mutableStateOf(DateTime.now()) }
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
@@ -44,7 +46,12 @@ fun MembersAttendancesScreen(
             viewModel.navigateBack()
         }
 
-        if (uiState.value is UiState.Error) WarningWidget((uiState.value as UiState.Error).message)
+        if (uiState.value is UiState.Error) {
+            snackbarHostState.Show(
+                type = SnackbarType.ERROR,
+                message = (uiState.value as UiState.Error).message,
+            )
+        }
 
         DateSelectionWidget(selectedDate, false) {
             selectedDate = it

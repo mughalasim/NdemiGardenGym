@@ -51,6 +51,7 @@ fun MemberStatusWidget(
     onAttendanceTapped: (memberEntity: MemberEntity) -> Unit = {},
     onSessionTapped: (memberEntity: MemberEntity) -> Unit = {},
 ) {
+    // TODO - Extension function for Modifier to create a styled card to be used across app
     Column(
         modifier =
             modifier

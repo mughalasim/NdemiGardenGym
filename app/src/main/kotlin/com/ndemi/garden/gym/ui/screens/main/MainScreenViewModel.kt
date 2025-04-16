@@ -48,6 +48,7 @@ class MainScreenViewModel(
             }
         }
 
+    // TODO - Make a global shared flow of current user that all viewModels can subscribe to
     val loggedInMember =
         liveData(dispatcher) {
             emit(UiState.Loading)
