@@ -24,7 +24,7 @@ fun MemberEntity.toMemberModel() =
         memberType = memberType.name,
     )
 
-fun MemberModel.toMemberEntity() =
+fun MemberModel.toMemberEntity(emailVerified: Boolean = false) =
     MemberEntity(
         id = id,
         firstName = firstName,
@@ -39,6 +39,7 @@ fun MemberModel.toMemberEntity() =
         amountDue = amountDue,
         phoneNumber = phoneNumber,
         memberType = memberType.toMemberType(),
+        emailVerified = emailVerified,
     )
 
 private fun String.toMemberType(): MemberType =

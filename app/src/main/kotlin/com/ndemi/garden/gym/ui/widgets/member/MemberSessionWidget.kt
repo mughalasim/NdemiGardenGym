@@ -1,7 +1,6 @@
 package com.ndemi.garden.gym.ui.widgets.member
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,11 +16,11 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants
+import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import org.joda.time.DateTime
 
@@ -35,19 +34,8 @@ fun MemberSessionWidget(
     Column(
         modifier =
             Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
                 .padding(top = padding_screen)
-                .background(
-                    color = AppTheme.colors.backgroundCard,
-                    shape = RoundedCornerShape(border_radius),
-                )
-                .border(
-                    width = line_thickness,
-                    color = AppTheme.colors.border,
-                    shape = RoundedCornerShape(border_radius),
-                )
-                .padding(padding_screen),
+                .toAppCardStyle(),
     ) {
         TextWidget(
             color = AppTheme.colors.primary,

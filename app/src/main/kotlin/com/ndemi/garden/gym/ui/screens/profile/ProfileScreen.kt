@@ -3,14 +3,11 @@ package com.ndemi.garden.gym.ui.screens.profile
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,19 +19,20 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
+import com.ndemi.garden.gym.ui.widgets.LoadingScreenWidget
 import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import com.ndemi.garden.gym.ui.widgets.member.MemberProfileWidget
+import com.ndemi.garden.gym.ui.widgets.member.MemberImageWidget
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     viewModel: ProfileScreenViewModel = koinViewModel<ProfileScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
-    val sessionStartTime = viewModel.sessionStartTime.collectAsState()
+    LaunchedEffect(Unit) { viewModel.observeMember() }
+    val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading).value
+    val sessionStartTime = viewModel.sessionStartTime.collectAsState().value
     val context = LocalContext.current
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
@@ -45,8 +43,6 @@ fun ProfileScreen(
             }
         }
 
-    LaunchedEffect(true) { viewModel.getMember() }
-
     Column {
         ToolBarWidget(
             title = stringResource(R.string.txt_profile),
@@ -54,28 +50,23 @@ fun ProfileScreen(
             onSecondaryIconPressed = viewModel::onLogOutTapped,
         )
 
-        if (uiState.value is UiState.Error) {
-            snackbarHostState.Show(
-                type = SnackbarType.ERROR,
-                message = (uiState.value as UiState.Error).message,
-            )
-        }
-
-        PullToRefreshBox(
-            modifier = Modifier.fillMaxSize(),
-            isRefreshing = (uiState.value is UiState.Loading),
-            onRefresh = { viewModel.getMember() },
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier =
+                Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(padding_screen),
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier =
-                    Modifier
-                        .verticalScroll(rememberScrollState())
-                        .padding(padding_screen),
-            ) {
-                if (uiState.value is UiState.Success) {
-                    MemberProfileWidget(
-                        imageUrl = (uiState.value as UiState.Success).memberEntity.profileImageUrl,
+            when (uiState) {
+                is UiState.Success -> {
+                    if (uiState.errorMessage.isNotEmpty()) {
+                        snackbarHostState.Show(
+                            type = SnackbarType.ERROR,
+                            message = uiState.errorMessage,
+                        )
+                    }
+                    MemberImageWidget(
+                        imageUrl = uiState.memberEntity.profileImageUrl,
                         onImageDelete = {
                             viewModel.deleteMemberImage()
                         },
@@ -84,13 +75,16 @@ fun ProfileScreen(
                         },
                     )
                     ProfileDetailsScreen(
-                        memberEntity = (uiState.value as UiState.Success).memberEntity,
+                        memberEntity = uiState.memberEntity,
                         isAdmin = viewModel.isAdmin(),
-                        message = (uiState.value as UiState.Success).message,
-                        sessionStartTime = sessionStartTime.value,
+                        message = uiState.errorMessage,
+                        sessionStartTime = sessionStartTime,
                         onSessionStarted = viewModel::setStartedSession,
                         onSessionCompleted = viewModel::setAttendance,
                     )
+                }
+                is UiState.Loading -> {
+                    LoadingScreenWidget()
                 }
             }
         }

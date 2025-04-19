@@ -10,12 +10,13 @@ import cv.data.retrofit.toDomainError
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
-import cv.domain.entities.MemberType
 import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.AuthRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.callbackFlow
 
 class AuthRepositoryImp(
@@ -24,16 +25,12 @@ class AuthRepositoryImp(
     private val repositoryUrls: AuthRepositoryUrls,
     private val logger: AppLoggerRepository,
 ) : AuthRepository {
-    private lateinit var memberEntity: MemberEntity
+    private val _memberEntity: MutableStateFlow<MemberEntity> = MutableStateFlow(MemberEntity())
+    val memberEntity: StateFlow<MemberEntity> = _memberEntity
 
     override fun isAuthenticated() = firebaseAuth.currentUser != null
 
-    override fun getMemberType() =
-        if (this::memberEntity.isInitialized) {
-            memberEntity.memberType
-        } else {
-            MemberType.MEMBER
-        }
+    override fun getMemberType() = _memberEntity.value.memberType
 
     override fun logOut() = firebaseAuth.signOut()
 
@@ -136,8 +133,8 @@ class AuthRepositoryImp(
                             logger.log("Data received: $response")
                             val memberModel = response.toObject<MemberModel>()
                             memberModel?.let {
-                                memberEntity = memberModel.toMemberEntity()
-                                trySend(DomainResult.Success(memberEntity)).isSuccess
+                                _memberEntity.value = memberModel.toMemberEntity(firebaseAuth.currentUser?.isEmailVerified == true)
+                                trySend(DomainResult.Success(_memberEntity.value)).isSuccess
                             } ?: run {
                                 trySend(DomainResult.Error(DomainError.UNAUTHORISED)).isSuccess
                             }
@@ -147,7 +144,6 @@ class AuthRepositoryImp(
                             trySend(DomainResult.Error(error.toDomainError())).isSuccess
                         }
                     }
-
                 awaitClose { subscription.remove() }
             }.run {
                 logger.log("Member UID is null or empty", AppLogLevel.ERROR)
@@ -155,6 +151,8 @@ class AuthRepositoryImp(
                 awaitClose { }
             }
         }
+
+    override fun observeUser() = memberEntity
 }
 
 data class AuthRepositoryUrls(

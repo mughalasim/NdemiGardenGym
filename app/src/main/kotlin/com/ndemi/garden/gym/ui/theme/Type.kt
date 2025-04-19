@@ -11,7 +11,7 @@ data class AppTextStyles(
     val small: TextStyle =
         TextStyle(
             fontFamily = localFontFamily,
-            fontWeight = FontWeight.ExtraBold,
+            fontWeight = FontWeight.Normal,
             fontSize = text_size_small,
         ),
     val regular: TextStyle =

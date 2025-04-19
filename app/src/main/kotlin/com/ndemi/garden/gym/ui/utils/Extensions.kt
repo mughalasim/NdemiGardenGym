@@ -2,13 +2,22 @@ package com.ndemi.garden.gym.ui.utils
 
 import android.content.res.Resources
 import android.telephony.PhoneNumberUtils
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.os.ConfigurationCompat
 import androidx.core.text.isDigitsOnly
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.ui.theme.AppTheme
+import com.ndemi.garden.gym.ui.theme.border_radius
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.DateConstants.DAYS_IN_MONTH
 import com.ndemi.garden.gym.ui.utils.DateConstants.HOUR_IN_DAY
 import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
@@ -134,6 +143,16 @@ fun DateTime.toPaymentPlanDuration(): String {
         stringResource(R.string.txt_tomorrow)
     }
 }
+
+@Composable
+fun Modifier.toAppCardStyle() =
+    this.fillMaxWidth()
+        .wrapContentHeight()
+        .background(
+            color = AppTheme.colors.backgroundCard,
+            shape = RoundedCornerShape(border_radius),
+        )
+        .padding(padding_screen_small)
 
 fun Double.toAmountString(): String = DecimalFormat("${BuildConfig.CURRENCY_CODE} #,###").format(this)
 

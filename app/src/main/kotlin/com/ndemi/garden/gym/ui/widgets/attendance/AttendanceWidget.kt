@@ -1,15 +1,11 @@
 package com.ndemi.garden.gym.ui.widgets.attendance
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.AlertDialog
@@ -26,14 +22,13 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockAttendanceEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
+import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.AttendanceEntity
@@ -55,18 +50,7 @@ fun AttendanceWidget(
             modifier
                 .padding(horizontal = padding_screen)
                 .padding(top = padding_screen_small)
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .background(
-                    color = AppTheme.colors.backgroundCard,
-                    shape = RoundedCornerShape(border_radius),
-                )
-                .border(
-                    width = line_thickness,
-                    color = AppTheme.colors.border,
-                    shape = RoundedCornerShape(border_radius),
-                )
-                .padding(padding_screen_small),
+                .toAppCardStyle(),
     ) {
         Row(
             modifier =

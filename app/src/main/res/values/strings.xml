@@ -17,6 +17,7 @@
     <string name="error_registration_failed">Registration failed</string>
     <string name="error_invalid_info">Information supplied is invalid</string>
     <string name="error_email_already_exists">The supplied email already exists</string>
+    <string name="error_email_not_verified">Your email address has not been verified</string>
     <string name="error_password_length">Password must be at least 6 characters in length</string>
     <string name="error_account_disabled">Your account has been disabled, please contact the administration</string>
     <string name="error_workout_session_length">Cannot update your workout session as it is either too short or longer than a day</string>
@@ -25,6 +26,7 @@
     <string name="error_invalid_amount">Amount entered is invalid, set any number above 0</string>
     <string name="error_invalid_month_duration">The month duration is invalid, set any number above 0</string>
     <string name="error_invalid_phone_number">The phone number is invalid, leave blank if not present</string>
+    <string name="error_upload_failure">Failed to upload your file, please check your internet connection</string>
 
     <!-- Text within screens-->
     <string name="txt_ok">OK</string>
@@ -37,9 +39,11 @@
     <string name="txt_register_new_member">Register a new member</string>
     <string name="txt_your_attendances">Your Attendances</string>
 
-    <string name="txt_profile">Profile</string>
+    <string name="txt_profile">My profile</string>
     <string name="txt_active_members">Active Members</string>
+    <string name="txt_active">Active</string>
     <string name="txt_inactive_members">Inactive Members</string>
+    <string name="txt_inactive">Inactive</string>
     <string name="txt_expired_memberships">Expired memberships</string>
     <string name="txt_in_the_gym">In the Gym</string>
     <string name="txt_edit_member">Edit Member</string>

@@ -37,7 +37,6 @@ val repositoryModule =
 
         single<MemberRepository> {
             MemberRepositoryImp(
-                firebaseAuth = Firebase.auth,
                 firebaseFirestore = Firebase.firestore,
                 pathUser = BuildConfig.PATH_USER,
                 logger = get(),

@@ -47,7 +47,7 @@ fun EditTextWidget(
     onValueChanged: (String) -> Unit = {},
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-
+    // TODO - Use BasicEdiText field and customise styling
     Column {
         OutlinedTextField(
             modifier = modifier.fillMaxWidth(),

@@ -23,8 +23,6 @@ class MemberUseCase(
     private val memberRepository: MemberRepository,
     private val analyticsRepository: AnalyticsRepository,
 ) {
-    suspend fun getMember() = memberRepository.getMember()
-
     suspend fun getMemberById(memberId: String) = memberRepository.getMemberById(memberId = memberId)
 
     suspend fun getAllMembers() = memberRepository.getAllMembers(isActiveNow = false)

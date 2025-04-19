@@ -14,12 +14,15 @@ data class MemberEntity(
     val amountDue: Double = 0.0,
     val phoneNumber: String = "",
     val memberType: MemberType = MemberType.MEMBER,
+    val emailVerified: Boolean = false,
 ) {
     fun getFullName(): String = "$firstName $lastName"
 
     fun hasPaidMembership(): Boolean = renewalFutureDateMillis != null
 
     fun isActiveNow(): Boolean = activeNowDateMillis != null
+
+    fun isAdmin() = memberType == MemberType.ADMIN
 
     fun getResidentialStatus(): String =
         if (apartmentNumber.isNullOrEmpty()) {

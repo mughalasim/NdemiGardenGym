@@ -4,6 +4,7 @@ import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.MemberType
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface AuthRepository {
     fun isAuthenticated(): Boolean
@@ -34,4 +35,6 @@ interface AuthRepository {
     suspend fun getAuthState(): Flow<DomainResult<Unit>>
 
     suspend fun getAppVersion(): Flow<DomainResult<String>>
+
+    fun observeUser(): StateFlow<MemberEntity>
 }

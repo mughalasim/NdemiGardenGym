@@ -1,7 +1,5 @@
 package com.ndemi.garden.gym.ui.widgets.member
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Accessibility
 import androidx.compose.material3.Icon
@@ -27,14 +23,15 @@ import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.icon_image_size
-import com.ndemi.garden.gym.ui.theme.line_thickness
+import com.ndemi.garden.gym.ui.theme.icon_image_size_profile_small
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAmountString
+import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
+import com.ndemi.garden.gym.ui.widgets.AsyncImageWidget
 import com.ndemi.garden.gym.ui.widgets.ButtonOutlineWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.MemberEntity
@@ -51,21 +48,11 @@ fun MemberStatusWidget(
     onAttendanceTapped: (memberEntity: MemberEntity) -> Unit = {},
     onSessionTapped: (memberEntity: MemberEntity) -> Unit = {},
 ) {
-    // TODO - Extension function for Modifier to create a styled card to be used across app
     Column(
         modifier =
             modifier
                 .padding(bottom = padding_screen_small)
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .background(
-                    color = AppTheme.colors.backgroundCard,
-                    shape = RoundedCornerShape(border_radius),
-                ).border(
-                    width = line_thickness,
-                    color = AppTheme.colors.border,
-                    shape = RoundedCornerShape(border_radius),
-                ).padding(padding_screen_small),
+                .toAppCardStyle(),
     ) {
         Row(
             modifier =
@@ -76,8 +63,8 @@ fun MemberStatusWidget(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImageWidget(
+                modifier = Modifier.width(icon_image_size_profile_small).height(icon_image_size_profile_small),
                 profileImageUrl = memberEntity.profileImageUrl,
-                isLarge = false,
             )
 
             Column(
@@ -88,24 +75,23 @@ fun MemberStatusWidget(
             ) {
                 TextWidget(
                     text = memberEntity.getFullName(),
-                    style = AppTheme.textStyles.regularBold,
+                    style = AppTheme.textStyles.large,
                 )
 
                 if (showDetails) {
                     TextWidget(
-                        modifier = Modifier.padding(top = padding_screen_tiny),
-                        color = AppTheme.colors.error,
+                        style = AppTheme.textStyles.small,
                         text = memberEntity.getResidentialStatus(),
                     )
 
                     if (memberEntity.hasPaidMembership()) {
                         TextWidget(
+                            style = AppTheme.textStyles.small,
                             modifier = Modifier.fillMaxWidth(),
                             text = memberEntity.renewalFutureDateMillis.toMembershipStatusString(),
                         )
                         TextWidget(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = AppTheme.colors.error,
+                            style = AppTheme.textStyles.small,
                             text = memberEntity.amountDue.toAmountString(),
                         )
                     }

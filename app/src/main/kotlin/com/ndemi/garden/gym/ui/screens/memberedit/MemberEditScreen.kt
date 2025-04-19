@@ -33,7 +33,7 @@ import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import com.ndemi.garden.gym.ui.widgets.member.MemberProfileWidget
+import com.ndemi.garden.gym.ui.widgets.member.MemberImageWidget
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,7 +83,7 @@ fun MemberEditScreen(
                         .requiredWidth(page_width),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                MemberProfileWidget(
+                MemberImageWidget(
                     isEnabled = viewModel.hasAdminRights(),
                     imageUrl = memberEntity.value.profileImageUrl,
                     onImageSelect = {

@@ -30,7 +30,6 @@ fun RegisterNewScreen(
             viewModel.navigateBack()
         }
 
-        // TODO - The viewModel needs to determine what type of registration this is
         RegisterDetailScreen(
             uiState = uiState.value,
             inputData = inputData.value,

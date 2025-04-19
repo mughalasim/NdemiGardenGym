@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemColors
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -76,7 +75,7 @@ fun BottomNavigationWidget(
                     )
                 },
                 label = {
-                    Text(text = stringResource(id = item.label), style = AppTheme.textStyles.small)
+                    TextWidget(text = stringResource(id = item.label), style = AppTheme.textStyles.small, color = item.icon.tintColor)
                 },
                 colors =
                     NavigationBarItemColors(
@@ -139,13 +138,13 @@ sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: I
     data object MembersScreen : BottomNavItem(
         Route.MembersScreen,
         Icons.Rounded.Group,
-        R.string.txt_active_members,
+        R.string.txt_active,
     )
 
     data object MembersExpiredScreen : BottomNavItem(
         Route.MembersExpiredScreen,
         Icons.Rounded.Group,
-        R.string.txt_inactive_members,
+        R.string.txt_inactive,
     )
 
     data object MembersActiveScreen : BottomNavItem(

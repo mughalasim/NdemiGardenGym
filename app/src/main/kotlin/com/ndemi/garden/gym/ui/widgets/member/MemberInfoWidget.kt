@@ -1,7 +1,6 @@
 package com.ndemi.garden.gym.ui.widgets.member
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,8 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,12 +19,12 @@ import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants
 import com.ndemi.garden.gym.ui.utils.toAmountString
+import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.MemberEntity
@@ -39,20 +36,7 @@ fun MemberInfoWidget(
     showExtraInfo: Boolean = true,
 ) {
     Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .background(
-                    color = AppTheme.colors.backgroundCard,
-                    shape = RoundedCornerShape(border_radius),
-                )
-                .border(
-                    width = line_thickness,
-                    color = AppTheme.colors.border,
-                    shape = RoundedCornerShape(border_radius),
-                )
-                .padding(padding_screen_small),
+        modifier = Modifier.toAppCardStyle(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(

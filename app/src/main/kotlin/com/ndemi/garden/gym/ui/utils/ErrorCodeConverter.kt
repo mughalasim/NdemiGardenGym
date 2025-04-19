@@ -35,6 +35,7 @@ class ErrorCodeConverterImp(
             DomainError.INVALID_LOGIN_CREDENTIALS -> application.resources.getString(R.string.error_invalid_credentials)
             DomainError.USER_DISABLED -> application.resources.getString(R.string.error_account_disabled)
             DomainError.INVALID_SESSION_TIME -> application.resources.getString(R.string.error_workout_session_length)
+            DomainError.UPLOAD_FAILURE -> application.resources.getString(R.string.error_upload_failure)
         }
     }
 

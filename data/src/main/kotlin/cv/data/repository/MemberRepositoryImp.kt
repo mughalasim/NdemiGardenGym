@@ -1,6 +1,5 @@
 package cv.data.repository
 
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
@@ -18,36 +17,10 @@ import cv.domain.repositories.MemberRepository
 import kotlinx.coroutines.CompletableDeferred
 
 class MemberRepositoryImp(
-    private val firebaseAuth: FirebaseAuth,
     private val firebaseFirestore: FirebaseFirestore,
     private val pathUser: String,
     private val logger: AppLoggerRepository,
 ) : MemberRepository {
-    override suspend fun getMember(): DomainResult<MemberEntity> {
-        val id =
-            firebaseAuth.currentUser?.uid ?: run {
-                logger.log("Not Authorised", AppLogLevel.ERROR)
-                return DomainResult.Error(DomainError.UNAUTHORISED)
-            }
-
-        val completable: CompletableDeferred<DomainResult<MemberEntity>> = CompletableDeferred()
-        firebaseFirestore.collection(pathUser).document(id).get()
-            .addOnSuccessListener { document ->
-                logger.log("Data received: $document")
-                val response = document.toObject<MemberModel>()
-                response?.let {
-                    completable.complete(DomainResult.Success(it.toMemberEntity()))
-                } ?: run {
-                    completable.complete(DomainResult.Error(DomainError.NO_DATA))
-                }
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
-
-        return completable.await()
-    }
-
     override suspend fun getMemberById(memberId: String): DomainResult<MemberEntity> {
         val completable: CompletableDeferred<DomainResult<MemberEntity>> = CompletableDeferred()
         firebaseFirestore.collection(pathUser).document(memberId).get()

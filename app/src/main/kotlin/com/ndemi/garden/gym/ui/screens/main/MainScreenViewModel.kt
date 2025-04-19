@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.navigation.NavHostController
 import com.ndemi.garden.gym.navigation.NavigationService
+import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
@@ -48,7 +49,6 @@ class MainScreenViewModel(
             }
         }
 
-    // TODO - Make a global shared flow of current user that all viewModels can subscribe to
     val loggedInMember =
         liveData(dispatcher) {
             emit(UiState.Loading)
@@ -63,6 +63,11 @@ class MainScreenViewModel(
                 }
             }
         }
+
+    fun onLogOutTapped() {
+        authUseCase.logOut()
+        navigationService.open(Route.LoginScreen, true)
+    }
 
     @Immutable
     sealed interface VersionState {

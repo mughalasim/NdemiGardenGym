@@ -1,5 +1,6 @@
 package cv.domain.usecase
 
+import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.Variables.EVENT_PHOTO
 import cv.domain.Variables.PARAM_PHOTO_UPLOAD
@@ -16,7 +17,7 @@ class StorageUseCase(
     suspend fun updateImageForMember(
         memberEntity: MemberEntity,
         byteArray: ByteArray,
-    ): Boolean {
+    ): DomainResult<Boolean> {
         analyticsRepository.logEvent(
             eventName = EVENT_PHOTO,
             params =
@@ -24,14 +25,10 @@ class StorageUseCase(
                     Pair(PARAM_PHOTO_UPLOAD, memberEntity.id),
                 ),
         )
-        when (val result = storageRepository.updateImageForMember(memberEntity.id, byteArray)) {
-            is DomainResult.Error -> return false
+        return when (val responseUploadFile = storageRepository.updateImageForMember(memberEntity.id, byteArray)) {
+            is DomainResult.Error -> DomainResult.Error(DomainError.UPLOAD_FAILURE)
             is DomainResult.Success -> {
-                val response = memberRepository.updateMember(memberEntity.copy(profileImageUrl = result.data))
-                return when (response) {
-                    is DomainResult.Error -> false
-                    is DomainResult.Success -> true
-                }
+                memberRepository.updateMember(memberEntity.copy(profileImageUrl = responseUploadFile.data))
             }
         }
     }

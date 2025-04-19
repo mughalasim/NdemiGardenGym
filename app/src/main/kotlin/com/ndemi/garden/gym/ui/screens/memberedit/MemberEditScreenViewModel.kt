@@ -123,7 +123,7 @@ class MemberEditScreenViewModel(
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             val success = storageUseCase.updateImageForMember(_memberEntity.value, byteArray)
-            if (success) {
+            if (success is DomainResult.Success) {
                 getMemberForId(initialMemberEntity.value.id)
             } else {
                 sendAction(Action.Success)

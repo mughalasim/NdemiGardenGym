@@ -60,15 +60,15 @@ fun ButtonWidget(
             modifier
                 .fillMaxWidth()
                 .padding(top = padding_screen)
+                .clickable {
+                    if (hideKeyboardOnClick) keyboardController?.hide()
+                    if (isEnabled && !isLoading) onButtonClicked()
+                }
                 .background(
                     bgColor,
                     shape = RoundedCornerShape(border_radius),
                 )
-                .padding(padding_screen)
-                .clickable {
-                    if (hideKeyboardOnClick) keyboardController?.hide()
-                    if (isEnabled && !isLoading) onButtonClicked()
-                },
+                .padding(padding_screen),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {

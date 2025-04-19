@@ -16,8 +16,8 @@ val icon_image_size_large = 35.dp
 val icon_image_size_profile = 190.dp
 val icon_image_size_profile_small = 75.dp
 
-val text_size_small = 12.sp
-val text_size_regular = 14.sp
+val text_size_small = 14.sp
+val text_size_regular = 16.sp
 val text_size_large = 20.sp
 
 val page_width = 360.dp
