@@ -36,7 +36,7 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.icon_image_size_large
+import com.ndemi.garden.gym.ui.theme.icon_size_large
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
@@ -76,7 +76,7 @@ fun MonthPickerWidget(
                     Icon(
                         modifier =
                             Modifier
-                                .size(icon_image_size_large)
+                                .size(icon_size_large)
                                 .clickable(
                                     indication = null,
                                     interactionSource = interactionSource,
@@ -97,7 +97,7 @@ fun MonthPickerWidget(
                     Icon(
                         modifier =
                             Modifier
-                                .size(icon_image_size_large)
+                                .size(icon_size_large)
                                 .clickable(
                                     indication = null,
                                     interactionSource = interactionSource,
@@ -165,15 +165,15 @@ fun MonthPickerWidget(
                 }
 
                 Row {
-                    ButtonOutlineWidget(
-                        text = stringResource(id = R.string.txt_cancel),
-                        hasOutline = false,
+                    ButtonWidget(
+                        title = stringResource(id = R.string.txt_cancel),
                     ) {
                         cancelClicked()
                     }
 
-                    ButtonOutlineWidget(
-                        text = stringResource(id = R.string.txt_update),
+                    ButtonWidget(
+                        title = stringResource(id = R.string.txt_update),
+                        isOutlined = true,
                     ) {
                         confirmButtonCLicked(
                             months.indexOf(month) + 1,

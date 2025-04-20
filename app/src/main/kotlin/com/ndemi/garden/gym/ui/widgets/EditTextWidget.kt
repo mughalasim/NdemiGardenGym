@@ -3,10 +3,12 @@ package com.ndemi.garden.gym.ui.widgets
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -14,17 +16,14 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -33,6 +32,7 @@ import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
@@ -40,90 +40,76 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 fun EditTextWidget(
     modifier: Modifier = Modifier,
     textInput: String = "",
-    hint: String = "Hint",
+    hint: String = "",
     errorText: String = "",
     isEnabled: Boolean = true,
+    canClear: Boolean = true,
+    isPasswordEditText: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
     onValueChanged: (String) -> Unit = {},
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    // TODO - Use BasicEdiText field and customise styling
-    Column {
-        OutlinedTextField(
-            modifier = modifier.fillMaxWidth(),
-            value = textInput,
-            enabled = isEnabled,
-            isError = errorText.isNotEmpty(),
-            singleLine = true,
-            onValueChange = { onValueChanged(it) },
-            label = { Text(text = hint, style = AppTheme.textStyles.regular) },
-            textStyle = AppTheme.textStyles.regular,
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-            colors = getAppTextColors(),
-            keyboardActions =
-                KeyboardActions {
-                    onValueChanged.invoke(textInput)
-                    keyboardController?.hide()
-                },
-            trailingIcon = {
-                if (textInput.isNotEmpty()) {
-                    Icon(
-                        Icons.Default.Clear,
-                        contentDescription = hint,
-                        modifier =
-                            Modifier.clickable {
-                                onValueChanged("")
-                            },
-                        tint = if (errorText.isNotEmpty()) AppTheme.colors.error else AppTheme.colors.border,
-                    )
-                }
-            },
-        )
-        EditTextBottomComponent(errorText)
-    }
-}
-
-@Composable
-fun EditPasswordTextWidget(
-    modifier: Modifier = Modifier,
-    textInput: String = "",
-    hint: String = "Password",
-    errorText: String = "",
-    isEnabled: Boolean = true,
-    onValueChanged: (String) -> Unit = {},
-) {
+    val textColor = if (errorText.isEmpty()) AppTheme.colors.textPrimary else AppTheme.colors.error
     var passwordVisible: Boolean by rememberSaveable { mutableStateOf(false) }
-    Column {
-        OutlinedTextField(
-            modifier = modifier.fillMaxWidth(),
-            value = textInput,
-            onValueChange = { onValueChanged(it) },
-            textStyle = AppTheme.textStyles.regular,
-            label = { Text(text = hint, style = AppTheme.textStyles.regular) },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            isError = errorText.isNotEmpty(),
-            enabled = isEnabled,
-            colors = getAppTextColors(),
-            visualTransformation =
-                if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                val image =
-                    if (passwordVisible) {
-                        Icons.Outlined.Lock
-                    } else {
-                        Icons.Filled.Lock
-                    }
+    val trailingIcon =
+        if (!isPasswordEditText) {
+            Icons.Default.Clear
+        } else if (passwordVisible) {
+            Icons.Outlined.Lock
+        } else {
+            Icons.Filled.Lock
+        }
 
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(
-                        imageVector = image,
-                        contentDescription = hint,
-                        tint = if (errorText.isNotEmpty()) AppTheme.colors.error else AppTheme.colors.border,
-                    )
-                }
-            },
+    Column(modifier = modifier) {
+        TextWidget(
+            text = hint,
+            style = AppTheme.textStyles.small,
+            color = AppTheme.colors.textSecondary,
         )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            BasicTextField(
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .padding(vertical = padding_screen_small),
+                value = textInput,
+                onValueChange = onValueChanged,
+                keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+                enabled = isEnabled,
+                keyboardActions =
+                    KeyboardActions {
+                        onValueChanged.invoke(textInput)
+                        keyboardController?.hide()
+                    },
+                visualTransformation =
+                    if (!isPasswordEditText || passwordVisible) {
+                        VisualTransformation.None
+                    } else {
+                        PasswordVisualTransformation()
+                    },
+                textStyle = AppTheme.textStyles.regular.copy(color = textColor),
+                cursorBrush = SolidColor(AppTheme.colors.primary),
+            )
+            if (textInput.isNotEmpty() && isEnabled && canClear) {
+                Icon(
+                    trailingIcon,
+                    contentDescription = hint,
+                    modifier =
+                        Modifier
+                            .padding(horizontal = padding_screen_tiny)
+                            .clickable {
+                                if (isPasswordEditText) {
+                                    passwordVisible = !passwordVisible
+                                } else {
+                                    onValueChanged("")
+                                }
+                            },
+                    tint = if (errorText.isNotEmpty()) AppTheme.colors.error else AppTheme.colors.border,
+                )
+            }
+        }
         EditTextBottomComponent(errorText)
     }
 }
@@ -135,13 +121,11 @@ private fun EditTextBottomComponent(errorText: String) {
             Modifier
                 .fillMaxWidth()
                 .height(line_thickness)
-                .padding(horizontal = padding_screen)
                 .background(if (errorText.isNotEmpty()) AppTheme.colors.error else AppTheme.colors.border),
     )
     TextWidget(
         modifier =
             Modifier
-                .padding(horizontal = padding_screen)
                 .padding(top = padding_screen_tiny),
         style = AppTheme.textStyles.small,
         color = AppTheme.colors.error,
@@ -149,55 +133,34 @@ private fun EditTextBottomComponent(errorText: String) {
     )
 }
 
-@Composable
-private fun getAppTextColors() =
-    OutlinedTextFieldDefaults.colors(
-        focusedTextColor = AppTheme.colors.textPrimary,
-        focusedTrailingIconColor = AppTheme.colors.primary,
-        focusedBorderColor = Color.Transparent,
-        focusedLabelColor = AppTheme.colors.primary,
-        unfocusedTextColor = AppTheme.colors.textPrimary,
-        unfocusedTrailingIconColor = AppTheme.colors.backgroundButtonDisabled,
-        unfocusedBorderColor = Color.Transparent,
-        unfocusedLabelColor = AppTheme.colors.primary,
-        disabledTextColor = AppTheme.colors.textSecondary,
-        disabledTrailingIconColor = Color.Transparent,
-        disabledBorderColor = Color.Transparent,
-        disabledLabelColor = AppTheme.colors.textSecondary,
-        errorTextColor = AppTheme.colors.error,
-        errorTrailingIconColor = AppTheme.colors.error,
-        errorBorderColor = Color.Transparent,
-        focusedContainerColor = Color.Transparent,
-        unfocusedContainerColor = Color.Transparent,
-        disabledContainerColor = Color.Transparent,
-        errorContainerColor = Color.Transparent,
-    )
-
 @AppPreview
 @Composable
 private fun EditTextWidgetPreview() {
     AppThemeComposable {
         Column {
-            EditTextWidget()
-            EditTextWidget(textInput = "Normal")
             EditTextWidget(
-                textInput = "Error",
-                errorText = "Some error is shown here",
+                textInput = "Lorem Ipsum text",
+                errorText = "Error message",
             )
-            EditTextWidget(textInput = "Disabled", isEnabled = false)
-        }
-    }
-}
 
-@AppPreview
-@Composable
-private fun EditPasswordTextWidgetPreview() {
-    AppThemeComposable {
-        Column {
-            EditPasswordTextWidget()
-            EditPasswordTextWidget(textInput = "Normal")
-            EditPasswordTextWidget(textInput = "Error", errorText = "Some error is here")
-            EditPasswordTextWidget(textInput = "Disabled", isEnabled = false)
+            EditTextWidget(
+                modifier = Modifier.padding(top = padding_screen),
+                textInput = "Some test",
+                canClear = false,
+            )
+
+            EditTextWidget(
+                modifier = Modifier.padding(top = padding_screen),
+                textInput = "Some test",
+                isPasswordEditText = true,
+            )
+
+            EditTextWidget(
+                modifier = Modifier.padding(top = padding_screen),
+                textInput = "Some test",
+                hint = "Hint text",
+                isEnabled = false,
+            )
         }
     }
 }

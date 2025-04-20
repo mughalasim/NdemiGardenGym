@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.icon_image_size
+import com.ndemi.garden.gym.ui.theme.icon_size_small
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
@@ -25,8 +25,8 @@ fun LoadingScreenWidget() {
         CircularProgressIndicator(
             modifier =
                 Modifier
-                    .width(icon_image_size)
-                    .height(icon_image_size),
+                    .width(icon_size_small)
+                    .height(icon_size_small),
         )
         TextWidget(
             modifier = Modifier.padding(top = padding_screen),

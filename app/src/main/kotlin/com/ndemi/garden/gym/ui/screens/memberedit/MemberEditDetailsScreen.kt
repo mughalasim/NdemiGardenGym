@@ -23,6 +23,7 @@ import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.Inpu
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.utils.toPhoneNumberString
@@ -60,6 +61,7 @@ fun MemberEditDetailsScreen(
                     type = SnackbarType.ERROR,
                     message = uiState.message,
                 )
+
             else -> Unit
         }
     }
@@ -126,7 +128,6 @@ fun MemberEditDetailsScreen(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = padding_screen)
                     .padding(top = padding_screen),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -141,15 +142,19 @@ fun MemberEditDetailsScreen(
                 },
             )
         }
-
-        ButtonWidget(
-            modifier = Modifier.padding(padding_screen),
-            title = stringResource(R.string.txt_update),
-            isEnabled = uiState is UiState.ReadyToUpdate && hasAdminRights,
-            isLoading = uiState is UiState.Loading,
-            hideKeyboardOnClick = true,
-        ) {
-            onUpdateTapped.invoke()
+        if (hasAdminRights) {
+            ButtonWidget(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = padding_screen_large),
+                title = stringResource(R.string.txt_update),
+                isEnabled = uiState is UiState.ReadyToUpdate,
+                isLoading = uiState is UiState.Loading,
+                hideKeyboardOnClick = true,
+            ) {
+                onUpdateTapped.invoke()
+            }
         }
     }
 }
@@ -160,9 +165,9 @@ private fun MemberEditDetailsScreenPreview() {
     AppThemeComposable {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             MemberEditDetailsScreen(
-                hasAdminRights = false,
+                hasAdminRights = true,
                 memberEntity = getMockRegisteredMemberEntity(),
-                uiState = UiState.Loading,
+                uiState = UiState.ReadyToUpdate,
             )
         }
     }

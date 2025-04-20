@@ -48,8 +48,8 @@ fun DateSelectionWidget(
                 },
         )
 
-        ButtonOutlineWidget(
-            text =
+        ButtonWidget(
+            title =
                 if (hideMonthSelection) {
                     selectedDate.toString(formatYear)
                 } else {

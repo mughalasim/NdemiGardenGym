@@ -20,7 +20,6 @@ fun PaymentAddScreen(
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
     viewModel: PaymentAddScreenViewModel = koinViewModel<PaymentAddScreenViewModel>(),
 ) {
-    // TODO - This screen needs to be resolved
     viewModel.setMemberId(memberId)
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Waiting)
     val inputData = viewModel.inputData.collectAsState()

@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
@@ -23,8 +22,8 @@ import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.icon_image_size
-import com.ndemi.garden.gym.ui.theme.icon_image_size_profile_small
+import com.ndemi.garden.gym.ui.theme.icon_size_small
+import com.ndemi.garden.gym.ui.theme.image_size_small
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
@@ -32,11 +31,10 @@ import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import com.ndemi.garden.gym.ui.widgets.AsyncImageWidget
-import com.ndemi.garden.gym.ui.widgets.ButtonOutlineWidget
+import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.MemberEntity
 
-@Suppress("detekt.MagicNumber")
 @Composable
 fun MemberStatusWidget(
     modifier: Modifier = Modifier,
@@ -63,7 +61,7 @@ fun MemberStatusWidget(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImageWidget(
-                modifier = Modifier.width(icon_image_size_profile_small).height(icon_image_size_profile_small),
+                modifier = Modifier.width(image_size_small).height(image_size_small),
                 profileImageUrl = memberEntity.profileImageUrl,
             )
 
@@ -105,8 +103,8 @@ fun MemberStatusWidget(
                             modifier =
                                 Modifier
                                     .padding(top = padding_screen_small)
-                                    .width(icon_image_size)
-                                    .height(icon_image_size),
+                                    .width(icon_size_small)
+                                    .height(icon_size_small),
                             imageVector = Icons.Rounded.Accessibility,
                             contentDescription = null,
                             tint = AppTheme.colors.primary,
@@ -129,36 +127,32 @@ fun MemberStatusWidget(
                         .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                ButtonOutlineWidget(
+                ButtonWidget(
                     modifier = Modifier.weight(1f),
-                    text = stringResource(R.string.txt_payments),
+                    title = stringResource(R.string.txt_payments),
+                    isOutlined = true,
                 ) {
                     onPaymentsTapped.invoke(memberEntity)
                 }
                 Spacer(modifier = Modifier.width(padding_screen_small))
-                ButtonOutlineWidget(
+                ButtonWidget(
                     modifier = Modifier.weight(1f),
-                    text = stringResource(R.string.txt_attendance),
+                    title = stringResource(R.string.txt_attendance),
+                    isOutlined = true,
                 ) {
                     onAttendanceTapped.invoke(memberEntity)
                 }
                 if (hasAdminRights && memberEntity.hasPaidMembership()) {
                     Spacer(modifier = Modifier.width(padding_screen_small))
-                    ButtonOutlineWidget(
+                    ButtonWidget(
                         modifier = Modifier.weight(1f),
-                        text =
+                        title =
                             if (memberEntity.isActiveNow()) {
                                 stringResource(R.string.txt_end_session)
                             } else {
                                 stringResource(R.string.txt_start_session)
                             },
-                        hasOutline = !memberEntity.isActiveNow(),
-                        backgroundColor =
-                            if (memberEntity.isActiveNow()) {
-                                AppTheme.colors.error
-                            } else {
-                                Color.Transparent
-                            },
+                        isOutlined = !memberEntity.isActiveNow(),
                     ) {
                         onSessionTapped.invoke(memberEntity)
                     }

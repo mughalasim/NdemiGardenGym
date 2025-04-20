@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
@@ -22,8 +23,7 @@ import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.InputT
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.icon_image_size_profile
-import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.image_size_large
 import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.theme.page_width
 import com.ndemi.garden.gym.ui.utils.AppPreview
@@ -79,15 +79,12 @@ fun ResetPasswordDetailsScreen(
             Image(
                 modifier =
                     Modifier
-                        .size(icon_image_size_profile),
+                        .size(image_size_large),
                 imageVector = ImageVector.vectorResource(R.drawable.ic_app),
                 contentDescription = "",
             )
 
             TextWidget(
-                modifier =
-                    Modifier
-                        .padding(horizontal = padding_screen),
                 style = AppTheme.textStyles.large,
                 text = stringResource(R.string.txt_password_reset),
             )
@@ -95,7 +92,6 @@ fun ResetPasswordDetailsScreen(
             TextWidget(
                 modifier =
                     Modifier
-                        .padding(horizontal = padding_screen)
                         .padding(top = padding_screen_large),
                 textAlign = TextAlign.Center,
                 text = stringResource(R.string.txt_reset_desc),
@@ -104,7 +100,7 @@ fun ResetPasswordDetailsScreen(
             EditTextWidget(
                 modifier =
                     Modifier
-                        .padding(top = padding_screen),
+                        .padding(top = padding_screen_large),
                 textInput = email,
                 hint = stringResource(id = R.string.txt_email),
                 errorText = errorEmail,
@@ -115,8 +111,8 @@ fun ResetPasswordDetailsScreen(
             ButtonWidget(
                 modifier =
                     Modifier
-                        .padding(top = padding_screen_large)
-                        .padding(horizontal = padding_screen),
+                        .fillMaxWidth()
+                        .padding(top = padding_screen_large),
                 title = stringResource(R.string.txt_reset),
                 isEnabled = uiState is UiState.Ready,
                 isLoading = uiState is UiState.Loading,

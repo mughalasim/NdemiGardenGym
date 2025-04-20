@@ -22,8 +22,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.icon_image_size_large
-import com.ndemi.garden.gym.ui.theme.icon_image_size_profile
+import com.ndemi.garden.gym.ui.theme.icon_size_large
+import com.ndemi.garden.gym.ui.theme.image_size_large
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.AsyncImageWidget
@@ -38,14 +38,14 @@ fun MemberImageWidget(
     Box(
         modifier =
             Modifier
-                .padding(bottom = padding_screen)
+                .padding(vertical = padding_screen)
                 .wrapContentHeight(),
     ) {
         AsyncImageWidget(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(icon_image_size_profile),
+                    .height(image_size_large),
             profileImageUrl = imageUrl,
         )
         Row(
@@ -79,8 +79,8 @@ private fun ImageIcon(
         colorFilter = ColorFilter.tint(tintColor),
         modifier =
             Modifier
-                .width(icon_image_size_large)
-                .height(icon_image_size_large)
+                .width(icon_size_large)
+                .height(icon_size_large)
                 .clickable {
                     onClickListener.invoke()
                 },

@@ -38,7 +38,7 @@ class PaymentAddScreenViewModel(
     data class InputData(
         val startDate: DateTime = DateTime.now().withTime(0, 0, 0, 0),
         val monthDuration: Int = 0,
-        val amount: Double = 0.0,
+        val amount: Int = 0,
     )
 
     private val _inputData = MutableStateFlow(InputData())
@@ -58,14 +58,14 @@ class PaymentAddScreenViewModel(
                     if (monthDuration.isNotEmpty() && monthDuration.isDigitsOnly()) {
                         _inputData.value.copy(monthDuration = monthDuration.toInt())
                     } else {
-                        _inputData.value
+                        _inputData.value.copy(monthDuration = 0)
                     }
                 }
                 AMOUNT -> {
                     if (amount.isNotEmpty() && amount.isDigitsOnly()) {
-                        _inputData.value.copy(amount = amount.toDouble())
+                        _inputData.value.copy(amount = amount.toInt())
                     } else {
-                        _inputData.value
+                        _inputData.value.copy(amount = 0)
                     }
                 }
             }
@@ -80,11 +80,11 @@ class PaymentAddScreenViewModel(
         val monthDuration = _inputData.value.monthDuration
         val amount = _inputData.value.amount
 
-        if (monthDuration < 1) {
+        if (monthDuration < 1 || monthDuration > MAX_MONTH_DURATION) {
             sendAction(
                 Action.ShowError(converter.getMessage(UiError.INVALID_MONTH_DURATION), MONTH_DURATION),
             )
-        } else if (amount < 1) {
+        } else if (amount < 1 || amount > MAX_PAYMENT_AMOUNT) {
             sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_AMOUNT), AMOUNT))
         } else {
             sendAction(Action.SetReady)
@@ -96,7 +96,7 @@ class PaymentAddScreenViewModel(
 
         val startDate = _inputData.value.startDate
         val monthDuration = _inputData.value.monthDuration
-        val amount = _inputData.value.amount
+        val amount = _inputData.value.amount.toDouble()
 
         viewModelScope.launch {
             paymentUseCase.addPaymentPlanForMember(
@@ -208,3 +208,6 @@ class PaymentAddScreenViewModel(
         }
     }
 }
+
+private const val MAX_PAYMENT_AMOUNT = 100000
+private const val MAX_MONTH_DURATION = 5

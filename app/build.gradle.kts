@@ -1,5 +1,5 @@
-import com.android.build.api.dsl.ApplicationBuildType
 import com.android.build.api.dsl.ApplicationDefaultConfig
+import com.android.build.api.dsl.VariantDimension
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import java.io.FileInputStream
 import java.util.Properties
@@ -71,45 +71,12 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("config")
-            resValue("string", "app_name", libs.versions.appName.get())
-            setConfigVariable(variableName = "PATH_USER", variableSource = "PATH_USER")
-            setConfigVariable(variableName = "PATH_ATTENDANCE", variableSource = "PATH_ATTENDANCE")
-            setConfigVariable(
-                variableName = "PATH_PAYMENT_PLAN",
-                variableSource = "PATH_PAYMENT_PLAN",
-            )
-            setConfigVariable(
-                variableName = "PATH_APP_VERSION_TYPE",
-                variableSource = "PATH_APP_VERSION_TYPE",
-            )
-            setConfigVariable(
-                variableName = "PATH_USER_IMAGES",
-                variableSource = "PATH_USER_IMAGES",
-            )
         }
 
         getByName("debug") {
             isMinifyEnabled = false
             isShrinkResources = false
             isDebuggable = true
-            resValue("string", "app_name", "${libs.versions.appName.get()} (Debug)")
-            setConfigVariable(variableName = "PATH_USER", variableSource = "DEBUG_PATH_USER")
-            setConfigVariable(
-                variableName = "PATH_ATTENDANCE",
-                variableSource = "DEBUG_PATH_ATTENDANCE",
-            )
-            setConfigVariable(
-                variableName = "PATH_PAYMENT_PLAN",
-                variableSource = "DEBUG_PATH_PAYMENT",
-            )
-            setConfigVariable(
-                variableName = "PATH_APP_VERSION_TYPE",
-                variableSource = "DEBUG_PATH_APP_VERSION_TYPE",
-            )
-            setConfigVariable(
-                variableName = "PATH_USER_IMAGES",
-                variableSource = "DEBUG_PATH_USER_IMAGES",
-            )
         }
     }
 
@@ -129,8 +96,51 @@ android {
 
     flavorDimensions += "version"
     productFlavors {
-        create("App") {
+        create("Live") {
             dimension = "version"
+            resValue("string", "app_name", libs.versions.appName.get())
+            setConfigVariable(variableName = "PATH_USER", variableSource = "PATH_USER")
+            setConfigVariable(variableName = "PATH_ATTENDANCE", variableSource = "PATH_ATTENDANCE")
+            setConfigVariable(
+                variableName = "PATH_PAYMENT_PLAN",
+                variableSource = "PATH_PAYMENT_PLAN",
+            )
+            setConfigVariable(
+                variableName = "PATH_APP_VERSION_TYPE",
+                variableSource = "PATH_APP_VERSION_TYPE",
+            )
+            setConfigVariable(
+                variableName = "PATH_USER_IMAGES",
+                variableSource = "PATH_USER_IMAGES",
+            )
+            setProperty(
+                "archivesBaseName",
+                "${libs.versions.appName.get()} (${libs.versions.appVersionName.get()})",
+            )
+        }
+
+        create("Staging") {
+            isDefault = true
+            dimension = "version"
+            applicationIdSuffix = ".staging"
+            resValue("string", "app_name", "${libs.versions.appName.get()} (Staging)")
+            setConfigVariable(variableName = "PATH_USER", variableSource = "DEBUG_PATH_USER")
+            setConfigVariable(
+                variableName = "PATH_ATTENDANCE",
+                variableSource = "DEBUG_PATH_ATTENDANCE",
+            )
+            setConfigVariable(
+                variableName = "PATH_PAYMENT_PLAN",
+                variableSource = "DEBUG_PATH_PAYMENT",
+            )
+            setConfigVariable(
+                variableName = "PATH_APP_VERSION_TYPE",
+                variableSource = "DEBUG_PATH_APP_VERSION_TYPE",
+            )
+            setConfigVariable(
+                variableName = "PATH_USER_IMAGES",
+                variableSource = "DEBUG_PATH_USER_IMAGES",
+            )
             setProperty(
                 "archivesBaseName",
                 "${libs.versions.appName.get()} (${libs.versions.appVersionName.get()})",
@@ -153,7 +163,7 @@ android {
     }
 }
 
-fun ApplicationDefaultConfig.setConfigVariable(
+fun VariantDimension.setConfigVariable(
     variableName: String,
     variableSource: String,
 ) {
@@ -164,7 +174,7 @@ fun ApplicationDefaultConfig.setConfigVariable(
     )
 }
 
-fun ApplicationBuildType.setConfigVariable(
+fun ApplicationDefaultConfig.setConfigVariable(
     variableName: String,
     variableSource: String,
 ) {

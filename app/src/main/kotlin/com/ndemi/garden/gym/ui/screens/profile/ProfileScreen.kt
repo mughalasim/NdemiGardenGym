@@ -55,7 +55,7 @@ fun ProfileScreen(
             modifier =
                 Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(padding_screen),
+                    .padding(horizontal = padding_screen),
         ) {
             when (uiState) {
                 is UiState.Success -> {

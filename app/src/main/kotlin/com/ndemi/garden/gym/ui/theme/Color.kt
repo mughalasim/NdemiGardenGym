@@ -40,7 +40,7 @@ val DarkAppColors =
         error = red,
         success = green,
         backgroundButtonDisabled = darkGrey,
-        backgroundButtonEnabled = Color.White,
+        backgroundButtonEnabled = orange,
     )
 
 val LightAppColors =
@@ -54,7 +54,7 @@ val LightAppColors =
         error = red,
         success = green,
         backgroundButtonDisabled = lightBlue,
-        backgroundButtonEnabled = darkBlue,
+        backgroundButtonEnabled = orange,
     )
 
 @Suppress("detekt.LongParameterList")

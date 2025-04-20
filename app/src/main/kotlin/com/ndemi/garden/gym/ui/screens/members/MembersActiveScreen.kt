@@ -20,7 +20,6 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
-import com.ndemi.garden.gym.ui.widgets.EditTextWidget
 import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
@@ -63,10 +62,11 @@ fun MembersActiveScreen(
         ) {
             LazyColumn {
                 item {
-                    EditTextWidget(
+                    SearchMemberComponent(
                         textInput = searchTerm.value,
-                        hint = stringResource(R.string.txt_search_members),
-                        onValueChanged = viewModel::onSearchTextChanged,
+                        isVisible = members.value.isNotEmpty() || searchTerm.value.isNotEmpty(),
+                        memberCount = members.value.size,
+                        onTextChanged = viewModel::onSearchTextChanged,
                     )
                 }
                 item {

@@ -2,6 +2,8 @@ package com.ndemi.garden.gym.ui.screens.paymentadd
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.rememberScrollState
@@ -20,12 +22,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.padding_screen_large
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.theme.page_width
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
@@ -76,31 +81,33 @@ fun PaymentAddDetailsScreen(
             text = stringResource(R.string.txt_payments_add_desc),
         )
 
-        TextWidget(
-            modifier = Modifier.padding(horizontal = padding_screen),
-            text = stringResource(R.string.txt_payments_add_select_date),
-        )
-
-        ButtonWidget(
-            modifier =
-                Modifier
-                    .padding(horizontal = padding_screen),
-            title = inputData.startDate.toString(formatDayMonthYear).orEmpty(),
+        Row(
+            modifier = Modifier.padding(top = padding_screen_large),
         ) {
-            datePickerVisibility = !datePickerVisibility
+            EditTextWidget(
+                modifier =
+                    Modifier
+                        .weight(DATE_WEIGHT)
+                        .padding(end = padding_screen_small),
+                canClear = false,
+                isEnabled = false,
+                errorText = errorStartDate,
+                hint = stringResource(R.string.txt_payments_add_select_date),
+                textInput = inputData.startDate.toString(formatDayMonthYear).orEmpty(),
+            )
+            ButtonWidget(
+                modifier = Modifier.weight(1f),
+                title = stringResource(R.string.txt_select),
+                isOutlined = true,
+            ) {
+                datePickerVisibility = !datePickerVisibility
+            }
         }
-
-        TextWidget(
-            modifier = Modifier.padding(padding_screen),
-            style = AppTheme.textStyles.small,
-            color = AppTheme.colors.error,
-            text = errorStartDate,
-        )
 
         EditTextWidget(
             modifier = Modifier.padding(top = padding_screen),
             hint = stringResource(R.string.txt_payments_add_select_duration),
-            textInput = inputData.monthDuration.toString(),
+            textInput = (inputData.monthDuration.takeIf { it != 0 } ?: "").toString(),
             errorText = errorMonthDuration,
             keyboardType = KeyboardType.Number,
         ) {
@@ -109,8 +116,8 @@ fun PaymentAddDetailsScreen(
 
         EditTextWidget(
             modifier = Modifier.padding(top = padding_screen),
-            hint = stringResource(R.string.txt_payments_add_amount_paid),
-            textInput = inputData.amount.toString(),
+            hint = stringResource(R.string.txt_payments_add_amount_paid, BuildConfig.CURRENCY_CODE),
+            textInput = (inputData.amount.takeIf { it != 0 } ?: "").toString(),
             errorText = errorAmount,
             keyboardType = KeyboardType.Number,
         ) {
@@ -118,7 +125,10 @@ fun PaymentAddDetailsScreen(
         }
 
         ButtonWidget(
-            modifier = Modifier.padding(padding_screen),
+            modifier =
+                Modifier
+                    .padding(top = padding_screen_large)
+                    .fillMaxWidth(),
             title = stringResource(id = R.string.txt_update),
             isEnabled = uiState is UiState.Ready,
             isLoading = uiState is UiState.Loading,
@@ -164,6 +174,8 @@ fun PaymentAddDetailsScreen(
         }
     }
 }
+
+private const val DATE_WEIGHT = 3f
 
 @AppPreview
 @Composable

@@ -23,8 +23,8 @@
     <string name="error_workout_session_length">Cannot update your workout session as it is either too short or longer than a day</string>
     <string name="error_apartment_number">Apartment number is invalid, Leave blank if not a resident</string>
     <string name="error_past_date_set">You cannot set a date in the past</string>
-    <string name="error_invalid_amount">Amount entered is invalid, set any number above 0</string>
-    <string name="error_invalid_month_duration">The month duration is invalid, set any number above 0</string>
+    <string name="error_invalid_amount">Amount entered is invalid</string>
+    <string name="error_invalid_month_duration">The month duration is invalid</string>
     <string name="error_invalid_phone_number">The phone number is invalid, leave blank if not present</string>
     <string name="error_upload_failure">Failed to upload your file, please check your internet connection</string>
 
@@ -114,14 +114,15 @@
     <string name="txt_payments_add_select_date">Select the date a payment was made</string>
     <string name="txt_payments_add_select_duration">How many months is the subscription for?</string>
     <string name="txt_payments_add_month_duration">Month duration</string>
-    <string name="txt_payments_add_amount_paid">Enter the amount paid</string>
+    <string name="txt_payments_add_amount_paid">Enter the amount paid (%1$s)</string>
     <string name="txt_amount">Amount</string>
     <string name="txt_add_payment">Add Payment</string>
     <string name="txt_amount_due">Amount due</string>
     <string name="txt_app_update_title">App update required</string>
     <string name="txt_app_update_desc">Looks like you are using an outdated version of the app. Kindly update and restart.</string>
     <string name="txt_download">Download</string>
-    <string name="txt_search_members">Search members</string>
+    <string name="txt_search_members">Search amongst %1$s members</string>
+    <string name="txt_select">Select</string>
 
     <!-- Plurals-->
     <plurals name="plural_months">
