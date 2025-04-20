@@ -36,7 +36,7 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.icon_image_size_large
+import com.ndemi.garden.gym.ui.theme.icon_size_large
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
@@ -58,96 +58,104 @@ fun MonthPickerWidget(
 
     if (visible) {
         BasicAlertDialog(
-            modifier = Modifier
-                .background(
-                    color = AppTheme.colors.backgroundButtonDisabled,
-                    shape = RoundedCornerShape(border_radius)
-                )
-                .padding(padding_screen),
-            onDismissRequest = {}
+            modifier =
+                Modifier
+                    .background(
+                        color = AppTheme.colors.backgroundButtonDisabled,
+                        shape = RoundedCornerShape(border_radius),
+                    )
+                    .padding(padding_screen),
+            onDismissRequest = {},
         ) {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
-                        modifier = Modifier
-                            .size(icon_image_size_large)
-                            .clickable(
-                                indication = null,
-                                interactionSource = interactionSource,
-                                onClick = {
-                                    year--
-                                }
-                            ),
-                        tint = AppTheme.colors.highLight,
+                        modifier =
+                            Modifier
+                                .size(icon_size_large)
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = interactionSource,
+                                    onClick = {
+                                        year--
+                                    },
+                                ),
+                        tint = AppTheme.colors.primary,
                         imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
-                        contentDescription = null
+                        contentDescription = null,
                     )
 
-                    TextRegular(
+                    TextWidget(
                         modifier = Modifier.padding(horizontal = padding_screen),
                         text = year.toString(),
                     )
 
                     Icon(
-                        modifier = Modifier
-                            .size(icon_image_size_large)
-                            .clickable(
-                                indication = null,
-                                interactionSource = interactionSource,
-                                onClick = {
-                                    year++
-                                }
-                            ),
-                        tint = AppTheme.colors.highLight,
+                        modifier =
+                            Modifier
+                                .size(icon_size_large)
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = interactionSource,
+                                    onClick = {
+                                        year++
+                                    },
+                                ),
+                        tint = AppTheme.colors.primary,
                         imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                        contentDescription = null
+                        contentDescription = null,
                     )
                 }
 
                 if (!hideMonthSelection) {
                     FlowRow(
-                        modifier = Modifier.padding(vertical = padding_screen)
+                        modifier = Modifier.padding(vertical = padding_screen),
                     ) {
                         months.forEach {
                             Box(
-                                modifier = Modifier
-                                    .size(60.dp)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = interactionSource,
-                                        onClick = { month = it }
-                                    ),
-                                contentAlignment = Alignment.Center
+                                modifier =
+                                    Modifier
+                                        .size(60.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = interactionSource,
+                                            onClick = { month = it },
+                                        ),
+                                contentAlignment = Alignment.Center,
                             ) {
-
                                 val animatedSize by animateDpAsState(
                                     targetValue = if (month == it) 60.dp else 0.dp,
-                                    animationSpec = tween(
-                                        durationMillis = 300,
-                                        easing = LinearOutSlowInEasing
-                                    ), label = ""
+                                    animationSpec =
+                                        tween(
+                                            durationMillis = 300,
+                                            easing = LinearOutSlowInEasing,
+                                        ),
+                                    label = "",
                                 )
 
                                 Box(
-                                    modifier = Modifier
-                                        .size(animatedSize)
-                                        .background(
-                                            color = if (month == it) {
-                                                AppTheme.colors.backgroundScreen
-                                            } else {
-                                                Color.Transparent
-                                            },
-                                            shape = RoundedCornerShape(border_radius)
-                                        )
+                                    modifier =
+                                        Modifier
+                                            .size(animatedSize)
+                                            .background(
+                                                color =
+                                                    if (month == it) {
+                                                        AppTheme.colors.backgroundScreen
+                                                    } else {
+                                                        Color.Transparent
+                                                    },
+                                                shape = RoundedCornerShape(border_radius),
+                                            ),
                                 )
 
-                                TextSmall(
+                                TextWidget(
                                     text = it,
-                                    color = AppTheme.colors.textPrimary
+                                    color = AppTheme.colors.textPrimary,
+                                    style = AppTheme.textStyles.small,
                                 )
                             }
                         }
@@ -157,19 +165,19 @@ fun MonthPickerWidget(
                 }
 
                 Row {
-                    ButtonOutlineWidget(
-                        text = stringResource(id = R.string.txt_cancel),
-                        hasOutline = false,
+                    ButtonWidget(
+                        title = stringResource(id = R.string.txt_cancel),
                     ) {
                         cancelClicked()
                     }
 
-                    ButtonOutlineWidget(
-                        text = stringResource(id = R.string.txt_update),
+                    ButtonWidget(
+                        title = stringResource(id = R.string.txt_update),
+                        isOutlined = true,
                     ) {
                         confirmButtonCLicked(
                             months.indexOf(month) + 1,
-                            year
+                            year,
                         )
                     }
                 }
@@ -180,7 +188,7 @@ fun MonthPickerWidget(
 
 @AppPreview
 @Composable
-fun MonthPickerPreview() {
+private fun MonthPickerPreview() {
     AppThemeComposable {
         MonthPickerWidget(
             visible = true,
@@ -188,7 +196,7 @@ fun MonthPickerPreview() {
             currentYear = 2024,
             hideMonthSelection = true,
             confirmButtonCLicked = { _, _ -> },
-            cancelClicked = {}
+            cancelClicked = {},
         )
     }
 }

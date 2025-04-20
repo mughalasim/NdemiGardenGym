@@ -1,7 +1,6 @@
 package com.ndemi.garden.gym.ui.widgets.member
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,8 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,16 +19,14 @@ import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants
 import com.ndemi.garden.gym.ui.utils.toAmountString
+import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
-import com.ndemi.garden.gym.ui.widgets.TextRegular
-import com.ndemi.garden.gym.ui.widgets.TextRegularBold
-import com.ndemi.garden.gym.ui.widgets.TextSmall
+import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.MemberEntity
 import org.joda.time.DateTime
 
@@ -41,164 +36,172 @@ fun MemberInfoWidget(
     showExtraInfo: Boolean = true,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .background(
-                color = AppTheme.colors.backgroundCard,
-                shape = RoundedCornerShape(border_radius)
-            )
-            .border(
-                width = line_thickness,
-                color = AppTheme.colors.backgroundCardBorder,
-                shape = RoundedCornerShape(border_radius),
-            )
-            .padding(padding_screen_small),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.toAppCardStyle(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.Start,
         ) {
-            TextSmall(
-                color = AppTheme.colors.highLight,
-                text = stringResource(R.string.txt_full_name)
+            TextWidget(
+                color = AppTheme.colors.primary,
+                text = stringResource(R.string.txt_full_name),
+                style = AppTheme.textStyles.small,
             )
-            TextRegularBold(
+            TextWidget(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.End,
-                text = memberEntity.getFullName()
+                text = memberEntity.getFullName(),
+                style = AppTheme.textStyles.regularBold,
             )
         }
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = padding_screen_small),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = padding_screen_small),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.Start,
         ) {
-            TextSmall(
-                color = AppTheme.colors.highLight,
-                text = stringResource(id = R.string.txt_email)
+            TextWidget(
+                color = AppTheme.colors.primary,
+                text = stringResource(id = R.string.txt_email),
+                style = AppTheme.textStyles.small,
             )
-            TextRegular(
+            TextWidget(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.End,
-                text = memberEntity.email
+                text = memberEntity.email,
             )
         }
 
-        if (showExtraInfo){
+        if (showExtraInfo) {
             Spacer(
-                modifier = Modifier
-                    .padding(top = padding_screen_small)
-                    .fillMaxWidth()
-                    .height(line_thickness)
-                    .background(AppTheme.colors.highLight)
+                modifier =
+                    Modifier
+                        .padding(top = padding_screen_small)
+                        .fillMaxWidth()
+                        .height(line_thickness)
+                        .background(AppTheme.colors.primary),
             )
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding_screen_small),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.Start,
             ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = stringResource(R.string.txt_residence)
+                TextWidget(
+                    color = AppTheme.colors.primary,
+                    text = stringResource(R.string.txt_residence),
+                    style = AppTheme.textStyles.small,
                 )
-                TextRegular(
+                TextWidget(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
-                    text = memberEntity.getResidentialStatus()
+                    text = memberEntity.getResidentialStatus(),
                 )
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding_screen_small),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.Start,
             ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = stringResource(R.string.txt_training_coach_assigned)
+                TextWidget(
+                    color = AppTheme.colors.primary,
+                    text = stringResource(R.string.txt_training_coach_assigned),
+                    style = AppTheme.textStyles.small,
                 )
-                TextRegularBold(
-                    color = if(memberEntity.hasCoach) AppTheme.colors.highLight else AppTheme.colors.backgroundError,
+                TextWidget(
+                    color = if (memberEntity.hasCoach) AppTheme.colors.primary else AppTheme.colors.error,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
-                    text = memberEntity.getCoachStatus()
+                    text = memberEntity.getCoachStatus(),
+                    style = AppTheme.textStyles.regularBold,
                 )
             }
 
             Spacer(
-                modifier = Modifier
-                    .padding(top = padding_screen_small)
-                    .fillMaxWidth()
-                    .height(line_thickness)
-                    .background(AppTheme.colors.highLight)
+                modifier =
+                    Modifier
+                        .padding(top = padding_screen_small)
+                        .fillMaxWidth()
+                        .height(line_thickness)
+                        .background(AppTheme.colors.primary),
             )
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding_screen_small),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.Start,
             ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = stringResource(R.string.txt_registration_date)
+                TextWidget(
+                    color = AppTheme.colors.primary,
+                    text = stringResource(R.string.txt_registration_date),
+                    style = AppTheme.textStyles.small,
                 )
-                TextRegular(
+                TextWidget(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
-                    text = DateTime(memberEntity.registrationDateMillis).toString(
-                        DateConstants.formatDayMonthYear
-                    )
+                    text =
+                        DateTime(memberEntity.registrationDateMillis).toString(
+                            DateConstants.formatDayMonthYear,
+                        ),
                 )
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding_screen_small),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = padding_screen_small),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.Start,
             ) {
-                TextSmall(
-                    color = AppTheme.colors.highLight,
-                    text = stringResource(R.string.txt_membership_due_date)
+                TextWidget(
+                    color = AppTheme.colors.primary,
+                    text = stringResource(R.string.txt_membership_due_date),
+                    style = AppTheme.textStyles.small,
                 )
-                TextRegular(
+                TextWidget(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
-                    text = memberEntity.renewalFutureDateMillis.toMembershipStatusString()
+                    text = memberEntity.renewalFutureDateMillis.toMembershipStatusString(),
                 )
             }
             if (memberEntity.hasPaidMembership()) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = padding_screen_small),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = padding_screen_small),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
+                    horizontalArrangement = Arrangement.Start,
                 ) {
-                    TextSmall(
-                        color = AppTheme.colors.highLight,
-                        text = "Amount due"
+                    TextWidget(
+                        color = AppTheme.colors.primary,
+                        text = "Amount due",
+                        style = AppTheme.textStyles.small,
                     )
-                    TextRegularBold(
+                    TextWidget(
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.End,
-                        color = AppTheme.colors.backgroundError,
-                        text = memberEntity.amountDue.toAmountString()
+                        color = AppTheme.colors.error,
+                        text = memberEntity.amountDue.toAmountString(),
+                        style = AppTheme.textStyles.regularBold,
                     )
                 }
             }
@@ -208,7 +211,7 @@ fun MemberInfoWidget(
 
 @AppPreview
 @Composable
-fun MemberInfoWidgetPreview() {
+private fun MemberInfoWidgetPreview() {
     AppThemeComposable {
         Column {
             MemberInfoWidget(memberEntity = getMockRegisteredMemberEntity())

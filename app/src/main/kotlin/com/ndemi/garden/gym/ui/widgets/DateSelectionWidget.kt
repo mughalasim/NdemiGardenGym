@@ -30,28 +30,31 @@ fun DateSelectionWidget(
 ) {
     var monthPickerVisibility by remember { mutableStateOf(false) }
     Row(
-        modifier = Modifier
-            .padding(horizontal = padding_screen)
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(top = padding_screen_small),
+        modifier =
+            Modifier
+                .padding(horizontal = padding_screen)
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(top = padding_screen_small),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        TextRegular(
-            text = if (hideMonthSelection) {
-                stringResource(R.string.txt_select_year)
-            } else {
-                stringResource(R.string.txt_select_date)
-            }
+        TextWidget(
+            text =
+                if (hideMonthSelection) {
+                    stringResource(R.string.txt_select_year)
+                } else {
+                    stringResource(R.string.txt_select_date)
+                },
         )
 
-        ButtonOutlineWidget(
-            text = if (hideMonthSelection) {
-                selectedDate.toString(formatYear)
-            } else {
-                selectedDate.toString(formatMonthYear)
-            }
+        ButtonWidget(
+            title =
+                if (hideMonthSelection) {
+                    selectedDate.toString(formatYear)
+                } else {
+                    selectedDate.toString(formatMonthYear)
+                },
         ) {
             monthPickerVisibility = !monthPickerVisibility
         }
@@ -65,7 +68,7 @@ fun DateSelectionWidget(
         confirmButtonCLicked = { month, year ->
             monthPickerVisibility = !monthPickerVisibility
             onDateSelected.invoke(DateTime.now().withDate(year, month, 1))
-        }
+        },
     ) {
         monthPickerVisibility = !monthPickerVisibility
     }
@@ -73,11 +76,11 @@ fun DateSelectionWidget(
 
 @AppPreview
 @Composable
-fun AttendanceDateSelectionWidgetPreview() {
+private fun AttendanceDateSelectionWidgetPreview() {
     AppThemeComposable {
         DateSelectionWidget(
             selectedDate = DateTime.now(),
-            hideMonthSelection = true
+            hideMonthSelection = true,
         ) {}
     }
 }

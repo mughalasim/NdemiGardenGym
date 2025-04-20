@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+apply(from = "${rootProject.projectDir}/lint.gradle")
+
 android {
     namespace = "cv.data"
     compileSdk = libs.versions.appCompileSdk.get().toInt()
@@ -22,12 +24,6 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_21.toString()
-    }
-
-    detekt {
-        toolVersion = libs.versions.detekt.get()
-        config.setFrom(rootProject.file("detekt.yml"))
-        buildUponDefaultConfig = false
     }
 }
 

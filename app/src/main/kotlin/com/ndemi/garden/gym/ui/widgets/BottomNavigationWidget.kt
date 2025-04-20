@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemColors
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -40,12 +39,13 @@ fun BottomNavigationWidget(
     navBottomItems: List<BottomNavItem> = listOf(),
 ) {
     NavigationBar(
-        modifier = Modifier
-            .background(AppTheme.colors.backgroundScreen)
-            .background(
-                color = AppTheme.colors.backgroundButtonDisabled,
-            ),
-        containerColor = Color.Transparent
+        modifier =
+            Modifier
+                .background(AppTheme.colors.backgroundScreen)
+                .background(
+                    color = AppTheme.colors.backgroundButtonDisabled,
+                ),
+        containerColor = Color.Transparent,
     ) {
         val navStackBackEntry by navHostController.currentBackStackEntryAsState()
         val currentDestination = navStackBackEntry?.destination
@@ -75,17 +75,18 @@ fun BottomNavigationWidget(
                     )
                 },
                 label = {
-                    Text(text = stringResource(id = item.label), style = AppTheme.textStyles.small)
+                    TextWidget(text = stringResource(id = item.label), style = AppTheme.textStyles.small, color = item.icon.tintColor)
                 },
-                colors = NavigationBarItemColors(
-                    selectedIconColor = AppTheme.colors.backgroundScreen,
-                    selectedTextColor = AppTheme.colors.textPrimary,
-                    selectedIndicatorColor = AppTheme.colors.textPrimary,
-                    disabledIconColor = AppTheme.colors.backgroundError,
-                    disabledTextColor = AppTheme.colors.backgroundError,
-                    unselectedIconColor = AppTheme.colors.textSecondary,
-                    unselectedTextColor = AppTheme.colors.textSecondary
-                )
+                colors =
+                    NavigationBarItemColors(
+                        selectedIconColor = AppTheme.colors.backgroundScreen,
+                        selectedTextColor = AppTheme.colors.textPrimary,
+                        selectedIndicatorColor = AppTheme.colors.textPrimary,
+                        disabledIconColor = AppTheme.colors.error,
+                        disabledTextColor = AppTheme.colors.error,
+                        unselectedIconColor = AppTheme.colors.textSecondary,
+                        unselectedTextColor = AppTheme.colors.textSecondary,
+                    ),
             )
         }
     }
@@ -93,84 +94,107 @@ fun BottomNavigationWidget(
 
 sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: Int) {
     data object LoginScreen : BottomNavItem(
-        Route.LoginScreen, Icons.Rounded.Lock, R.string.txt_login
+        Route.LoginScreen,
+        Icons.Rounded.Lock,
+        R.string.txt_login,
     )
 
     data object RegisterScreen : BottomNavItem(
-        Route.RegisterScreen, Icons.Rounded.ContactMail, R.string.txt_register
+        Route.RegisterScreen,
+        Icons.Rounded.ContactMail,
+        R.string.txt_register,
     )
 
     data object ResetPasswordScreen : BottomNavItem(
-        Route.ResetPasswordScreen, Icons.Rounded.Key, R.string.txt_reset
+        Route.ResetPasswordScreen,
+        Icons.Rounded.Key,
+        R.string.txt_reset,
     )
 
     data object ProfileScreen : BottomNavItem(
-        Route.ProfileScreen, Icons.Rounded.Person, R.string.txt_profile
+        Route.ProfileScreen,
+        Icons.Rounded.Person,
+        R.string.txt_profile,
     )
 
     data object AttendanceScreen : BottomNavItem(
-        Route.AttendanceScreen, Icons.Rounded.InsertChartOutlined, R.string.txt_attendance
+        Route.AttendanceScreen,
+        Icons.Rounded.InsertChartOutlined,
+        R.string.txt_attendance,
     )
 
     data object LiveAttendanceScreen : BottomNavItem(
-        Route.LiveAttendanceScreen, Icons.Rounded.Groups, R.string.txt_live_view
+        Route.LiveAttendanceScreen,
+        Icons.Rounded.Groups,
+        R.string.txt_live_view,
     )
 
     data object PaymentsScreen : BottomNavItem(
-        Route.PaymentsScreen(), Icons.Rounded.MonetizationOn, R.string.txt_payments
+        Route.PaymentsScreen(),
+        Icons.Rounded.MonetizationOn,
+        R.string.txt_payments,
     )
 
     data object MembersScreen : BottomNavItem(
-        Route.MembersScreen, Icons.Rounded.Group, R.string.txt_active_members
+        Route.MembersScreen,
+        Icons.Rounded.Group,
+        R.string.txt_active,
     )
 
     data object MembersExpiredScreen : BottomNavItem(
-        Route.MembersExpiredScreen, Icons.Rounded.Group, R.string.txt_inactive_members
+        Route.MembersExpiredScreen,
+        Icons.Rounded.Group,
+        R.string.txt_inactive,
     )
 
     data object MembersActiveScreen : BottomNavItem(
-        Route.MembersActiveScreen, Icons.Rounded.Group, R.string.txt_in_the_gym
+        Route.MembersActiveScreen,
+        Icons.Rounded.Group,
+        R.string.txt_in_the_gym,
     )
 
     companion object {
-        fun getMemberBottomItems() = listOf(
-            ProfileScreen,
-            AttendanceScreen,
-            PaymentsScreen,
-            LiveAttendanceScreen,
-        )
+        fun getMemberBottomItems() =
+            listOf(
+                ProfileScreen,
+                AttendanceScreen,
+                PaymentsScreen,
+                LiveAttendanceScreen,
+            )
 
-        fun getLoginBottomItems() = listOf(
-            LoginScreen,
-            RegisterScreen,
-            ResetPasswordScreen,
-        )
+        fun getLoginBottomItems() =
+            listOf(
+                LoginScreen,
+                RegisterScreen,
+                ResetPasswordScreen,
+            )
 
-        fun getAdminBottomItems() = listOf(
-            MembersScreen,
-            MembersExpiredScreen,
-            MembersActiveScreen,
-            ProfileScreen,
-        )
+        fun getAdminBottomItems() =
+            listOf(
+                MembersScreen,
+                MembersExpiredScreen,
+                MembersActiveScreen,
+                ProfileScreen,
+            )
     }
 }
 
 @AppPreview
 @Composable
-fun BottomNavigationWidgetPreview() {
+private fun BottomNavigationWidgetPreview() {
     AppThemeComposable {
         Column {
             BottomNavigationWidget(
                 navHostController = rememberNavController(),
-                BottomNavItem.getLoginBottomItems()
+                BottomNavItem.getLoginBottomItems(),
             )
             BottomNavigationWidget(
                 navHostController = rememberNavController(),
-                BottomNavItem.getMemberBottomItems()
+                BottomNavItem.getMemberBottomItems(),
             )
             BottomNavigationWidget(
                 navHostController = rememberNavController(),
-                BottomNavItem.getAdminBottomItems()
+                BottomNavItem.getAdminBottomItems(),
             )
         }
     }

@@ -24,14 +24,15 @@ fun ProfileDetailsScreen(
     onSessionCompleted: (DateTime, DateTime) -> Unit = { _, _ -> },
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier =
+            Modifier
+                .fillMaxWidth(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         MemberInfoWidget(memberEntity = memberEntity, showExtraInfo = !isAdmin)
 
-        if (memberEntity.hasPaidMembership() && !isAdmin){
+        if (memberEntity.hasPaidMembership() && !isAdmin) {
             MemberSessionWidget(
                 message = message,
                 sessionStartTime = sessionStartTime,
@@ -44,11 +45,11 @@ fun ProfileDetailsScreen(
 
 @AppPreview
 @Composable
-fun ProfileDetailsScreenPreview() {
+private fun ProfileDetailsScreenPreview() {
     AppThemeComposable {
         ProfileDetailsScreen(
             memberEntity = getMockRegisteredMemberEntity(),
-            isAdmin = false
+            isAdmin = false,
         )
     }
 }

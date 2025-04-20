@@ -19,4 +19,5 @@ data class MemberModel(
     val amountDue: Double = 0.0,
     val phoneNumber: String = "",
     val memberType: String = "",
+    val emailVerified: Boolean = false,
 )

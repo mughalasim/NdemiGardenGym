@@ -19,54 +19,70 @@ import com.ndemi.garden.gym.ui.screens.profile.ProfileScreen
 import com.ndemi.garden.gym.ui.screens.register.RegisterNewScreen
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreen
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreen
+import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 
 @Composable
 fun NavigationHost(
     navController: NavHostController,
     navigationService: NavigationService,
+    snackbarHostState: AppSnackbarHostState,
 ) {
     NavHost(
         navController = navController,
         startDestination = navigationService.getInitialRoute(),
     ) {
-        composable<Route.LoginScreen> { LoginScreen() }
+        composable<Route.LoginScreen> { LoginScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.ResetPasswordScreen> { ResetPasswordScreen() }
+        composable<Route.ResetPasswordScreen> { ResetPasswordScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.RegisterScreen> { RegisterScreen() }
+        composable<Route.RegisterScreen> { RegisterScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.RegisterNewScreen> { RegisterNewScreen() }
+        composable<Route.RegisterNewScreen> { RegisterNewScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.ProfileScreen> { ProfileScreen() }
+        composable<Route.ProfileScreen> { ProfileScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.AttendanceScreen> { AttendanceScreen() }
+        composable<Route.AttendanceScreen> { AttendanceScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.LiveAttendanceScreen> { LiveAttendanceScreen() }
+        composable<Route.LiveAttendanceScreen> { LiveAttendanceScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.MembersScreen> { MembersScreen() }
+        composable<Route.MembersScreen> { MembersScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.MembersActiveScreen> { MembersActiveScreen() }
+        composable<Route.MembersActiveScreen> { MembersActiveScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.MembersExpiredScreen> { MembersExpiredScreen() }
+        composable<Route.MembersExpiredScreen> { MembersExpiredScreen(snackbarHostState = snackbarHostState) }
 
         composable<Route.MemberEditScreen> {
             val args = it.toRoute<Route.MemberEditScreen>()
-            MemberEditScreen(args.memberId)
+            MemberEditScreen(
+                memberId = args.memberId,
+                snackbarHostState = snackbarHostState,
+            )
         }
 
         composable<Route.MembersAttendancesScreen> {
             val args = it.toRoute<Route.MembersAttendancesScreen>()
-            MembersAttendancesScreen(args.memberId, args.memberName)
+            MembersAttendancesScreen(
+                memberId = args.memberId,
+                memberName = args.memberName,
+                snackbarHostState = snackbarHostState,
+            )
         }
 
         composable<Route.PaymentsScreen> {
             val args = it.toRoute<Route.PaymentsScreen>()
-            PaymentsScreen(args.memberId, args.memberName)
+            PaymentsScreen(
+                memberId = args.memberId,
+                memberName = args.memberName,
+                snackbarHostState = snackbarHostState,
+            )
         }
 
         composable<Route.PaymentAddScreen> {
             val args = it.toRoute<Route.PaymentAddScreen>()
-           PaymentAddScreen(args.memberId)
+            PaymentAddScreen(
+                memberId = args.memberId,
+                snackbarHostState = snackbarHostState,
+            )
         }
     }
 }

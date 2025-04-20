@@ -23,11 +23,13 @@ class MembersAttendancesScreenViewModel(
     private val authUseCase: AuthUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-
     private lateinit var selectedDate: DateTime
     private lateinit var memberId: String
 
-    fun getAttendances(memberId: String, selectedDate: DateTime) {
+    fun getAttendances(
+        memberId: String,
+        selectedDate: DateTime,
+    ) {
         this.selectedDate = selectedDate
         this.memberId = memberId
         sendAction(Action.SetLoading)
@@ -35,7 +37,7 @@ class MembersAttendancesScreenViewModel(
             attendanceUseCase.getMemberAttendancesForId(
                 memberId = memberId,
                 year = selectedDate.year,
-                month = selectedDate.monthOfYear
+                month = selectedDate.monthOfYear,
             ).also { result ->
                 when (result) {
                     is DomainResult.Error ->
@@ -53,12 +55,13 @@ class MembersAttendancesScreenViewModel(
         viewModelScope.launch {
             attendanceUseCase.deleteAttendance(attendanceEntity).also { result ->
                 when (result) {
-                    is DomainResult.Error -> sendAction(
-                        Action.ShowDomainError(
-                            result.error,
-                            converter
+                    is DomainResult.Error ->
+                        sendAction(
+                            Action.ShowDomainError(
+                                result.error,
+                                converter,
+                            ),
                         )
-                    )
 
                     is DomainResult.Success -> getAttendances(memberId, selectedDate)
                 }
@@ -72,7 +75,6 @@ class MembersAttendancesScreenViewModel(
 
     fun hasAdminRights() = authUseCase.hasAdminRights()
 
-
     @Immutable
     sealed interface UiState : BaseState {
         data object Loading : UiState
@@ -80,7 +82,6 @@ class MembersAttendancesScreenViewModel(
         data class Error(val message: String) : UiState
 
         data class Success(val attendances: List<AttendanceEntity>, val totalMinutes: Int) : UiState
-
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -92,8 +93,7 @@ class MembersAttendancesScreenViewModel(
             val domainError: DomainError,
             val errorCodeConverter: ErrorCodeConverter,
         ) : Action {
-            override fun reduce(state: UiState): UiState =
-                UiState.Error(errorCodeConverter.getMessage(domainError))
+            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainError))
         }
 
         data class Success(val attendances: List<AttendanceEntity>, val totalMinutes: Int) : Action {

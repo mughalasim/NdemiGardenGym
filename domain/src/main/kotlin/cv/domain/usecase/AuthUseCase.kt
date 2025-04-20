@@ -4,6 +4,7 @@ import cv.domain.DomainResult
 import cv.domain.entities.MemberType
 import cv.domain.repositories.AuthRepository
 
+@Suppress("TooManyFunctions")
 class AuthUseCase(
     private val authRepository: AuthRepository,
 ) {
@@ -39,4 +40,6 @@ class AuthUseCase(
     fun hasAdminRights() = authRepository.getMemberType() == MemberType.ADMIN
 
     suspend fun getAppVersion() = authRepository.getAppVersion()
+
+    fun observeUser() = authRepository.observeUser()
 }

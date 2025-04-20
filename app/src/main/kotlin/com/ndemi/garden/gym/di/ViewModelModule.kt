@@ -5,8 +5,6 @@ import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreenViewModel
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel
 import com.ndemi.garden.gym.ui.screens.main.MainScreenViewModel
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel
-import com.ndemi.garden.gym.ui.screens.members.MembersActiveScreenViewModel
-import com.ndemi.garden.gym.ui.screens.members.MembersExpiredScreenViewModel
 import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel
 import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreenViewModel
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel
@@ -80,26 +78,6 @@ val viewModelModule =
 
         viewModel {
             MembersScreenViewModel(
-                converter = get(),
-                memberUseCase = get(),
-                attendanceUseCase = get(),
-                authUseCase = get(),
-                navigationService = get(),
-            )
-        }
-
-        viewModel {
-            MembersExpiredScreenViewModel(
-                converter = get(),
-                memberUseCase = get(),
-                attendanceUseCase = get(),
-                authUseCase = get(),
-                navigationService = get(),
-            )
-        }
-
-        viewModel {
-            MembersActiveScreenViewModel(
                 converter = get(),
                 memberUseCase = get(),
                 attendanceUseCase = get(),

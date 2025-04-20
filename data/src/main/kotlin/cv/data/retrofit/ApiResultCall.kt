@@ -22,7 +22,7 @@ internal class ApiResultCall<D>(
                             in 200..208 -> {
                                 callback.onResponse(
                                     this@ApiResultCall,
-                                    Response.success(ApiResult.Success(it))
+                                    Response.success(ApiResult.Success(it)),
                                 )
                             }
                             in 400..409 -> {
@@ -34,7 +34,7 @@ internal class ApiResultCall<D>(
                         }
                     } ?: callback.onResponse(
                         this@ApiResultCall,
-                        Response.success(ApiResult.Error(ApiError.SERVER))
+                        Response.success(ApiResult.Error(ApiError.SERVER)),
                     )
                 }
 
@@ -44,7 +44,7 @@ internal class ApiResultCall<D>(
                 ) {
                     callback.onResponse(
                         this@ApiResultCall,
-                        Response.success(ApiResult.Error(ApiError.UNKNOWN))
+                        Response.success(ApiResult.Error(ApiError.UNKNOWN)),
                     )
                     call.cancel()
                 }

@@ -1,15 +1,11 @@
 package com.ndemi.garden.gym.ui.widgets.attendance
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.AlertDialog
@@ -26,17 +22,15 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockAttendanceEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.border_radius
-import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
+import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
-import com.ndemi.garden.gym.ui.widgets.TextRegular
-import com.ndemi.garden.gym.ui.widgets.TextSmall
+import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.AttendanceEntity
 import org.joda.time.DateTime
 
@@ -45,7 +39,7 @@ fun AttendanceWidget(
     modifier: Modifier = Modifier,
     attendanceEntity: AttendanceEntity,
     canDeleteAttendance: Boolean = false,
-    onDeleteAttendance: (AttendanceEntity)-> Unit = {},
+    onDeleteAttendance: (AttendanceEntity) -> Unit = {},
 ) {
     val startDate = DateTime(attendanceEntity.startDateMillis)
     val endDate = DateTime(attendanceEntity.endDateMillis)
@@ -53,64 +47,62 @@ fun AttendanceWidget(
 
     Column(
         modifier =
-        modifier
-            .padding(horizontal = padding_screen)
-            .padding(top = padding_screen_small)
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .background(
-                color = AppTheme.colors.backgroundCard,
-                shape = RoundedCornerShape(border_radius)
-            )
-            .border(
-                width = line_thickness,
-                color = AppTheme.colors.backgroundCardBorder,
-                shape = RoundedCornerShape(border_radius),
-            )
-            .padding(padding_screen_small),
+            modifier
+                .padding(horizontal = padding_screen)
+                .padding(top = padding_screen_small)
+                .toAppCardStyle(),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            TextSmall(
+            TextWidget(
                 text = startDate.toString(formatDateDay),
+                style = AppTheme.textStyles.small,
             )
             if (canDeleteAttendance) {
                 Icon(
                     modifier = Modifier.clickable { showDialog = !showDialog },
                     imageVector = Icons.Default.Clear,
-                    tint = AppTheme.colors.highLight,
-                    contentDescription = stringResource(id = R.string.txt_delete)
+                    tint = AppTheme.colors.primary,
+                    contentDescription = stringResource(id = R.string.txt_delete),
                 )
             }
         }
         Row(
-            modifier = Modifier
-                .padding(top = padding_screen_small)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(top = padding_screen_small)
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            TextRegular(
-                text = startDate.toString(formatTime)
-                        + " - "
-                        + endDate.toString(formatTime),
+            TextWidget(
+                text =
+                    startDate.toString(formatTime) +
+                        " - " +
+                        endDate.toString(formatTime),
             )
 
-            TextRegular(
+            TextWidget(
                 text = endDate.toActiveStatusDuration(startDate),
             )
 
-            if (showDialog){
+            if (showDialog) {
                 AlertDialog(
                     containerColor = AppTheme.colors.backgroundButtonDisabled,
-                    title = { TextSmall(text = stringResource(R.string.txt_are_you_sure)) },
+                    title = {
+                        TextWidget(
+                            text = stringResource(R.string.txt_are_you_sure),
+                            style = AppTheme.textStyles.regularBold,
+                        )
+                    },
                     text = {
-                        TextRegular(
-                            text = stringResource(R.string.txt_are_you_sure_delete_attendance)
+                        TextWidget(
+                            text = stringResource(R.string.txt_are_you_sure_delete_attendance),
                         )
                     },
                     onDismissRequest = { showDialog = !showDialog },
@@ -124,7 +116,7 @@ fun AttendanceWidget(
                         ButtonWidget(title = stringResource(R.string.txt_cancel)) {
                             showDialog = !showDialog
                         }
-                    }
+                    },
                 )
             }
         }
@@ -133,7 +125,7 @@ fun AttendanceWidget(
 
 @AppPreview
 @Composable
-fun AttendanceWidgetPreview() {
+private fun AttendanceWidgetPreview() {
     AppThemeComposable {
         AttendanceWidget(attendanceEntity = getMockAttendanceEntity())
     }

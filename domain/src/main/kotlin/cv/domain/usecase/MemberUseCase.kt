@@ -23,74 +23,72 @@ class MemberUseCase(
     private val memberRepository: MemberRepository,
     private val analyticsRepository: AnalyticsRepository,
 ) {
-    suspend fun getMember() =
-        memberRepository.getMember()
+    suspend fun getMemberById(memberId: String) = memberRepository.getMemberById(memberId = memberId)
 
-    suspend fun getMemberById(memberId: String) =
-        memberRepository.getMemberById(memberId = memberId)
+    suspend fun getAllMembers() = memberRepository.getAllMembers(isActiveNow = false)
 
-    suspend fun getAllMembers() =
-        memberRepository.getAllMembers(isActiveNow = false)
+    suspend fun getLiveMembers() = memberRepository.getAllMembers(isActiveNow = true)
 
-    suspend fun getLiveMembers() =
-        memberRepository.getAllMembers(isActiveNow = true)
-
-    suspend fun getExpiredMembers() =
-        memberRepository.getExpiredMembers()
+    suspend fun getExpiredMembers() = memberRepository.getExpiredMembers()
 
     suspend fun updateMember(
         memberEntity: MemberEntity,
-        updateType: UpdateType
+        updateType: UpdateType,
     ): DomainResult<Boolean> {
-        when(updateType){
+        when (updateType) {
             UpdateType.ADMIN_REGISTRATION -> {
                 analyticsRepository.logEvent(
                     eventName = EVENT_REGISTRATION,
-                    params = listOf(
-                        Pair(PARAM_REGISTRATION_ADMIN, memberEntity.id)
-                    )
+                    params =
+                        listOf(
+                            Pair(PARAM_REGISTRATION_ADMIN, memberEntity.id),
+                        ),
                 )
             }
             UpdateType.SELF_REGISTRATION -> {
                 analyticsRepository.logEvent(
                     eventName = EVENT_REGISTRATION,
-                    params = listOf(
-                        Pair(PARAM_REGISTRATION_SELF, memberEntity.id)
-                    )
+                    params =
+                        listOf(
+                            Pair(PARAM_REGISTRATION_SELF, memberEntity.id),
+                        ),
                 )
             }
             UpdateType.MEMBERSHIP -> {
                 analyticsRepository.logEvent(
                     eventName = EVENT_MEMBERSHIP,
-                    params = listOf(
-                        Pair(PARAM_MEMBERSHIP_ADDED, memberEntity.id)
-                    )
+                    params =
+                        listOf(
+                            Pair(PARAM_MEMBERSHIP_ADDED, memberEntity.id),
+                        ),
                 )
             }
 
             UpdateType.PHOTO_DELETE -> {
                 analyticsRepository.logEvent(
                     eventName = EVENT_PHOTO,
-                    params = listOf(
-                        Pair(PARAM_PHOTO_DELETE, memberEntity.id)
-                    )
+                    params =
+                        listOf(
+                            Pair(PARAM_PHOTO_DELETE, memberEntity.id),
+                        ),
                 )
             }
             UpdateType.ACTIVE_SESSION -> {
-                val paramName = if (memberEntity.isActiveNow()){
-                    PARAM_ACTIVE_SESSION_TRUE
-                } else {
-                    PARAM_ACTIVE_SESSION_FALSE
-                }
+                val paramName =
+                    if (memberEntity.isActiveNow()) {
+                        PARAM_ACTIVE_SESSION_TRUE
+                    } else {
+                        PARAM_ACTIVE_SESSION_FALSE
+                    }
                 analyticsRepository.logEvent(
                     eventName = EVENT_ACTIVE,
-                    params = listOf( Pair(paramName, memberEntity.id))
+                    params = listOf(Pair(paramName, memberEntity.id)),
                 )
             }
             UpdateType.MEMBER -> {
                 analyticsRepository.logEvent(
                     eventName = EVENT_MEMBER_UPDATE,
-                    params = listOf( Pair(PARAM_MEMBER_UPDATE, memberEntity.id))
+                    params = listOf(Pair(PARAM_MEMBER_UPDATE, memberEntity.id)),
                 )
             }
         }
@@ -100,10 +98,14 @@ class MemberUseCase(
     suspend fun deleteMember(memberEntity: MemberEntity): DomainResult<Unit> {
         analyticsRepository.logEvent(
             eventName = EVENT_MEMBER_DELETE,
-            params = listOf(
-                Pair(PARAM_MEMBER_DELETE, memberEntity.id
-                        + " - " + memberEntity.getFullName())
-            )
+            params =
+                listOf(
+                    Pair(
+                        PARAM_MEMBER_DELETE,
+                        memberEntity.id +
+                            " - " + memberEntity.getFullName(),
+                    ),
+                ),
         )
         return memberRepository.deleteMember(memberEntity)
     }

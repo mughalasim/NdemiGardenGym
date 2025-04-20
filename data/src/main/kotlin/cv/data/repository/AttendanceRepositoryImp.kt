@@ -26,23 +26,24 @@ class AttendanceRepositoryImp(
     private val pathAttendance: String,
     private val logger: AppLoggerRepository,
 ) : AttendanceRepository {
-
     override suspend fun getAttendances(
         isMembersAttendances: Boolean,
         memberId: String,
         year: Int,
-        month: Int
+        month: Int,
     ): DomainResult<Pair<List<AttendanceEntity>, Int>> {
-        val setMemberId = memberId.ifEmpty {
-            firebaseAuth.currentUser?.uid ?: run {
-                logger.log("Not Authorised", AppLogLevel.ERROR)
-                return DomainResult.Error(DomainError.UNAUTHORISED)
+        val setMemberId =
+            memberId.ifEmpty {
+                firebaseAuth.currentUser?.uid ?: run {
+                    logger.log("Not Authorised", AppLogLevel.ERROR)
+                    return DomainResult.Error(DomainError.UNAUTHORISED)
+                }
             }
-        }
-        val reference = firebaseFirestore
-            .collection(pathAttendance)
-            .document(year.toString())
-            .collection(month.toString())
+        val reference =
+            firebaseFirestore
+                .collection(pathAttendance)
+                .document(year.toString())
+                .collection(month.toString())
 
         val completable: CompletableDeferred<DomainResult<Pair<List<AttendanceEntity>, Int>>> =
             CompletableDeferred()
@@ -50,23 +51,23 @@ class AttendanceRepositoryImp(
             .addOnSuccessListener { document ->
                 logger.log("Data received: $document")
                 val response = document.toObjects<AttendanceModel>()
-                val list = response
-                    .map { it.toAttendanceEntity() }
-                    .sortedByDescending { it.startDateMillis }
-                    .filter { it.memberId == setMemberId && isMembersAttendances }
+                val list =
+                    response
+                        .map { it.toAttendanceEntity() }
+                        .sortedByDescending { it.startDateMillis }
+                        .filter { it.memberId == setMemberId && isMembersAttendances }
 
                 var totalMinutes = 0
                 list.forEach {
                     totalMinutes +=
                         Minutes.minutesBetween(
                             DateTime(it.startDateMillis),
-                            DateTime(it.endDateMillis)
+                            DateTime(it.endDateMillis),
                         ).minutes
                 }
                 completable.complete(
-                    DomainResult.Success(Pair(list, totalMinutes))
+                    DomainResult.Success(Pair(list, totalMinutes)),
                 )
-
             }.addOnFailureListener {
                 logger.log("Exception: $it", AppLogLevel.ERROR)
                 completable.complete(DomainResult.Error(it.toDomainError()))
@@ -78,14 +79,15 @@ class AttendanceRepositoryImp(
     override suspend fun addAttendance(
         memberId: String,
         startDate: Date,
-        endDate: Date
+        endDate: Date,
     ): DomainResult<Unit> {
-        val setMemberId = memberId.ifEmpty {
-            firebaseAuth.currentUser?.uid ?: run {
-                logger.log("Not Authorised", AppLogLevel.ERROR)
-                return DomainResult.Error(DomainError.UNAUTHORISED)
+        val setMemberId =
+            memberId.ifEmpty {
+                firebaseAuth.currentUser?.uid ?: run {
+                    logger.log("Not Authorised", AppLogLevel.ERROR)
+                    return DomainResult.Error(DomainError.UNAUTHORISED)
+                }
             }
-        }
 
         val startDateTime = DateTime(startDate)
         val endDateTime = DateTime(endDate)
@@ -97,23 +99,24 @@ class AttendanceRepositoryImp(
             return DomainResult.Error(DomainError.INVALID_SESSION_TIME)
         }
 
-        val attendanceModel = AttendanceModel(
-            memberId = setMemberId,
-            startDate = Timestamp(startDate),
-            endDate = Timestamp(endDate)
-        )
-        val collection = firebaseFirestore
-            .collection(pathAttendance)
-            .document(startDateTime.year.toString())
-            .collection(startDateTime.monthOfYear.toString())
-            .document(attendanceModel.getAttendanceId())
+        val attendanceModel =
+            AttendanceModel(
+                memberId = setMemberId,
+                startDate = Timestamp(startDate),
+                endDate = Timestamp(endDate),
+            )
+        val collection =
+            firebaseFirestore
+                .collection(pathAttendance)
+                .document(startDateTime.year.toString())
+                .collection(startDateTime.monthOfYear.toString())
+                .document(attendanceModel.getAttendanceId())
 
         val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
         collection.set(attendanceModel)
             .addOnSuccessListener {
                 logger.log("Attendance Added")
                 completable.complete(DomainResult.Success(Unit))
-
             }.addOnFailureListener {
                 logger.log("Exception: $it", AppLogLevel.ERROR)
                 completable.complete(DomainResult.Error(it.toDomainError()))
@@ -122,24 +125,22 @@ class AttendanceRepositoryImp(
         return completable.await()
     }
 
-    override suspend fun deleteAttendance(
-        attendanceEntity: AttendanceEntity
-    ): DomainResult<Unit> {
+    override suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit> {
         val attendanceModel = attendanceEntity.toAttendanceModel()
         val startDateTime = DateTime(attendanceEntity.startDateMillis)
 
-        val collection = firebaseFirestore
-            .collection(pathAttendance)
-            .document(startDateTime.year.toString())
-            .collection(startDateTime.monthOfYear.toString())
-            .document(attendanceModel.getAttendanceId())
+        val collection =
+            firebaseFirestore
+                .collection(pathAttendance)
+                .document(startDateTime.year.toString())
+                .collection(startDateTime.monthOfYear.toString())
+                .document(attendanceModel.getAttendanceId())
 
         val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
         collection.delete()
             .addOnSuccessListener {
                 logger.log("Attendance Deleted")
                 completable.complete(DomainResult.Success(Unit))
-
             }.addOnFailureListener {
                 logger.log("Exception: $it", AppLogLevel.ERROR)
                 completable.complete(DomainResult.Error(it.toDomainError()))

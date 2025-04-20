@@ -8,18 +8,20 @@ import cv.domain.Variables.EVENT_ERROR
 import cv.domain.Variables.PARAM_DOMAIN
 import cv.domain.repositories.AnalyticsRepository
 
-interface ErrorCodeConverter{
+interface ErrorCodeConverter {
     fun getMessage(domainError: DomainError): String
+
     fun getMessage(uiError: UiError): String
 }
 
-class ErrorCodeConverterImp (
+class ErrorCodeConverterImp(
     private val application: Application,
     private val analyticsRepository: AnalyticsRepository,
-): ErrorCodeConverter {
+) : ErrorCodeConverter {
     override fun getMessage(domainError: DomainError): String {
-        analyticsRepository.logEvent(EVENT_ERROR,
-            listOf( Pair (PARAM_DOMAIN, domainError.name))
+        analyticsRepository.logEvent(
+            EVENT_ERROR,
+            listOf(Pair(PARAM_DOMAIN, domainError.name)),
         )
         return when (domainError) {
             DomainError.UNKNOWN -> application.resources.getString(R.string.error_unknown)
@@ -33,6 +35,7 @@ class ErrorCodeConverterImp (
             DomainError.INVALID_LOGIN_CREDENTIALS -> application.resources.getString(R.string.error_invalid_credentials)
             DomainError.USER_DISABLED -> application.resources.getString(R.string.error_account_disabled)
             DomainError.INVALID_SESSION_TIME -> application.resources.getString(R.string.error_workout_session_length)
+            DomainError.UPLOAD_FAILURE -> application.resources.getString(R.string.error_upload_failure)
         }
     }
 

@@ -26,6 +26,12 @@ data class AppTextStyles(
             fontWeight = FontWeight.ExtraBold,
             fontSize = text_size_regular,
         ),
+    val large: TextStyle =
+        TextStyle(
+            fontFamily = localFontFamily,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = text_size_large,
+        ),
 )
 
 val LocalTextStyles = staticCompositionLocalOf { AppTextStyles() }

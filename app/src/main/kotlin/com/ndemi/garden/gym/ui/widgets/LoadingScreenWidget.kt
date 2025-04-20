@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.icon_image_size
+import com.ndemi.garden.gym.ui.theme.icon_size_small
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
@@ -20,24 +20,24 @@ fun LoadingScreenWidget() {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         CircularProgressIndicator(
-            modifier = Modifier
-                .width(icon_image_size)
-                .height(icon_image_size)
+            modifier =
+                Modifier
+                    .width(icon_size_small)
+                    .height(icon_size_small),
         )
-        TextRegular(
+        TextWidget(
             modifier = Modifier.padding(top = padding_screen),
-            text = "Loading... Please wait..."
+            text = "Loading... Please wait...",
         )
     }
 }
 
-
 @AppPreview
 @Composable
-fun LoadingScreenWidgetPreview() {
+private fun LoadingScreenWidgetPreview() {
     AppThemeComposable {
         LoadingScreenWidget()
     }

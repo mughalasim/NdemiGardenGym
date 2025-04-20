@@ -17,15 +17,16 @@
     <string name="error_registration_failed">Registration failed</string>
     <string name="error_invalid_info">Information supplied is invalid</string>
     <string name="error_email_already_exists">The supplied email already exists</string>
+    <string name="error_email_not_verified">Your email address has not been verified</string>
     <string name="error_password_length">Password must be at least 6 characters in length</string>
     <string name="error_account_disabled">Your account has been disabled, please contact the administration</string>
     <string name="error_workout_session_length">Cannot update your workout session as it is either too short or longer than a day</string>
     <string name="error_apartment_number">Apartment number is invalid, Leave blank if not a resident</string>
     <string name="error_past_date_set">You cannot set a date in the past</string>
-    <string name="error_invalid_amount">Amount entered is invalid, set any number above 0</string>
-    <string name="error_invalid_month_duration">The month duration is invalid, set any number above 0</string>
+    <string name="error_invalid_amount">Amount entered is invalid</string>
+    <string name="error_invalid_month_duration">The month duration is invalid</string>
     <string name="error_invalid_phone_number">The phone number is invalid, leave blank if not present</string>
-    <string name="error_failed_to_open_link">Failed to open link, please try again later</string>
+    <string name="error_upload_failure">Failed to upload your file, please check your internet connection</string>
 
     <!-- Text within screens-->
     <string name="txt_ok">OK</string>
@@ -38,9 +39,11 @@
     <string name="txt_register_new_member">Register a new member</string>
     <string name="txt_your_attendances">Your Attendances</string>
 
-    <string name="txt_profile">Profile</string>
+    <string name="txt_profile">My profile</string>
     <string name="txt_active_members">Active Members</string>
+    <string name="txt_active">Active</string>
     <string name="txt_inactive_members">Inactive Members</string>
+    <string name="txt_inactive">Inactive</string>
     <string name="txt_expired_memberships">Expired memberships</string>
     <string name="txt_in_the_gym">In the Gym</string>
     <string name="txt_edit_member">Edit Member</string>
@@ -66,7 +69,7 @@
     <string name="txt_no_attendances">No Attendances for the selected month</string>
     <string name="txt_who_is_in">Who\'s in the Gym today?</string>
     <string name="txt_no_one_is_in">Oh no! No one\'s in, why don\'t you be the first?</string>
-    <string name="txt_login_desc">Welcome to %1$s App, Please enter your login details to proceed</string>
+    <string name="txt_login_desc">Hi there! Nice to see you again.</string>
     <string name="txt_app_version">"App version: "</string>
     <string name="txt_view_payments">View Payments</string>
     <string name="txt_view_attendance">View Attendance</string>
@@ -111,14 +114,15 @@
     <string name="txt_payments_add_select_date">Select the date a payment was made</string>
     <string name="txt_payments_add_select_duration">How many months is the subscription for?</string>
     <string name="txt_payments_add_month_duration">Month duration</string>
-    <string name="txt_payments_add_amount_paid">Enter the amount paid</string>
+    <string name="txt_payments_add_amount_paid">Enter the amount paid (%1$s)</string>
     <string name="txt_amount">Amount</string>
     <string name="txt_add_payment">Add Payment</string>
     <string name="txt_amount_due">Amount due</string>
     <string name="txt_app_update_title">App update required</string>
-    <string name="txt_app_update_desc">Looks like you are using an outdated version of the app, please tap the download button below to get redirected to the latest version</string>
+    <string name="txt_app_update_desc">Looks like you are using an outdated version of the app. Kindly update and restart.</string>
     <string name="txt_download">Download</string>
-    <string name="txt_search_members">Search members</string>
+    <string name="txt_search_members">Search amongst %1$s members</string>
+    <string name="txt_select">Select</string>
 
     <!-- Plurals-->
     <plurals name="plural_months">

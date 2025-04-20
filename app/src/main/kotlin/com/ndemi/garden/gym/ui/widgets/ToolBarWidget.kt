@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
@@ -35,57 +35,62 @@ fun ToolBarWidget(
     val backgroundColor = AppTheme.colors.backgroundButtonDisabled
     Row(
         modifier =
-        Modifier
-            .shadow(elevation = padding_screen_tiny)
-            .background(backgroundColor)
-            .padding(padding_screen_small)
-            .fillMaxWidth(),
+            Modifier
+                .shadow(elevation = padding_screen_tiny)
+                .background(backgroundColor)
+                .padding(padding_screen)
+                .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         Icon(
-            modifier = Modifier
-                .clickable(
-                    enabled = canNavigateBack
-                ) { onBackPressed.invoke() },
+            modifier =
+                Modifier
+                    .clickable(
+                        enabled = canNavigateBack,
+                    ) { onBackPressed.invoke() },
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            tint = if(canNavigateBack) {
-                AppTheme.colors.textPrimary
-            } else {
-                backgroundColor
-            },
-            contentDescription = null
+            tint =
+                if (canNavigateBack) {
+                    AppTheme.colors.textPrimary
+                } else {
+                    backgroundColor
+                },
+            contentDescription = null,
         )
-        TextRegularBold(
+        TextWidget(
             modifier = Modifier.weight(1f),
             text = title,
             color = AppTheme.colors.textPrimary,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            style = AppTheme.textStyles.regularBold,
         )
         Icon(
-            modifier = Modifier
-                .clickable(
-                    enabled = secondaryIcon != null
-                ){ onSecondaryIconPressed.invoke() },
+            modifier =
+                Modifier
+                    .clickable(
+                        enabled = secondaryIcon != null,
+                    ) { onSecondaryIconPressed.invoke() },
             imageVector = secondaryIcon ?: Icons.Default.Settings,
-            tint = if(secondaryIcon != null) {
-                AppTheme.colors.textPrimary
-            } else {
-                backgroundColor
-            },
-            contentDescription = null
+            tint =
+                if (secondaryIcon != null) {
+                    AppTheme.colors.textPrimary
+                } else {
+                    backgroundColor
+                },
+            contentDescription = null,
         )
     }
 }
 
 @AppPreview
 @Composable
-fun ToolBarWidgetPreview() {
+private fun ToolBarWidgetPreview() {
     AppThemeComposable {
         Column {
             ToolBarWidget(
                 title = "Test Toolbar",
-                canNavigateBack = true
+                canNavigateBack = true,
             )
             ToolBarWidget(
                 title = "Test Toolbar",
@@ -94,7 +99,7 @@ fun ToolBarWidgetPreview() {
                 title = "Extra button",
                 canNavigateBack = true,
                 secondaryIcon = Icons.Default.Delete,
-                onSecondaryIconPressed = {}
+                onSecondaryIconPressed = {},
             )
         }
     }

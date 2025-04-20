@@ -2,13 +2,22 @@ package com.ndemi.garden.gym.ui.utils
 
 import android.content.res.Resources
 import android.telephony.PhoneNumberUtils
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.os.ConfigurationCompat
 import androidx.core.text.isDigitsOnly
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.ui.theme.AppTheme
+import com.ndemi.garden.gym.ui.theme.border_radius
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.DateConstants.DAYS_IN_MONTH
 import com.ndemi.garden.gym.ui.utils.DateConstants.HOUR_IN_DAY
 import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
@@ -37,18 +46,21 @@ fun Long?.toMembershipStatusString(): String {
 
 @Composable
 fun DateTime.toActiveStatusDuration(startDate: DateTime): String {
-    val hours = Hours.hoursBetween(
-        startDate.toInstant(),
-        this.toInstant()
-    ).hours
-    val minutes = Minutes.minutesBetween(
-        startDate.toInstant(),
-        this.toInstant()
-    ).minutes % MINUTES_IN_HOUR
-    val seconds = Seconds.secondsBetween(
-        startDate.toInstant(),
-        this.toInstant()
-    ).seconds % SECONDS_IN_HOUR
+    val hours =
+        Hours.hoursBetween(
+            startDate.toInstant(),
+            this.toInstant(),
+        ).hours
+    val minutes =
+        Minutes.minutesBetween(
+            startDate.toInstant(),
+            this.toInstant(),
+        ).minutes % MINUTES_IN_HOUR
+    val seconds =
+        Seconds.secondsBetween(
+            startDate.toInstant(),
+            this.toInstant(),
+        ).seconds % SECONDS_IN_HOUR
 
     val hoursString = String.format(pluralStringResource(R.plurals.plural_hours, hours), hours)
     val minutesString =
@@ -65,15 +77,17 @@ fun DateTime.toActiveStatusDuration(startDate: DateTime): String {
 
 @Composable
 fun DateTime.toDaysDuration(): String {
-    val days = Days.daysBetween(
-        DateTime.now().toInstant(),
-        this.toInstant()
-    ).days
+    val days =
+        Days.daysBetween(
+            DateTime.now().toInstant(),
+            this.toInstant(),
+        ).days
 
-    val hours = Hours.hoursBetween(
-        DateTime.now().toInstant(),
-        this.toInstant()
-    ).hours
+    val hours =
+        Hours.hoursBetween(
+            DateTime.now().toInstant(),
+            this.toInstant(),
+        ).hours
 
     val daysString = String.format(pluralStringResource(R.plurals.plural_days, days), days)
 
@@ -90,25 +104,29 @@ fun DateTime.toDaysDuration(): String {
 fun DateTime.toPaymentPlanDuration(): String {
     if (this.isBeforeNow) return stringResource(id = R.string.txt_expired)
 
-    val months = Months.monthsBetween(
-        DateTime.now().toInstant(),
-        this.toInstant()
-    ).months
+    val months =
+        Months.monthsBetween(
+            DateTime.now().toInstant(),
+            this.toInstant(),
+        ).months
 
-    val totalDays = Days.daysBetween(
-        DateTime.now().toInstant(),
-        this.toInstant()
-    ).days
+    val totalDays =
+        Days.daysBetween(
+            DateTime.now().toInstant(),
+            this.toInstant(),
+        ).days
 
-    val daysLeft = Days.daysBetween(
-        DateTime.now().toInstant(),
-        this.toInstant()
-    ).days % DAYS_IN_MONTH
+    val daysLeft =
+        Days.daysBetween(
+            DateTime.now().toInstant(),
+            this.toInstant(),
+        ).days % DAYS_IN_MONTH
 
-    val hours = Hours.hoursBetween(
-        DateTime.now().toInstant(),
-        this.toInstant()
-    ).hours
+    val hours =
+        Hours.hoursBetween(
+            DateTime.now().toInstant(),
+            this.toInstant(),
+        ).hours
 
     val monthsString =
         String.format(pluralStringResource(R.plurals.plural_months, months), months)
@@ -126,8 +144,17 @@ fun DateTime.toPaymentPlanDuration(): String {
     }
 }
 
-fun Double.toAmountString(): String =
-    DecimalFormat("${BuildConfig.CURRENCY_CODE} #,###").format(this)
+@Composable
+fun Modifier.toAppCardStyle() =
+    this.fillMaxWidth()
+        .wrapContentHeight()
+        .background(
+            color = AppTheme.colors.backgroundCard,
+            shape = RoundedCornerShape(border_radius),
+        )
+        .padding(padding_screen_small)
+
+fun Double.toAmountString(): String = DecimalFormat("${BuildConfig.CURRENCY_CODE} #,###").format(this)
 
 fun String.toPhoneNumberString(): String =
     if (this.isEmpty()) {
@@ -136,11 +163,9 @@ fun String.toPhoneNumberString(): String =
         PhoneNumberUtils.formatNumber(this, appLocale.country)
     }
 
-fun String.isValidApartmentNumber(): Boolean =
-    this.matches(Regex("^[A-Da-d](?:[1-9][0-4][0-4][0-4]?|1404)\$"))
+fun String.isValidApartmentNumber(): Boolean = this.matches(Regex("^[A-Da-d](?:[1-9][0-4][0-4][0-4]?|1404)\$"))
 
-fun String.isValidPhoneNumber(): Boolean =
-    this.length == PHONE_NUMBER_DIGITS && this.isDigitsOnly() && this.first() == '0'
+fun String.isValidPhoneNumber(): Boolean = this.length == PHONE_NUMBER_DIGITS && this.isDigitsOnly() && this.first() == '0'
 
 object DateConstants {
     val appLocale =
@@ -149,7 +174,6 @@ object DateConstants {
 
     val formatDayMonthYear: DateTimeFormatter =
         DateTimeFormat.forPattern("dd MMMM yyyy").withLocale(appLocale)
-
 
     val formatDateDay: DateTimeFormatter =
         DateTimeFormat.forPattern("d EEEE").withLocale(appLocale)

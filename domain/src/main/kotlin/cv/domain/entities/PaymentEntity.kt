@@ -1,6 +1,6 @@
 package cv.domain.entities
 
-data class PaymentEntity (
+data class PaymentEntity(
     val paymentId: String,
     val memberId: String,
     val startDateMillis: Long,

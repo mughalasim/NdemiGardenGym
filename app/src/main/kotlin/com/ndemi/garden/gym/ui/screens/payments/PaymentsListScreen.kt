@@ -16,7 +16,7 @@ import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAmountString
-import com.ndemi.garden.gym.ui.widgets.TextRegular
+import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.payments.PaymentWidget
 import cv.domain.entities.PaymentEntity
 
@@ -29,23 +29,25 @@ fun PaymentsListScreen(
 ) {
     Column {
         Row {
-            TextRegular(
-                modifier = Modifier
-                    .padding(horizontal = padding_screen)
-                    .padding(top = padding_screen_small)
-                    .fillMaxWidth(),
-                text = stringResource(
-                    R.string.txt_total_amount,
-                    totalAmount.toAmountString()
-                ),
-                textAlign = TextAlign.End
+            TextWidget(
+                modifier =
+                    Modifier
+                        .padding(horizontal = padding_screen)
+                        .padding(top = padding_screen_small)
+                        .fillMaxWidth(),
+                text =
+                    stringResource(
+                        R.string.txt_total_amount,
+                        totalAmount.toAmountString(),
+                    ),
+                textAlign = TextAlign.End,
             )
         }
         repeat(payments.size) {
             PaymentWidget(
                 paymentEntity = payments[it],
                 canDeletePayment = canDeletePayment,
-                onDeletePayment = onDeletePayment
+                onDeletePayment = onDeletePayment,
             )
         }
     }
@@ -53,16 +55,17 @@ fun PaymentsListScreen(
 
 @AppPreview
 @Composable
-fun PaymentPlanListScreenPreview() {
+private fun PaymentPlanListScreenPreview() {
     AppThemeComposable {
         PaymentsListScreen(
-            payments = listOf(
-                getMockActivePaymentEntity(),
-                getMockActivePaymentEntity(),
-                getMockExpiredPaymentEntity()
-            ),
+            payments =
+                listOf(
+                    getMockActivePaymentEntity(),
+                    getMockActivePaymentEntity(),
+                    getMockExpiredPaymentEntity(),
+                ),
             totalAmount = 1200.0,
-            canDeletePayment = false
+            canDeletePayment = false,
         )
     }
 }
