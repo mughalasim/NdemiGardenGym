@@ -1,6 +1,6 @@
 # Ndemi Garden Gym App
 
-A pure kotlin Android application that allows an admin/ gym coach to register, track attendance and track membership payment plans for new gym members.
+Pure Kotlin application that follows the latest architecture, design patterns and best practices.
 
 Download the sample
 app [here](https://github.com/mughalasim/NdemiGardenGym/raw/master/release/Ndemi%20Garden%20Gym.apk)
@@ -8,51 +8,51 @@ app [here](https://github.com/mughalasim/NdemiGardenGym/raw/master/release/Ndemi
 ## Features
 
 *Basic App functionality*
-- Available app updates are prompted by the app
-- Instant UI update when Member type changed without logging out
+- Flow attached to user state and app version to update UI if app version changes, user is authenticated or updated
 - Supports Light and Dark Theme
 
-*Basic functionality for Admin user*
+*Functionality for Admin user*
 - Register and manage a new members information
 - Track and manage each members gym attendance
 - Track and manage each members membership payment plan
-- Search member by name
+- Search for all members
 - View who is in the gym
 
-*Basic functionality for Members*
-- Can register sign up and reset their password
-- Can upload a profile picture
+*Functionality for Members*
+- Can sign up and reset their password
+- Can update a profile picture
 - Can view their profile, membership renewal date and gym attendance
 - Can view who is in the gym
 - Can view total time spent in the gym each month
 
-*Basic functionality for a Supervisor*
+*Functionality for a Supervisor*
 - Can view all members
 - Can view each members attendance
 - Can view each members monthly payments
-- Can search members by name
+- Can search for all members
 
-## Release notes
-Get the release notes [here](https://github.com/mughalasim/NdemiGardenGym/releases)
+## Admin Previews
 
-## Preview
+<p float="left">
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc1.png" width="180" />
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc2.png" width="180" /> 
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc3.png" width="180" />
+</p>
+<p float="left">
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc4.png" width="180" />
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc5.png" width="180" /> 
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc6.png" width="180" />
+</p>
+<p float="left">
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc7.png" width="180" />
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc8.png" width="180" /> 
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc9.png" width="180" />
+</p>
 
-<img
-src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc1.png"
-width="180" height="400" alt="null"
-/>
+## User Previews
 
-<img
-src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc2.png"
-width="180" height="400" alt="null"
-/>
-
-<img
-src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc3.png"
-width="180" height="400" alt="null"
-/>
-
-<img
-src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc4.png"
-width="180" height="400" alt="null"
-/>
+<p float="left">
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc10.png" width="180" />
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc11.png" width="180" /> 
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc12.png" width="180" />
+</p>

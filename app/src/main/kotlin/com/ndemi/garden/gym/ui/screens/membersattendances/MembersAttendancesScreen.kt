@@ -2,7 +2,6 @@ package com.ndemi.garden.gym.ui.screens.membersattendances
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,12 +18,10 @@ import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceListScreen
 import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreenViewModel.UiState
-import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
-import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.SnackbarType
-import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
+import com.ndemi.garden.gym.ui.widgets.YearSelectionWidget
 import org.joda.time.DateTime
 import org.koin.androidx.compose.koinViewModel
 
@@ -33,6 +30,7 @@ import org.koin.androidx.compose.koinViewModel
 fun MembersAttendancesScreen(
     memberId: String,
     memberName: String,
+    // TODO - Consolidate the view model to one
     viewModel: MembersAttendancesScreenViewModel = koinViewModel<MembersAttendancesScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
@@ -41,6 +39,7 @@ fun MembersAttendancesScreen(
 
     LaunchedEffect(true) { viewModel.getAttendances(memberId, selectedDate) }
 
+    // TODO - Make the view shared
     Column {
         ToolBarWidget(title = stringResource(R.string.txt_attendance_for, memberName), canNavigateBack = true) {
             viewModel.navigateBack()
@@ -52,9 +51,9 @@ fun MembersAttendancesScreen(
                 message = (uiState.value as UiState.Error).message,
             )
         }
-
-        DateSelectionWidget(selectedDate, false) {
-            selectedDate = it
+// TODO - Fix the year selection here
+        YearSelectionWidget("selectedDate", false) {
+//            selectedDate = it
             viewModel.getAttendances(memberId, selectedDate)
         }
 
@@ -66,16 +65,12 @@ fun MembersAttendancesScreen(
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 if (uiState.value is UiState.Success) {
                     val result = (uiState.value as UiState.Success)
-                    if (result.attendances.isEmpty()) {
-                        TextWidget(
-                            modifier = Modifier.padding(padding_screen),
-                            text = stringResource(R.string.txt_no_attendances),
-                        )
-                    } else {
+                    for (attendanceMonthly in result.attendancesMonthly) {
                         AttendanceListScreen(
-                            attendances = result.attendances,
+                            monthName = attendanceMonthly.monthName,
+                            attendances = attendanceMonthly.attendances,
                             canDeleteAttendance = viewModel.hasAdminRights(),
-                            totalMinutes = result.totalMinutes,
+                            totalMinutes = attendanceMonthly.totalMinutes,
                         ) {
                             viewModel.deleteAttendance(it)
                         }

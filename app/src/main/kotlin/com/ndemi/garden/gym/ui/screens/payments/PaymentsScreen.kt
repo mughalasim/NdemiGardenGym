@@ -7,7 +7,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -21,11 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel.UiState
-import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
-import com.ndemi.garden.gym.ui.widgets.ButtonWidget
-import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
+import com.ndemi.garden.gym.ui.widgets.YearSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
@@ -73,9 +71,9 @@ fun PaymentsScreen(
                 message = (uiState.value as UiState.Error).message,
             )
         }
-
-        DateSelectionWidget(selectedDate, true) {
-            selectedDate = it
+// TODO - Fix the year selection here
+        YearSelectionWidget("selectedDate", true) {
+//            selectedDate = it
             viewModel.getPaymentsForMember(memberId, selectedDate)
         }
 
@@ -109,18 +107,13 @@ fun PaymentsScreen(
     }
 
     if (showDialog) {
-        AlertDialog(
-            containerColor = AppTheme.colors.backgroundButtonDisabled,
-            text = {
-                TextWidget(
-                    text = stringResource(R.string.txt_cannot_add_payment),
-                )
-            },
-            onDismissRequest = { showDialog = !showDialog },
-            confirmButton = {
-                ButtonWidget(title = stringResource(id = R.string.txt_ok)) {
-                    showDialog = !showDialog
-                }
+        AlertDialogWidget(
+            title = stringResource(R.string.txt_alert),
+            message = stringResource(R.string.txt_cannot_add_payment),
+            onDismissed = { showDialog = !showDialog },
+            positiveButton = stringResource(R.string.txt_ok),
+            positiveOnClick = {
+                showDialog = !showDialog
             },
         )
     }

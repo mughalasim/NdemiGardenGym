@@ -11,6 +11,7 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
+import cv.domain.entities.AttendanceMonthEntity
 import cv.domain.usecase.AttendanceUseCase
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
@@ -25,7 +26,7 @@ class AttendanceScreenViewModel(
         this.selectedDate = selectedDate
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            attendanceUseCase.getMemberAttendances(
+            attendanceUseCase.getMemberAttendancesForId(
                 year = selectedDate.year,
                 month = selectedDate.monthOfYear,
             ).also { result ->
@@ -34,7 +35,7 @@ class AttendanceScreenViewModel(
                         sendAction(Action.ShowDomainError(result.error, converter))
 
                     is DomainResult.Success ->
-                        sendAction(Action.Success(result.data.first, result.data.second))
+                        sendAction(Action.Success(result.data))
                 }
             }
         }
@@ -65,7 +66,7 @@ class AttendanceScreenViewModel(
 
         data class Error(val message: String) : UiState
 
-        data class Success(val attendances: List<AttendanceEntity>, val totalMinutes: Int) : UiState
+        data class Success(val attendancesMonthly: List<AttendanceMonthEntity>) : UiState
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -80,8 +81,8 @@ class AttendanceScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainError))
         }
 
-        data class Success(val attendances: List<AttendanceEntity>, val totalMinutes: Int) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Success(attendances, totalMinutes)
+        data class Success(val attendancesMonthly: List<AttendanceMonthEntity>) : Action {
+            override fun reduce(state: UiState): UiState = UiState.Success(attendancesMonthly)
         }
     }
 }

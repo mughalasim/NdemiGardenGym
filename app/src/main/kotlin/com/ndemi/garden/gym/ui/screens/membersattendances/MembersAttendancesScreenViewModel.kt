@@ -12,6 +12,7 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
+import cv.domain.entities.AttendanceMonthEntity
 import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.AuthUseCase
 import kotlinx.coroutines.launch
@@ -44,7 +45,7 @@ class MembersAttendancesScreenViewModel(
                         sendAction(Action.ShowDomainError(result.error, converter))
 
                     is DomainResult.Success ->
-                        sendAction(Action.Success(result.data.first, result.data.second))
+                        sendAction(Action.Success(result.data))
                 }
             }
         }
@@ -81,7 +82,7 @@ class MembersAttendancesScreenViewModel(
 
         data class Error(val message: String) : UiState
 
-        data class Success(val attendances: List<AttendanceEntity>, val totalMinutes: Int) : UiState
+        data class Success(val attendancesMonthly: List<AttendanceMonthEntity>) : UiState
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -96,8 +97,8 @@ class MembersAttendancesScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainError))
         }
 
-        data class Success(val attendances: List<AttendanceEntity>, val totalMinutes: Int) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Success(attendances, totalMinutes)
+        data class Success(val attendancesMonthly: List<AttendanceMonthEntity>) : Action {
+            override fun reduce(state: UiState): UiState = UiState.Success(attendancesMonthly)
         }
     }
 }

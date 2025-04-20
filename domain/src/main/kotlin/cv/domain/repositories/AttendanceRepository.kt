@@ -6,7 +6,6 @@ import java.util.Date
 
 interface AttendanceRepository {
     suspend fun getAttendances(
-        isMembersAttendances: Boolean,
         memberId: String,
         year: Int,
         month: Int,

@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -35,6 +35,7 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toPaymentPlanDuration
+import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.PaymentEntity
@@ -82,8 +83,8 @@ fun PaymentWidget(
             if (canDeletePayment) {
                 Icon(
                     modifier = Modifier.clickable { showDialog = !showDialog },
-                    imageVector = Icons.Default.Clear,
-                    tint = AppTheme.colors.primary,
+                    imageVector = Icons.Default.DeleteForever,
+                    tint = AppTheme.colors.error,
                     contentDescription = stringResource(id = R.string.txt_delete),
                 )
             }
@@ -96,54 +97,53 @@ fun PaymentWidget(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Column {
+            Column (
+                modifier = Modifier.weight(1f)
+            ) {
                 TextWidget(
                     text = "Start Date",
                     style = AppTheme.textStyles.small,
+                    color = AppTheme.colors.textSecondary,
                 )
                 TextWidget(text = startDate.toString(formatDayMonthYear))
             }
-            Column {
+            Column (
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 TextWidget(
                     text = "End Date",
                     style = AppTheme.textStyles.small,
+                    color = AppTheme.colors.textSecondary,
                 )
                 TextWidget(text = endDate.toString(formatDayMonthYear))
             }
-            Column {
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.End
+            ) {
                 TextWidget(
                     text = "Total",
                     style = AppTheme.textStyles.small,
+                    color = AppTheme.colors.textSecondary,
                 )
                 TextWidget(text = paymentEntity.amount.toAmountString())
             }
         }
 
         if (showDialog) {
-            AlertDialog(
-                containerColor = AppTheme.colors.backgroundButtonDisabled,
-                title = {
-                    TextWidget(
-                        text = stringResource(R.string.txt_are_you_sure),
-                        style = AppTheme.textStyles.small,
-                    )
+            AlertDialogWidget(
+                title = stringResource(R.string.txt_are_you_sure),
+                message = stringResource(R.string.txt_are_you_sure_delete_payment),
+                onDismissed = { showDialog = !showDialog },
+                positiveButton = stringResource(R.string.txt_delete),
+                positiveOnClick = {
+                    showDialog = !showDialog
+                    onDeletePayment.invoke(paymentEntity)
                 },
-                text = {
-                    TextWidget(
-                        text = stringResource(R.string.txt_are_you_sure_delete_payment),
-                    )
-                },
-                onDismissRequest = { showDialog = !showDialog },
-                confirmButton = {
-                    ButtonWidget(title = stringResource(R.string.txt_delete)) {
-                        showDialog = !showDialog
-                        onDeletePayment.invoke(paymentEntity)
-                    }
-                },
-                dismissButton = {
-                    ButtonWidget(title = stringResource(R.string.txt_cancel)) {
-                        showDialog = !showDialog
-                    }
+                negativeButton = stringResource(R.string.txt_cancel),
+                negativeOnClick = {
+                    showDialog = !showDialog
                 },
             )
         }
@@ -152,7 +152,7 @@ fun PaymentWidget(
 
 @AppPreview
 @Composable
-private fun PaymentWidgetPreview() {
+private fun PaymentWidgetPreview() =
     AppThemeComposable {
         Column {
             PaymentWidget(
@@ -164,4 +164,3 @@ private fun PaymentWidgetPreview() {
             )
         }
     }
-}

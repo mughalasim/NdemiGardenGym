@@ -2,7 +2,6 @@ package com.ndemi.garden.gym.ui.screens.attendance
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,16 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
-import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
-import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.SnackbarType
-import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
+import com.ndemi.garden.gym.ui.widgets.YearSelectionWidget
 import org.joda.time.DateTime
 import org.koin.androidx.compose.koinViewModel
 
-// TODO - Make this screen show all attendances by Year rather than by month
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttendanceScreen(
@@ -49,8 +45,8 @@ fun AttendanceScreen(
             )
         }
 
-        DateSelectionWidget(selectedDate, false) {
-            selectedDate = it
+        YearSelectionWidget("selectedDate", false) {
+//            selectedDate = it
             viewModel.getAttendances(selectedDate)
         }
 
@@ -64,16 +60,12 @@ fun AttendanceScreen(
             ) {
                 if (uiState.value is UiState.Success) {
                     val result = (uiState.value as UiState.Success)
-                    if (result.attendances.isEmpty()) {
-                        TextWidget(
-                            modifier = Modifier.padding(padding_screen),
-                            text = stringResource(R.string.txt_no_attendances),
-                        )
-                    } else {
+                    for (attendanceMonthly in result.attendancesMonthly) {
                         AttendanceListScreen(
-                            attendances = result.attendances,
+                            monthName = attendanceMonthly.monthName,
+                            attendances = attendanceMonthly.attendances,
                             canDeleteAttendance = false,
-                            totalMinutes = result.totalMinutes,
+                            totalMinutes = attendanceMonthly.totalMinutes,
                         ) {
                             viewModel.deleteAttendance(it)
                         }

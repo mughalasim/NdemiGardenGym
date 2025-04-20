@@ -29,6 +29,7 @@ import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiSt
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.page_width
+import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
@@ -106,30 +107,18 @@ fun MemberEditScreen(
         }
 
         if (showDeleteUserDialog) {
-            AlertDialog(
-                containerColor = AppTheme.colors.backgroundButtonDisabled,
-                title = {
-                    TextWidget(
-                        text = stringResource(R.string.txt_are_you_sure),
-                        style = AppTheme.textStyles.regularBold,
-                    )
+            AlertDialogWidget(
+                title = stringResource(R.string.txt_are_you_sure),
+                message = stringResource(R.string.txt_are_you_sure_delete_member),
+                onDismissed = { showDeleteUserDialog = !showDeleteUserDialog },
+                positiveButton = stringResource(R.string.txt_delete),
+                positiveOnClick = {
+                    showDeleteUserDialog = !showDeleteUserDialog
+                    viewModel.deleteMember()
                 },
-                text = {
-                    TextWidget(
-                        text = stringResource(R.string.txt_are_you_sure_delete_member),
-                    )
-                },
-                onDismissRequest = { showDeleteUserDialog = !showDeleteUserDialog },
-                confirmButton = {
-                    ButtonWidget(title = stringResource(R.string.txt_delete)) {
-                        showDeleteUserDialog = !showDeleteUserDialog
-                        viewModel.deleteMember()
-                    }
-                },
-                dismissButton = {
-                    ButtonWidget(title = stringResource(R.string.txt_cancel)) {
-                        showDeleteUserDialog = !showDeleteUserDialog
-                    }
+                negativeButton = stringResource(R.string.txt_cancel),
+                negativeOnClick = {
+                    showDeleteUserDialog = !showDeleteUserDialog
                 },
             )
         }

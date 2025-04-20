@@ -7,8 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,7 +28,7 @@ import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
-import com.ndemi.garden.gym.ui.widgets.ButtonWidget
+import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.AttendanceEntity
 import org.joda.time.DateTime
@@ -48,7 +47,6 @@ fun AttendanceWidget(
     Column(
         modifier =
             modifier
-                .padding(horizontal = padding_screen)
                 .padding(top = padding_screen_small)
                 .toAppCardStyle(),
     ) {
@@ -62,12 +60,13 @@ fun AttendanceWidget(
             TextWidget(
                 text = startDate.toString(formatDateDay),
                 style = AppTheme.textStyles.small,
+                color = AppTheme.colors.primary,
             )
             if (canDeleteAttendance) {
                 Icon(
                     modifier = Modifier.clickable { showDialog = !showDialog },
-                    imageVector = Icons.Default.Clear,
-                    tint = AppTheme.colors.primary,
+                    imageVector = Icons.Default.DeleteForever,
+                    tint = AppTheme.colors.error,
                     contentDescription = stringResource(id = R.string.txt_delete),
                 )
             }
@@ -92,30 +91,18 @@ fun AttendanceWidget(
             )
 
             if (showDialog) {
-                AlertDialog(
-                    containerColor = AppTheme.colors.backgroundButtonDisabled,
-                    title = {
-                        TextWidget(
-                            text = stringResource(R.string.txt_are_you_sure),
-                            style = AppTheme.textStyles.regularBold,
-                        )
+                AlertDialogWidget(
+                    title = stringResource(R.string.txt_are_you_sure),
+                    message = stringResource(R.string.txt_are_you_sure_delete_attendance),
+                    onDismissed = { showDialog = !showDialog },
+                    positiveButton = stringResource(R.string.txt_delete),
+                    positiveOnClick = {
+                        showDialog = !showDialog
+                        onDeleteAttendance.invoke(attendanceEntity)
                     },
-                    text = {
-                        TextWidget(
-                            text = stringResource(R.string.txt_are_you_sure_delete_attendance),
-                        )
-                    },
-                    onDismissRequest = { showDialog = !showDialog },
-                    confirmButton = {
-                        ButtonWidget(title = stringResource(R.string.txt_delete)) {
-                            showDialog = !showDialog
-                            onDeleteAttendance.invoke(attendanceEntity)
-                        }
-                    },
-                    dismissButton = {
-                        ButtonWidget(title = stringResource(R.string.txt_cancel)) {
-                            showDialog = !showDialog
-                        }
+                    negativeButton = stringResource(R.string.txt_cancel),
+                    negativeOnClick = {
+                        showDialog = !showDialog
                     },
                 )
             }
@@ -125,8 +112,11 @@ fun AttendanceWidget(
 
 @AppPreview
 @Composable
-private fun AttendanceWidgetPreview() {
+private fun AttendanceWidgetPreview() =
     AppThemeComposable {
-        AttendanceWidget(attendanceEntity = getMockAttendanceEntity())
+        Column {
+            AttendanceWidget(attendanceEntity = getMockAttendanceEntity())
+            AttendanceWidget(attendanceEntity = getMockAttendanceEntity(), canDeleteAttendance = true)
+        }
     }
-}
+
