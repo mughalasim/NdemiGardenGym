@@ -56,3 +56,11 @@ app [here](https://github.com/mughalasim/NdemiGardenGym/raw/master/release/Ndemi
   <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc11.png" width="180" /> 
   <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc12.png" width="180" />
 </p>
+
+
+## TODO's
+
+- Add app settings to be fetched and refreshed from database
+- Add unit tests to all modules - repositories, mappers/ factories, useCases and viewModels
+- Change staging app icon
+- Running push notifications triggered when session(s) have started for one or more users, will require deep linking
