@@ -19,6 +19,7 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.icon_size_large
+import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 
@@ -30,7 +31,9 @@ fun YearSelectionWidget(
     onYearPlusTapped: () -> Unit = {},
 ) {
     Row(
-        modifier = Modifier.toAppCardStyle(),
+        modifier = Modifier
+            .padding(padding_screen)
+            .toAppCardStyle(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -42,15 +45,23 @@ fun YearSelectionWidget(
             imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
             contentDescription = null,
         )
-        Column {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(icon_size_large),
                     color = AppTheme.colors.primary
                 )
             } else {
-                TextWidget(text = stringResource(R.string.txt_selected_year))
-                TextWidget(text = selectedYear)
+                TextWidget(
+                    text = stringResource(R.string.txt_selected_year),
+                    style = AppTheme.textStyles.small,
+                )
+                TextWidget(
+                    text = selectedYear,
+                    style = AppTheme.textStyles.large,
+                )
             }
         }
         Icon(

@@ -25,6 +25,7 @@ import com.ndemi.garden.gym.ui.utils.DateConstants.PHONE_NUMBER_DIGITS
 import com.ndemi.garden.gym.ui.utils.DateConstants.SECONDS_IN_HOUR
 import com.ndemi.garden.gym.ui.utils.DateConstants.appLocale
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
+import com.ndemi.garden.gym.ui.utils.DateConstants.formatMonth
 import org.joda.time.DateTime
 import org.joda.time.Days
 import org.joda.time.Hours
@@ -99,6 +100,9 @@ fun DateTime.toDaysDuration(): String {
         daysString
     }
 }
+
+fun Int.toMonthName(): String =
+    DateTime().withMonthOfYear(this).toString(formatMonth)
 
 @Composable
 fun DateTime.toPaymentPlanDuration(): String {
@@ -181,8 +185,8 @@ object DateConstants {
     val formatTime: DateTimeFormatter =
         DateTimeFormat.shortTime().withLocale(appLocale)
 
-    val formatMonthYear: DateTimeFormatter =
-        DateTimeFormat.forPattern("MMMM yyyy").withLocale(appLocale)
+    val formatMonth: DateTimeFormatter =
+        DateTimeFormat.forPattern("MMMM").withLocale(appLocale)
 
     val formatYear: DateTimeFormatter =
         DateTimeFormat.forPattern("yyyy").withLocale(appLocale)

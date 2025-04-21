@@ -67,7 +67,7 @@
     <string name="txt_total_amount">Total: %1$s</string>
     <string name="txt_total_time_spent">Total time spent: %1$s</string>
     <string name="txt_no_payments">No payments captured for the selected year</string>
-    <string name="txt_no_attendances">No Attendances for the month of %1$s</string>
+    <string name="txt_no_attendances">No Attendances this year</string>
     <string name="txt_who_is_in">Who\'s in the Gym today?</string>
     <string name="txt_no_one_is_in">Oh no! No one\'s in, why don\'t you be the first?</string>
     <string name="txt_login_desc">Hi there! Nice to see you again.</string>

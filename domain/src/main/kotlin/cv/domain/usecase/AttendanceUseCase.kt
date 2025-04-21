@@ -16,52 +16,27 @@ class AttendanceUseCase(
     suspend fun getMemberAttendancesForId(
         memberId: String = "",
         year: Int,
-        month: Int,
     ): DomainResult<List<AttendanceMonthEntity>> {
         val result: MutableList<AttendanceMonthEntity> = mutableListOf()
-        for (monthNumber in 1..12) {
+        for (month in JANUARY..DECEMBER) {
             val response = attendanceRepository.getAttendances(
                 memberId = memberId,
-                year = 2024,
-                month = monthNumber,
+                year = year,
+                month = month,
             )
-            when (response) {
-                is DomainResult.Success -> {
-                    if (response.data.first.isNotEmpty()) {
-                        result.add(
-                            AttendanceMonthEntity(
-                                monthName = monthNumber.toMonthName(),
-                                totalMinutes = response.data.second,
-                                attendances = response.data.first
-                            )
-                        )
-                    }
-                }
-
-                else -> Unit
+            if (response is DomainResult.Success && response.data.first.isNotEmpty()){
+                result.add(
+                    AttendanceMonthEntity(
+                        monthNumber = month,
+                        totalMinutes = response.data.second,
+                        attendances = response.data.first
+                    )
+                )
             }
-
         }
-
         return DomainResult.Success(result)
-
     }
-    // TODO - Use date time correctly and removed hard coded date
-    private fun Int.toMonthName() =
-        when (this) {
-            1 -> "Jan"
-            2 -> "Feb"
-            3 -> "Mar"
-            4 -> "Ap"
-            5 -> "Ma"
-            6 -> "June"
-            7 -> "Jul"
-            8 -> "Aug"
-            9 -> "Sept"
-            10 -> "Oct"
-            11 -> "Nov"
-            else -> "Dec"
-        }
+
 
     suspend fun addAttendance(
         startDate: Date,
@@ -93,3 +68,6 @@ class AttendanceUseCase(
         return attendanceRepository.deleteAttendance(attendanceEntity)
     }
 }
+
+private const val DECEMBER = 12
+private const val JANUARY = 1

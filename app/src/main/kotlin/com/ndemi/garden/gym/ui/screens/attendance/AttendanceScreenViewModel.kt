@@ -2,6 +2,7 @@ package com.ndemi.garden.gym.ui.screens.attendance
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
@@ -13,22 +14,32 @@ import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.AttendanceMonthEntity
 import cv.domain.usecase.AttendanceUseCase
+import cv.domain.usecase.AuthUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
 class AttendanceScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val attendanceUseCase: AttendanceUseCase,
+    private val authUseCase: AuthUseCase,
+    private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-    private lateinit var selectedDate: DateTime
+    private lateinit var memberId: String
 
-    fun getAttendances(selectedDate: DateTime) {
-        this.selectedDate = selectedDate
+    private val _selectedDate: MutableStateFlow<DateTime> = MutableStateFlow(DateTime.now())
+    val selectedDate: StateFlow<DateTime> = _selectedDate
+
+    fun getAttendances(
+        memberId: String = "",
+    ) {
+        this.memberId = memberId
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             attendanceUseCase.getMemberAttendancesForId(
-                year = selectedDate.year,
-                month = selectedDate.monthOfYear,
+                memberId = memberId,
+                year = selectedDate.value.year,
             ).also { result ->
                 when (result) {
                     is DomainResult.Error ->
@@ -39,6 +50,16 @@ class AttendanceScreenViewModel(
                 }
             }
         }
+    }
+
+    fun increaseYear(){
+        _selectedDate.value = _selectedDate.value.plusYears(1)
+        getAttendances(memberId)
+    }
+
+    fun decreaseYear(){
+        _selectedDate.value = _selectedDate.value.minusYears(1)
+        getAttendances(memberId)
     }
 
     fun deleteAttendance(attendanceEntity: AttendanceEntity) {
@@ -54,11 +75,17 @@ class AttendanceScreenViewModel(
                             ),
                         )
 
-                    is DomainResult.Success -> getAttendances(selectedDate)
+                    is DomainResult.Success -> getAttendances(memberId)
                 }
             }
         }
     }
+
+    fun navigateBack() {
+        navigationService.popBack()
+    }
+
+    fun hasAdminRights() = authUseCase.hasAdminRights()
 
     @Immutable
     sealed interface UiState : BaseState {
