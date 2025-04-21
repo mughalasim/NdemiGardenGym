@@ -36,6 +36,7 @@
     <string name="txt_delete">Delete</string>
     <string name="txt_update">Update</string>
     <string name="txt_expired">Expired</string>
+    <string name="txt_alert">Alert</string>
     <string name="txt_register_new_member">Register a new member</string>
     <string name="txt_your_attendances">Your Attendances</string>
 
@@ -66,7 +67,7 @@
     <string name="txt_total_amount">Total: %1$s</string>
     <string name="txt_total_time_spent">Total time spent: %1$s</string>
     <string name="txt_no_payments">No payments captured for the selected year</string>
-    <string name="txt_no_attendances">No Attendances for the selected month</string>
+    <string name="txt_no_attendances">No Attendances this year</string>
     <string name="txt_who_is_in">Who\'s in the Gym today?</string>
     <string name="txt_no_one_is_in">Oh no! No one\'s in, why don\'t you be the first?</string>
     <string name="txt_login_desc">Hi there! Nice to see you again.</string>
@@ -78,12 +79,12 @@
     <string name="txt_register_info">Register with us by filling in the details below, Contact the Gym Coach in order to activate your account</string>
     <string name="txt_reset_desc">Oh no! Did you forget your password? Worry not! Enter the email address you used to register with us and we shall send you a reset password link</string>
     <string name="txt_email_has_been_sent">Email has been sent to %1$s</string>
-    <string name="txt_select_date">Selected month and year</string>
-    <string name="txt_select_year">Selected year</string>
+    <string name="txt_selected_year">Selected year</string>
     <string name="txt_are_you_sure">Are you sure</string>
     <string name="txt_are_you_sure_delete_attendance">Are you sure you wish to delete this Attendance, This action is permanent.</string>
     <string name="txt_are_you_sure_delete_payment">Are you sure you wish to delete payment record, This action is permanent.</string>
     <string name="txt_are_you_sure_delete_member">Are you sure you wish to delete this Member. Their respective attendance will also be deleted. This action is permanent.</string>
+    <string name="txt_are_you_sure_log_out">Are you sure you wish to log out.</string>
     <string name="txt_now">Now</string>
     <string name="txt_not_active">Not active</string>
     <string name="txt_no_active_members">No active members in the gym</string>

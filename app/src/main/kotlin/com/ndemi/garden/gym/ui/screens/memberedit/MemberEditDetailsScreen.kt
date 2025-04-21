@@ -9,10 +9,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,7 +22,6 @@ import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
-import com.ndemi.garden.gym.ui.utils.toPhoneNumberString
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
@@ -44,7 +39,6 @@ fun MemberEditDetailsScreen(
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
     onUpdateTapped: () -> Unit = {},
 ) {
-    var initialHasCoach by remember { mutableStateOf(memberEntity.hasCoach) }
     var errorFirstName = ""
     var errorLastName = ""
     var errorApartmentNumber = ""
@@ -116,7 +110,7 @@ fun MemberEditDetailsScreen(
         EditTextWidget(
             modifier = Modifier.padding(top = padding_screen),
             hint = stringResource(R.string.txt_phone_number),
-            textInput = memberEntity.phoneNumber.toPhoneNumberString(),
+            textInput = memberEntity.phoneNumber,
             errorText = errorPhoneNumber,
             keyboardType = KeyboardType.Phone,
             isEnabled = hasAdminRights,
@@ -134,11 +128,10 @@ fun MemberEditDetailsScreen(
         ) {
             TextWidget(text = stringResource(id = R.string.txt_training_coach_assigned))
             Switch(
-                checked = initialHasCoach,
+                checked = memberEntity.hasCoach,
                 enabled = hasAdminRights,
                 onCheckedChange = {
-                    initialHasCoach = it
-                    onSetString.invoke(initialHasCoach.toString(), InputType.HAS_COACH)
+                    onSetString.invoke(it.toString(), InputType.HAS_COACH)
                 },
             )
         }

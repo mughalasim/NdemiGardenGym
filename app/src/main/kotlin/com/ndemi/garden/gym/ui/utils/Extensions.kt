@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.os.ConfigurationCompat
-import androidx.core.text.isDigitsOnly
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
@@ -21,10 +20,9 @@ import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.DateConstants.DAYS_IN_MONTH
 import com.ndemi.garden.gym.ui.utils.DateConstants.HOUR_IN_DAY
 import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
-import com.ndemi.garden.gym.ui.utils.DateConstants.PHONE_NUMBER_DIGITS
 import com.ndemi.garden.gym.ui.utils.DateConstants.SECONDS_IN_HOUR
-import com.ndemi.garden.gym.ui.utils.DateConstants.appLocale
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
+import com.ndemi.garden.gym.ui.utils.DateConstants.formatMonth
 import org.joda.time.DateTime
 import org.joda.time.Days
 import org.joda.time.Hours
@@ -100,6 +98,8 @@ fun DateTime.toDaysDuration(): String {
     }
 }
 
+fun Int.toMonthName(): String = DateTime().withMonthOfYear(this).toString(formatMonth)
+
 @Composable
 fun DateTime.toPaymentPlanDuration(): String {
     if (this.isBeforeNow) return stringResource(id = R.string.txt_expired)
@@ -156,19 +156,14 @@ fun Modifier.toAppCardStyle() =
 
 fun Double.toAmountString(): String = DecimalFormat("${BuildConfig.CURRENCY_CODE} #,###").format(this)
 
-fun String.toPhoneNumberString(): String =
-    if (this.isEmpty()) {
-        ""
-    } else {
-        PhoneNumberUtils.formatNumber(this, appLocale.country)
-    }
-
 fun String.isValidApartmentNumber(): Boolean = this.matches(Regex("^[A-Da-d](?:[1-9][0-4][0-4][0-4]?|1404)\$"))
 
-fun String.isValidPhoneNumber(): Boolean = this.length == PHONE_NUMBER_DIGITS && this.isDigitsOnly() && this.first() == '0'
+fun String.isValidPhoneNumber(): Boolean =
+    this.matches(Regex("^[+]?[0-9]{10,13}\$")) &&
+        PhoneNumberUtils.isGlobalPhoneNumber(this)
 
 object DateConstants {
-    val appLocale =
+    private val appLocale =
         ConfigurationCompat.getLocales(Resources.getSystem().configuration).get(0)
             ?: Locale(Locale.ENGLISH.language)
 
@@ -181,15 +176,11 @@ object DateConstants {
     val formatTime: DateTimeFormatter =
         DateTimeFormat.shortTime().withLocale(appLocale)
 
-    val formatMonthYear: DateTimeFormatter =
-        DateTimeFormat.forPattern("MMMM yyyy").withLocale(appLocale)
-
-    val formatYear: DateTimeFormatter =
-        DateTimeFormat.forPattern("yyyy").withLocale(appLocale)
+    val formatMonth: DateTimeFormatter =
+        DateTimeFormat.forPattern("MMMM").withLocale(appLocale)
 
     const val DAYS_IN_MONTH = 30
     const val HOUR_IN_DAY = 12
     const val MINUTES_IN_HOUR = 60
     const val SECONDS_IN_HOUR = 3600
-    const val PHONE_NUMBER_DIGITS = 10
 }

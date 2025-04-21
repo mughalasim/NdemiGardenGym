@@ -1,84 +1,87 @@
 package com.ndemi.garden.gym.ui.screens.attendance
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
-import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import org.joda.time.DateTime
+import com.ndemi.garden.gym.ui.widgets.YearSelectionWidget
 import org.koin.androidx.compose.koinViewModel
 
-// TODO - Make this screen show all attendances by Year rather than by month
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttendanceScreen(
+    memberId: String = "",
+    memberName: String = "",
     viewModel: AttendanceScreenViewModel = koinViewModel<AttendanceScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    var selectedDate by remember { mutableStateOf(DateTime.now()) }
-    val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
+    val uiState = viewModel.uiStateFlow.collectAsState().value
+    val selectedDate = viewModel.selectedDate.collectAsState().value
+    val title =
+        if (memberName.isEmpty()) {
+            stringResource(R.string.txt_your_attendances)
+        } else {
+            stringResource(R.string.txt_attendance_for, memberName)
+        }
 
-    LaunchedEffect(true) { viewModel.getAttendances(selectedDate) }
+    LaunchedEffect(true) { viewModel.getAttendances(memberId = memberId) }
 
     Column {
-        ToolBarWidget(title = stringResource(R.string.txt_your_attendances))
-
-        if (uiState.value is UiState.Error) {
-            snackbarHostState.Show(
-                type = SnackbarType.ERROR,
-                message = (uiState.value as UiState.Error).message,
-            )
+        ToolBarWidget(title = title, canNavigateBack = memberName.isNotEmpty()) {
+            viewModel.navigateBack()
         }
 
-        DateSelectionWidget(selectedDate, false) {
-            selectedDate = it
-            viewModel.getAttendances(selectedDate)
-        }
+        YearSelectionWidget(
+            selectedYear = selectedDate.year.toString(),
+            isLoading = uiState is UiState.Loading,
+            onYearPlusTapped = viewModel::increaseYear,
+            onYearMinusTapped = viewModel::decreaseYear,
+        )
 
-        PullToRefreshBox(
-            modifier = Modifier.fillMaxSize(),
-            isRefreshing = (uiState.value is UiState.Loading),
-            onRefresh = { viewModel.getAttendances(selectedDate) },
-        ) {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-            ) {
-                if (uiState.value is UiState.Success) {
-                    val result = (uiState.value as UiState.Success)
-                    if (result.attendances.isEmpty()) {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            when (uiState) {
+                is UiState.Success -> {
+                    if (uiState.attendancesMonthly.isEmpty()) {
                         TextWidget(
-                            modifier = Modifier.padding(padding_screen),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(padding_screen),
                             text = stringResource(R.string.txt_no_attendances),
+                            textAlign = TextAlign.Center,
                         )
-                    } else {
+                    }
+                    for (attendanceMonthly in uiState.attendancesMonthly) {
                         AttendanceListScreen(
-                            attendances = result.attendances,
-                            canDeleteAttendance = false,
-                            totalMinutes = result.totalMinutes,
+                            attendanceMonthly = attendanceMonthly,
+                            canDeleteAttendance = viewModel.hasAdminRights(),
                         ) {
                             viewModel.deleteAttendance(it)
                         }
                     }
                 }
+
+                is UiState.Error -> {
+                    snackbarHostState.Show(
+                        type = SnackbarType.ERROR,
+                        message = uiState.message,
+                    )
+                }
+
+                else -> Unit
             }
         }
     }

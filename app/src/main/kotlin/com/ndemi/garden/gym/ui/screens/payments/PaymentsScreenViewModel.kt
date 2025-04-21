@@ -26,23 +26,21 @@ class PaymentsScreenViewModel(
     private val authUseCase: AuthUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-    private lateinit var selectedDate: DateTime
     private lateinit var memberId: String
 
     private val _canAddPayment = MutableStateFlow(false)
     val canAddPayment: StateFlow<Boolean> = _canAddPayment
 
-    fun getPaymentsForMember(
-        memberId: String,
-        selectedDate: DateTime,
-    ) {
-        this.selectedDate = selectedDate
+    private val _selectedDate: MutableStateFlow<DateTime> = MutableStateFlow(DateTime.now())
+    val selectedDate: StateFlow<DateTime> = _selectedDate
+
+    fun getPaymentsForMember(memberId: String) {
         this.memberId = memberId
         _canAddPayment.value = false
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             paymentUseCase.getPaymentPlanForMember(
-                year = selectedDate.year,
+                year = _selectedDate.value.year,
                 memberId = memberId,
             ).also { result ->
                 when (result) {
@@ -50,12 +48,27 @@ class PaymentsScreenViewModel(
                         sendAction(Action.ShowDomainError(result.error, converter))
 
                     is DomainResult.Success -> {
-                        _canAddPayment.value = result.data.second
-                        sendAction(Action.Success(result.data.first, result.data.third))
+                        _canAddPayment.value = result.data.canAddNewPayment
+                        sendAction(
+                            Action.Success(
+                                payments = result.data.payments,
+                                totalAmount = result.data.totalAmount,
+                            ),
+                        )
                     }
                 }
             }
         }
+    }
+
+    fun increaseYear() {
+        _selectedDate.value = _selectedDate.value.plusYears(1)
+        getPaymentsForMember(memberId)
+    }
+
+    fun decreaseYear() {
+        _selectedDate.value = _selectedDate.value.minusYears(1)
+        getPaymentsForMember(memberId)
     }
 
     fun navigateBack() {
@@ -75,7 +88,7 @@ class PaymentsScreenViewModel(
                             ),
                         )
 
-                    is DomainResult.Success -> getPaymentsForMember(memberId, selectedDate)
+                    is DomainResult.Success -> getPaymentsForMember(memberId)
                 }
             }
         }

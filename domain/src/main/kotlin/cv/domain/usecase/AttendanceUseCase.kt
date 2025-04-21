@@ -4,6 +4,7 @@ import cv.domain.DomainResult
 import cv.domain.Variables.EVENT_ATTENDANCE_DELETE
 import cv.domain.Variables.PARAM_ATTENDANCE_DELETE
 import cv.domain.entities.AttendanceEntity
+import cv.domain.entities.AttendanceMonthEntity
 import cv.domain.repositories.AnalyticsRepository
 import cv.domain.repositories.AttendanceRepository
 import java.util.Date
@@ -13,25 +14,29 @@ class AttendanceUseCase(
     private val analyticsRepository: AnalyticsRepository,
 ) {
     suspend fun getMemberAttendancesForId(
-        memberId: String,
+        memberId: String = "",
         year: Int,
-        month: Int,
-    ) = attendanceRepository.getAttendances(
-        isMembersAttendances = true,
-        memberId = memberId,
-        year = year,
-        month = month,
-    )
-
-    suspend fun getMemberAttendances(
-        year: Int,
-        month: Int,
-    ) = attendanceRepository.getAttendances(
-        isMembersAttendances = true,
-        memberId = "",
-        year = year,
-        month = month,
-    )
+    ): DomainResult<List<AttendanceMonthEntity>> {
+        val result: MutableList<AttendanceMonthEntity> = mutableListOf()
+        for (month in JANUARY..DECEMBER) {
+            val response =
+                attendanceRepository.getAttendances(
+                    memberId = memberId,
+                    year = year,
+                    month = month,
+                )
+            if (response is DomainResult.Success && response.data.first.isNotEmpty()) {
+                result.add(
+                    AttendanceMonthEntity(
+                        monthNumber = month,
+                        totalMinutes = response.data.second,
+                        attendances = response.data.first,
+                    ),
+                )
+            }
+        }
+        return DomainResult.Success(result)
+    }
 
     suspend fun addAttendance(
         startDate: Date,
@@ -63,3 +68,6 @@ class AttendanceUseCase(
         return attendanceRepository.deleteAttendance(attendanceEntity)
     }
 }
+
+private const val DECEMBER = 12
+private const val JANUARY = 1

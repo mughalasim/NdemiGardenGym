@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -26,12 +25,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
-import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.page_width
+import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
-import com.ndemi.garden.gym.ui.widgets.ButtonWidget
-import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberImageWidget
 import org.koin.androidx.compose.koinViewModel
@@ -106,30 +103,18 @@ fun MemberEditScreen(
         }
 
         if (showDeleteUserDialog) {
-            AlertDialog(
-                containerColor = AppTheme.colors.backgroundButtonDisabled,
-                title = {
-                    TextWidget(
-                        text = stringResource(R.string.txt_are_you_sure),
-                        style = AppTheme.textStyles.regularBold,
-                    )
+            AlertDialogWidget(
+                title = stringResource(R.string.txt_are_you_sure),
+                message = stringResource(R.string.txt_are_you_sure_delete_member),
+                onDismissed = { showDeleteUserDialog = !showDeleteUserDialog },
+                positiveButton = stringResource(R.string.txt_delete),
+                positiveOnClick = {
+                    showDeleteUserDialog = !showDeleteUserDialog
+                    viewModel.deleteMember()
                 },
-                text = {
-                    TextWidget(
-                        text = stringResource(R.string.txt_are_you_sure_delete_member),
-                    )
-                },
-                onDismissRequest = { showDeleteUserDialog = !showDeleteUserDialog },
-                confirmButton = {
-                    ButtonWidget(title = stringResource(R.string.txt_delete)) {
-                        showDeleteUserDialog = !showDeleteUserDialog
-                        viewModel.deleteMember()
-                    }
-                },
-                dismissButton = {
-                    ButtonWidget(title = stringResource(R.string.txt_cancel)) {
-                        showDeleteUserDialog = !showDeleteUserDialog
-                    }
+                negativeButton = stringResource(R.string.txt_cancel),
+                negativeOnClick = {
+                    showDeleteUserDialog = !showDeleteUserDialog
                 },
             )
         }

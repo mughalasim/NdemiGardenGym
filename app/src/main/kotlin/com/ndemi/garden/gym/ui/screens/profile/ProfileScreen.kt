@@ -11,6 +11,10 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -18,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.LoadingScreenWidget
 import com.ndemi.garden.gym.ui.widgets.SnackbarType
@@ -34,6 +39,7 @@ fun ProfileScreen(
     val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading).value
     val sessionStartTime = viewModel.sessionStartTime.collectAsState().value
     val context = LocalContext.current
+    var showDialog by remember { mutableStateOf(false) }
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
             imageUri?.let {
@@ -43,11 +49,28 @@ fun ProfileScreen(
             }
         }
 
+    if (showDialog) {
+        AlertDialogWidget(
+            title = stringResource(R.string.txt_are_you_sure),
+            message = stringResource(R.string.txt_are_you_sure_log_out),
+            onDismissed = { showDialog = !showDialog },
+            positiveButton = stringResource(R.string.txt_logout),
+            positiveOnClick = {
+                showDialog = !showDialog
+                viewModel.onLogOutTapped()
+            },
+            negativeButton = stringResource(R.string.txt_cancel),
+            negativeOnClick = {
+                showDialog = !showDialog
+            },
+        )
+    }
+
     Column {
         ToolBarWidget(
             title = stringResource(R.string.txt_profile),
             secondaryIcon = Icons.AutoMirrored.Filled.Logout,
-            onSecondaryIconPressed = viewModel::onLogOutTapped,
+            onSecondaryIconPressed = { showDialog = !showDialog },
         )
 
         Column(

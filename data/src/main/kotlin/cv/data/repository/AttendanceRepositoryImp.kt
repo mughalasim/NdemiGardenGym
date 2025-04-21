@@ -27,7 +27,6 @@ class AttendanceRepositoryImp(
     private val logger: AppLoggerRepository,
 ) : AttendanceRepository {
     override suspend fun getAttendances(
-        isMembersAttendances: Boolean,
         memberId: String,
         year: Int,
         month: Int,
@@ -43,7 +42,7 @@ class AttendanceRepositoryImp(
             firebaseFirestore
                 .collection(pathAttendance)
                 .document(year.toString())
-                .collection(month.toString())
+                .collection(month.toString()).whereEqualTo("memberId", setMemberId)
 
         val completable: CompletableDeferred<DomainResult<Pair<List<AttendanceEntity>, Int>>> =
             CompletableDeferred()
@@ -55,7 +54,6 @@ class AttendanceRepositoryImp(
                     response
                         .map { it.toAttendanceEntity() }
                         .sortedByDescending { it.startDateMillis }
-                        .filter { it.memberId == setMemberId && isMembersAttendances }
 
                 var totalMinutes = 0
                 list.forEach {
