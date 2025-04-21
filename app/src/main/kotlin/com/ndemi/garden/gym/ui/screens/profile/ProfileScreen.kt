@@ -62,7 +62,7 @@ fun ProfileScreen(
             negativeButton = stringResource(R.string.txt_cancel),
             negativeOnClick = {
                 showDialog = !showDialog
-            }
+            },
         )
     }
 

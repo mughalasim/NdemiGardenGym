@@ -31,27 +31,29 @@ fun YearSelectionWidget(
     onYearPlusTapped: () -> Unit = {},
 ) {
     Row(
-        modifier = Modifier
-            .padding(padding_screen)
-            .toAppCardStyle(),
+        modifier =
+            Modifier
+                .padding(padding_screen)
+                .toAppCardStyle(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Icon(
-            modifier = Modifier
-                .size(icon_size_large)
-                .clickable { onYearMinusTapped.invoke() },
+            modifier =
+                Modifier
+                    .size(icon_size_large)
+                    .clickable { onYearMinusTapped.invoke() },
             tint = AppTheme.colors.primary,
             imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
             contentDescription = null,
         )
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(icon_size_large),
-                    color = AppTheme.colors.primary
+                    color = AppTheme.colors.primary,
                 )
             } else {
                 TextWidget(
@@ -65,9 +67,10 @@ fun YearSelectionWidget(
             }
         }
         Icon(
-            modifier = Modifier
-                .size(icon_size_large)
-                .clickable { onYearPlusTapped.invoke() },
+            modifier =
+                Modifier
+                    .size(icon_size_large)
+                    .clickable { onYearPlusTapped.invoke() },
             tint = AppTheme.colors.primary,
             imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
             contentDescription = null,

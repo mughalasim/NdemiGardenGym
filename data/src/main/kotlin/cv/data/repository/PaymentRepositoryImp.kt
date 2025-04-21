@@ -10,6 +10,7 @@ import cv.data.retrofit.toDomainError
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.PaymentEntity
+import cv.domain.entities.PaymentYearEntity
 import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.PaymentRepository
@@ -27,7 +28,7 @@ class PaymentRepositoryImp(
         isMembersPayment: Boolean,
         memberId: String,
         year: Int,
-    ): DomainResult<Triple<List<PaymentEntity>, Boolean, Double>> {
+    ): DomainResult<PaymentYearEntity> {
         val setMemberId =
             memberId.ifEmpty {
                 firebaseAuth.currentUser?.uid ?: run {
@@ -43,7 +44,7 @@ class PaymentRepositoryImp(
                 .collection(year.toString())
 
         val completable:
-            CompletableDeferred<DomainResult<Triple<List<PaymentEntity>, Boolean, Double>>> =
+            CompletableDeferred<DomainResult<PaymentYearEntity>> =
             CompletableDeferred()
 
         reference.get()
@@ -64,7 +65,15 @@ class PaymentRepositoryImp(
                         canAddPayment = false
                     }
                 }
-                completable.complete(DomainResult.Success(Triple(list, canAddPayment, totalAmount)))
+                completable.complete(
+                    DomainResult.Success(
+                        PaymentYearEntity(
+                            payments = list,
+                            canAddNewPayment = canAddPayment,
+                            totalAmount = totalAmount,
+                        ),
+                    ),
+                )
             }.addOnFailureListener {
                 logger.log("Exception: $it", AppLogLevel.ERROR)
                 completable.complete(DomainResult.Error(it.toDomainError()))

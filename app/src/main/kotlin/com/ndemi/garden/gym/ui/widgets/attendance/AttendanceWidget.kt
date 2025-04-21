@@ -21,7 +21,6 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockAttendanceEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
@@ -119,4 +118,3 @@ private fun AttendanceWidgetPreview() =
             AttendanceWidget(attendanceEntity = getMockAttendanceEntity(), canDeleteAttendance = true)
         }
     }
-

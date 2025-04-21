@@ -1,7 +1,6 @@
 package com.ndemi.garden.gym.ui.screens.attendance
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -24,22 +23,32 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AttendanceScreen(
+    memberId: String = "",
+    memberName: String = "",
     viewModel: AttendanceScreenViewModel = koinViewModel<AttendanceScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
     val uiState = viewModel.uiStateFlow.collectAsState().value
     val selectedDate = viewModel.selectedDate.collectAsState().value
+    val title =
+        if (memberName.isEmpty()) {
+            stringResource(R.string.txt_your_attendances)
+        } else {
+            stringResource(R.string.txt_attendance_for, memberName)
+        }
 
-    LaunchedEffect(true) { viewModel.getAttendances() }
+    LaunchedEffect(true) { viewModel.getAttendances(memberId = memberId) }
 
     Column {
-        ToolBarWidget(title = stringResource(R.string.txt_your_attendances))
+        ToolBarWidget(title = title, canNavigateBack = memberName.isNotEmpty()) {
+            viewModel.navigateBack()
+        }
 
         YearSelectionWidget(
             selectedYear = selectedDate.year.toString(),
             isLoading = uiState is UiState.Loading,
             onYearPlusTapped = viewModel::increaseYear,
-            onYearMinusTapped = viewModel::decreaseYear
+            onYearMinusTapped = viewModel::decreaseYear,
         )
 
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -47,7 +56,10 @@ fun AttendanceScreen(
                 is UiState.Success -> {
                     if (uiState.attendancesMonthly.isEmpty()) {
                         TextWidget(
-                            modifier = Modifier.fillMaxWidth().padding(padding_screen),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(padding_screen),
                             text = stringResource(R.string.txt_no_attendances),
                             textAlign = TextAlign.Center,
                         )
@@ -72,6 +84,5 @@ fun AttendanceScreen(
                 else -> Unit
             }
         }
-
     }
 }

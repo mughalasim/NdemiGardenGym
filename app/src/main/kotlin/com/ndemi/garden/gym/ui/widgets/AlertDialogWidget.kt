@@ -58,10 +58,11 @@ fun AlertDialogWidget(
                 )
             }
         },
-        properties = DialogProperties(
-            dismissOnClickOutside = isDismissed,
-            dismissOnBackPress = isDismissed
-        )
+        properties =
+            DialogProperties(
+                dismissOnClickOutside = isDismissed,
+                dismissOnBackPress = isDismissed,
+            ),
     )
 }
 
@@ -73,6 +74,6 @@ private fun AlertDialogWidgetPreview() =
             title = "Some title",
             message = "Some long message will be shown here",
             positiveButton = "Yes",
-            negativeButton = "NO"
+            negativeButton = "NO",
         )
     }

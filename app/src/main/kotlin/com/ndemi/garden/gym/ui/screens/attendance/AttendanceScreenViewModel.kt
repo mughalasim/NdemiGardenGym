@@ -31,9 +31,7 @@ class AttendanceScreenViewModel(
     private val _selectedDate: MutableStateFlow<DateTime> = MutableStateFlow(DateTime.now())
     val selectedDate: StateFlow<DateTime> = _selectedDate
 
-    fun getAttendances(
-        memberId: String = "",
-    ) {
+    fun getAttendances(memberId: String = "") {
         this.memberId = memberId
         sendAction(Action.SetLoading)
         viewModelScope.launch {
@@ -52,12 +50,12 @@ class AttendanceScreenViewModel(
         }
     }
 
-    fun increaseYear(){
+    fun increaseYear() {
         _selectedDate.value = _selectedDate.value.plusYears(1)
         getAttendances(memberId)
     }
 
-    fun decreaseYear(){
+    fun decreaseYear() {
         _selectedDate.value = _selectedDate.value.minusYears(1)
         getAttendances(memberId)
     }

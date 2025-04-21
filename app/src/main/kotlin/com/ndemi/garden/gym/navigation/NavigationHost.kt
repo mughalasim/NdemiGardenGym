@@ -12,7 +12,6 @@ import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreen
 import com.ndemi.garden.gym.ui.screens.members.MembersActiveScreen
 import com.ndemi.garden.gym.ui.screens.members.MembersExpiredScreen
 import com.ndemi.garden.gym.ui.screens.members.MembersScreen
-import com.ndemi.garden.gym.ui.screens.membersattendances.MembersAttendancesScreen
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreen
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreen
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreen
@@ -61,7 +60,7 @@ fun NavigationHost(
 
         composable<Route.MembersAttendancesScreen> {
             val args = it.toRoute<Route.MembersAttendancesScreen>()
-            MembersAttendancesScreen(
+            AttendanceScreen(
                 memberId = args.memberId,
                 memberName = args.memberName,
                 snackbarHostState = snackbarHostState,

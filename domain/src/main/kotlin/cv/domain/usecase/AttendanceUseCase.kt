@@ -19,24 +19,24 @@ class AttendanceUseCase(
     ): DomainResult<List<AttendanceMonthEntity>> {
         val result: MutableList<AttendanceMonthEntity> = mutableListOf()
         for (month in JANUARY..DECEMBER) {
-            val response = attendanceRepository.getAttendances(
-                memberId = memberId,
-                year = year,
-                month = month,
-            )
-            if (response is DomainResult.Success && response.data.first.isNotEmpty()){
+            val response =
+                attendanceRepository.getAttendances(
+                    memberId = memberId,
+                    year = year,
+                    month = month,
+                )
+            if (response is DomainResult.Success && response.data.first.isNotEmpty()) {
                 result.add(
                     AttendanceMonthEntity(
                         monthNumber = month,
                         totalMinutes = response.data.second,
-                        attendances = response.data.first
-                    )
+                        attendances = response.data.first,
+                    ),
                 )
             }
         }
         return DomainResult.Success(result)
     }
-
 
     suspend fun addAttendance(
         startDate: Date,

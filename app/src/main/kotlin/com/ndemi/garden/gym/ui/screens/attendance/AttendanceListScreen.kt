@@ -32,7 +32,7 @@ fun AttendanceListScreen(
     onDeleteAttendance: (AttendanceEntity) -> Unit = {},
 ) {
     Column(
-        modifier = Modifier.padding(horizontal = padding_screen)
+        modifier = Modifier.padding(horizontal = padding_screen),
     ) {
         TextWidget(
             text = attendanceMonthly.monthNumber.toMonthName(),
@@ -61,11 +61,12 @@ fun AttendanceListScreen(
         }
 
         Spacer(
-            modifier = Modifier
-                .padding(vertical = padding_screen)
-                .fillMaxWidth()
-                .height(line_thickness)
-                .background(AppTheme.colors.backgroundButtonDisabled)
+            modifier =
+                Modifier
+                    .padding(vertical = padding_screen)
+                    .fillMaxWidth()
+                    .height(line_thickness)
+                    .background(AppTheme.colors.backgroundButtonDisabled),
         )
     }
 }
@@ -76,15 +77,16 @@ private fun AttendanceScreenPreview() {
     AppThemeComposable {
         Column {
             AttendanceListScreen(
-                attendanceMonthly = AttendanceMonthEntity(
-                    monthNumber = 1,
-                    totalMinutes = 45,
-                    attendances = listOf(getMockAttendanceEntity())
-                ),
+                attendanceMonthly =
+                    AttendanceMonthEntity(
+                        monthNumber = 1,
+                        totalMinutes = 45,
+                        attendances = listOf(getMockAttendanceEntity()),
+                    ),
                 canDeleteAttendance = false,
             )
             AttendanceListScreen(
-                attendanceMonthly = AttendanceMonthEntity()
+                attendanceMonthly = AttendanceMonthEntity(),
             )
         }
     }
