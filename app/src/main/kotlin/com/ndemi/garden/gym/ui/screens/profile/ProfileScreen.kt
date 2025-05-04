@@ -36,9 +36,9 @@ fun ProfileScreen(
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
     LaunchedEffect(Unit) { viewModel.observeMember() }
-    val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading).value
-    val sessionStartTime = viewModel.sessionStartTime.collectAsState().value
     val context = LocalContext.current
+    val uiState by viewModel.uiStateFlow.collectAsState()
+    val sessionStartTime by viewModel.sessionStartTime.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
@@ -80,16 +80,16 @@ fun ProfileScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = padding_screen),
         ) {
-            when (uiState) {
+            when (val state = uiState) {
                 is UiState.Success -> {
-                    if (uiState.errorMessage.isNotEmpty()) {
+                    if (state.errorMessage.isNotEmpty()) {
                         snackbarHostState.Show(
                             type = SnackbarType.ERROR,
-                            message = uiState.errorMessage,
+                            message = state.errorMessage,
                         )
                     }
                     MemberImageWidget(
-                        imageUrl = uiState.memberEntity.profileImageUrl,
+                        imageUrl = state.memberEntity.profileImageUrl,
                         onImageDelete = {
                             viewModel.deleteMemberImage()
                         },
@@ -98,9 +98,9 @@ fun ProfileScreen(
                         },
                     )
                     ProfileDetailsScreen(
-                        memberEntity = uiState.memberEntity,
+                        memberEntity = state.memberEntity,
                         isAdmin = viewModel.isAdmin(),
-                        message = uiState.errorMessage,
+                        message = state.errorMessage,
                         sessionStartTime = sessionStartTime,
                         onSessionStarted = viewModel::setStartedSession,
                         onSessionCompleted = viewModel::setAttendance,

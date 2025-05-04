@@ -2,8 +2,8 @@ package com.ndemi.garden.gym.ui.screens.login
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.InputType
-import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import org.koin.androidx.compose.koinViewModel
 
@@ -12,21 +12,18 @@ fun LoginScreen(
     viewModel: LoginScreenViewModel = koinViewModel<LoginScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    val uiState =
-        viewModel.uiStateFlow.collectAsState(
-            initial = UiState.Waiting,
-        )
-    val inputData = viewModel.inputData.collectAsState()
+    val uiState by viewModel.uiStateFlow.collectAsState()
+    val inputData by viewModel.inputData.collectAsState()
 
     LoginScreenDetails(
-        uiState = uiState.value,
+        uiState = uiState,
         listeners =
             LoginScreenListeners(
                 onValueChanged = viewModel::setString,
                 onLoginTapped = viewModel::onLoginTapped,
             ),
-        email = inputData.value.email,
-        password = inputData.value.password,
+        email = inputData.email,
+        password = inputData.password,
         snackbarHostState = snackbarHostState,
     )
 }

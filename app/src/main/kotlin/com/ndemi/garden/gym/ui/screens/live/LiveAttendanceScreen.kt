@@ -11,6 +11,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -29,42 +30,46 @@ fun LiveAttendanceScreen(
     viewModel: LiveAttendanceScreenViewModel = koinViewModel<LiveAttendanceScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
+    val uiState by viewModel.uiStateFlow.collectAsState()
 
-    LaunchedEffect(true) { viewModel.getLiveMembers() }
+    LaunchedEffect(Unit) { viewModel.getLiveMembers() }
 
     Column {
         ToolBarWidget(title = stringResource(R.string.txt_who_is_in))
-
-        if (uiState.value is UiState.Error) {
-            snackbarHostState.Show(
-                type = SnackbarType.ERROR,
-                message = (uiState.value as UiState.Error).message,
-            )
-        }
 
         PullToRefreshBox(
             modifier =
                 Modifier
                     .fillMaxSize()
                     .padding(padding_screen),
-            isRefreshing = (uiState.value is UiState.Loading),
+            isRefreshing = (uiState is UiState.Loading),
             onRefresh = { viewModel.getLiveMembers() },
         ) {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                if (uiState.value is UiState.Success) {
-                    if ((uiState.value as UiState.Success).members.isEmpty()) {
-                        TextWidget(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(padding_screen),
-                            textAlign = TextAlign.Center,
-                            text = stringResource(R.string.txt_no_one_is_in),
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                when (val state = uiState) {
+                    is UiState.Error -> {
+                        snackbarHostState.Show(
+                            type = SnackbarType.ERROR,
+                            message = state.message,
                         )
-                    } else {
-                        LiveAttendanceListScreen(members = (uiState.value as UiState.Success).members)
                     }
+
+                    is UiState.Success -> {
+                        if (state.members.isEmpty()) {
+                            TextWidget(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(padding_screen),
+                                textAlign = TextAlign.Center,
+                                text = stringResource(R.string.txt_no_one_is_in),
+                            )
+                        } else {
+                            LiveAttendanceListScreen(members = state.members)
+                        }
+                    }
+
+                    UiState.Loading -> Unit
                 }
             }
         }

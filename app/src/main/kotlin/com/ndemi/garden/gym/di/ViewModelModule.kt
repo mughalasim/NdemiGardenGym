@@ -21,7 +21,6 @@ val viewModelModule =
                 navigationService = get(),
                 authUseCase = get(),
                 converter = get(),
-                dispatcher = get(),
             )
         }
 

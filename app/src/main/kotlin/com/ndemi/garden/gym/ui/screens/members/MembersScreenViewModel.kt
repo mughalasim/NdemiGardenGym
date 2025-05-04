@@ -48,7 +48,7 @@ class MembersScreenViewModel(
                     MemberScreenType.EXPIRED_MEMBERS -> memberUseCase.getExpiredMembers()
                     MemberScreenType.LIVE_MEMBERS -> memberUseCase.getLiveMembers()
                 }
-            useCaseAction.also { result ->
+            useCaseAction.collect { result ->
                 when (result) {
                     is DomainResult.Error ->
                         sendAction(Action.ShowDomainError(result.error, converter))

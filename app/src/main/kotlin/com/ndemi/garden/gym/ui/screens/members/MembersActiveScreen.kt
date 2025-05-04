@@ -13,6 +13,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -24,6 +25,7 @@ import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberStatusWidget
+import com.ndemi.garden.gym.ui.widgets.member.MemberStatusWidgetListener
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,11 +34,15 @@ fun MembersActiveScreen(
     viewModel: MembersScreenViewModel = koinViewModel<MembersScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
-    val members = viewModel.members.collectAsState()
-    val searchTerm = viewModel.searchTerm.collectAsState()
+    val uiState by viewModel.uiStateFlow.collectAsState()
+    val members by viewModel.members.collectAsState()
+    val searchTerm by viewModel.searchTerm.collectAsState()
 
-    LaunchedEffect(true) { viewModel.getMembers(MemberScreenType.LIVE_MEMBERS) }
+    LaunchedEffect(Unit) {
+        viewModel.getMembers(
+            memberScreenType = MemberScreenType.LIVE_MEMBERS,
+        )
+    }
 
     Column {
         ToolBarWidget(
@@ -45,10 +51,10 @@ fun MembersActiveScreen(
             onSecondaryIconPressed = viewModel::onRegisterMember,
         )
 
-        if (uiState.value is UiState.Error) {
+        if (uiState is UiState.Error) {
             snackbarHostState.Show(
                 type = SnackbarType.ERROR,
-                message = (uiState.value as UiState.Error).message,
+                message = (uiState as UiState.Error).message,
             )
         }
 
@@ -57,20 +63,20 @@ fun MembersActiveScreen(
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = padding_screen),
-            isRefreshing = (uiState.value is UiState.Loading),
+            isRefreshing = uiState is UiState.Loading,
             onRefresh = { viewModel.getMembers(MemberScreenType.LIVE_MEMBERS) },
         ) {
             LazyColumn {
                 item {
                     SearchMemberComponent(
-                        textInput = searchTerm.value,
-                        isVisible = members.value.isNotEmpty() || searchTerm.value.isNotEmpty(),
-                        memberCount = members.value.size,
+                        textInput = searchTerm,
+                        isVisible = members.isNotEmpty() || searchTerm.isNotEmpty(),
+                        memberCount = members.size,
                         onTextChanged = viewModel::onSearchTextChanged,
                     )
                 }
                 item {
-                    if (members.value.isEmpty() && uiState.value !is UiState.Loading) {
+                    if (members.isEmpty() && uiState !is UiState.Loading) {
                         TextWidget(
                             modifier =
                                 Modifier
@@ -81,15 +87,17 @@ fun MembersActiveScreen(
                         )
                     }
                 }
-                items(members.value) {
+                items(members) {
                     MemberStatusWidget(
                         memberEntity = it,
-                        showDetails = true,
                         hasAdminRights = viewModel.hasAdminRights(),
-                        onMemberTapped = viewModel::onMemberTapped,
-                        onPaymentsTapped = viewModel::onPaymentsTapped,
-                        onAttendanceTapped = viewModel::onAttendanceTapped,
-                        onSessionTapped = viewModel::onSessionTapped,
+                        listener =
+                            MemberStatusWidgetListener(
+                                onMemberTapped = viewModel::onMemberTapped,
+                                onPaymentsTapped = viewModel::onPaymentsTapped,
+                                onAttendanceTapped = viewModel::onAttendanceTapped,
+                                onSessionTapped = viewModel::onSessionTapped,
+                            ),
                     )
                 }
             }

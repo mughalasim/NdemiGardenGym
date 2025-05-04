@@ -26,13 +26,17 @@ class AttendanceScreenViewModel(
     private val authUseCase: AuthUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-    private lateinit var memberId: String
+    private var memberId: String = ""
 
     private val _selectedDate: MutableStateFlow<DateTime> = MutableStateFlow(DateTime.now())
     val selectedDate: StateFlow<DateTime> = _selectedDate
 
-    fun getAttendances(memberId: String = "") {
+    fun setMemberId(memberId: String) {
         this.memberId = memberId
+    }
+
+    // TODO - make flow
+    fun getAttendances() {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             attendanceUseCase.getMemberAttendancesForId(
@@ -43,8 +47,9 @@ class AttendanceScreenViewModel(
                     is DomainResult.Error ->
                         sendAction(Action.ShowDomainError(result.error, converter))
 
-                    is DomainResult.Success ->
+                    is DomainResult.Success -> {
                         sendAction(Action.Success(result.data))
+                    }
                 }
             }
         }
@@ -52,12 +57,12 @@ class AttendanceScreenViewModel(
 
     fun increaseYear() {
         _selectedDate.value = _selectedDate.value.plusYears(1)
-        getAttendances(memberId)
+        getAttendances()
     }
 
     fun decreaseYear() {
         _selectedDate.value = _selectedDate.value.minusYears(1)
-        getAttendances(memberId)
+        getAttendances()
     }
 
     fun deleteAttendance(attendanceEntity: AttendanceEntity) {
@@ -73,7 +78,7 @@ class AttendanceScreenViewModel(
                             ),
                         )
 
-                    is DomainResult.Success -> getAttendances(memberId)
+                    is DomainResult.Success -> getAttendances()
                 }
             }
         }

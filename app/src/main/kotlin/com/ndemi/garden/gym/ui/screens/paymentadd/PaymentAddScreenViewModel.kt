@@ -91,6 +91,7 @@ class PaymentAddScreenViewModel(
         }
     }
 
+    // TODO - Move to useCase
     fun onPaymentAddTapped() {
         sendAction(Action.SetLoading)
 

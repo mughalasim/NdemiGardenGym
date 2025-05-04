@@ -3,6 +3,7 @@ package com.ndemi.garden.gym.ui.screens.register
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
@@ -15,10 +16,10 @@ fun RegisterNewScreen(
     viewModel: RegisterScreenViewModel = koinViewModel<RegisterScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Waiting)
-    val inputData = viewModel.inputData.collectAsState()
+    val uiState by viewModel.uiStateFlow.collectAsState()
+    val inputData by viewModel.inputData.collectAsState()
 
-    if (uiState.value is UiState.Success) {
+    if (uiState is UiState.Success) {
         viewModel.navigateBack()
     }
 
@@ -31,8 +32,8 @@ fun RegisterNewScreen(
         }
 
         RegisterDetailScreen(
-            uiState = uiState.value,
-            inputData = inputData.value,
+            uiState = uiState,
+            inputData = inputData,
             hidePassword = true,
             onSetString = viewModel::setString,
             snackbarHostState = snackbarHostState,

@@ -95,7 +95,7 @@ class AuthRepositoryImp(
             awaitClose { }
         }
 
-    override suspend fun getAppVersion() =
+    override suspend fun getAppVersion(): Flow<DomainResult<String>> =
         callbackFlow {
             val eventDocument = firebaseFirestore.collection(repositoryUrls.pathVersion).document(repositoryUrls.pathVersionType)
 
@@ -106,17 +106,17 @@ class AuthRepositoryImp(
                         val versionModel = response.toObject<VersionModel>()
                         versionModel?.let {
                             if (it.version > repositoryUrls.currentAppVersion) {
-                                trySend(DomainResult.Success(it.url)).isSuccess
+                                trySend(DomainResult.Success(it.url))
                             } else {
-                                trySend(DomainResult.Error(DomainError.NO_DATA)).isSuccess
+                                trySend(DomainResult.Error(DomainError.NO_DATA))
                             }
                         } ?: run {
-                            trySend(DomainResult.Error(DomainError.NO_DATA)).isSuccess
+                            trySend(DomainResult.Error(DomainError.NO_DATA))
                         }
                     }
                     error?.let {
                         logger.log("Exception: $error", AppLogLevel.ERROR)
-                        trySend(DomainResult.Error(error.toDomainError())).isSuccess
+                        trySend(DomainResult.Error(error.toDomainError()))
                     }
                 }
             awaitClose { subscription.remove() }
@@ -134,20 +134,20 @@ class AuthRepositoryImp(
                             val memberModel = response.toObject<MemberModel>()
                             memberModel?.let {
                                 _memberEntity.value = memberModel.toMemberEntity(firebaseAuth.currentUser?.isEmailVerified == true)
-                                trySend(DomainResult.Success(_memberEntity.value)).isSuccess
+                                trySend(DomainResult.Success(_memberEntity.value))
                             } ?: run {
-                                trySend(DomainResult.Error(DomainError.UNAUTHORISED)).isSuccess
+                                trySend(DomainResult.Error(DomainError.UNAUTHORISED))
                             }
                         }
                         error?.let {
                             logger.log("Exception: $error", AppLogLevel.ERROR)
-                            trySend(DomainResult.Error(error.toDomainError())).isSuccess
+                            trySend(DomainResult.Error(error.toDomainError()))
                         }
                     }
                 awaitClose { subscription.remove() }
             }.run {
                 logger.log("Member UID is null or empty", AppLogLevel.ERROR)
-                trySend(DomainResult.Error(DomainError.UNAUTHORISED)).isSuccess
+                trySend(DomainResult.Error(DomainError.UNAUTHORISED))
                 awaitClose { }
             }
         }

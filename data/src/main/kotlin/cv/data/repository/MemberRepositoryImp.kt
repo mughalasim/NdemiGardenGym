@@ -15,6 +15,9 @@ import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.MemberRepository
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
 class MemberRepositoryImp(
     private val firebaseFirestore: FirebaseFirestore,
@@ -40,65 +43,65 @@ class MemberRepositoryImp(
         return completable.await()
     }
 
-    override suspend fun getAllMembers(isActiveNow: Boolean): DomainResult<List<MemberEntity>> {
-        val completable: CompletableDeferred<DomainResult<List<MemberEntity>>> =
-            CompletableDeferred()
-        val collection = firebaseFirestore.collection(pathUser)
+    override suspend fun getAllMembers(isActiveNow: Boolean): Flow<DomainResult<List<MemberEntity>>> =
+        callbackFlow {
+            val collection = firebaseFirestore.collection(pathUser)
+            val subscription =
+                collection.addSnapshotListener { snapshot, error ->
+                    snapshot?.let {
+                        logger.log("Data received: $it")
+                        val response = it.toObjects<MemberModel>()
+                        trySend(
+                            DomainResult.Success(
+                                response.map {
+                                    it.toMemberEntity()
+                                }.filter {
+                                    if (isActiveNow) {
+                                        it.activeNowDateMillis != null
+                                    } else {
+                                        it.memberType == MemberType.MEMBER && it.hasPaidMembership()
+                                    }
+                                }.sortedByDescending {
+                                    it.registrationDateMillis
+                                },
+                            ),
+                        )
+                    }
+                    error?.let {
+                        logger.log("Exception: $it", AppLogLevel.ERROR)
+                        trySend(DomainResult.Error(it.toDomainError()))
+                    }
+                }
+            awaitClose { subscription.remove() }
+        }
 
-        collection.get()
-            .addOnSuccessListener { document ->
-                logger.log("Data received: $document")
-                val response = document.toObjects<MemberModel>()
-                completable.complete(
-                    DomainResult.Success(
-                        response.map {
-                            it.toMemberEntity()
-                        }.filter {
-                            if (isActiveNow) {
-                                it.activeNowDateMillis != null
-                            } else {
-                                it.memberType == MemberType.MEMBER && it.hasPaidMembership()
-                            }
-                        }.sortedByDescending {
-                            it.registrationDateMillis
-                        },
-                    ),
-                )
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
-
-        return completable.await()
-    }
-
-    override suspend fun getExpiredMembers(): DomainResult<List<MemberEntity>> {
-        val completable: CompletableDeferred<DomainResult<List<MemberEntity>>> =
-            CompletableDeferred()
-        val collection = firebaseFirestore.collection(pathUser)
-
-        collection.get()
-            .addOnSuccessListener { document ->
-                logger.log("Data received: $document")
-                val response = document.toObjects<MemberModel>()
-                completable.complete(
-                    DomainResult.Success(
-                        response.map {
-                            it.toMemberEntity()
-                        }.filter {
-                            !it.hasPaidMembership() && it.memberType == MemberType.MEMBER
-                        }.sortedByDescending {
-                            it.renewalFutureDateMillis
-                        },
-                    ),
-                )
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
-
-        return completable.await()
-    }
+    override suspend fun getExpiredMembers(): Flow<DomainResult<List<MemberEntity>>> =
+        callbackFlow {
+            val collection = firebaseFirestore.collection(pathUser)
+            val subscription =
+                collection.addSnapshotListener { snapshot, error ->
+                    snapshot?.let {
+                        logger.log("Data received: $it")
+                        val response = it.toObjects<MemberModel>()
+                        trySend(
+                            DomainResult.Success(
+                                response.map {
+                                    it.toMemberEntity()
+                                }.filter {
+                                    !it.hasPaidMembership() && it.memberType == MemberType.MEMBER
+                                }.sortedByDescending {
+                                    it.renewalFutureDateMillis
+                                },
+                            ),
+                        )
+                    }
+                    error?.let {
+                        logger.log("Exception: $it", AppLogLevel.ERROR)
+                        trySend(DomainResult.Error(it.toDomainError()))
+                    }
+                }
+            awaitClose { subscription.remove() }
+        }
 
     override suspend fun updateMember(memberEntity: MemberEntity): DomainResult<Boolean> {
         val completable: CompletableDeferred<DomainResult<Boolean>> = CompletableDeferred()

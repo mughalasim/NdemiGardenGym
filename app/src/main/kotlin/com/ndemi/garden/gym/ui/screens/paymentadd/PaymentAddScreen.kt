@@ -5,11 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import org.koin.androidx.compose.koinViewModel
@@ -21,8 +21,8 @@ fun PaymentAddScreen(
     viewModel: PaymentAddScreenViewModel = koinViewModel<PaymentAddScreenViewModel>(),
 ) {
     viewModel.setMemberId(memberId)
-    val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Waiting)
-    val inputData = viewModel.inputData.collectAsState()
+    val uiState by viewModel.uiStateFlow.collectAsState()
+    val inputData by viewModel.inputData.collectAsState()
 
     Column(
         modifier =
@@ -38,8 +38,8 @@ fun PaymentAddScreen(
         )
 
         PaymentAddDetailsScreen(
-            inputData = inputData.value,
-            uiState = uiState.value,
+            inputData = inputData,
+            uiState = uiState,
             onSetData = viewModel::setData,
             snackbarHostState = snackbarHostState,
             onPaymentAddTapped = viewModel::onPaymentAddTapped,

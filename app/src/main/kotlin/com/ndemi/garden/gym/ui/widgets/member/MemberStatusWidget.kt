@@ -39,12 +39,8 @@ import cv.domain.entities.MemberEntity
 fun MemberStatusWidget(
     modifier: Modifier = Modifier,
     memberEntity: MemberEntity,
-    showDetails: Boolean = false,
     hasAdminRights: Boolean = false,
-    onMemberTapped: (memberEntity: MemberEntity) -> Unit = {},
-    onPaymentsTapped: (memberEntity: MemberEntity) -> Unit = {},
-    onAttendanceTapped: (memberEntity: MemberEntity) -> Unit = {},
-    onSessionTapped: (memberEntity: MemberEntity) -> Unit = {},
+    listener: MemberStatusWidgetListener = MemberStatusWidgetListener(),
 ) {
     Column(
         modifier =
@@ -56,12 +52,15 @@ fun MemberStatusWidget(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .clickable { if (showDetails) onMemberTapped.invoke(memberEntity) },
+                    .clickable { if (hasAdminRights) listener.onMemberTapped.invoke(memberEntity) },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImageWidget(
-                modifier = Modifier.width(image_size_small).height(image_size_small),
+                modifier =
+                    Modifier
+                        .width(image_size_small)
+                        .height(image_size_small),
                 profileImageUrl = memberEntity.profileImageUrl,
             )
 
@@ -76,7 +75,7 @@ fun MemberStatusWidget(
                     style = AppTheme.textStyles.large,
                 )
 
-                if (showDetails) {
+                if (hasAdminRights) {
                     TextWidget(
                         style = AppTheme.textStyles.small,
                         text = memberEntity.getResidentialStatus(),
@@ -96,30 +95,28 @@ fun MemberStatusWidget(
                 }
             }
 
-            if (showDetails) {
+            if (hasAdminRights && memberEntity.hasCoach) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    if (memberEntity.hasCoach) {
-                        Icon(
-                            modifier =
-                                Modifier
-                                    .padding(top = padding_screen_small)
-                                    .width(icon_size_small)
-                                    .height(icon_size_small),
-                            imageVector = Icons.Rounded.Accessibility,
-                            contentDescription = null,
-                            tint = AppTheme.colors.primary,
-                        )
-                        TextWidget(
-                            text = stringResource(R.string.txt_coach),
-                            color = AppTheme.colors.primary,
-                            style = AppTheme.textStyles.small,
-                        )
-                    }
+                    Icon(
+                        modifier =
+                            Modifier
+                                .padding(top = padding_screen_small)
+                                .width(icon_size_small)
+                                .height(icon_size_small),
+                        imageVector = Icons.Rounded.Accessibility,
+                        contentDescription = null,
+                        tint = AppTheme.colors.primary,
+                    )
+                    TextWidget(
+                        text = stringResource(R.string.txt_coach),
+                        color = AppTheme.colors.primary,
+                        style = AppTheme.textStyles.small,
+                    )
                 }
             }
         }
 
-        if (showDetails) {
+        if (hasAdminRights) {
             Row(
                 modifier =
                     Modifier
@@ -132,7 +129,7 @@ fun MemberStatusWidget(
                     title = stringResource(R.string.txt_payments),
                     isOutlined = true,
                 ) {
-                    onPaymentsTapped.invoke(memberEntity)
+                    listener.onPaymentsTapped.invoke(memberEntity)
                 }
                 Spacer(modifier = Modifier.width(padding_screen_small))
                 ButtonWidget(
@@ -140,9 +137,9 @@ fun MemberStatusWidget(
                     title = stringResource(R.string.txt_attendance),
                     isOutlined = true,
                 ) {
-                    onAttendanceTapped.invoke(memberEntity)
+                    listener.onAttendanceTapped.invoke(memberEntity)
                 }
-                if (hasAdminRights && memberEntity.hasPaidMembership()) {
+                if (memberEntity.hasPaidMembership()) {
                     Spacer(modifier = Modifier.width(padding_screen_small))
                     ButtonWidget(
                         modifier = Modifier.weight(1f),
@@ -154,13 +151,20 @@ fun MemberStatusWidget(
                             },
                         isOutlined = !memberEntity.isActiveNow(),
                     ) {
-                        onSessionTapped.invoke(memberEntity)
+                        listener.onSessionTapped.invoke(memberEntity)
                     }
                 }
             }
         }
     }
 }
+
+data class MemberStatusWidgetListener(
+    val onMemberTapped: (memberEntity: MemberEntity) -> Unit = {},
+    val onPaymentsTapped: (memberEntity: MemberEntity) -> Unit = {},
+    val onAttendanceTapped: (memberEntity: MemberEntity) -> Unit = {},
+    val onSessionTapped: (memberEntity: MemberEntity) -> Unit = {},
+)
 
 @AppPreview
 @Composable
@@ -170,20 +174,17 @@ private fun MemberWidgetPreview() {
             MemberStatusWidget(
                 memberEntity = getMockRegisteredMemberEntity(),
                 hasAdminRights = true,
-                showDetails = true,
             )
             MemberStatusWidget(
                 memberEntity = getMockActiveMemberEntity(),
                 hasAdminRights = true,
-                showDetails = true,
             )
             MemberStatusWidget(
                 memberEntity = getMockExpiredMemberEntity(),
-                showDetails = true,
+                hasAdminRights = true,
             )
             MemberStatusWidget(
-                memberEntity = getMockRegisteredMemberEntity(),
-                showDetails = false,
+                memberEntity = getMockActiveMemberEntity(),
             )
         }
     }

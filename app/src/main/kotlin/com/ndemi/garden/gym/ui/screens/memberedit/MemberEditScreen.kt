@@ -40,9 +40,10 @@ fun MemberEditScreen(
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
     viewModel: MemberEditScreenViewModel = koinViewModel<MemberEditScreenViewModel>(),
 ) {
-    val uiState = viewModel.uiStateFlow.collectAsState(initial = UiState.Loading)
-    val memberEntity = viewModel.memberEntity.collectAsState()
     val context = LocalContext.current
+    val uiState by viewModel.uiStateFlow.collectAsState()
+    val memberEntity by viewModel.memberEntity.collectAsState()
+    var showDeleteUserDialog by remember { mutableStateOf(false) }
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
             imageUri?.let {
@@ -51,9 +52,8 @@ fun MemberEditScreen(
                     ?.let { byteArray -> viewModel.updateMemberImage(byteArray) }
             }
         }
-    var showDeleteUserDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(true) { viewModel.getMemberForId(memberId) }
+    LaunchedEffect(Unit) { viewModel.getMemberForId(memberId) }
 
     Column {
         ToolBarWidget(
@@ -69,7 +69,7 @@ fun MemberEditScreen(
                 Modifier
                     .fillMaxSize()
                     .padding(horizontal = padding_screen),
-            isRefreshing = (uiState.value is UiState.Loading),
+            isRefreshing = uiState is UiState.Loading,
             contentAlignment = Alignment.TopCenter,
             onRefresh = { viewModel.getMemberForId(memberId) },
         ) {
@@ -82,7 +82,7 @@ fun MemberEditScreen(
             ) {
                 MemberImageWidget(
                     isEnabled = viewModel.hasAdminRights(),
-                    imageUrl = memberEntity.value.profileImageUrl,
+                    imageUrl = memberEntity.profileImageUrl,
                     onImageSelect = {
                         galleryLauncher.launch("image/*")
                     },
@@ -93,8 +93,8 @@ fun MemberEditScreen(
 
                 MemberEditDetailsScreen(
                     hasAdminRights = viewModel.hasAdminRights(),
-                    uiState = uiState.value,
-                    memberEntity = memberEntity.value,
+                    uiState = uiState,
+                    memberEntity = memberEntity,
                     onSetString = viewModel::setString,
                     snackbarHostState = snackbarHostState,
                     onUpdateTapped = viewModel::onUpdateTapped,
