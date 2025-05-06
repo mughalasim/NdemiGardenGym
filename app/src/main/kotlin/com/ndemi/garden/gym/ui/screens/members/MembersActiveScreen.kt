@@ -44,6 +44,7 @@ fun MembersActiveScreen(
         )
     }
 
+    // TODO - Show Inactive members to other users below active members
     Column {
         ToolBarWidget(
             title = stringResource(R.string.txt_who_is_in),

@@ -11,10 +11,14 @@ import cv.data.retrofit.toDomainError
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
+import cv.domain.entities.AttendanceMonthEntity
 import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.AttendanceRepository
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import org.joda.time.DateTime
 import org.joda.time.Days
 import org.joda.time.Minutes
@@ -30,49 +34,57 @@ class AttendanceRepositoryImp(
         memberId: String,
         year: Int,
         month: Int,
-    ): DomainResult<Pair<List<AttendanceEntity>, Int>> {
-        val setMemberId =
-            memberId.ifEmpty {
-                firebaseAuth.currentUser?.uid ?: run {
-                    logger.log("Not Authorised", AppLogLevel.ERROR)
-                    return DomainResult.Error(DomainError.UNAUTHORISED)
+    ): Flow<DomainResult<AttendanceMonthEntity>> =
+        callbackFlow {
+            val setMemberId =
+                memberId.ifEmpty {
+                    firebaseAuth.currentUser?.uid ?: run {
+                        logger.log("Not Authorised", AppLogLevel.ERROR)
+                        trySend(DomainResult.Error(DomainError.UNAUTHORISED))
+                    }
                 }
-            }
-        val reference =
-            firebaseFirestore
-                .collection(pathAttendance)
-                .document(year.toString())
-                .collection(month.toString()).whereEqualTo("memberId", setMemberId)
+            val reference =
+                firebaseFirestore
+                    .collection(pathAttendance)
+                    .document(year.toString())
+                    .collection(month.toString()).whereEqualTo("memberId", setMemberId)
 
-        val completable: CompletableDeferred<DomainResult<Pair<List<AttendanceEntity>, Int>>> =
-            CompletableDeferred()
-        reference.get()
-            .addOnSuccessListener { document ->
-                logger.log("Data received: $document")
-                val response = document.toObjects<AttendanceModel>()
-                val list =
-                    response
-                        .map { it.toAttendanceEntity() }
-                        .sortedByDescending { it.startDateMillis }
+            val subscription =
+                reference
+                    .addSnapshotListener { snapshot, error ->
+                        snapshot?.let {
+                            logger.log("Data received: ${snapshot.toObjects<Any>()}")
+                            val response = snapshot.toObjects<AttendanceModel>()
+                            val list =
+                                response
+                                    .map { it.toAttendanceEntity() }
+                                    .sortedByDescending { it.startDateMillis }
 
-                var totalMinutes = 0
-                list.forEach {
-                    totalMinutes +=
-                        Minutes.minutesBetween(
-                            DateTime(it.startDateMillis),
-                            DateTime(it.endDateMillis),
-                        ).minutes
-                }
-                completable.complete(
-                    DomainResult.Success(Pair(list, totalMinutes)),
-                )
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
-
-        return completable.await()
-    }
+                            var totalMinutes = 0
+                            list.forEach {
+                                totalMinutes +=
+                                    Minutes.minutesBetween(
+                                        DateTime(it.startDateMillis),
+                                        DateTime(it.endDateMillis),
+                                    ).minutes
+                            }
+                            trySend(
+                                DomainResult.Success(
+                                    AttendanceMonthEntity(
+                                        monthNumber = month,
+                                        totalMinutes = totalMinutes,
+                                        attendances = list,
+                                    ),
+                                ),
+                            )
+                        }
+                        error?.let {
+                            logger.log("Exception: $it", AppLogLevel.ERROR)
+                            trySend(DomainResult.Error(it.toDomainError()))
+                        }
+                    }
+            awaitClose { subscription.remove() }
+        }
 
     override suspend fun addAttendance(
         memberId: String,

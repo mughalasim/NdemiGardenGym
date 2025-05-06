@@ -3,13 +3,14 @@ package cv.domain.repositories
 import cv.domain.DomainResult
 import cv.domain.entities.PaymentEntity
 import cv.domain.entities.PaymentYearEntity
+import kotlinx.coroutines.flow.Flow
 
 interface PaymentRepository {
     suspend fun getPayments(
         isMembersPayment: Boolean,
         memberId: String,
         year: Int,
-    ): DomainResult<PaymentYearEntity>
+    ): Flow<DomainResult<PaymentYearEntity>>
 
     suspend fun addPaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit>
 

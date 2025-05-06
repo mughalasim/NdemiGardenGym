@@ -35,14 +35,13 @@ class AttendanceScreenViewModel(
         this.memberId = memberId
     }
 
-    // TODO - make flow
     fun getAttendances() {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             attendanceUseCase.getMemberAttendancesForId(
                 memberId = memberId,
                 year = selectedDate.value.year,
-            ).also { result ->
+            ).collect { result ->
                 when (result) {
                     is DomainResult.Error ->
                         sendAction(Action.ShowDomainError(result.error, converter))

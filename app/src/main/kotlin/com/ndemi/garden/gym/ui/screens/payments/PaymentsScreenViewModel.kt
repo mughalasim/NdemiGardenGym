@@ -38,7 +38,6 @@ class PaymentsScreenViewModel(
         this.memberId = memberId
     }
 
-    // TODO - make flow
     fun getPaymentsForMember() {
         _canAddPayment.value = false
         sendAction(Action.SetLoading)
@@ -46,7 +45,7 @@ class PaymentsScreenViewModel(
             paymentUseCase.getPaymentPlanForMember(
                 year = _selectedDate.value.year,
                 memberId = memberId,
-            ).also { result ->
+            ).collect { result ->
                 when (result) {
                     is DomainResult.Error ->
                         sendAction(Action.ShowDomainError(result.error, converter))

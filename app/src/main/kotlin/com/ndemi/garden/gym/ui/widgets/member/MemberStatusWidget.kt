@@ -42,6 +42,7 @@ fun MemberStatusWidget(
     hasAdminRights: Boolean = false,
     listener: MemberStatusWidgetListener = MemberStatusWidgetListener(),
 ) {
+    // TODO - Change view to staggered list
     Column(
         modifier =
             modifier

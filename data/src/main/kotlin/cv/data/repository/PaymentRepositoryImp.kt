@@ -15,6 +15,9 @@ import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.PaymentRepository
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import org.joda.time.DateTime
 
 class PaymentRepositoryImp(
@@ -28,59 +31,59 @@ class PaymentRepositoryImp(
         isMembersPayment: Boolean,
         memberId: String,
         year: Int,
-    ): DomainResult<PaymentYearEntity> {
-        val setMemberId =
-            memberId.ifEmpty {
-                firebaseAuth.currentUser?.uid ?: run {
-                    logger.log("Not Authorised", AppLogLevel.ERROR)
-                    return DomainResult.Error(DomainError.UNAUTHORISED)
-                }
-            }
-
-        val reference =
-            firebaseFirestore
-                .collection(pathPayment)
-                .document(pathPaymentPlan)
-                .collection(year.toString())
-
-        val completable:
-            CompletableDeferred<DomainResult<PaymentYearEntity>> =
-            CompletableDeferred()
-
-        reference.get()
-            .addOnSuccessListener { document ->
-                logger.log("Data received: $document")
-                val response = document.toObjects<PaymentModel>()
-                val list =
-                    response
-                        .map { it.toPaymentEntity() }
-                        .sortedByDescending { it.startDateMillis }
-                        .filter { it.memberId == setMemberId && isMembersPayment }
-
-                var canAddPayment = memberId.isNotEmpty() && DateTime.now().year == year
-                var totalAmount = 0.0
-                list.forEach {
-                    totalAmount += it.amount
-                    if (DateTime(it.endDateMillis).isAfterNow) {
-                        canAddPayment = false
+    ): Flow<DomainResult<PaymentYearEntity>> =
+        callbackFlow {
+            val setMemberId =
+                memberId.ifEmpty {
+                    firebaseAuth.currentUser?.uid ?: run {
+                        logger.log("Not Authorised", AppLogLevel.ERROR)
+                        trySend(DomainResult.Error(DomainError.UNAUTHORISED))
                     }
                 }
-                completable.complete(
-                    DomainResult.Success(
-                        PaymentYearEntity(
-                            payments = list,
-                            canAddNewPayment = canAddPayment,
-                            totalAmount = totalAmount,
-                        ),
-                    ),
-                )
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
 
-        return completable.await()
-    }
+            val reference =
+                firebaseFirestore
+                    .collection(pathPayment)
+                    .document(pathPaymentPlan)
+                    .collection(year.toString())
+
+            val subscription =
+                reference.addSnapshotListener { document, error ->
+                    document?.let {
+                        logger.log("Data received: ${document.toObjects<Any>()}")
+                        val response = document.toObjects<PaymentModel>()
+                        val list =
+                            response
+                                .map { it.toPaymentEntity() }
+                                .sortedByDescending { it.startDateMillis }
+                                .filter { it.memberId == setMemberId && isMembersPayment }
+
+                        var canAddPayment = memberId.isNotEmpty() && DateTime.now().year == year
+                        var totalAmount = 0.0
+                        list.forEach {
+                            totalAmount += it.amount
+                            if (DateTime(it.endDateMillis).isAfterNow) {
+                                canAddPayment = false
+                            }
+                        }
+                        trySend(
+                            DomainResult.Success(
+                                PaymentYearEntity(
+                                    payments = list,
+                                    canAddNewPayment = canAddPayment,
+                                    totalAmount = totalAmount,
+                                ),
+                            ),
+                        )
+                    }
+                    error?.let {
+                        logger.log("Exception: $it", AppLogLevel.ERROR)
+                        trySend(DomainResult.Error(it.toDomainError()))
+                    }
+                }
+
+            awaitClose { subscription.remove() }
+        }
 
     override suspend fun addPaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit> {
         val paymentModel = paymentEntity.toPaymentModel()

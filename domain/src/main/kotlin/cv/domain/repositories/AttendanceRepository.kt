@@ -2,6 +2,8 @@ package cv.domain.repositories
 
 import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
+import cv.domain.entities.AttendanceMonthEntity
+import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 interface AttendanceRepository {
@@ -9,7 +11,7 @@ interface AttendanceRepository {
         memberId: String,
         year: Int,
         month: Int,
-    ): DomainResult<Pair<List<AttendanceEntity>, Int>>
+    ): Flow<DomainResult<AttendanceMonthEntity>>
 
     suspend fun addAttendance(
         memberId: String,

@@ -28,7 +28,7 @@ class MemberRepositoryImp(
         val completable: CompletableDeferred<DomainResult<MemberEntity>> = CompletableDeferred()
         firebaseFirestore.collection(pathUser).document(memberId).get()
             .addOnSuccessListener { document ->
-                logger.log("Data received: $document")
+                logger.log("Data received: ${document.toObject<Any>()}")
                 val response = document.toObject<MemberModel>()
                 response?.let {
                     completable.complete(DomainResult.Success(it.toMemberEntity()))
@@ -45,12 +45,16 @@ class MemberRepositoryImp(
 
     override suspend fun getAllMembers(isActiveNow: Boolean): Flow<DomainResult<List<MemberEntity>>> =
         callbackFlow {
-            val collection = firebaseFirestore.collection(pathUser)
+            val query = firebaseFirestore.collection(pathUser).whereEqualTo("memberType", MemberType.MEMBER)
+            if (isActiveNow) {
+                query.whereNotEqualTo("activeNowDate", null)
+            }
+
             val subscription =
-                collection.addSnapshotListener { snapshot, error ->
-                    snapshot?.let {
-                        logger.log("Data received: $it")
-                        val response = it.toObjects<MemberModel>()
+                query.addSnapshotListener { snapshot, error ->
+                    snapshot?.let { querySnapshot ->
+                        logger.log("Data received: ${querySnapshot.toObjects<Any>()}")
+                        val response = querySnapshot.toObjects<MemberModel>()
                         trySend(
                             DomainResult.Success(
                                 response.map {
@@ -59,7 +63,7 @@ class MemberRepositoryImp(
                                     if (isActiveNow) {
                                         it.activeNowDateMillis != null
                                     } else {
-                                        it.memberType == MemberType.MEMBER && it.hasPaidMembership()
+                                        it.hasPaidMembership()
                                     }
                                 }.sortedByDescending {
                                     it.registrationDateMillis
@@ -77,18 +81,18 @@ class MemberRepositoryImp(
 
     override suspend fun getExpiredMembers(): Flow<DomainResult<List<MemberEntity>>> =
         callbackFlow {
-            val collection = firebaseFirestore.collection(pathUser)
+            val collection = firebaseFirestore.collection(pathUser).whereEqualTo("memberType", MemberType.MEMBER)
             val subscription =
                 collection.addSnapshotListener { snapshot, error ->
                     snapshot?.let {
-                        logger.log("Data received: $it")
+                        logger.log("Data received: ${it.toObjects<Any>()}")
                         val response = it.toObjects<MemberModel>()
                         trySend(
                             DomainResult.Success(
                                 response.map {
                                     it.toMemberEntity()
                                 }.filter {
-                                    !it.hasPaidMembership() && it.memberType == MemberType.MEMBER
+                                    !it.hasPaidMembership()
                                 }.sortedByDescending {
                                     it.renewalFutureDateMillis
                                 },

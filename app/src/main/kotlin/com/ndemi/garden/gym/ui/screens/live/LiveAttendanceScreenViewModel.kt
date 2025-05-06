@@ -18,7 +18,6 @@ class LiveAttendanceScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val memberUseCase: MemberUseCase,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-    // TODO - make flow
     fun getLiveMembers() {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
