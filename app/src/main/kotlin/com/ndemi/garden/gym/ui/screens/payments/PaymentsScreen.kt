@@ -41,11 +41,13 @@ fun PaymentsScreen(
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
-    val uiState = viewModel.uiStateFlow.collectAsState().value
-    val selectedDate = viewModel.selectedDate.collectAsState().value
-    val canAddPayment = viewModel.canAddPayment.collectAsState().value
+    val uiState by viewModel.uiStateFlow.collectAsState()
+    val selectedDate by viewModel.selectedDate.collectAsState()
+    val canAddPayment by viewModel.canAddPayment.collectAsState()
 
-    LaunchedEffect(true) { viewModel.getPaymentsForMember(memberId) }
+    viewModel.setMemberId(memberId)
+
+    LaunchedEffect(Unit) { viewModel.getPaymentsForMember() }
 
     Column {
         ToolBarWidget(
@@ -77,12 +79,12 @@ fun PaymentsScreen(
         PullToRefreshBox(
             modifier = Modifier.fillMaxSize(),
             isRefreshing = uiState is UiState.Loading,
-            onRefresh = { viewModel.getPaymentsForMember(memberId) },
+            onRefresh = { viewModel.getPaymentsForMember() },
         ) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                when (uiState) {
+                when (val state = uiState) {
                     is UiState.Success -> {
-                        if (uiState.payments.isEmpty()) {
+                        if (state.payments.isEmpty()) {
                             TextWidget(
                                 modifier = Modifier.fillMaxWidth().padding(padding_screen),
                                 text = stringResource(R.string.txt_no_payments),
@@ -90,8 +92,8 @@ fun PaymentsScreen(
                             )
                         } else {
                             PaymentsListScreen(
-                                payments = uiState.payments,
-                                totalAmount = uiState.totalAmount,
+                                payments = state.payments,
+                                totalAmount = state.totalAmount,
                                 canDeletePayment = viewModel.hasAdminRights(),
                                 onDeletePayment = viewModel::deletePayment,
                             )
@@ -101,7 +103,7 @@ fun PaymentsScreen(
                     is UiState.Error -> {
                         snackbarHostState.Show(
                             type = SnackbarType.ERROR,
-                            message = uiState.message,
+                            message = state.message,
                         )
                     }
 

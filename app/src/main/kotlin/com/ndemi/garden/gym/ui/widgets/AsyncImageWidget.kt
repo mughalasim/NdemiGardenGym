@@ -27,7 +27,7 @@ fun AsyncImageWidget(
         fallback = painterResource(R.drawable.ic_app),
         error = painterResource(R.drawable.ic_app),
         contentDescription = "profile picture",
-        contentScale = ContentScale.Crop,
-        modifier = modifier.clip(RoundedCornerShape(border_radius)),
+        contentScale = ContentScale.FillWidth,
+        modifier = modifier.clip(RoundedCornerShape(topEnd = border_radius, topStart = border_radius)),
     )
 }

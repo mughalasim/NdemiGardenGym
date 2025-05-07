@@ -2,7 +2,7 @@ package com.ndemi.garden.gym.ui.screens.reset
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiState
+import androidx.compose.runtime.getValue
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import org.koin.androidx.compose.koinViewModel
 
@@ -11,15 +11,12 @@ fun ResetPasswordScreen(
     viewModel: ResetPasswordScreenViewModel = koinViewModel<ResetPasswordScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    val uiState =
-        viewModel.uiStateFlow.collectAsState(
-            initial = UiState.Waiting,
-        )
-    val inputData = viewModel.inputData.collectAsState()
+    val uiState by viewModel.uiStateFlow.collectAsState()
+    val inputData by viewModel.inputData.collectAsState()
 
     ResetPasswordDetailsScreen(
-        uiState = uiState.value,
-        email = inputData.value,
+        uiState = uiState,
+        email = inputData,
         setEmail = viewModel::setEmail,
         onResetPasswordTapped = viewModel::onResetPasswordTapped,
         snackbarHostState = snackbarHostState,

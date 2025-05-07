@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -28,8 +29,8 @@ fun AttendanceScreen(
     viewModel: AttendanceScreenViewModel = koinViewModel<AttendanceScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    val uiState = viewModel.uiStateFlow.collectAsState().value
-    val selectedDate = viewModel.selectedDate.collectAsState().value
+    val uiState by viewModel.uiStateFlow.collectAsState()
+    val selectedDate by viewModel.selectedDate.collectAsState()
     val title =
         if (memberName.isEmpty()) {
             stringResource(R.string.txt_your_attendances)
@@ -37,10 +38,15 @@ fun AttendanceScreen(
             stringResource(R.string.txt_attendance_for, memberName)
         }
 
-    LaunchedEffect(true) { viewModel.getAttendances(memberId = memberId) }
+    viewModel.setMemberId(memberId)
+
+    LaunchedEffect(Unit) { viewModel.getAttendances() }
 
     Column {
-        ToolBarWidget(title = title, canNavigateBack = memberName.isNotEmpty()) {
+        ToolBarWidget(
+            title = title,
+            canNavigateBack = memberName.isNotEmpty(),
+        ) {
             viewModel.navigateBack()
         }
 
@@ -52,9 +58,9 @@ fun AttendanceScreen(
         )
 
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            when (uiState) {
+            when (val state = uiState) {
                 is UiState.Success -> {
-                    if (uiState.attendancesMonthly.isEmpty()) {
+                    if (state.attendancesMonthly.isEmpty()) {
                         TextWidget(
                             modifier =
                                 Modifier
@@ -64,7 +70,7 @@ fun AttendanceScreen(
                             textAlign = TextAlign.Center,
                         )
                     }
-                    for (attendanceMonthly in uiState.attendancesMonthly) {
+                    for (attendanceMonthly in state.attendancesMonthly) {
                         AttendanceListScreen(
                             attendanceMonthly = attendanceMonthly,
                             canDeleteAttendance = viewModel.hasAdminRights(),
@@ -77,7 +83,7 @@ fun AttendanceScreen(
                 is UiState.Error -> {
                     snackbarHostState.Show(
                         type = SnackbarType.ERROR,
-                        message = uiState.message,
+                        message = state.message,
                     )
                 }
 

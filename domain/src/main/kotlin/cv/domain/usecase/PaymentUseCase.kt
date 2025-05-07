@@ -6,7 +6,7 @@ import cv.domain.repositories.PaymentRepository
 class PaymentUseCase(
     private val paymentRepository: PaymentRepository,
 ) {
-    suspend fun getPaymentPlanForMember(
+    fun getPaymentPlanForMember(
         memberId: String,
         year: Int,
     ) = paymentRepository.getPayments(

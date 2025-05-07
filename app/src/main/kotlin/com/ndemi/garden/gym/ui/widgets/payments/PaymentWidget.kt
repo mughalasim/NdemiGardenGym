@@ -57,9 +57,10 @@ fun PaymentWidget(
                 Modifier
                     .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.End,
         ) {
             TextWidget(
+                modifier = Modifier.weight(1f),
                 text = endDate.toPaymentPlanDuration(),
                 color = AppTheme.colors.primary,
                 style = AppTheme.textStyles.regularBold,
@@ -76,7 +77,6 @@ fun PaymentWidget(
         Row(
             modifier =
                 Modifier
-                    .padding(top = padding_screen_small)
                     .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -145,6 +145,9 @@ private fun PaymentWidgetPreview() =
             PaymentWidget(
                 paymentEntity = getMockExpiredPaymentEntity(),
                 canDeletePayment = true,
+            )
+            PaymentWidget(
+                paymentEntity = getMockExpiredPaymentEntity(),
             )
         }
     }

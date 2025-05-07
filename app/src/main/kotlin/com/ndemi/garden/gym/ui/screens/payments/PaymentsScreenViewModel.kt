@@ -34,15 +34,18 @@ class PaymentsScreenViewModel(
     private val _selectedDate: MutableStateFlow<DateTime> = MutableStateFlow(DateTime.now())
     val selectedDate: StateFlow<DateTime> = _selectedDate
 
-    fun getPaymentsForMember(memberId: String) {
+    fun setMemberId(memberId: String) {
         this.memberId = memberId
+    }
+
+    fun getPaymentsForMember() {
         _canAddPayment.value = false
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             paymentUseCase.getPaymentPlanForMember(
                 year = _selectedDate.value.year,
                 memberId = memberId,
-            ).also { result ->
+            ).collect { result ->
                 when (result) {
                     is DomainResult.Error ->
                         sendAction(Action.ShowDomainError(result.error, converter))
@@ -63,12 +66,12 @@ class PaymentsScreenViewModel(
 
     fun increaseYear() {
         _selectedDate.value = _selectedDate.value.plusYears(1)
-        getPaymentsForMember(memberId)
+        getPaymentsForMember()
     }
 
     fun decreaseYear() {
         _selectedDate.value = _selectedDate.value.minusYears(1)
-        getPaymentsForMember(memberId)
+        getPaymentsForMember()
     }
 
     fun navigateBack() {
@@ -88,7 +91,7 @@ class PaymentsScreenViewModel(
                             ),
                         )
 
-                    is DomainResult.Success -> getPaymentsForMember(memberId)
+                    is DomainResult.Success -> getPaymentsForMember()
                 }
             }
         }

@@ -32,15 +32,15 @@ fun MainDetailsScreen(
     Scaffold(
         topBar = {},
         bottomBar = {
+            // TODO - Add a SuperAdmin User that can do the following
+            // - CRUDs all user types
+            // - Force admins to verify email before using the app
+            // - Accepts admin requests
             val bottomNavItems =
-                if (isAuthenticated) {
-                    if (isAdmin) {
-                        BottomNavItem.getAdminBottomItems()
-                    } else {
-                        BottomNavItem.getMemberBottomItems()
-                    }
-                } else {
-                    BottomNavItem.getLoginBottomItems()
+                when {
+                    isAuthenticated && isAdmin -> BottomNavItem.getAdminBottomItems()
+                    isAuthenticated -> BottomNavItem.getMemberBottomItems()
+                    else -> BottomNavItem.getLoginBottomItems()
                 }
             BottomNavigationWidget(
                 navController,
@@ -60,6 +60,7 @@ fun MainDetailsScreen(
                     .fillMaxSize()
                     .background(AppTheme.colors.backgroundScreen),
         ) {
+            // TODO - Add an extra feature to force users to verify emails first
             if (showEmailVerificationWarning) {
                 WarningWidget(message = stringResource(R.string.error_email_not_verified))
             }

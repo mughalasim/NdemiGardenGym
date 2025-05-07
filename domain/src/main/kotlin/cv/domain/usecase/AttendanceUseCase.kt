@@ -7,36 +7,42 @@ import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.AttendanceMonthEntity
 import cv.domain.repositories.AnalyticsRepository
 import cv.domain.repositories.AttendanceRepository
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.merge
 import java.util.Date
 
 class AttendanceUseCase(
     private val attendanceRepository: AttendanceRepository,
     private val analyticsRepository: AnalyticsRepository,
 ) {
-    suspend fun getMemberAttendancesForId(
+    fun getMemberAttendancesForId(
         memberId: String = "",
         year: Int,
-    ): DomainResult<List<AttendanceMonthEntity>> {
-        val result: MutableList<AttendanceMonthEntity> = mutableListOf()
-        for (month in JANUARY..DECEMBER) {
-            val response =
-                attendanceRepository.getAttendances(
-                    memberId = memberId,
-                    year = year,
-                    month = month,
-                )
-            if (response is DomainResult.Success && response.data.first.isNotEmpty()) {
-                result.add(
-                    AttendanceMonthEntity(
-                        monthNumber = month,
-                        totalMinutes = response.data.second,
-                        attendances = response.data.first,
-                    ),
-                )
-            }
+    ): Flow<DomainResult<List<AttendanceMonthEntity>>> =
+        callbackFlow {
+            val result: MutableList<AttendanceMonthEntity> = mutableListOf()
+
+            (JANUARY..DECEMBER).map { month ->
+                attendanceRepository.getAttendances(memberId, year, month)
+            }.merge()
+                .collect { response ->
+                    if (response is DomainResult.Success && response.data.attendances.isNotEmpty()) {
+                        result.removeIf { it.monthNumber == response.data.monthNumber }
+                        result.add(
+                            AttendanceMonthEntity(
+                                monthNumber = response.data.monthNumber,
+                                totalMinutes = response.data.totalMinutes,
+                                attendances = response.data.attendances,
+                            ),
+                        )
+                    }
+                    trySend(DomainResult.Success(result.sortedByDescending { it.monthNumber }))
+                }
+
+            awaitClose()
         }
-        return DomainResult.Success(result)
-    }
 
     suspend fun addAttendance(
         startDate: Date,

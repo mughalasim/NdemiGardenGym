@@ -21,12 +21,14 @@ class LiveAttendanceScreenViewModel(
     fun getLiveMembers() {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            memberUseCase.getLiveMembers().also { result ->
+            memberUseCase.getLiveMembers().collect { result ->
                 when (result) {
                     is DomainResult.Error ->
                         sendAction(Action.ShowDomainError(result.error, converter))
-                    is DomainResult.Success ->
+
+                    is DomainResult.Success -> {
                         sendAction(Action.Success(result.data))
+                    }
                 }
             }
         }
