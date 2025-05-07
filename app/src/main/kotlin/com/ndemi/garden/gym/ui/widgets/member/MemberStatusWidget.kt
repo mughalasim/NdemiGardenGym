@@ -33,12 +33,14 @@ import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
+import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import com.ndemi.garden.gym.ui.widgets.AsyncImageWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.MemberEntity
+import org.joda.time.DateTime
 
 @Composable
 fun MemberStatusWidget(
@@ -70,13 +72,18 @@ fun MemberStatusWidget(
                 text = memberEntity.getFullName(),
                 style = AppTheme.textStyles.regularBold,
             )
-
-            if (hasAdminRights) {
+            if (memberEntity.isActiveNow()) {
+                TextWidget(
+                    style = AppTheme.textStyles.small,
+                    text =
+                        DateTime.now()
+                            .toActiveStatusDuration(DateTime(memberEntity.activeNowDateMillis)),
+                )
+            } else if (hasAdminRights) {
                 TextWidget(
                     style = AppTheme.textStyles.small,
                     text = memberEntity.getResidentialStatus(),
                 )
-
                 if (memberEntity.hasPaidMembership()) {
                     TextWidget(
                         style = AppTheme.textStyles.small,
@@ -116,7 +123,8 @@ fun MemberStatusWidget(
                     modifier =
                         Modifier
                             .padding(horizontal = padding_screen)
-                            .iconModifier().clickable {
+                            .iconModifier()
+                            .clickable {
                                 listener.onAttendanceTapped.invoke(memberEntity)
                             },
                     imageVector = Icons.Rounded.AccessTime,

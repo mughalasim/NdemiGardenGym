@@ -38,7 +38,7 @@ class AttendanceUseCase(
                             ),
                         )
                     }
-                    trySend(DomainResult.Success(result.sortedBy { it.monthNumber }))
+                    trySend(DomainResult.Success(result.sortedByDescending { it.monthNumber }))
                 }
 
             awaitClose()

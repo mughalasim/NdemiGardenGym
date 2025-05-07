@@ -26,7 +26,6 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
-import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.AttendanceEntity
@@ -46,8 +45,7 @@ fun AttendanceWidget(
     Column(
         modifier =
             modifier
-                .padding(top = padding_screen_small)
-                .toAppCardStyle(),
+                .padding(top = padding_screen_small),
     ) {
         Row(
             modifier =

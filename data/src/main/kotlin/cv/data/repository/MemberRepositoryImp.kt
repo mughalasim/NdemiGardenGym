@@ -61,26 +61,31 @@ class MemberRepositoryImp(
                 query.addSnapshotListener { snapshot, error ->
                     snapshot?.let { querySnapshot ->
                         logger.log("Data received: ${querySnapshot.toObjects<Any>()}")
-                        val response = querySnapshot.toObjects<MemberModel>()
+                        val response =
+                            querySnapshot
+                                .toObjects<MemberModel>()
+                                .map { it.toMemberEntity() }
                         trySend(
                             DomainResult.Success(
-                                response
-                                    .map { it.toMemberEntity() }
-                                    .filter {
-                                        when (fetchType) {
-                                            MemberFetchType.ALL -> true
-                                            MemberFetchType.MEMBERS -> it.renewalFutureDateMillis != null
-                                            MemberFetchType.ACTIVE -> it.activeNowDateMillis != null
-                                            MemberFetchType.EXPIRED_REGISTRATIONS -> it.renewalFutureDateMillis == null
-                                        }
-                                    }
-                                    .sortedByDescending {
-                                        if (fetchType == MemberFetchType.ACTIVE) {
-                                            it.activeNowDateMillis
-                                        } else {
-                                            it.registrationDateMillis
-                                        }
-                                    },
+                                when (fetchType) {
+                                    MemberFetchType.ALL ->
+                                        response.sortedByDescending { it.registrationDateMillis }
+
+                                    MemberFetchType.MEMBERS ->
+                                        response
+                                            .filter { it.renewalFutureDateMillis != null }
+                                            .sortedBy { it.renewalFutureDateMillis }
+
+                                    MemberFetchType.ACTIVE ->
+                                        response
+                                            .filter { it.activeNowDateMillis != null }
+                                            .sortedBy { it.activeNowDateMillis }
+
+                                    MemberFetchType.EXPIRED_REGISTRATIONS ->
+                                        response
+                                            .filter { it.renewalFutureDateMillis == null }
+                                            .sortedByDescending { it.registrationDateMillis }
+                                },
                             ),
                         )
                     }

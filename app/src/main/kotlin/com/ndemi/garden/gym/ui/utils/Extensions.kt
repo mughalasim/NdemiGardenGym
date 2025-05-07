@@ -66,7 +66,7 @@ fun DateTime.toActiveStatusDuration(startDate: DateTime): String {
         String.format(pluralStringResource(R.plurals.plural_minutes, minutes), minutes)
 
     return if (seconds <= 0) {
-        stringResource(R.string.txt_not_active)
+        stringResource(R.string.txt_now)
     } else if (hours <= 0 && minutes < 1) {
         stringResource(R.string.txt_now)
     } else {
@@ -169,7 +169,7 @@ object DateConstants {
             ?: Locale(Locale.ENGLISH.language)
 
     val formatDayMonthYear: DateTimeFormatter =
-        DateTimeFormat.forPattern("dd MMMM yyyy").withLocale(appLocale)
+        DateTimeFormat.forPattern("dd MMM yyyy").withLocale(appLocale)
 
     val formatDateDay: DateTimeFormatter =
         DateTimeFormat.forPattern("d EEEE").withLocale(appLocale)
