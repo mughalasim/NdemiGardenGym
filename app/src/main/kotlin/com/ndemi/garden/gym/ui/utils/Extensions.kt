@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.core.os.ConfigurationCompat
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
@@ -102,7 +103,7 @@ fun Int.toMonthName(): String = DateTime().withMonthOfYear(this).toString(format
 
 @Composable
 fun DateTime.toPaymentPlanDuration(): String {
-    if (this.isBeforeNow) return stringResource(id = R.string.txt_expired)
+    if (this.isBeforeNow) return ""
 
     val months =
         Months.monthsBetween(
@@ -145,14 +146,14 @@ fun DateTime.toPaymentPlanDuration(): String {
 }
 
 @Composable
-fun Modifier.toAppCardStyle() =
+fun Modifier.toAppCardStyle(overridePadding: Dp = padding_screen_small) =
     this.fillMaxWidth()
         .wrapContentHeight()
         .background(
             color = AppTheme.colors.backgroundCard,
             shape = RoundedCornerShape(border_radius),
         )
-        .padding(padding_screen_small)
+        .padding(overridePadding)
 
 fun Double.toAmountString(): String = DecimalFormat("${BuildConfig.CURRENCY_CODE} #,###").format(this)
 

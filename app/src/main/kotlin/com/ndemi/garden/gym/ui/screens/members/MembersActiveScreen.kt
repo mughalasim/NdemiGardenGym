@@ -1,34 +1,14 @@
 package com.ndemi.garden.gym.ui.screens.members
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PersonAdd
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel.UiState
-import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
-import com.ndemi.garden.gym.ui.widgets.SnackbarType
-import com.ndemi.garden.gym.ui.widgets.TextWidget
-import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import com.ndemi.garden.gym.ui.widgets.member.MemberStatusWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberStatusWidgetListener
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MembersActiveScreen(
     viewModel: MembersScreenViewModel = koinViewModel<MembersScreenViewModel>(),
@@ -44,64 +24,28 @@ fun MembersActiveScreen(
         )
     }
 
-    // TODO - Show Inactive members to other users below active members
-    Column {
-        ToolBarWidget(
-            title = stringResource(R.string.txt_who_is_in),
-            secondaryIcon = if (viewModel.hasAdminRights()) Icons.Default.PersonAdd else null,
-            onSecondaryIconPressed = viewModel::onRegisterMember,
-        )
-
-        if (uiState is UiState.Error) {
-            snackbarHostState.Show(
-                type = SnackbarType.ERROR,
-                message = (uiState as UiState.Error).message,
-            )
-        }
-
-        PullToRefreshBox(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = padding_screen),
-            isRefreshing = uiState is UiState.Loading,
-            onRefresh = { viewModel.getMembers(MemberScreenType.LIVE_MEMBERS) },
-        ) {
-            LazyColumn {
-                item {
-                    SearchMemberComponent(
-                        textInput = searchTerm,
-                        isVisible = members.isNotEmpty() || searchTerm.isNotEmpty(),
-                        memberCount = members.size,
-                        onTextChanged = viewModel::onSearchTextChanged,
-                    )
-                }
-                item {
-                    if (members.isEmpty() && uiState !is UiState.Loading) {
-                        TextWidget(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(padding_screen),
-                            textAlign = TextAlign.Center,
-                            text = stringResource(R.string.txt_no_active_members),
-                        )
-                    }
-                }
-                items(members) {
-                    MemberStatusWidget(
-                        memberEntity = it,
-                        hasAdminRights = viewModel.hasAdminRights(),
-                        listener =
-                            MemberStatusWidgetListener(
-                                onMemberTapped = viewModel::onMemberTapped,
-                                onPaymentsTapped = viewModel::onPaymentsTapped,
-                                onAttendanceTapped = viewModel::onAttendanceTapped,
-                                onSessionTapped = viewModel::onSessionTapped,
-                            ),
-                    )
-                }
-            }
-        }
-    }
+    MembersSharedScreen(
+        pageTitleRes = R.string.txt_who_is_in,
+        defaultMessageRes = R.string.txt_no_active_members,
+        hasAdminRights = viewModel.hasAdminRights(),
+        searchTerm = searchTerm,
+        uiState = uiState,
+        snackbarHostState = snackbarHostState,
+        members = members,
+        listeners =
+            MembersSharedScreenListeners(
+                onRegisterMemberTapped = viewModel::onRegisterMember,
+                onSearchTextChanged = viewModel::onSearchTextChanged,
+                getMembers = {
+                    viewModel.getMembers(MemberScreenType.LIVE_MEMBERS)
+                },
+                memberStatusWidgetListener =
+                    MemberStatusWidgetListener(
+                        onMemberTapped = viewModel::onMemberTapped,
+                        onPaymentsTapped = viewModel::onPaymentsTapped,
+                        onAttendanceTapped = viewModel::onAttendanceTapped,
+                        onSessionTapped = viewModel::onSessionTapped,
+                    ),
+            ),
+    )
 }

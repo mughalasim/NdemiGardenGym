@@ -27,7 +27,7 @@ class PaymentRepositoryImp(
     private val pathPaymentPlan: String,
     private val logger: AppLoggerRepository,
 ) : PaymentRepository {
-    override suspend fun getPayments(
+    override fun getPayments(
         isMembersPayment: Boolean,
         memberId: String,
         year: Int,

@@ -17,6 +17,7 @@ import cv.domain.Variables.PARAM_REGISTRATION_ADMIN
 import cv.domain.Variables.PARAM_REGISTRATION_SELF
 import cv.domain.entities.MemberEntity
 import cv.domain.repositories.AnalyticsRepository
+import cv.domain.repositories.MemberFetchType
 import cv.domain.repositories.MemberRepository
 
 class MemberUseCase(
@@ -25,11 +26,11 @@ class MemberUseCase(
 ) {
     suspend fun getMemberById(memberId: String) = memberRepository.getMemberById(memberId = memberId)
 
-    suspend fun getAllMembers() = memberRepository.getAllMembers(isActiveNow = false)
+    fun getAllMembers() = memberRepository.getMembers(fetchType = MemberFetchType.MEMBERS)
 
-    suspend fun getLiveMembers() = memberRepository.getAllMembers(isActiveNow = true)
+    fun getLiveMembers() = memberRepository.getMembers(fetchType = MemberFetchType.ACTIVE)
 
-    suspend fun getExpiredMembers() = memberRepository.getExpiredMembers()
+    fun getExpiredMembers() = memberRepository.getMembers(fetchType = MemberFetchType.EXPIRED_REGISTRATIONS)
 
     suspend fun updateMember(
         memberEntity: MemberEntity,

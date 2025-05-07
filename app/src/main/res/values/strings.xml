@@ -88,6 +88,7 @@
     <string name="txt_now">Now</string>
     <string name="txt_not_active">Not active</string>
     <string name="txt_no_active_members">No active members in the gym</string>
+    <string name="txt_no_active_registered_members">No active registered members</string>
     <string name="txt_today">Today</string>
     <string name="txt_tomorrow">Tomorrow</string>
     <string name="txt_update_training_coach_status">Update training coach status</string>

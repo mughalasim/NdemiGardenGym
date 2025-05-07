@@ -6,7 +6,7 @@ import cv.domain.entities.PaymentYearEntity
 import kotlinx.coroutines.flow.Flow
 
 interface PaymentRepository {
-    suspend fun getPayments(
+    fun getPayments(
         isMembersPayment: Boolean,
         memberId: String,
         year: Int,

@@ -30,7 +30,7 @@ class AttendanceRepositoryImp(
     private val pathAttendance: String,
     private val logger: AppLoggerRepository,
 ) : AttendanceRepository {
-    override suspend fun getAttendances(
+    override fun getAttendances(
         memberId: String,
         year: Int,
         month: Int,

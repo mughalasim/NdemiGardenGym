@@ -13,6 +13,7 @@ import cv.domain.entities.MemberEntity
 import cv.domain.entities.MemberType
 import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
+import cv.domain.repositories.MemberFetchType
 import cv.domain.repositories.MemberRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.awaitClose
@@ -43,12 +44,18 @@ class MemberRepositoryImp(
         return completable.await()
     }
 
-    override suspend fun getAllMembers(isActiveNow: Boolean): Flow<DomainResult<List<MemberEntity>>> =
+    override fun getMembers(fetchType: MemberFetchType): Flow<DomainResult<List<MemberEntity>>> =
         callbackFlow {
-            val query = firebaseFirestore.collection(pathUser).whereEqualTo("memberType", MemberType.MEMBER)
-            if (isActiveNow) {
-                query.whereNotEqualTo("activeNowDate", null)
-            }
+            val query =
+                when (fetchType) {
+                    MemberFetchType.ALL ->
+                        firebaseFirestore.collection(pathUser)
+                            .whereNotEqualTo("memberType", MemberType.SUPER_ADMIN)
+
+                    else ->
+                        firebaseFirestore.collection(pathUser)
+                            .whereEqualTo("memberType", MemberType.MEMBER)
+                }
 
             val subscription =
                 query.addSnapshotListener { snapshot, error ->
@@ -57,45 +64,23 @@ class MemberRepositoryImp(
                         val response = querySnapshot.toObjects<MemberModel>()
                         trySend(
                             DomainResult.Success(
-                                response.map {
-                                    it.toMemberEntity()
-                                }.filter {
-                                    if (isActiveNow) {
-                                        it.activeNowDateMillis != null
-                                    } else {
-                                        it.hasPaidMembership()
+                                response
+                                    .map { it.toMemberEntity() }
+                                    .filter {
+                                        when (fetchType) {
+                                            MemberFetchType.ALL -> true
+                                            MemberFetchType.MEMBERS -> it.renewalFutureDateMillis != null
+                                            MemberFetchType.ACTIVE -> it.activeNowDateMillis != null
+                                            MemberFetchType.EXPIRED_REGISTRATIONS -> it.renewalFutureDateMillis == null
+                                        }
                                     }
-                                }.sortedByDescending {
-                                    it.registrationDateMillis
-                                },
-                            ),
-                        )
-                    }
-                    error?.let {
-                        logger.log("Exception: $it", AppLogLevel.ERROR)
-                        trySend(DomainResult.Error(it.toDomainError()))
-                    }
-                }
-            awaitClose { subscription.remove() }
-        }
-
-    override suspend fun getExpiredMembers(): Flow<DomainResult<List<MemberEntity>>> =
-        callbackFlow {
-            val collection = firebaseFirestore.collection(pathUser).whereEqualTo("memberType", MemberType.MEMBER)
-            val subscription =
-                collection.addSnapshotListener { snapshot, error ->
-                    snapshot?.let {
-                        logger.log("Data received: ${it.toObjects<Any>()}")
-                        val response = it.toObjects<MemberModel>()
-                        trySend(
-                            DomainResult.Success(
-                                response.map {
-                                    it.toMemberEntity()
-                                }.filter {
-                                    !it.hasPaidMembership()
-                                }.sortedByDescending {
-                                    it.renewalFutureDateMillis
-                                },
+                                    .sortedByDescending {
+                                        if (fetchType == MemberFetchType.ACTIVE) {
+                                            it.activeNowDateMillis
+                                        } else {
+                                            it.registrationDateMillis
+                                        }
+                                    },
                             ),
                         )
                     }
