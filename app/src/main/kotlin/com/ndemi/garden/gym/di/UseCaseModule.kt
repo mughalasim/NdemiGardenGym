@@ -32,6 +32,7 @@ val useCaseModule =
         single {
             PaymentUseCase(
                 paymentRepository = get(),
+                memberRepository = get(),
             )
         }
 

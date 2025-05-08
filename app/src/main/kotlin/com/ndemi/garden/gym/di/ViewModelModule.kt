@@ -63,7 +63,6 @@ val viewModelModule =
         viewModel {
             PaymentAddScreenViewModel(
                 converter = get(),
-                memberUseCase = get(),
                 paymentUseCase = get(),
                 navigationService = get(),
             )
