@@ -1,8 +1,8 @@
 package cv.data.repository
 
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.FirebaseFirestoreException.Code
 import com.google.firebase.storage.StorageReference
-import cv.data.retrofit.handleError
-import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
@@ -17,27 +17,25 @@ class StorageRepositoryImp(
     override suspend fun updateImageForMember(
         memberId: String,
         byteArray: ByteArray,
-    ): DomainResult<String> {
-        if (memberId.isEmpty()) {
-            logger.log("Not Authorised", AppLogLevel.ERROR)
-            return DomainResult.Error(DomainError.UNAUTHORISED)
-        }
+    ): DomainResult<String> =
+        runCatching {
+            if (memberId.isEmpty()) {
+                logger.log("Not authorised", AppLogLevel.ERROR)
+                throw FirebaseFirestoreException("", Code.UNAUTHENTICATED)
+            }
 
-        val task = storageReference
-            .child("$pathUserImage$memberId.jpg")
-            .putBytes(byteArray)
-            .await()
-            .storage
-            .downloadUrl
-
-        task.await()
-
-        return if (task.isSuccessful){
-            val result = task.result
-            val url = "https://${result.encodedAuthority}${result.encodedPath}?${result.encodedQuery}"
-            DomainResult.Success(url)
-        } else {
-            handleError(task, logger)
-        }
-    }
+            storageReference
+                .child("$pathUserImage$memberId.jpg")
+                .putBytes(byteArray)
+                .await()
+                .storage
+                .downloadUrl
+                .await()
+        }.fold(
+            onSuccess = { result ->
+                val url = "https://${result.encodedAuthority}${result.encodedPath}?${result.encodedQuery}"
+                DomainResult.Success(url)
+            },
+            onFailure = { handleError(it, logger) },
+        )
 }

@@ -34,6 +34,7 @@ class AuthRepositoryImp(
 
     override fun logOut() = firebaseAuth.signOut()
 
+    // TODO - All should be suspend
     override fun register(
         email: String,
         password: String,
@@ -92,7 +93,7 @@ class AuthRepositoryImp(
                     trySend(DomainResult.Success(Unit)).isSuccess
                 }
             }
-            awaitClose { }
+            awaitClose()
         }
 
     override suspend fun getAppVersion(): Flow<DomainResult<String>> =
@@ -148,7 +149,7 @@ class AuthRepositoryImp(
             }.run {
                 logger.log("Member UID is null or empty", AppLogLevel.ERROR)
                 trySend(DomainResult.Error(DomainError.UNAUTHORISED))
-                awaitClose { }
+                awaitClose()
             }
         }
 

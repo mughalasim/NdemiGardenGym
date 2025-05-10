@@ -1,9 +1,5 @@
 package com.ndemi.garden.gym.di
 
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import com.ndemi.garden.gym.BuildConfig
 import cv.data.repository.AttendanceRepositoryImp
 import cv.data.repository.AuthRepositoryImp
@@ -22,8 +18,8 @@ val repositoryModule =
     module {
         single<AuthRepository> {
             AuthRepositoryImp(
-                firebaseAuth = Firebase.auth,
-                firebaseFirestore = Firebase.firestore,
+                firebaseAuth = get(),
+                firebaseFirestore = get(),
                 repositoryUrls =
                     AuthRepositoryUrls(
                         pathUser = BuildConfig.PATH_USER,
@@ -37,7 +33,7 @@ val repositoryModule =
 
         single<MemberRepository> {
             MemberRepositoryImp(
-                firebaseFirestore = Firebase.firestore,
+                firebaseFirestore = get(),
                 pathUser = BuildConfig.PATH_USER,
                 logger = get(),
             )
@@ -45,8 +41,8 @@ val repositoryModule =
 
         single<AttendanceRepository> {
             AttendanceRepositoryImp(
-                firebaseAuth = Firebase.auth,
-                firebaseFirestore = Firebase.firestore,
+                firebaseAuth = get(),
+                firebaseFirestore = get(),
                 pathAttendance = BuildConfig.PATH_ATTENDANCE,
                 logger = get(),
             )
@@ -54,8 +50,8 @@ val repositoryModule =
 
         single<PaymentRepository> {
             PaymentRepositoryImp(
-                firebaseAuth = Firebase.auth,
-                firebaseFirestore = Firebase.firestore,
+                firebaseAuth = get(),
+                firebaseFirestore = get(),
                 pathPayment = BuildConfig.PATH_PAYMENT,
                 pathPaymentPlan = BuildConfig.PATH_PAYMENT_PLAN,
                 logger = get(),
@@ -64,7 +60,7 @@ val repositoryModule =
 
         single<StorageRepository> {
             StorageRepositoryImp(
-                storageReference = Firebase.storage.reference,
+                storageReference = get(),
                 pathUserImage = BuildConfig.PATH_USER_IMAGES,
                 logger = get(),
             )

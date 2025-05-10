@@ -17,7 +17,7 @@ class StorageUseCase(
     suspend fun updateImageForMember(
         memberEntity: MemberEntity,
         byteArray: ByteArray,
-    ): DomainResult<Boolean> {
+    ): DomainResult<Unit> {
         analyticsRepository.logEvent(
             eventName = EVENT_PHOTO,
             params =

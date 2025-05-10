@@ -14,10 +14,10 @@ import cv.domain.entities.PaymentYearEntity
 import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.PaymentRepository
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import org.joda.time.DateTime
 
 class PaymentRepositoryImp(
@@ -85,47 +85,32 @@ class PaymentRepositoryImp(
             awaitClose { subscription.remove() }
         }
 
-    override suspend fun addPaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit> {
-        val paymentModel = paymentEntity.toPaymentModel()
-
-        val collection =
+    override suspend fun addPaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit> =
+        runCatching {
+            val paymentModel = paymentEntity.toPaymentModel()
             firebaseFirestore
                 .collection(pathPayment)
                 .document(pathPaymentPlan)
                 .collection(DateTime(paymentEntity.startDateMillis).year.toString())
                 .document(paymentModel.paymentId)
+                .set(paymentModel)
+                .await()
+        }.fold(
+            onSuccess = { DomainResult.Success(Unit) },
+            onFailure = { handleError(it, logger) },
+        )
 
-        val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
-        collection.set(paymentModel)
-            .addOnSuccessListener {
-                logger.log("Payment Plan Added")
-                completable.complete(DomainResult.Success(Unit))
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
-
-        return completable.await()
-    }
-
-    override suspend fun deletePaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit> {
-        val collection =
+    override suspend fun deletePaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit> =
+        runCatching {
             firebaseFirestore
                 .collection(pathPayment)
                 .document(pathPaymentPlan)
                 .collection(DateTime(paymentEntity.startDateMillis).year.toString())
                 .document(paymentEntity.paymentId)
-
-        val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
-        collection.delete()
-            .addOnSuccessListener {
-                logger.log("Payment Plan Deleted")
-                completable.complete(DomainResult.Success(Unit))
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
-
-        return completable.await()
-    }
+                .delete()
+                .await()
+        }.fold(
+            onSuccess = { DomainResult.Success(Unit) },
+            onFailure = { handleError(it, logger) },
+        )
 }

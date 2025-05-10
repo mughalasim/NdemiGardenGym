@@ -35,7 +35,7 @@ class MemberUseCase(
     suspend fun updateMember(
         memberEntity: MemberEntity,
         updateType: UpdateType,
-    ): DomainResult<Boolean> {
+    ): DomainResult<Unit> {
         when (updateType) {
             UpdateType.ADMIN_REGISTRATION -> {
                 analyticsRepository.logEvent(
