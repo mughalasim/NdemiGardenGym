@@ -1,5 +1,6 @@
 package cv.data.retrofit
 
+import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthEmailException
 import com.google.firebase.auth.FirebaseAuthException
@@ -8,6 +9,9 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import cv.domain.DomainError
+import cv.domain.DomainResult
+import cv.domain.repositories.AppLogLevel
+import cv.domain.repositories.AppLoggerRepository
 
 enum class ApiError {
     UNKNOWN,
@@ -23,6 +27,13 @@ fun ApiError.toDomainError(): DomainError =
         ApiError.UNAUTHORISED -> DomainError.UNAUTHORISED
         else -> DomainError.SERVER
     }
+
+// TODO - Remove complettableDefferred from all repositories
+fun <T, D>handleError(task: Task<T>, logger: AppLoggerRepository): DomainResult<D> =
+    task.exception?.let {
+        logger.log("Exception: $it", AppLogLevel.ERROR)
+        DomainResult.Error(it.toDomainError())
+    }?: DomainResult.Error(DomainError.UNKNOWN)
 
 @Suppress("detekt.CyclomaticComplexMethod")
 fun Exception.toDomainError(): DomainError {

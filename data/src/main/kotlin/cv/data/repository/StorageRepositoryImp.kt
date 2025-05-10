@@ -1,13 +1,12 @@
 package cv.data.repository
 
 import com.google.firebase.storage.StorageReference
-import cv.data.retrofit.toDomainError
+import cv.data.retrofit.handleError
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.StorageRepository
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.tasks.await
 
 class StorageRepositoryImp(
@@ -23,17 +22,22 @@ class StorageRepositoryImp(
             logger.log("Not Authorised", AppLogLevel.ERROR)
             return DomainResult.Error(DomainError.UNAUTHORISED)
         }
-        val completable: CompletableDeferred<DomainResult<String>> = CompletableDeferred()
 
-        storageReference.child("$pathUserImage$memberId.jpg").putBytes(byteArray).await().storage.downloadUrl
-            .addOnSuccessListener { result ->
-                val url = "https://" + result.encodedAuthority + result.encodedPath + "?" + result.encodedQuery
-                completable.complete(DomainResult.Success(url))
-            }
-            .addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
-        return completable.await()
+        val task = storageReference
+            .child("$pathUserImage$memberId.jpg")
+            .putBytes(byteArray)
+            .await()
+            .storage
+            .downloadUrl
+
+        task.await()
+
+        return if (task.isSuccessful){
+            val result = task.result
+            val url = "https://${result.encodedAuthority}${result.encodedPath}?${result.encodedQuery}"
+            DomainResult.Success(url)
+        } else {
+            handleError(task, logger)
+        }
     }
 }
