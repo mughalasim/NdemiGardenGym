@@ -14,7 +14,7 @@ import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.AttendanceMonthEntity
 import cv.domain.usecase.AttendanceUseCase
-import cv.domain.usecase.AuthUseCase
+import cv.domain.usecase.PermissionsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,7 +23,7 @@ import org.joda.time.DateTime
 class AttendanceScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val attendanceUseCase: AttendanceUseCase,
-    private val authUseCase: AuthUseCase,
+    private val permissionsUseCase: PermissionsUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
     private var memberId: String = ""
@@ -87,7 +87,7 @@ class AttendanceScreenViewModel(
         navigationService.popBack()
     }
 
-    fun hasAdminRights() = authUseCase.hasAdminRights()
+    fun canDeleteAttendance() = permissionsUseCase.canDeleteAttendance(memberId)
 
     @Immutable
     sealed interface UiState : BaseState {

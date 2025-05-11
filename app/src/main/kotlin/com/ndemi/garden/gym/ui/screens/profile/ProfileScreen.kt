@@ -30,6 +30,7 @@ import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberImageWidget
 import org.koin.androidx.compose.koinViewModel
 
+// TODO - Split profile screens for Members Admin and Super Admin
 @Composable
 fun ProfileScreen(
     viewModel: ProfileScreenViewModel = koinViewModel<ProfileScreenViewModel>(),
@@ -106,6 +107,7 @@ fun ProfileScreen(
                         onSessionCompleted = viewModel::setAttendance,
                     )
                 }
+                // TODO - Handle session handling error with a snackbar
                 is UiState.Loading -> {
                     LoadingScreenWidget()
                 }

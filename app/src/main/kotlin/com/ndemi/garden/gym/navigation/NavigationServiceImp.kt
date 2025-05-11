@@ -6,19 +6,19 @@ import com.ndemi.garden.gym.navigation.Route.Companion.toRoute
 import cv.domain.Variables.EVENT_NAVIGATE
 import cv.domain.Variables.PARAM_SCREEN_NAME
 import cv.domain.repositories.AnalyticsRepository
-import cv.domain.usecase.AuthUseCase
+import cv.domain.usecase.PermissionsUseCase
 import kotlinx.serialization.Serializable
 
 class NavigationServiceImp(
     private val analyticsRepository: AnalyticsRepository,
-    private val authUseCase: AuthUseCase,
+    private val permissionsUseCase: PermissionsUseCase,
 ) : NavigationService {
     private lateinit var navController: NavController
     private lateinit var initialRoute: Route
 
     override fun setNavController(navController: NavController) {
         this.navController = navController
-        val initialRoute = Route.getInitialRoute(authUseCase.isAuthenticated(), authUseCase.isNotMember())
+        val initialRoute = Route.getInitialRoute(permissionsUseCase.isAuthenticated(), permissionsUseCase.isNotMember())
         this.initialRoute = initialRoute
     }
 
@@ -56,7 +56,7 @@ class NavigationServiceImp(
 
     override fun getCurrentRoute(): Route =
         navController.currentDestination?.route?.toRoute()
-            ?: Route.getInitialRoute(authUseCase.isAuthenticated(), authUseCase.isNotMember())
+            ?: Route.getInitialRoute(permissionsUseCase.isAuthenticated(), permissionsUseCase.isNotMember())
 
     override fun getInitialRoute(): Route = initialRoute
 }

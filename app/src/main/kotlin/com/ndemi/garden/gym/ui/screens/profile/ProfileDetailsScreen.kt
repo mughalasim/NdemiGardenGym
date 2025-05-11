@@ -32,7 +32,7 @@ fun ProfileDetailsScreen(
     ) {
         MemberInfoWidget(memberEntity = memberEntity, showExtraInfo = !isAdmin)
 
-        if (memberEntity.hasPaidMembership() && !isAdmin) {
+        if (!isAdmin) {
             MemberSessionWidget(
                 message = message,
                 sessionStartTime = sessionStartTime,
@@ -49,7 +49,7 @@ private fun ProfileDetailsScreenPreview() {
     AppThemeComposable {
         ProfileDetailsScreen(
             memberEntity = getMockRegisteredMemberEntity(),
-            isAdmin = false,
+            isAdmin = true,
         )
     }
 }

@@ -3,7 +3,6 @@ package com.ndemi.garden.gym.ui.screens.profile
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
-import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
@@ -12,9 +11,11 @@ import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
+import cv.domain.usecase.PermissionsUseCase
 import cv.domain.usecase.StorageUseCase
 import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,9 +26,11 @@ import org.joda.time.DateTime
 class ProfileScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val authUseCase: AuthUseCase,
+    private val accessUseCase: AccessUseCase,
     private val memberUseCase: MemberUseCase,
     private val attendanceUseCase: AttendanceUseCase,
     private val storageUseCase: StorageUseCase,
+    private val permissionsUseCase: PermissionsUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
     private val _sessionStartTime = MutableStateFlow<DateTime?>(null)
@@ -76,11 +79,10 @@ class ProfileScreenViewModel(
         }
     }
 
-    fun isAdmin() = authUseCase.isNotMember()
+    fun isAdmin() = permissionsUseCase.isNotMember()
 
     fun onLogOutTapped() {
-        authUseCase.logOut()
-        navigationService.open(Route.LoginScreen, true)
+        accessUseCase.logOut()
     }
 
     fun deleteMemberImage() {

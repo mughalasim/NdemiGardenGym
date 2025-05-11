@@ -11,24 +11,7 @@ interface AuthRepository {
 
     fun getMemberType(): MemberType
 
-    fun logOut()
-
-    fun register(
-        email: String,
-        password: String,
-        callback: (DomainResult<String>) -> Unit,
-    )
-
-    fun login(
-        email: String,
-        password: String,
-        callback: (DomainResult<Unit>) -> Unit,
-    )
-
-    fun resetPasswordForEmail(
-        email: String,
-        callback: (DomainResult<Unit>) -> Unit,
-    )
+    fun getMemberId(): String
 
     suspend fun getLoggedInUser(): Flow<DomainResult<MemberEntity>>
 

@@ -41,7 +41,7 @@ val applicationModule =
         single<NavigationService> {
             NavigationServiceImp(
                 analyticsRepository = get(),
-                authUseCase = get(),
+                permissionsUseCase = get(),
             )
         }
 

@@ -1,12 +1,14 @@
 package com.ndemi.garden.gym.di
 
 import com.ndemi.garden.gym.BuildConfig
+import cv.data.models.AuthRepositoryUrls
+import cv.data.repository.AccessRepositoryImp
 import cv.data.repository.AttendanceRepositoryImp
 import cv.data.repository.AuthRepositoryImp
-import cv.data.repository.AuthRepositoryUrls
 import cv.data.repository.MemberRepositoryImp
 import cv.data.repository.PaymentRepositoryImp
 import cv.data.repository.StorageRepositoryImp
+import cv.domain.repositories.AccessRepository
 import cv.domain.repositories.AttendanceRepository
 import cv.domain.repositories.AuthRepository
 import cv.domain.repositories.MemberRepository
@@ -27,6 +29,13 @@ val repositoryModule =
                         pathVersionType = BuildConfig.PATH_APP_VERSION_TYPE,
                         currentAppVersion = BuildConfig.VERSION_CODE,
                     ),
+                logger = get(),
+            )
+        }
+
+        single<AccessRepository> {
+            AccessRepositoryImp(
+                firebaseAuth = get(),
                 logger = get(),
             )
         }

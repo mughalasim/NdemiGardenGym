@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.ndemi.garden.gym.navigation.NavigationService
-import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.AuthUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 class MainScreenViewModel(
     private val navigationService: NavigationService,
     private val authUseCase: AuthUseCase,
+    private val accessUseCase: AccessUseCase,
     private val converter: ErrorCodeConverter,
 ) : ViewModel() {
     private val authState: MutableStateFlow<AuthState> = MutableStateFlow(AuthState.Loading)
@@ -73,8 +74,7 @@ class MainScreenViewModel(
     }
 
     fun onLogOutTapped() {
-        authUseCase.logOut()
-        navigationService.open(Route.LoginScreen, true)
+        accessUseCase.logOut()
     }
 
     private fun getVersionState() =

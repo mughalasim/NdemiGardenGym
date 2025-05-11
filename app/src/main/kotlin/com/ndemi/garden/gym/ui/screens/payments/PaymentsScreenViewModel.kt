@@ -13,8 +13,8 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.PaymentEntity
-import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.PaymentUseCase
+import cv.domain.usecase.PermissionsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,7 +23,7 @@ import org.joda.time.DateTime
 class PaymentsScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val paymentUseCase: PaymentUseCase,
-    private val authUseCase: AuthUseCase,
+    private val permissionsUseCase: PermissionsUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
     private lateinit var memberId: String
@@ -101,7 +101,7 @@ class PaymentsScreenViewModel(
         navigationService.open(Route.PaymentAddScreen(memberId))
     }
 
-    fun hasAdminRights() = authUseCase.hasAdminRights()
+    fun canUpdatePayment() = permissionsUseCase.canUpdatePayment()
 
     @Immutable
     sealed interface UiState : BaseState {

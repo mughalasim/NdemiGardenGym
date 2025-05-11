@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import cv.data.mappers.toMemberEntity
+import cv.data.models.AuthRepositoryUrls
 import cv.data.models.MemberModel
 import cv.data.models.VersionModel
 import cv.data.retrofit.toDomainError
@@ -32,65 +33,15 @@ class AuthRepositoryImp(
 
     override fun getMemberType() = _memberEntity.value.memberType
 
-    override fun logOut() = firebaseAuth.signOut()
-
-    // TODO - All should be suspend
-    override fun register(
-        email: String,
-        password: String,
-        callback: (DomainResult<String>) -> Unit,
-    ) {
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
-            .addOnSuccessListener { result ->
-                result.user?.let {
-                    callback.invoke(DomainResult.Success(it.uid))
-                } ?: run {
-                    callback.invoke(DomainResult.Error(DomainError.NO_DATA))
-                }
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                callback.invoke(DomainResult.Error(it.toDomainError()))
-            }
-    }
-
-    override fun login(
-        email: String,
-        password: String,
-        callback: (DomainResult<Unit>) -> Unit,
-    ) {
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-            .addOnSuccessListener { result ->
-                result.user?.let {
-                    callback.invoke(DomainResult.Success(Unit))
-                } ?: run {
-                    callback.invoke(DomainResult.Error(DomainError.NO_DATA))
-                }
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                callback.invoke(DomainResult.Error(it.toDomainError()))
-            }
-    }
-
-    override fun resetPasswordForEmail(
-        email: String,
-        callback: (DomainResult<Unit>) -> Unit,
-    ) {
-        firebaseAuth.sendPasswordResetEmail(email)
-            .addOnSuccessListener {
-                callback.invoke(DomainResult.Success(Unit))
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                callback.invoke(DomainResult.Error(it.toDomainError()))
-            }
-    }
+    override fun getMemberId() = _memberEntity.value.id
 
     override suspend fun getAuthState(): Flow<DomainResult<Unit>> =
         callbackFlow {
             firebaseAuth.addAuthStateListener {
                 if (it.uid.isNullOrEmpty()) {
-                    trySend(DomainResult.Error(DomainError.UNAUTHORISED)).isSuccess
+                    trySend(DomainResult.Error(DomainError.UNAUTHORISED))
                 } else {
-                    trySend(DomainResult.Success(Unit)).isSuccess
+                    trySend(DomainResult.Success(Unit))
                 }
             }
             awaitClose()
@@ -155,10 +106,3 @@ class AuthRepositoryImp(
 
     override fun observeUser() = memberEntity
 }
-
-data class AuthRepositoryUrls(
-    val pathUser: String,
-    val pathVersion: String,
-    val pathVersionType: String,
-    val currentAppVersion: Int,
-)

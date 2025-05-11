@@ -41,7 +41,7 @@ val viewModelModule =
         viewModel(named<CreateMember>()) {
             RegisterScreenViewModel(
                 converter = get(),
-                authUseCase = get(),
+                accessUseCase = get(),
                 memberUseCase = get(),
                 navigationService = get(),
                 hidePassword = true,
@@ -50,7 +50,7 @@ val viewModelModule =
         viewModel(named<RegisterMember>()) {
             RegisterScreenViewModel(
                 converter = get(),
-                authUseCase = get(),
+                accessUseCase = get(),
                 memberUseCase = get(),
                 navigationService = get(),
                 hidePassword = false,

@@ -15,8 +15,8 @@ import com.ndemi.garden.gym.ui.utils.isValidApartmentNumber
 import com.ndemi.garden.gym.ui.utils.isValidPhoneNumber
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
-import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
+import cv.domain.usecase.PermissionsUseCase
 import cv.domain.usecase.StorageUseCase
 import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 class MemberEditScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val memberUseCase: MemberUseCase,
-    private val authUseCase: AuthUseCase,
+    private val permissionsUseCase: PermissionsUseCase,
     private val storageUseCase: StorageUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
@@ -163,7 +163,11 @@ class MemberEditScreenViewModel(
         }
     }
 
-    fun hasAdminRights() = authUseCase.hasAdminRights()
+    fun canDeleteMember() = permissionsUseCase.canDeleteMember()
+
+    fun canEditMember() = permissionsUseCase.canEditMember(_memberEntity.value.id)
+
+    fun canAssignCoach() = permissionsUseCase.hasAdminRights()
 
     enum class InputType {
         NONE,

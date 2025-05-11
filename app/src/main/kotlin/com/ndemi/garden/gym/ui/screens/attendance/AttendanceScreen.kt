@@ -73,7 +73,7 @@ fun AttendanceScreen(
                     for (attendanceMonthly in state.attendancesMonthly) {
                         AttendanceListScreen(
                             attendanceMonthly = attendanceMonthly,
-                            canDeleteAttendance = viewModel.hasAdminRights(),
+                            canDeleteAttendance = viewModel.canDeleteAttendance(),
                         ) {
                             viewModel.deleteAttendance(it)
                         }

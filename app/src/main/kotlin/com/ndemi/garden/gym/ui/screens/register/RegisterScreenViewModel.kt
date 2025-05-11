@@ -15,7 +15,7 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import com.ndemi.garden.gym.ui.utils.isValidApartmentNumber
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
-import cv.domain.usecase.AuthUseCase
+import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +26,7 @@ import java.util.UUID
 
 class RegisterScreenViewModel(
     private val converter: ErrorCodeConverter,
-    private val authUseCase: AuthUseCase,
+    private val accessUseCase: AccessUseCase,
     private val memberUseCase: MemberUseCase,
     private val navigationService: NavigationService,
     private val hidePassword: Boolean,
@@ -157,13 +157,15 @@ class RegisterScreenViewModel(
 
     fun onRegisterTapped() {
         sendAction(Action.SetLoading)
-        authUseCase.register(
-            inputData.value.email,
-            inputData.value.password,
-        ) {
-            when (it) {
-                is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
-                is DomainResult.Success -> updateMember(it.data, UpdateType.REGISTRATION)
+        viewModelScope.launch {
+            accessUseCase.register(
+                inputData.value.email,
+                inputData.value.password,
+            ).also {
+                when (it) {
+                    is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
+                    is DomainResult.Success -> updateMember(it.data, UpdateType.REGISTRATION)
+                }
             }
         }
     }

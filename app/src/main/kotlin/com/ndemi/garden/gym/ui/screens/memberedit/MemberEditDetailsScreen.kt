@@ -32,7 +32,8 @@ import org.joda.time.DateTime
 
 @Composable
 fun MemberEditDetailsScreen(
-    hasAdminRights: Boolean,
+    canUpdateMemberDetails: Boolean,
+    canAssignCoach: Boolean,
     uiState: UiState,
     memberEntity: MemberEntity,
     onSetString: (String, InputType) -> Unit = { _, _ -> },
@@ -82,7 +83,7 @@ fun MemberEditDetailsScreen(
             hint = stringResource(R.string.txt_first_name),
             textInput = memberEntity.firstName,
             errorText = errorFirstName,
-            isEnabled = hasAdminRights,
+            isEnabled = canUpdateMemberDetails,
         ) {
             onSetString.invoke(it, InputType.FIRST_NAME)
         }
@@ -92,7 +93,7 @@ fun MemberEditDetailsScreen(
             hint = stringResource(R.string.txt_last_name),
             textInput = memberEntity.lastName,
             errorText = errorLastName,
-            isEnabled = hasAdminRights,
+            isEnabled = canUpdateMemberDetails,
         ) {
             onSetString.invoke(it, InputType.LAST_NAME)
         }
@@ -102,7 +103,7 @@ fun MemberEditDetailsScreen(
             hint = stringResource(R.string.txt_apartment_number),
             textInput = memberEntity.apartmentNumber.orEmpty(),
             errorText = errorApartmentNumber,
-            isEnabled = hasAdminRights,
+            isEnabled = canUpdateMemberDetails,
         ) {
             onSetString.invoke(it, InputType.APARTMENT_NUMBER)
         }
@@ -113,7 +114,7 @@ fun MemberEditDetailsScreen(
             textInput = memberEntity.phoneNumber,
             errorText = errorPhoneNumber,
             keyboardType = KeyboardType.Phone,
-            isEnabled = hasAdminRights,
+            isEnabled = canUpdateMemberDetails,
         ) {
             onSetString.invoke(it, InputType.PHONE_NUMBER)
         }
@@ -129,13 +130,13 @@ fun MemberEditDetailsScreen(
             TextWidget(text = stringResource(id = R.string.txt_training_coach_assigned))
             Switch(
                 checked = memberEntity.hasCoach,
-                enabled = hasAdminRights,
+                enabled = canAssignCoach,
                 onCheckedChange = {
                     onSetString.invoke(it.toString(), InputType.HAS_COACH)
                 },
             )
         }
-        if (hasAdminRights) {
+        if (canUpdateMemberDetails) {
             ButtonWidget(
                 modifier =
                     Modifier
@@ -158,7 +159,8 @@ private fun MemberEditDetailsScreenPreview() {
     AppThemeComposable {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             MemberEditDetailsScreen(
-                hasAdminRights = true,
+                canUpdateMemberDetails = true,
+                canAssignCoach = true,
                 memberEntity = getMockRegisteredMemberEntity(),
                 uiState = UiState.ReadyToUpdate,
             )
