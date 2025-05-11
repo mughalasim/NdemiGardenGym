@@ -8,10 +8,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
@@ -25,7 +25,7 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel<MainScreenViewMode
     val navController = rememberNavController()
     viewModel.setNavController(navController)
 
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     viewModel.startUp()
 
@@ -52,18 +52,11 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel<MainScreenViewMode
                 }
             }
 
-        MainScreenViewModel.UiState.Login -> {
+        is MainScreenViewModel.UiState.Ready -> {
             MainDetailsScreen(
-                navController = navController,
-                navigationService = viewModel.getNavigationService(),
-            )
-        }
-
-        is MainScreenViewModel.UiState.Authenticated -> {
-            MainDetailsScreen(
-                isAuthenticated = true,
-                isAdmin = state.member.isAdmin(),
-                showEmailVerificationWarning = !state.member.emailVerified,
+                isAuthenticated = state.isAuthenticated,
+                isAdmin = state.isAdmin,
+                showEmailVerificationWarning = state.showEmailVerificationWarning,
                 navController = navController,
                 navigationService = viewModel.getNavigationService(),
             )

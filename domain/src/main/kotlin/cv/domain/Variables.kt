@@ -6,6 +6,7 @@ object Variables {
     const val EVENT_NAVIGATE = "Navigate"
     const val EVENT_ERROR = "Error"
     const val EVENT_PHOTO = "ProfilePicture"
+    const val EVENT_CREATE_MEMBER = "CreateMember"
     const val EVENT_REGISTRATION = "Registration"
     const val EVENT_MEMBER_UPDATE = "MemberUpdate"
     const val EVENT_ACTIVE = "ActiveSession"

@@ -5,42 +5,18 @@ import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.PaymentUseCase
 import cv.domain.usecase.StorageUseCase
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val useCaseModule =
     module {
-        single {
-            AuthUseCase(
-                authRepository = get(),
-            )
-        }
+        singleOf(::AuthUseCase)
 
-        single {
-            MemberUseCase(
-                memberRepository = get(),
-                analyticsRepository = get(),
-            )
-        }
+        singleOf(::MemberUseCase)
 
-        single {
-            AttendanceUseCase(
-                attendanceRepository = get(),
-                analyticsRepository = get(),
-            )
-        }
+        singleOf(::AttendanceUseCase)
 
-        single {
-            PaymentUseCase(
-                paymentRepository = get(),
-                memberRepository = get(),
-            )
-        }
+        singleOf(::PaymentUseCase)
 
-        single {
-            StorageUseCase(
-                storageRepository = get(),
-                memberRepository = get(),
-                analyticsRepository = get(),
-            )
-        }
+        singleOf(::StorageUseCase)
     }

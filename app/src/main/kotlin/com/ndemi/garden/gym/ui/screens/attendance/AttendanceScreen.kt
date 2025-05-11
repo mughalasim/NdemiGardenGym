@@ -7,11 +7,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
@@ -29,8 +29,8 @@ fun AttendanceScreen(
     viewModel: AttendanceScreenViewModel = koinViewModel<AttendanceScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    val uiState by viewModel.uiStateFlow.collectAsState()
-    val selectedDate by viewModel.selectedDate.collectAsState()
+    val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
+    val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
     val title =
         if (memberName.isEmpty()) {
             stringResource(R.string.txt_your_attendances)

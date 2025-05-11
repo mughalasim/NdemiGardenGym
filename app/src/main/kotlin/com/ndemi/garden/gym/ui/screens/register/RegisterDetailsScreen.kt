@@ -168,9 +168,6 @@ fun RegisterDetailScreen(
             ) {
                 onSetString.invoke(it, InputType.CONFIRM_PASSWORD)
             }
-        } else {
-            onSetString.invoke("123456", InputType.PASSWORD)
-            onSetString.invoke("123456", InputType.CONFIRM_PASSWORD)
         }
 
         ButtonWidget(
@@ -181,6 +178,7 @@ fun RegisterDetailScreen(
             title = stringResource(R.string.txt_register),
             isEnabled = uiState is UiState.Ready,
             isLoading = uiState is UiState.Loading,
+            hideKeyboardOnClick = true,
         ) {
             onRegisterTapped.invoke()
         }

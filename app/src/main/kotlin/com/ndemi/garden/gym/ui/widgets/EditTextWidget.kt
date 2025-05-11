@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -76,13 +77,13 @@ fun EditTextWidget(
                         .padding(vertical = padding_screen_small),
                 value = textInput,
                 onValueChange = onValueChanged,
-                keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+                keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done),
                 enabled = isEnabled,
+                singleLine = true,
                 keyboardActions =
-                    KeyboardActions {
-                        onValueChanged.invoke(textInput)
-                        keyboardController?.hide()
-                    },
+                    KeyboardActions(
+                        onDone = { keyboardController?.hide() },
+                    ),
                 visualTransformation =
                     if (!isPasswordEditText || passwordVisible) {
                         VisualTransformation.None

@@ -4,11 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
@@ -21,8 +21,8 @@ fun PaymentAddScreen(
     viewModel: PaymentAddScreenViewModel = koinViewModel<PaymentAddScreenViewModel>(),
 ) {
     viewModel.setMemberId(memberId)
-    val uiState by viewModel.uiStateFlow.collectAsState()
-    val inputData by viewModel.inputData.collectAsState()
+    val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
+    val inputData by viewModel.inputData.collectAsStateWithLifecycle()
 
     Column(
         modifier =

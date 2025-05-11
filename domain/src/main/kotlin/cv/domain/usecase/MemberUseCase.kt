@@ -1,7 +1,9 @@
 package cv.domain.usecase
 
+import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.Variables.EVENT_ACTIVE
+import cv.domain.Variables.EVENT_CREATE_MEMBER
 import cv.domain.Variables.EVENT_MEMBERSHIP
 import cv.domain.Variables.EVENT_MEMBER_DELETE
 import cv.domain.Variables.EVENT_MEMBER_UPDATE
@@ -19,6 +21,7 @@ import cv.domain.entities.MemberEntity
 import cv.domain.repositories.AnalyticsRepository
 import cv.domain.repositories.MemberFetchType
 import cv.domain.repositories.MemberRepository
+import kotlinx.coroutines.flow.firstOrNull
 
 class MemberUseCase(
     private val memberRepository: MemberRepository,
@@ -37,16 +40,24 @@ class MemberUseCase(
         updateType: UpdateType,
     ): DomainResult<Unit> {
         when (updateType) {
-            UpdateType.ADMIN_REGISTRATION -> {
+            UpdateType.CREATE_MEMBER -> {
+                when (val result = memberRepository.getMembers(fetchType = MemberFetchType.ALL).firstOrNull()) {
+                    is DomainResult.Success -> {
+                        if (result.data.find { it.email == memberEntity.email } != null) {
+                            return DomainResult.Error(DomainError.EMAIL_ALREADY_EXISTS)
+                        }
+                    }
+                    else -> return DomainResult.Error(DomainError.SERVER)
+                }
                 analyticsRepository.logEvent(
-                    eventName = EVENT_REGISTRATION,
+                    eventName = EVENT_CREATE_MEMBER,
                     params =
                         listOf(
                             Pair(PARAM_REGISTRATION_ADMIN, memberEntity.id),
                         ),
                 )
             }
-            UpdateType.SELF_REGISTRATION -> {
+            UpdateType.REGISTRATION -> {
                 analyticsRepository.logEvent(
                     eventName = EVENT_REGISTRATION,
                     params =
@@ -113,8 +124,8 @@ class MemberUseCase(
 }
 
 enum class UpdateType {
-    ADMIN_REGISTRATION,
-    SELF_REGISTRATION,
+    CREATE_MEMBER,
+    REGISTRATION,
     MEMBERSHIP,
     PHOTO_DELETE,
     ACTIVE_SESSION,

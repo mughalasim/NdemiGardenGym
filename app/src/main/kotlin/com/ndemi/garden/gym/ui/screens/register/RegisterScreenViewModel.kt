@@ -29,6 +29,7 @@ class RegisterScreenViewModel(
     private val authUseCase: AuthUseCase,
     private val memberUseCase: MemberUseCase,
     private val navigationService: NavigationService,
+    private val hidePassword: Boolean,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     data class InputData(
         val firstName: String = "",
@@ -41,6 +42,8 @@ class RegisterScreenViewModel(
 
     private val _inputData = MutableStateFlow(InputData())
     val inputData: StateFlow<InputData> = _inputData
+
+    fun shouldHidePassword() = hidePassword
 
     fun setString(
         value: String,
@@ -61,67 +64,94 @@ class RegisterScreenViewModel(
 
     private fun validateInput() {
         val email = _inputData.value.email
-        val password = _inputData.value.password
-        val confirmPassword = _inputData.value.confirmPassword
         val firstName = _inputData.value.firstName
         val lastName = _inputData.value.lastName
         val apartmentNumber = _inputData.value.apartmentNumber
 
-        if (firstName.isEmpty() || firstName.isDigitsOnly()) {
-            sendAction(
-                Action.ShowError(
-                    converter.getMessage(UiError.INVALID_FIRST_NAME),
-                    InputType.FIRST_NAME,
-                ),
-            )
-        } else if (lastName.isEmpty() || lastName.isDigitsOnly()) {
-            sendAction(
-                Action.ShowError(
-                    converter.getMessage(UiError.INVALID_LAST_NAME),
-                    InputType.LAST_NAME,
-                ),
-            )
-        } else if (email.isEmpty() ||
-            !android.util.Patterns.EMAIL_ADDRESS
-                .matcher(email)
-                .matches()
-        ) {
-            sendAction(
-                Action.ShowError(
-                    converter.getMessage(UiError.INVALID_EMAIL),
-                    InputType.EMAIL,
-                ),
-            )
-        } else if (password.isEmpty()) {
-            sendAction(
-                Action.ShowError(
-                    converter.getMessage(UiError.INVALID_PASSWORD),
-                    InputType.PASSWORD,
-                ),
-            )
-        } else if (confirmPassword.isEmpty()) {
-            sendAction(
-                Action.ShowError(
-                    converter.getMessage(UiError.INVALID_PASSWORD_CONFIRM),
-                    InputType.CONFIRM_PASSWORD,
-                ),
-            )
-        } else if (password != confirmPassword) {
-            sendAction(
-                Action.ShowError(
-                    converter.getMessage(UiError.INVALID_PASSWORD_MATCH),
-                    InputType.CONFIRM_PASSWORD,
-                ),
-            )
-        } else if (apartmentNumber.isNotEmpty() && !apartmentNumber.isValidApartmentNumber()) {
-            sendAction(
-                Action.ShowError(
-                    converter.getMessage(UiError.INVALID_APARTMENT_NUMBER),
-                    InputType.APARTMENT_NUMBER,
-                ),
-            )
-        } else {
-            sendAction(Action.SetReady)
+        when {
+            firstName.isEmpty() || firstName.isDigitsOnly() -> {
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiError.INVALID_FIRST_NAME),
+                        InputType.FIRST_NAME,
+                    ),
+                )
+            }
+
+            lastName.isEmpty() || lastName.isDigitsOnly() -> {
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiError.INVALID_LAST_NAME),
+                        InputType.LAST_NAME,
+                    ),
+                )
+            }
+
+            email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiError.INVALID_EMAIL),
+                        InputType.EMAIL,
+                    ),
+                )
+            }
+
+            apartmentNumber.isNotEmpty() && !apartmentNumber.isValidApartmentNumber() -> {
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiError.INVALID_APARTMENT_NUMBER),
+                        InputType.APARTMENT_NUMBER,
+                    ),
+                )
+            }
+
+            shouldValidatePassword -> passwordCheck()
+
+            else -> {
+                sendAction(Action.SetReady)
+            }
+        }
+    }
+
+    private val shouldValidatePassword =
+        !hidePassword && (
+            _inputData.value.password.isEmpty() ||
+                _inputData.value.confirmPassword.isEmpty() ||
+                _inputData.value.password != _inputData.value.confirmPassword
+        )
+
+    private fun passwordCheck() {
+        when {
+            _inputData.value.password.isEmpty() -> {
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiError.INVALID_PASSWORD),
+                        InputType.PASSWORD,
+                    ),
+                )
+            }
+
+            _inputData.value.confirmPassword.isEmpty() -> {
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiError.INVALID_PASSWORD_CONFIRM),
+                        InputType.CONFIRM_PASSWORD,
+                    ),
+                )
+            }
+
+            _inputData.value.password != _inputData.value.confirmPassword -> {
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiError.INVALID_PASSWORD_MATCH),
+                        InputType.CONFIRM_PASSWORD,
+                    ),
+                )
+            }
+
+            else -> {
+                sendAction(Action.SetReady)
+            }
         }
     }
 
@@ -133,13 +163,13 @@ class RegisterScreenViewModel(
         ) {
             when (it) {
                 is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
-                is DomainResult.Success -> updateMember(it.data, UpdateType.SELF_REGISTRATION)
+                is DomainResult.Success -> updateMember(it.data, UpdateType.REGISTRATION)
             }
         }
     }
 
     fun onRegisterNewTapped() {
-        updateMember(UUID.randomUUID().toString(), UpdateType.ADMIN_REGISTRATION)
+        updateMember(UUID.randomUUID().toString(), UpdateType.CREATE_MEMBER)
     }
 
     private fun updateMember(
@@ -170,10 +200,10 @@ class RegisterScreenViewModel(
                         profileImageUrl = "",
                     ),
                     updateType,
-                ).also { result ->
-                    when (result) {
+                ).also {
+                    when (it) {
                         is DomainResult.Error ->
-                            sendAction(Action.ShowError(converter.getMessage(UiError.REGISTRATION_FAILED)))
+                            sendAction(Action.ShowError(converter.getMessage(it.error)))
 
                         is DomainResult.Success -> sendAction(Action.Success)
                     }
