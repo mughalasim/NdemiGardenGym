@@ -5,7 +5,8 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.navigation.NavigationService
-import com.ndemi.garden.gym.ui.UiError
+import com.ndemi.garden.gym.ui.enums.RegisterScreenInputType
+import com.ndemi.garden.gym.ui.enums.UiErrorType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
@@ -15,9 +16,9 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import com.ndemi.garden.gym.ui.utils.isValidApartmentNumber
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.enums.MemberUpdateType
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.MemberUseCase
-import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -47,17 +48,17 @@ class RegisterScreenViewModel(
 
     fun setString(
         value: String,
-        inPutType: InputType,
+        inPutType: RegisterScreenInputType,
     ) {
         _inputData.value =
             when (inPutType) {
-                InputType.FIRST_NAME -> _inputData.value.copy(firstName = value)
-                InputType.LAST_NAME -> _inputData.value.copy(lastName = value)
-                InputType.EMAIL -> _inputData.value.copy(email = value)
-                InputType.APARTMENT_NUMBER -> _inputData.value.copy(apartmentNumber = value)
-                InputType.PASSWORD -> _inputData.value.copy(password = value)
-                InputType.CONFIRM_PASSWORD -> _inputData.value.copy(confirmPassword = value)
-                InputType.NONE -> _inputData.value
+                RegisterScreenInputType.FIRST_NAME -> _inputData.value.copy(firstName = value)
+                RegisterScreenInputType.LAST_NAME -> _inputData.value.copy(lastName = value)
+                RegisterScreenInputType.EMAIL -> _inputData.value.copy(email = value)
+                RegisterScreenInputType.APARTMENT_NUMBER -> _inputData.value.copy(apartmentNumber = value)
+                RegisterScreenInputType.PASSWORD -> _inputData.value.copy(password = value)
+                RegisterScreenInputType.CONFIRM_PASSWORD -> _inputData.value.copy(confirmPassword = value)
+                RegisterScreenInputType.NONE -> _inputData.value
             }
         validateInput()
     }
@@ -72,8 +73,8 @@ class RegisterScreenViewModel(
             firstName.isEmpty() || firstName.isDigitsOnly() -> {
                 sendAction(
                     Action.ShowError(
-                        converter.getMessage(UiError.INVALID_FIRST_NAME),
-                        InputType.FIRST_NAME,
+                        converter.getMessage(UiErrorType.INVALID_FIRST_NAME),
+                        RegisterScreenInputType.FIRST_NAME,
                     ),
                 )
             }
@@ -81,8 +82,8 @@ class RegisterScreenViewModel(
             lastName.isEmpty() || lastName.isDigitsOnly() -> {
                 sendAction(
                     Action.ShowError(
-                        converter.getMessage(UiError.INVALID_LAST_NAME),
-                        InputType.LAST_NAME,
+                        converter.getMessage(UiErrorType.INVALID_LAST_NAME),
+                        RegisterScreenInputType.LAST_NAME,
                     ),
                 )
             }
@@ -90,8 +91,8 @@ class RegisterScreenViewModel(
             email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
                 sendAction(
                     Action.ShowError(
-                        converter.getMessage(UiError.INVALID_EMAIL),
-                        InputType.EMAIL,
+                        converter.getMessage(UiErrorType.INVALID_EMAIL),
+                        RegisterScreenInputType.EMAIL,
                     ),
                 )
             }
@@ -99,8 +100,8 @@ class RegisterScreenViewModel(
             apartmentNumber.isNotEmpty() && !apartmentNumber.isValidApartmentNumber() -> {
                 sendAction(
                     Action.ShowError(
-                        converter.getMessage(UiError.INVALID_APARTMENT_NUMBER),
-                        InputType.APARTMENT_NUMBER,
+                        converter.getMessage(UiErrorType.INVALID_APARTMENT_NUMBER),
+                        RegisterScreenInputType.APARTMENT_NUMBER,
                     ),
                 )
             }
@@ -125,8 +126,8 @@ class RegisterScreenViewModel(
             _inputData.value.password.isEmpty() -> {
                 sendAction(
                     Action.ShowError(
-                        converter.getMessage(UiError.INVALID_PASSWORD),
-                        InputType.PASSWORD,
+                        converter.getMessage(UiErrorType.INVALID_PASSWORD),
+                        RegisterScreenInputType.PASSWORD,
                     ),
                 )
             }
@@ -134,8 +135,8 @@ class RegisterScreenViewModel(
             _inputData.value.confirmPassword.isEmpty() -> {
                 sendAction(
                     Action.ShowError(
-                        converter.getMessage(UiError.INVALID_PASSWORD_CONFIRM),
-                        InputType.CONFIRM_PASSWORD,
+                        converter.getMessage(UiErrorType.INVALID_PASSWORD_CONFIRM),
+                        RegisterScreenInputType.CONFIRM_PASSWORD,
                     ),
                 )
             }
@@ -143,8 +144,8 @@ class RegisterScreenViewModel(
             _inputData.value.password != _inputData.value.confirmPassword -> {
                 sendAction(
                     Action.ShowError(
-                        converter.getMessage(UiError.INVALID_PASSWORD_MATCH),
-                        InputType.CONFIRM_PASSWORD,
+                        converter.getMessage(UiErrorType.INVALID_PASSWORD_MATCH),
+                        RegisterScreenInputType.CONFIRM_PASSWORD,
                     ),
                 )
             }
@@ -164,19 +165,19 @@ class RegisterScreenViewModel(
             ).also {
                 when (it) {
                     is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
-                    is DomainResult.Success -> updateMember(it.data, UpdateType.REGISTRATION)
+                    is DomainResult.Success -> updateMember(it.data, MemberUpdateType.REGISTRATION)
                 }
             }
         }
     }
 
     fun onRegisterNewTapped() {
-        updateMember(UUID.randomUUID().toString(), UpdateType.CREATE_MEMBER)
+        updateMember(UUID.randomUUID().toString(), MemberUpdateType.CREATE)
     }
 
     private fun updateMember(
         memberId: String,
-        updateType: UpdateType,
+        memberUpdateType: MemberUpdateType,
     ) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
@@ -201,7 +202,7 @@ class RegisterScreenViewModel(
                                 .replaceFirstChar(Char::uppercase),
                         profileImageUrl = "",
                     ),
-                    updateType,
+                    memberUpdateType,
                 ).also {
                     when (it) {
                         is DomainResult.Error ->
@@ -227,20 +228,10 @@ class RegisterScreenViewModel(
 
         data class Error(
             val message: String,
-            val inputType: InputType,
+            val inputType: RegisterScreenInputType,
         ) : UiState
 
         data object Success : UiState
-    }
-
-    enum class InputType {
-        NONE,
-        FIRST_NAME,
-        LAST_NAME,
-        EMAIL,
-        APARTMENT_NUMBER,
-        PASSWORD,
-        CONFIRM_PASSWORD,
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -254,7 +245,7 @@ class RegisterScreenViewModel(
 
         data class ShowError(
             val message: String,
-            val inputType: InputType = InputType.NONE,
+            val inputType: RegisterScreenInputType = RegisterScreenInputType.NONE,
         ) : Action {
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }

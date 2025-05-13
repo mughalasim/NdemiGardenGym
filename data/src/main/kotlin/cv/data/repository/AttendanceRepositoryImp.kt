@@ -6,15 +6,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.FirebaseFirestoreException.Code
 import com.google.firebase.firestore.toObjects
+import cv.data.handleError
 import cv.data.mappers.toAttendanceEntity
 import cv.data.mappers.toAttendanceModel
 import cv.data.models.AttendanceModel
-import cv.data.retrofit.toDomainError
-import cv.domain.DomainError
+import cv.data.toDomainError
 import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.AttendanceMonthEntity
-import cv.domain.repositories.AppLogLevel
+import cv.domain.enums.AppLogType
+import cv.domain.enums.DomainErrorType
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.AttendanceRepository
 import kotlinx.coroutines.channels.awaitClose
@@ -41,8 +42,8 @@ class AttendanceRepositoryImp(
             val setMemberId =
                 memberId.ifEmpty {
                     firebaseAuth.currentUser?.uid ?: run {
-                        logger.log("Not Authorised", AppLogLevel.ERROR)
-                        trySend(DomainResult.Error(DomainError.UNAUTHORISED))
+                        logger.log("Not Authorised", AppLogType.ERROR)
+                        trySend(DomainResult.Error(DomainErrorType.UNAUTHORISED))
                     }
                 }
             val reference =
@@ -81,7 +82,7 @@ class AttendanceRepositoryImp(
                             )
                         }
                         error?.let {
-                            logger.log("Exception: $it", AppLogLevel.ERROR)
+                            logger.log("Exception: $it", AppLogType.ERROR)
                             trySend(DomainResult.Error(it.toDomainError()))
                         }
                     }
@@ -97,7 +98,7 @@ class AttendanceRepositoryImp(
             val setMemberId =
                 memberId.ifEmpty {
                     firebaseAuth.currentUser?.uid ?: run {
-                        logger.log("Not authorised", AppLogLevel.ERROR)
+                        logger.log("Not authorised", AppLogType.ERROR)
                         throw FirebaseFirestoreException("", Code.UNAUTHENTICATED)
                     }
                 }
@@ -109,7 +110,7 @@ class AttendanceRepositoryImp(
                 Days.daysBetween(startDateTime, endDateTime).days > 1 ||
                 Minutes.minutesBetween(startDateTime, endDateTime).minutes < 1
             ) {
-                logger.log("Invalid argument passed", AppLogLevel.ERROR)
+                logger.log("Invalid argument passed", AppLogType.ERROR)
                 throw FirebaseFirestoreException("", Code.INVALID_ARGUMENT)
             }
 
@@ -127,7 +128,7 @@ class AttendanceRepositoryImp(
                 .set(attendanceModel)
         }.fold(
             onSuccess = { DomainResult.Success(Unit) },
-            onFailure = { throwable -> handleError(throwable, logger) },
+            onFailure = { handleError(it, logger) },
         )
 
     override suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit> =
@@ -142,6 +143,6 @@ class AttendanceRepositoryImp(
                 .await()
         }.fold(
             onSuccess = { DomainResult.Success(Unit) },
-            onFailure = { throwable -> handleError(throwable, logger) },
+            onFailure = { handleError(it, logger) },
         )
 }

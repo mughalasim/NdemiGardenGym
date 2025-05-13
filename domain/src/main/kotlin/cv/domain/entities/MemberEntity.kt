@@ -1,5 +1,7 @@
 package cv.domain.entities
 
+import cv.domain.enums.MemberType
+
 data class MemberEntity(
     val id: String = "",
     val firstName: String = "",
@@ -41,11 +43,4 @@ data class MemberEntity(
             memberEntity.phoneNumber != phoneNumber ||
             memberEntity.hasCoach != hasCoach
     }
-}
-
-enum class MemberType {
-    SUPER_ADMIN,
-    ADMIN,
-    SUPERVISOR,
-    MEMBER,
 }

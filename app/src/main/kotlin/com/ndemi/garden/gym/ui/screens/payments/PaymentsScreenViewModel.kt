@@ -10,9 +10,9 @@ import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
-import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.PaymentEntity
+import cv.domain.enums.DomainErrorType
 import cv.domain.usecase.PaymentUseCase
 import cv.domain.usecase.PermissionsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -101,7 +101,7 @@ class PaymentsScreenViewModel(
         navigationService.open(Route.PaymentAddScreen(memberId))
     }
 
-    fun canUpdatePayment() = permissionsUseCase.canUpdatePayment()
+    fun getPermissions(memberId: String) = permissionsUseCase.getPermissions(memberId)
 
     @Immutable
     sealed interface UiState : BaseState {
@@ -118,10 +118,10 @@ class PaymentsScreenViewModel(
         }
 
         data class ShowDomainError(
-            val domainError: DomainError,
+            val domainErrorType: DomainErrorType,
             val errorCodeConverter: ErrorCodeConverter,
         ) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainError))
+            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainErrorType))
         }
 
         data class Success(val payments: List<PaymentEntity>, val totalAmount: Double) : Action {

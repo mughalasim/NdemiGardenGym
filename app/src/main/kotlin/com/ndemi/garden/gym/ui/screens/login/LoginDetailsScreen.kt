@@ -19,7 +19,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.InputType
+import com.ndemi.garden.gym.ui.enums.LoginScreenInputType
+import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
@@ -31,7 +32,6 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
-import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 
 @Composable
@@ -48,15 +48,15 @@ fun LoginScreenDetails(
 
         if (uiState is UiState.Error) {
             when (uiState.inputType) {
-                InputType.NONE ->
+                LoginScreenInputType.NONE ->
                     snackbarHostState.Show(
                         type = SnackbarType.ERROR,
                         message = uiState.message,
                     )
 
-                InputType.EMAIL -> emailError = uiState.message
+                LoginScreenInputType.EMAIL -> emailError = uiState.message
 
-                InputType.PASSWORD -> passwordError = uiState.message
+                LoginScreenInputType.PASSWORD -> passwordError = uiState.message
             }
         }
 
@@ -96,7 +96,7 @@ fun LoginScreenDetails(
                 errorText = emailError,
                 keyboardType = KeyboardType.Email,
             ) {
-                listeners.onValueChanged(it, InputType.EMAIL)
+                listeners.onValueChanged(it, LoginScreenInputType.EMAIL)
             }
 
             EditTextWidget(
@@ -106,7 +106,7 @@ fun LoginScreenDetails(
                 errorText = passwordError,
                 isPasswordEditText = true,
             ) {
-                listeners.onValueChanged(it, InputType.PASSWORD)
+                listeners.onValueChanged(it, LoginScreenInputType.PASSWORD)
             }
 
             ButtonWidget(
@@ -141,7 +141,7 @@ private fun LoginDetailsScreenPreview() =
             uiState =
                 UiState.Error(
                     message = "Invalid email address",
-                    InputType.EMAIL,
+                    LoginScreenInputType.EMAIL,
                 ),
         )
     }

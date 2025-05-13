@@ -4,15 +4,16 @@ import androidx.compose.runtime.Immutable
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
-import com.ndemi.garden.gym.ui.UiError
+import com.ndemi.garden.gym.ui.enums.PaymentAddScreenInputType
+import com.ndemi.garden.gym.ui.enums.PaymentAddScreenInputType.AMOUNT
+import com.ndemi.garden.gym.ui.enums.PaymentAddScreenInputType.MONTH_DURATION
+import com.ndemi.garden.gym.ui.enums.PaymentAddScreenInputType.NONE
+import com.ndemi.garden.gym.ui.enums.PaymentAddScreenInputType.START_DATE
+import com.ndemi.garden.gym.ui.enums.UiErrorType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.Action
-import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.InputType.AMOUNT
-import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.InputType.MONTH_DURATION
-import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.InputType.NONE
-import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.InputType.START_DATE
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
@@ -42,7 +43,7 @@ class PaymentAddScreenViewModel(
         startDate: DateTime = _inputData.value.startDate,
         monthDuration: String = "",
         amount: String = "",
-        inputType: InputType,
+        inputType: PaymentAddScreenInputType,
     ) {
         _inputData.value =
             when (inputType) {
@@ -76,10 +77,10 @@ class PaymentAddScreenViewModel(
 
         if (monthDuration < 1 || monthDuration > MAX_MONTH_DURATION) {
             sendAction(
-                Action.ShowError(converter.getMessage(UiError.INVALID_MONTH_DURATION), MONTH_DURATION),
+                Action.ShowError(converter.getMessage(UiErrorType.INVALID_MONTH_DURATION), MONTH_DURATION),
             )
         } else if (amount < 1 || amount > MAX_PAYMENT_AMOUNT) {
-            sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_AMOUNT), AMOUNT))
+            sendAction(Action.ShowError(converter.getMessage(UiErrorType.INVALID_AMOUNT), AMOUNT))
         } else {
             sendAction(Action.SetReady)
         }
@@ -123,14 +124,7 @@ class PaymentAddScreenViewModel(
 
         data object Loading : UiState
 
-        data class Error(val message: String, val inputType: InputType) : UiState
-    }
-
-    enum class InputType {
-        NONE,
-        START_DATE,
-        MONTH_DURATION,
-        AMOUNT,
+        data class Error(val message: String, val inputType: PaymentAddScreenInputType) : UiState
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -142,7 +136,7 @@ class PaymentAddScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowError(val message: String, val inputType: InputType) : Action {
+        data class ShowError(val message: String, val inputType: PaymentAddScreenInputType) : Action {
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
     }

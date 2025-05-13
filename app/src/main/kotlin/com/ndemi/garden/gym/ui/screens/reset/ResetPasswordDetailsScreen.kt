@@ -19,7 +19,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.InputType
+import com.ndemi.garden.gym.ui.enums.ResetScreenInputType
+import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
@@ -30,7 +31,6 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
-import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 
 @Composable
@@ -60,13 +60,13 @@ fun ResetPasswordDetailsScreen(
 
         if (uiState is UiState.Error) {
             when (uiState.inputType) {
-                InputType.NONE ->
+                ResetScreenInputType.NONE ->
                     snackbarHostState.Show(
                         type = SnackbarType.ERROR,
                         message = uiState.message,
                     )
 
-                InputType.EMAIL -> errorEmail = uiState.message
+                ResetScreenInputType.EMAIL -> errorEmail = uiState.message
             }
         }
 

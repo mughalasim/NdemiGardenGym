@@ -2,8 +2,8 @@ package cv.data.repository
 
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
+import cv.domain.enums.AppLogType
 import cv.domain.repositories.AnalyticsRepository
-import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 
 class AnalyticsRepositoryImp(
@@ -19,6 +19,6 @@ class AnalyticsRepositoryImp(
             bundle.putString(param.first, param.second)
         }
         firebaseAnalytics.logEvent(eventName, bundle)
-        logger.log("Event: $eventName Params: $bundle", AppLogLevel.ANALYTICS)
+        logger.log("Event: $eventName Params: $bundle", AppLogType.ANALYTICS)
     }
 }

@@ -11,13 +11,13 @@ import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.enums.MemberUpdateType
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.PermissionsUseCase
 import cv.domain.usecase.StorageUseCase
-import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -54,7 +54,7 @@ class ProfileScreenViewModel(
         viewModelScope.launch {
             memberUseCase.updateMember(
                 memberEntity.value.copy(activeNowDateMillis = DateTime.now().millis),
-                UpdateType.ACTIVE_SESSION,
+                MemberUpdateType.ACTIVE_SESSION,
             )
         }
     }
@@ -63,7 +63,7 @@ class ProfileScreenViewModel(
         viewModelScope.launch {
             memberUseCase.updateMember(
                 memberEntity.value.copy(activeNowDateMillis = null),
-                UpdateType.ACTIVE_SESSION,
+                MemberUpdateType.ACTIVE_SESSION,
             )
         }
     }
@@ -91,7 +91,7 @@ class ProfileScreenViewModel(
             memberUseCase
                 .updateMember(
                     memberEntity.value.copy(profileImageUrl = ""),
-                    UpdateType.PHOTO_DELETE,
+                    MemberUpdateType.PHOTO_DELETE,
                 )
         }
     }

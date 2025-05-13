@@ -1,6 +1,6 @@
-package cv.domain
+package cv.domain.enums
 
-enum class DomainError {
+enum class DomainErrorType {
     UNKNOWN,
     USER_DISABLED,
     SERVER,

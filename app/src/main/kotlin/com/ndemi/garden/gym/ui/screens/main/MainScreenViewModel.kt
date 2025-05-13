@@ -11,6 +11,7 @@ import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.AuthUseCase
+import cv.domain.usecase.PermissionsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -21,6 +22,7 @@ class MainScreenViewModel(
     private val navigationService: NavigationService,
     private val authUseCase: AuthUseCase,
     private val accessUseCase: AccessUseCase,
+    private val permissionsUseCase: PermissionsUseCase,
     private val converter: ErrorCodeConverter,
 ) : ViewModel() {
     private val authState: MutableStateFlow<AuthState> = MutableStateFlow(AuthState.Loading)
@@ -53,7 +55,7 @@ class MainScreenViewModel(
                     _uiState.value =
                         UiState.Ready(
                             isAuthenticated = true,
-                            isAdmin = member.member.isAdmin(),
+                            isAdmin = permissionsUseCase.isNotMember(),
                             showEmailVerificationWarning = !member.member.emailVerified,
                         )
 

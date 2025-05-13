@@ -43,6 +43,8 @@ fun MemberEditScreen(
     val context = LocalContext.current
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val memberEntity by viewModel.memberEntity.collectAsStateWithLifecycle()
+    val permissionState by viewModel.getPermissions().collectAsStateWithLifecycle()
+
     var showDeleteUserDialog by remember { mutableStateOf(false) }
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
@@ -59,7 +61,7 @@ fun MemberEditScreen(
         ToolBarWidget(
             title = stringResource(R.string.txt_edit_member),
             canNavigateBack = true,
-            secondaryIcon = if (viewModel.canDeleteMember()) Icons.Default.DeleteForever else null,
+            secondaryIcon = if (permissionState.canDeleteMember) Icons.Default.DeleteForever else null,
             onSecondaryIconPressed = { showDeleteUserDialog = true },
             onBackPressed = viewModel::navigateBack,
         )
@@ -81,7 +83,7 @@ fun MemberEditScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 MemberImageWidget(
-                    canEditImage = viewModel.canEditMember(),
+                    canEditImage = permissionState.canEditMember,
                     imageUrl = memberEntity.profileImageUrl,
                     onImageSelect = {
                         galleryLauncher.launch("image/*")
@@ -92,8 +94,8 @@ fun MemberEditScreen(
                 )
 
                 MemberEditDetailsScreen(
-                    canUpdateMemberDetails = viewModel.canEditMember(),
-                    canAssignCoach = viewModel.canAssignCoach(),
+                    canUpdateMemberDetails = permissionState.canEditMember,
+                    canAssignCoach = permissionState.canAssignCoach,
                     uiState = uiState,
                     memberEntity = memberEntity,
                     onSetString = viewModel::setString,

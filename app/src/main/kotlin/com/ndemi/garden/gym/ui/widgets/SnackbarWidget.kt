@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
@@ -45,11 +46,6 @@ fun SnackbarWidget(
         actionContentColor = actionContentColor,
         dismissActionContentColor = dismissActionContentColor,
     )
-}
-
-enum class SnackbarType {
-    SUCCESS,
-    ERROR,
 }
 
 data class AppSnackbarHostState(

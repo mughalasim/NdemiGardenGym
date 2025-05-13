@@ -1,8 +1,6 @@
 package cv.domain
 
 object Variables {
-    const val SHARED_PREF_SESSION_START = "SHARED_PREF_SESSION_START"
-
     const val EVENT_NAVIGATE = "Navigate"
     const val EVENT_ERROR = "Error"
     const val EVENT_PHOTO = "ProfilePicture"
