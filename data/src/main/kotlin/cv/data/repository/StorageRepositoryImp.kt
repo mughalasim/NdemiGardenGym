@@ -3,8 +3,9 @@ package cv.data.repository
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.FirebaseFirestoreException.Code
 import com.google.firebase.storage.StorageReference
+import cv.data.handleError
 import cv.domain.DomainResult
-import cv.domain.repositories.AppLogLevel
+import cv.domain.enums.AppLogType
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.StorageRepository
 import kotlinx.coroutines.tasks.await
@@ -20,7 +21,7 @@ class StorageRepositoryImp(
     ): DomainResult<String> =
         runCatching {
             if (memberId.isEmpty()) {
-                logger.log("Not authorised", AppLogLevel.ERROR)
+                logger.log("Not authorised", AppLogType.ERROR)
                 throw FirebaseFirestoreException("", Code.UNAUTHENTICATED)
             }
 

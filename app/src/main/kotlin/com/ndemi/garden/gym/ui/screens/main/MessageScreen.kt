@@ -2,67 +2,67 @@ package com.ndemi.garden.gym.ui.screens.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.core.net.toUri
-import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.theme.page_width
 import com.ndemi.garden.gym.ui.utils.AppPreview
+import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 
 @Composable
-fun NewVersionScreen(url: String) {
+fun MessageScreen(
+    title: String,
+    message: String,
+    buttonText: String,
+    onButtonTapped: () -> Unit,
+) {
     Column(
         modifier =
             Modifier
-                .fillMaxHeight()
+                .fillMaxSize()
                 .requiredWidth(page_width)
-                .padding(padding_screen),
+                .toAppCardStyle()
+                .padding(vertical = padding_screen),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        val uriHandler = LocalUriHandler.current
         TextWidget(
-            text = stringResource(R.string.txt_app_update_title),
+            text = title,
             style = AppTheme.textStyles.large,
         )
         TextWidget(
             modifier = Modifier.padding(top = padding_screen),
             textAlign = TextAlign.Center,
-            text =
-                stringResource(R.string.txt_app_update_desc),
+            text = message,
         )
-        if (isValidUri(url)) {
+        if (buttonText.isNotEmpty()) {
             ButtonWidget(
-                modifier = Modifier.padding(top = padding_screen),
-                title = stringResource(R.string.txt_download),
-            ) {
-                uriHandler.openUri(url)
-            }
+                modifier = Modifier.padding(top = padding_screen_large),
+                title = buttonText,
+                onButtonClicked = onButtonTapped,
+            )
         }
     }
 }
 
-fun isValidUri(uriString: String): Boolean {
-    val uri = runCatching { uriString.toUri() }.getOrNull()
-    return uri != null
-}
-
 @AppPreview
 @Composable
-private fun NewVersionScreenPreview() {
+private fun MessageScreenPreview() {
     AppThemeComposable {
-        NewVersionScreen(url = "https://www.google.com")
+        MessageScreen(
+            title = "Title",
+            message = "Some important message will be here",
+            buttonText = "Exit",
+        ) {}
     }
 }

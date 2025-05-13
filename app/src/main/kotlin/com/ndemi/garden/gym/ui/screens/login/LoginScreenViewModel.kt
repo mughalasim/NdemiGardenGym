@@ -3,7 +3,9 @@ package com.ndemi.garden.gym.ui.screens.login
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.BuildConfig
-import com.ndemi.garden.gym.ui.UiError
+import com.ndemi.garden.gym.autoFillInformation
+import com.ndemi.garden.gym.ui.enums.LoginScreenInputType
+import com.ndemi.garden.gym.ui.enums.UiErrorType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
@@ -11,6 +13,7 @@ import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
+import cv.domain.enums.MemberType
 import cv.domain.usecase.AccessUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +31,7 @@ class LoginScreenViewModel(
     private val _inputData =
         MutableStateFlow(
             InputData(
-                email = if (BuildConfig.DEBUG) BuildConfig.ADMIN_STAGING else "",
+                email = "",
                 password = "",
             ),
         )
@@ -36,13 +39,13 @@ class LoginScreenViewModel(
 
     fun setString(
         value: String,
-        inputType: InputType,
+        inputType: LoginScreenInputType,
     ) {
         _inputData.value =
             when (inputType) {
-                InputType.NONE -> _inputData.value
-                InputType.EMAIL -> _inputData.value.copy(email = value)
-                InputType.PASSWORD -> _inputData.value.copy(password = value)
+                LoginScreenInputType.NONE -> _inputData.value
+                LoginScreenInputType.EMAIL -> _inputData.value.copy(email = value)
+                LoginScreenInputType.PASSWORD -> _inputData.value.copy(password = value)
             }
         validateInput()
     }
@@ -56,9 +59,9 @@ class LoginScreenViewModel(
                 .matcher(email)
                 .matches()
         ) {
-            sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_EMAIL), InputType.EMAIL))
+            sendAction(Action.ShowError(converter.getMessage(UiErrorType.INVALID_EMAIL), LoginScreenInputType.EMAIL))
         } else if (password.isEmpty()) {
-            sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_PASSWORD), InputType.PASSWORD))
+            sendAction(Action.ShowError(converter.getMessage(UiErrorType.INVALID_PASSWORD), LoginScreenInputType.PASSWORD))
         } else {
             sendAction(Action.SetReady)
         }
@@ -79,6 +82,13 @@ class LoginScreenViewModel(
         }
     }
 
+    fun onAutoCompleteTapped(memberType: MemberType) {
+        if (!BuildConfig.DEBUG) return
+        val pair = autoFillInformation(memberType)
+        setString(pair.first, LoginScreenInputType.EMAIL)
+        setString(pair.second, LoginScreenInputType.PASSWORD)
+    }
+
     @Immutable
     sealed interface UiState : BaseState {
         data object Waiting : UiState
@@ -89,16 +99,10 @@ class LoginScreenViewModel(
 
         data class Error(
             val message: String,
-            val inputType: InputType,
+            val inputType: LoginScreenInputType,
         ) : UiState
 
         data object Success : UiState
-    }
-
-    enum class InputType {
-        NONE,
-        EMAIL,
-        PASSWORD,
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -112,7 +116,7 @@ class LoginScreenViewModel(
 
         data class ShowError(
             val message: String,
-            val inputType: InputType = InputType.NONE,
+            val inputType: LoginScreenInputType = LoginScreenInputType.NONE,
         ) : Action {
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }

@@ -46,13 +46,14 @@ import org.joda.time.DateTime
 fun MemberStatusWidget(
     modifier: Modifier = Modifier,
     memberEntity: MemberEntity,
-    hasAdminRights: Boolean = false,
+    canViewMemberDetails: Boolean = false,
+    canViewMemberStats: Boolean = false,
     listener: MemberStatusWidgetListener = MemberStatusWidgetListener(),
 ) {
     Column(
         modifier =
             modifier
-                .clickable { if (hasAdminRights) listener.onMemberTapped.invoke(memberEntity) }
+                .clickable { if (canViewMemberDetails) listener.onMemberTapped.invoke(memberEntity) }
                 .toAppCardStyle(overridePadding = 0.dp),
     ) {
         AsyncImageWidget(
@@ -79,7 +80,7 @@ fun MemberStatusWidget(
                         DateTime.now()
                             .toActiveStatusDuration(DateTime(memberEntity.activeNowDateMillis)),
                 )
-            } else if (hasAdminRights) {
+            } else if (canViewMemberDetails) {
                 TextWidget(
                     style = AppTheme.textStyles.small,
                     text = memberEntity.getResidentialStatus(),
@@ -98,7 +99,7 @@ fun MemberStatusWidget(
             }
         }
 
-        if (hasAdminRights) {
+        if (canViewMemberStats) {
             Row(
                 modifier =
                     Modifier
@@ -131,23 +132,21 @@ fun MemberStatusWidget(
                     contentDescription = null,
                     tint = AppTheme.colors.primary,
                 )
-                if (memberEntity.hasPaidMembership()) {
-                    Icon(
-                        modifier =
-                            Modifier
-                                .iconModifier()
-                                .background(
-                                    color = if (memberEntity.isActiveNow()) Color.Green else Color.Transparent,
-                                    shape = RoundedCornerShape(border_radius),
-                                )
-                                .clickable {
-                                    listener.onSessionTapped.invoke(memberEntity)
-                                },
-                        imageVector = Icons.AutoMirrored.Rounded.DirectionsRun,
-                        contentDescription = null,
-                        tint = AppTheme.colors.primary,
-                    )
-                }
+                Icon(
+                    modifier =
+                        Modifier
+                            .iconModifier()
+                            .background(
+                                color = if (memberEntity.isActiveNow()) Color.Green else Color.Transparent,
+                                shape = RoundedCornerShape(border_radius),
+                            )
+                            .clickable {
+                                listener.onSessionTapped.invoke(memberEntity)
+                            },
+                    imageVector = Icons.AutoMirrored.Rounded.DirectionsRun,
+                    contentDescription = null,
+                    tint = AppTheme.colors.primary,
+                )
             }
         }
     }
@@ -177,15 +176,17 @@ private fun MemberWidgetPreview() {
         Column {
             MemberStatusWidget(
                 memberEntity = getMockRegisteredMemberEntity(),
-                hasAdminRights = true,
+                canViewMemberDetails = true,
             )
             MemberStatusWidget(
                 memberEntity = getMockActiveMemberEntity(),
-                hasAdminRights = true,
+                canViewMemberDetails = true,
+                canViewMemberStats = true,
             )
             MemberStatusWidget(
                 memberEntity = getMockExpiredMemberEntity(),
-                hasAdminRights = true,
+                canViewMemberDetails = true,
+                canViewMemberStats = true,
             )
             MemberStatusWidget(
                 memberEntity = getMockActiveMemberEntity(),

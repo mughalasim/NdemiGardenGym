@@ -19,8 +19,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.ui.enums.RegisterScreenInputType
+import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.InputData
-import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
@@ -32,7 +33,6 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
-import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 
 @Composable
@@ -40,7 +40,7 @@ fun RegisterDetailScreen(
     uiState: UiState,
     inputData: InputData = InputData(),
     hidePassword: Boolean = false,
-    onSetString: (String, InputType) -> Unit = { _, _ -> },
+    onSetString: (String, RegisterScreenInputType) -> Unit = { _, _ -> },
     onRegisterTapped: () -> Unit = {},
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
@@ -53,13 +53,13 @@ fun RegisterDetailScreen(
 
     if (uiState is UiState.Error) {
         when (uiState.inputType) {
-            InputType.FIRST_NAME -> errorFirstName = uiState.message
-            InputType.LAST_NAME -> errorLastName = uiState.message
-            InputType.EMAIL -> errorEmail = uiState.message
-            InputType.APARTMENT_NUMBER -> errorApartmentNumber = uiState.message
-            InputType.PASSWORD -> errorPassword = uiState.message
-            InputType.CONFIRM_PASSWORD -> errorConfirmPassword = uiState.message
-            InputType.NONE ->
+            RegisterScreenInputType.FIRST_NAME -> errorFirstName = uiState.message
+            RegisterScreenInputType.LAST_NAME -> errorLastName = uiState.message
+            RegisterScreenInputType.EMAIL -> errorEmail = uiState.message
+            RegisterScreenInputType.APARTMENT_NUMBER -> errorApartmentNumber = uiState.message
+            RegisterScreenInputType.PASSWORD -> errorPassword = uiState.message
+            RegisterScreenInputType.CONFIRM_PASSWORD -> errorConfirmPassword = uiState.message
+            RegisterScreenInputType.NONE ->
                 snackbarHostState.Show(
                     type = SnackbarType.ERROR,
                     message = uiState.message,
@@ -107,7 +107,7 @@ fun RegisterDetailScreen(
             textInput = inputData.firstName,
             errorText = errorFirstName,
         ) {
-            onSetString.invoke(it, InputType.FIRST_NAME)
+            onSetString.invoke(it, RegisterScreenInputType.FIRST_NAME)
         }
 
         EditTextWidget(
@@ -118,7 +118,7 @@ fun RegisterDetailScreen(
             textInput = inputData.lastName,
             errorText = errorLastName,
         ) {
-            onSetString.invoke(it, InputType.LAST_NAME)
+            onSetString.invoke(it, RegisterScreenInputType.LAST_NAME)
         }
 
         EditTextWidget(
@@ -130,7 +130,7 @@ fun RegisterDetailScreen(
             errorText = errorEmail,
             keyboardType = KeyboardType.Email,
         ) {
-            onSetString.invoke(it, InputType.EMAIL)
+            onSetString.invoke(it, RegisterScreenInputType.EMAIL)
         }
 
         EditTextWidget(
@@ -141,7 +141,7 @@ fun RegisterDetailScreen(
             textInput = inputData.apartmentNumber,
             errorText = errorApartmentNumber,
         ) {
-            onSetString.invoke(it, InputType.APARTMENT_NUMBER)
+            onSetString.invoke(it, RegisterScreenInputType.APARTMENT_NUMBER)
         }
 
         if (!hidePassword) {
@@ -154,7 +154,7 @@ fun RegisterDetailScreen(
                 errorText = errorPassword,
                 isPasswordEditText = true,
             ) {
-                onSetString.invoke(it, InputType.PASSWORD)
+                onSetString.invoke(it, RegisterScreenInputType.PASSWORD)
             }
 
             EditTextWidget(
@@ -166,7 +166,7 @@ fun RegisterDetailScreen(
                 errorText = errorConfirmPassword,
                 isPasswordEditText = true,
             ) {
-                onSetString.invoke(it, InputType.CONFIRM_PASSWORD)
+                onSetString.invoke(it, RegisterScreenInputType.CONFIRM_PASSWORD)
             }
         }
 

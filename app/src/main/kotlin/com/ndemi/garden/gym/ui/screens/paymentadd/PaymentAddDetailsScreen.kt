@@ -24,7 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.InputType
+import com.ndemi.garden.gym.ui.enums.PaymentAddScreenInputType
+import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
@@ -37,7 +38,6 @@ import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
-import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import org.joda.time.DateTime
 
@@ -46,7 +46,7 @@ import org.joda.time.DateTime
 fun PaymentAddDetailsScreen(
     inputData: PaymentAddScreenViewModel.InputData = PaymentAddScreenViewModel.InputData(),
     uiState: UiState = UiState.Ready,
-    onSetData: (DateTime, String, String, InputType) -> Unit = { _, _, _, _ -> },
+    onSetData: (DateTime, String, String, PaymentAddScreenInputType) -> Unit = { _, _, _, _ -> },
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
     onPaymentAddTapped: () -> Unit = {},
 ) {
@@ -58,10 +58,10 @@ fun PaymentAddDetailsScreen(
 
     if (uiState is UiState.Error) {
         when (uiState.inputType) {
-            InputType.START_DATE -> errorStartDate = uiState.message
-            InputType.MONTH_DURATION -> errorMonthDuration = uiState.message
-            InputType.AMOUNT -> errorAmount = uiState.message
-            InputType.NONE ->
+            PaymentAddScreenInputType.START_DATE -> errorStartDate = uiState.message
+            PaymentAddScreenInputType.MONTH_DURATION -> errorMonthDuration = uiState.message
+            PaymentAddScreenInputType.AMOUNT -> errorAmount = uiState.message
+            PaymentAddScreenInputType.NONE ->
                 snackbarHostState.Show(
                     type = SnackbarType.ERROR,
                     message = uiState.message,
@@ -111,7 +111,7 @@ fun PaymentAddDetailsScreen(
             errorText = errorMonthDuration,
             keyboardType = KeyboardType.Number,
         ) {
-            onSetData.invoke(DateTime.now(), it, it, InputType.MONTH_DURATION)
+            onSetData.invoke(DateTime.now(), it, it, PaymentAddScreenInputType.MONTH_DURATION)
         }
 
         EditTextWidget(
@@ -121,7 +121,7 @@ fun PaymentAddDetailsScreen(
             errorText = errorAmount,
             keyboardType = KeyboardType.Number,
         ) {
-            onSetData.invoke(DateTime.now(), it, it, InputType.AMOUNT)
+            onSetData.invoke(DateTime.now(), it, it, PaymentAddScreenInputType.AMOUNT)
         }
 
         ButtonWidget(
@@ -152,7 +152,7 @@ fun PaymentAddDetailsScreen(
                             .clickable {
                                 datePickerVisibility = !datePickerVisibility
                                 state.selectedDateMillis?.let {
-                                    onSetData.invoke(DateTime(it), "", "", InputType.START_DATE)
+                                    onSetData.invoke(DateTime(it), "", "", PaymentAddScreenInputType.START_DATE)
                                 }
                             },
                 )

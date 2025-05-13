@@ -14,7 +14,8 @@ import com.ndemi.garden.gym.ui.screens.members.MembersExpiredScreen
 import com.ndemi.garden.gym.ui.screens.members.MembersScreen
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreen
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreen
-import com.ndemi.garden.gym.ui.screens.profile.ProfileScreen
+import com.ndemi.garden.gym.ui.screens.profile.admin.ProfileAdminScreen
+import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreen
 import com.ndemi.garden.gym.ui.screens.register.RegisterNewScreen
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreen
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreen
@@ -38,7 +39,9 @@ fun NavigationHost(
 
         composable<Route.RegisterNewScreen> { RegisterNewScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.ProfileScreen> { ProfileScreen(snackbarHostState = snackbarHostState) }
+        composable<Route.ProfileAdminScreen> { ProfileAdminScreen(snackbarHostState = snackbarHostState) }
+
+        composable<Route.ProfileMemberScreen> { ProfileMemberScreen(snackbarHostState = snackbarHostState) }
 
         composable<Route.AttendanceScreen> { AttendanceScreen(snackbarHostState = snackbarHostState) }
 

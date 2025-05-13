@@ -14,6 +14,7 @@ import com.ndemi.garden.gym.ui.widgets.member.MemberSessionWidget
 import cv.domain.entities.MemberEntity
 import org.joda.time.DateTime
 
+// TODO - Split this screen up for Admins and for Members
 @Composable
 fun ProfileDetailsScreen(
     memberEntity: MemberEntity,
@@ -49,7 +50,7 @@ private fun ProfileDetailsScreenPreview() {
     AppThemeComposable {
         ProfileDetailsScreen(
             memberEntity = getMockRegisteredMemberEntity(),
-            isAdmin = true,
+            isAdmin = false,
         )
     }
 }

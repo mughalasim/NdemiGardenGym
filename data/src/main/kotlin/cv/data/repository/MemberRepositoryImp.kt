@@ -3,17 +3,18 @@ package cv.data.repository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
+import cv.data.handleError
 import cv.data.mappers.toMemberEntity
 import cv.data.mappers.toMemberModel
 import cv.data.models.MemberModel
-import cv.data.retrofit.toDomainError
-import cv.domain.DomainError
+import cv.data.toDomainError
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
-import cv.domain.entities.MemberType
-import cv.domain.repositories.AppLogLevel
+import cv.domain.enums.AppLogType
+import cv.domain.enums.DomainErrorType
+import cv.domain.enums.MemberFetchType
+import cv.domain.enums.MemberType
 import cv.domain.repositories.AppLoggerRepository
-import cv.domain.repositories.MemberFetchType
 import cv.domain.repositories.MemberRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -35,7 +36,7 @@ class MemberRepositoryImp(
                 return response?.let {
                     DomainResult.Success(it.toMemberEntity())
                 } ?: run {
-                    DomainResult.Error(DomainError.NO_DATA)
+                    DomainResult.Error(DomainErrorType.NO_DATA)
                 }
             },
             onFailure = { handleError(it, logger) },
@@ -87,7 +88,7 @@ class MemberRepositoryImp(
                         )
                     }
                     error?.let {
-                        logger.log("Exception: $it", AppLogLevel.ERROR)
+                        logger.log("Exception: $it", AppLogType.ERROR)
                         trySend(DomainResult.Error(it.toDomainError()))
                     }
                 }

@@ -2,7 +2,8 @@ package com.ndemi.garden.gym.ui.screens.reset
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
-import com.ndemi.garden.gym.ui.UiError
+import com.ndemi.garden.gym.ui.enums.ResetScreenInputType
+import com.ndemi.garden.gym.ui.enums.UiErrorType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
@@ -31,8 +32,8 @@ class ResetPasswordScreenViewModel(
         if (_inputData.value.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(_inputData.value).matches()) {
             sendAction(
                 Action.ShowError(
-                    converter.getMessage(UiError.INVALID_EMAIL),
-                    InputType.EMAIL,
+                    converter.getMessage(UiErrorType.INVALID_EMAIL),
+                    ResetScreenInputType.EMAIL,
                 ),
             )
         } else {
@@ -60,14 +61,9 @@ class ResetPasswordScreenViewModel(
 
         data object Loading : UiState
 
-        data class Error(val message: String, val inputType: InputType) : UiState
+        data class Error(val message: String, val inputType: ResetScreenInputType) : UiState
 
         data class Success(val email: String) : UiState
-    }
-
-    enum class InputType {
-        NONE,
-        EMAIL,
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -79,7 +75,7 @@ class ResetPasswordScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowError(val message: String, val inputType: InputType = InputType.NONE) : Action {
+        data class ShowError(val message: String, val inputType: ResetScreenInputType = ResetScreenInputType.NONE) : Action {
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
 

@@ -15,5 +15,7 @@ interface AccessRepository {
 
     suspend fun resetPasswordForEmail(email: String): DomainResult<Unit>
 
+    suspend fun verifyEmail(): DomainResult<Unit>
+
     fun logOut()
 }

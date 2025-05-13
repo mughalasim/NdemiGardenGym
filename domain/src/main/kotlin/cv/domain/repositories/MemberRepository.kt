@@ -2,6 +2,7 @@ package cv.domain.repositories
 
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.enums.MemberFetchType
 import kotlinx.coroutines.flow.Flow
 
 interface MemberRepository {

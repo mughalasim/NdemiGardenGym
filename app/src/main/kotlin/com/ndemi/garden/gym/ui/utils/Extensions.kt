@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import androidx.core.net.toUri
 import androidx.core.os.ConfigurationCompat
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
@@ -162,6 +163,8 @@ fun String.isValidApartmentNumber(): Boolean = this.matches(Regex("^[A-Da-d](?:[
 fun String.isValidPhoneNumber(): Boolean =
     this.matches(Regex("^[+]?[0-9]{10,13}\$")) &&
         PhoneNumberUtils.isGlobalPhoneNumber(this)
+
+fun String.isValidUri(): Boolean = runCatching { this.toUri() }.getOrNull() != null
 
 object DateConstants {
     private val appLocale =

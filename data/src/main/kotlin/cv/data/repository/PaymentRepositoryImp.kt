@@ -3,15 +3,16 @@ package cv.data.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
+import cv.data.handleError
 import cv.data.mappers.toPaymentEntity
 import cv.data.mappers.toPaymentModel
 import cv.data.models.PaymentModel
-import cv.data.retrofit.toDomainError
-import cv.domain.DomainError
+import cv.data.toDomainError
 import cv.domain.DomainResult
 import cv.domain.entities.PaymentEntity
 import cv.domain.entities.PaymentYearEntity
-import cv.domain.repositories.AppLogLevel
+import cv.domain.enums.AppLogType
+import cv.domain.enums.DomainErrorType
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.PaymentRepository
 import kotlinx.coroutines.channels.awaitClose
@@ -36,8 +37,8 @@ class PaymentRepositoryImp(
             val setMemberId =
                 memberId.ifEmpty {
                     firebaseAuth.currentUser?.uid ?: run {
-                        logger.log("Not Authorised", AppLogLevel.ERROR)
-                        trySend(DomainResult.Error(DomainError.UNAUTHORISED))
+                        logger.log("Not Authorised", AppLogType.ERROR)
+                        trySend(DomainResult.Error(DomainErrorType.UNAUTHORISED))
                     }
                 }
 
@@ -77,7 +78,7 @@ class PaymentRepositoryImp(
                         )
                     }
                     error?.let {
-                        logger.log("Exception: $it", AppLogLevel.ERROR)
+                        logger.log("Exception: $it", AppLogType.ERROR)
                         trySend(DomainResult.Error(it.toDomainError()))
                     }
                 }

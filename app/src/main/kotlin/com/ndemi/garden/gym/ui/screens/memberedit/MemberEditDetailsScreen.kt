@@ -14,8 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.ui.enums.MemberEditScreenInputType
+import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
-import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.InputType
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
@@ -25,7 +26,6 @@ import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
-import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.MemberEntity
 import org.joda.time.DateTime
@@ -36,7 +36,7 @@ fun MemberEditDetailsScreen(
     canAssignCoach: Boolean,
     uiState: UiState,
     memberEntity: MemberEntity,
-    onSetString: (String, InputType) -> Unit = { _, _ -> },
+    onSetString: (String, MemberEditScreenInputType) -> Unit = { _, _ -> },
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
     onUpdateTapped: () -> Unit = {},
 ) {
@@ -47,11 +47,11 @@ fun MemberEditDetailsScreen(
 
     if (uiState is UiState.Error) {
         when (uiState.inputType) {
-            InputType.FIRST_NAME -> errorFirstName = uiState.message
-            InputType.LAST_NAME -> errorLastName = uiState.message
-            InputType.APARTMENT_NUMBER -> errorApartmentNumber = uiState.message
-            InputType.PHONE_NUMBER -> errorPhoneNumber = uiState.message
-            InputType.NONE ->
+            MemberEditScreenInputType.FIRST_NAME -> errorFirstName = uiState.message
+            MemberEditScreenInputType.LAST_NAME -> errorLastName = uiState.message
+            MemberEditScreenInputType.APARTMENT_NUMBER -> errorApartmentNumber = uiState.message
+            MemberEditScreenInputType.PHONE_NUMBER -> errorPhoneNumber = uiState.message
+            MemberEditScreenInputType.NONE ->
                 snackbarHostState.Show(
                     type = SnackbarType.ERROR,
                     message = uiState.message,
@@ -85,7 +85,7 @@ fun MemberEditDetailsScreen(
             errorText = errorFirstName,
             isEnabled = canUpdateMemberDetails,
         ) {
-            onSetString.invoke(it, InputType.FIRST_NAME)
+            onSetString.invoke(it, MemberEditScreenInputType.FIRST_NAME)
         }
 
         EditTextWidget(
@@ -95,7 +95,7 @@ fun MemberEditDetailsScreen(
             errorText = errorLastName,
             isEnabled = canUpdateMemberDetails,
         ) {
-            onSetString.invoke(it, InputType.LAST_NAME)
+            onSetString.invoke(it, MemberEditScreenInputType.LAST_NAME)
         }
 
         EditTextWidget(
@@ -105,7 +105,7 @@ fun MemberEditDetailsScreen(
             errorText = errorApartmentNumber,
             isEnabled = canUpdateMemberDetails,
         ) {
-            onSetString.invoke(it, InputType.APARTMENT_NUMBER)
+            onSetString.invoke(it, MemberEditScreenInputType.APARTMENT_NUMBER)
         }
 
         EditTextWidget(
@@ -116,7 +116,7 @@ fun MemberEditDetailsScreen(
             keyboardType = KeyboardType.Phone,
             isEnabled = canUpdateMemberDetails,
         ) {
-            onSetString.invoke(it, InputType.PHONE_NUMBER)
+            onSetString.invoke(it, MemberEditScreenInputType.PHONE_NUMBER)
         }
 
         Row(
@@ -132,7 +132,7 @@ fun MemberEditDetailsScreen(
                 checked = memberEntity.hasCoach,
                 enabled = canAssignCoach,
                 onCheckedChange = {
-                    onSetString.invoke(it.toString(), InputType.HAS_COACH)
+                    onSetString.invoke(it.toString(), MemberEditScreenInputType.HAS_COACH)
                 },
             )
         }

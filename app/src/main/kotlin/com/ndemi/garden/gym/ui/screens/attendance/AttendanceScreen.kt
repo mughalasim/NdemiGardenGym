@@ -13,10 +13,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
-import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.YearSelectionWidget
@@ -31,6 +31,8 @@ fun AttendanceScreen(
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
+    val permissionState by viewModel.getPermissions().collectAsStateWithLifecycle()
+
     val title =
         if (memberName.isEmpty()) {
             stringResource(R.string.txt_your_attendances)
@@ -73,7 +75,7 @@ fun AttendanceScreen(
                     for (attendanceMonthly in state.attendancesMonthly) {
                         AttendanceListScreen(
                             attendanceMonthly = attendanceMonthly,
-                            canDeleteAttendance = viewModel.canDeleteAttendance(),
+                            canDeleteAttendance = permissionState.canDeleteAttendance,
                         ) {
                             viewModel.deleteAttendance(it)
                         }

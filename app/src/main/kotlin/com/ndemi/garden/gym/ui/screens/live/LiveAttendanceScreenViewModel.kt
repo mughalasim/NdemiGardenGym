@@ -8,9 +8,9 @@ import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
-import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.enums.DomainErrorType
 import cv.domain.usecase.MemberUseCase
 import kotlinx.coroutines.launch
 
@@ -49,10 +49,10 @@ class LiveAttendanceScreenViewModel(
         }
 
         data class ShowDomainError(
-            val domainError: DomainError,
+            val domainErrorType: DomainErrorType,
             val errorCodeConverter: ErrorCodeConverter,
         ) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainError))
+            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainErrorType))
         }
 
         data class Success(val members: List<MemberEntity>) : Action {

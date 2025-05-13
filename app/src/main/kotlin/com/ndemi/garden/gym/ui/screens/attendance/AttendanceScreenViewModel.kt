@@ -9,10 +9,10 @@ import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
-import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.AttendanceMonthEntity
+import cv.domain.enums.DomainErrorType
 import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.PermissionsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -87,7 +87,7 @@ class AttendanceScreenViewModel(
         navigationService.popBack()
     }
 
-    fun canDeleteAttendance() = permissionsUseCase.canDeleteAttendance(memberId)
+    fun getPermissions() = permissionsUseCase.getPermissions(memberId)
 
     @Immutable
     sealed interface UiState : BaseState {
@@ -104,10 +104,10 @@ class AttendanceScreenViewModel(
         }
 
         data class ShowDomainError(
-            val domainError: DomainError,
+            val domainErrorType: DomainErrorType,
             val errorCodeConverter: ErrorCodeConverter,
         ) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainError))
+            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainErrorType))
         }
 
         data class Success(val attendancesMonthly: List<AttendanceMonthEntity>) : Action {

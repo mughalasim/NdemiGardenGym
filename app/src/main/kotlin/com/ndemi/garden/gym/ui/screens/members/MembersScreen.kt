@@ -17,6 +17,7 @@ fun MembersScreen(
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val members by viewModel.members.collectAsStateWithLifecycle()
     val searchTerm by viewModel.searchTerm.collectAsStateWithLifecycle()
+    val permissionState by viewModel.getPermissions().collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.getMembers(
@@ -27,7 +28,7 @@ fun MembersScreen(
     MembersSharedScreen(
         pageTitleRes = R.string.txt_active_members,
         defaultMessageRes = R.string.txt_no_active_registered_members,
-        hasAdminRights = viewModel.hasAdminRights(),
+        permissionState = permissionState,
         searchTerm = searchTerm,
         uiState = uiState,
         snackbarHostState = snackbarHostState,

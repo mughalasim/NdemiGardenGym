@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
@@ -27,19 +28,19 @@ import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
-import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberStatusWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberStatusWidgetListener
 import cv.domain.entities.MemberEntity
+import cv.domain.entities.PermissionsEntity
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 internal fun MembersSharedScreen(
     @StringRes pageTitleRes: Int = R.string.txt_active_members,
     @StringRes defaultMessageRes: Int = R.string.txt_no_members,
-    hasAdminRights: Boolean = false,
+    permissionState: PermissionsEntity = PermissionsEntity(),
     searchTerm: String = "",
     uiState: UiState = UiState.Loading,
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
@@ -49,7 +50,7 @@ internal fun MembersSharedScreen(
     Column {
         ToolBarWidget(
             title = stringResource(pageTitleRes),
-            secondaryIcon = if (hasAdminRights) Icons.Default.PersonAdd else null,
+            secondaryIcon = if (permissionState.canAddMember) Icons.Default.PersonAdd else null,
             onSecondaryIconPressed = listeners.onRegisterMemberTapped,
         )
 
@@ -92,7 +93,8 @@ internal fun MembersSharedScreen(
                 items(members) {
                     MemberStatusWidget(
                         memberEntity = it,
-                        hasAdminRights = hasAdminRights,
+                        canViewMemberDetails = permissionState.canViewMemberDetails,
+                        canViewMemberStats = permissionState.canViewMemberStats,
                         listener = listeners.memberStatusWidgetListener,
                     )
                 }
@@ -124,6 +126,5 @@ private fun MembersSharedScreenPreview() =
                     getMockRegisteredMemberEntity(),
                     getMockRegisteredMemberEntity(),
                 ),
-            hasAdminRights = true,
         )
     }

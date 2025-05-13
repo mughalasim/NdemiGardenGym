@@ -1,6 +1,7 @@
 package com.ndemi.garden.gym.ui.screens.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,20 +20,23 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.InputType
+import com.ndemi.garden.gym.ui.enums.LoginScreenInputType
+import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.image_size_large
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_large
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.theme.page_width
 import com.ndemi.garden.gym.ui.utils.AppPreview
+import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
-import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
+import cv.domain.enums.MemberType
 
 @Composable
 fun LoginScreenDetails(
@@ -48,15 +52,15 @@ fun LoginScreenDetails(
 
         if (uiState is UiState.Error) {
             when (uiState.inputType) {
-                InputType.NONE ->
+                LoginScreenInputType.NONE ->
                     snackbarHostState.Show(
                         type = SnackbarType.ERROR,
                         message = uiState.message,
                     )
 
-                InputType.EMAIL -> emailError = uiState.message
+                LoginScreenInputType.EMAIL -> emailError = uiState.message
 
-                InputType.PASSWORD -> passwordError = uiState.message
+                LoginScreenInputType.PASSWORD -> passwordError = uiState.message
             }
         }
 
@@ -96,7 +100,7 @@ fun LoginScreenDetails(
                 errorText = emailError,
                 keyboardType = KeyboardType.Email,
             ) {
-                listeners.onValueChanged(it, InputType.EMAIL)
+                listeners.onValueChanged(it, LoginScreenInputType.EMAIL)
             }
 
             EditTextWidget(
@@ -106,7 +110,7 @@ fun LoginScreenDetails(
                 errorText = passwordError,
                 isPasswordEditText = true,
             ) {
-                listeners.onValueChanged(it, InputType.PASSWORD)
+                listeners.onValueChanged(it, LoginScreenInputType.PASSWORD)
             }
 
             ButtonWidget(
@@ -124,11 +128,24 @@ fun LoginScreenDetails(
             TextWidget(
                 modifier =
                     Modifier
-                        .padding(top = padding_screen_large)
+                        .padding(vertical = padding_screen_large)
                         .padding(horizontal = padding_screen),
                 text = stringResource(R.string.txt_app_version) + BuildConfig.VERSION_NAME,
                 style = AppTheme.textStyles.small,
             )
+
+            if (BuildConfig.DEBUG) {
+                for (member in MemberType.entries) {
+                    TextWidget(
+                        modifier =
+                            Modifier
+                                .padding(top = padding_screen_small)
+                                .toAppCardStyle()
+                                .clickable { listeners.onAutoCompleteTapped(member) },
+                        text = member.name,
+                    )
+                }
+            }
         }
     }
 }
@@ -141,7 +158,7 @@ private fun LoginDetailsScreenPreview() =
             uiState =
                 UiState.Error(
                     message = "Invalid email address",
-                    InputType.EMAIL,
+                    LoginScreenInputType.EMAIL,
                 ),
         )
     }

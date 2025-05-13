@@ -1,25 +1,34 @@
 package cv.domain.usecase
 
-import cv.domain.entities.MemberType
+import cv.domain.entities.PermissionsEntity
+import cv.domain.entities.getAdminPermissions
+import cv.domain.entities.getSupervisorPermissions
+import cv.domain.enums.MemberType
 import cv.domain.repositories.AuthRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-// TODO - Return one permission data class that can be used across any viewModel
 class PermissionsUseCase(
     private val authRepository: AuthRepository,
 ) {
     fun isAuthenticated() = authRepository.isAuthenticated()
 
-    fun isNotMember() =
-        authRepository.getMemberType() == MemberType.ADMIN ||
-            authRepository.getMemberType() == MemberType.SUPERVISOR
+    fun isNotMember() = authRepository.getMemberType() != MemberType.MEMBER
 
-    fun hasAdminRights() = authRepository.getMemberType() == MemberType.ADMIN
+    fun getPermissions(memberId: String = ""): StateFlow<PermissionsEntity> {
+        val memberType = authRepository.getMemberType()
+        val canUpdateSelf = memberId.isEmpty() || memberId == authRepository.getMemberId()
 
-    fun canEditMember(memberId: String) = memberId.isEmpty() || memberId == authRepository.getMemberId() || hasAdminRights()
-
-    fun canDeleteMember() = hasAdminRights()
-
-    fun canUpdatePayment() = hasAdminRights()
-
-    fun canDeleteAttendance(memberId: String) = memberId.isEmpty() || memberId == authRepository.getMemberId() || hasAdminRights()
+        val permission =
+            when (memberType) {
+                MemberType.SUPER_ADMIN, MemberType.ADMIN -> getAdminPermissions()
+                MemberType.SUPERVISOR -> getSupervisorPermissions()
+                MemberType.MEMBER ->
+                    getSupervisorPermissions().copy(
+                        canEditMember = canUpdateSelf,
+                        canDeleteAttendance = canUpdateSelf,
+                    )
+            }
+        return MutableStateFlow(permission)
+    }
 }

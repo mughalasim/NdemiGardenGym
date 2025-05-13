@@ -1,4 +1,4 @@
-package cv.domain.repositories
+package cv.domain.enums
 
 enum class MemberFetchType {
     ALL,
