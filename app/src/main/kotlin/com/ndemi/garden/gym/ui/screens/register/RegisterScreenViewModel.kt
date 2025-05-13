@@ -3,7 +3,6 @@ package com.ndemi.garden.gym.ui.screens.register
 import androidx.compose.runtime.Immutable
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
-import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.ui.enums.RegisterScreenInputType
 import com.ndemi.garden.gym.ui.enums.UiErrorType
@@ -35,7 +34,7 @@ class RegisterScreenViewModel(
     data class InputData(
         val firstName: String = "",
         val lastName: String = "",
-        val email: String = if (BuildConfig.DEBUG) BuildConfig.ADMIN_STAGING else "",
+        val email: String = "",
         val apartmentNumber: String = "",
         val password: String = "",
         val confirmPassword: String = "",

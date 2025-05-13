@@ -31,6 +31,9 @@ class MainScreenViewModel(
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
 
+    private val _emailVerifiedState: MutableStateFlow<EmailVerifiedState> = MutableStateFlow(EmailVerifiedState.Hidden)
+    val emailVerifiedState: StateFlow<EmailVerifiedState> = _emailVerifiedState
+
     val snackbarHostState: AppSnackbarHostState = AppSnackbarHostState()
 
     init {
@@ -39,6 +42,7 @@ class MainScreenViewModel(
             versionState,
             memberState,
         ) { auth, version, member ->
+            _emailVerifiedState.value = EmailVerifiedState.Hidden
             when {
                 version is VersionState.UpdateRequired ->
                     _uiState.value = UiState.UpdateRequired(version.url)
@@ -48,16 +52,18 @@ class MainScreenViewModel(
                         UiState.Ready(
                             isAuthenticated = false,
                             isAdmin = false,
-                            showEmailVerificationWarning = false,
                         )
 
-                auth == AuthState.Authorised && member is MemberState.Authenticated ->
+                auth == AuthState.Authorised && member is MemberState.Authenticated -> {
                     _uiState.value =
                         UiState.Ready(
                             isAuthenticated = true,
                             isAdmin = permissionsUseCase.isNotMember(),
-                            showEmailVerificationWarning = !member.member.emailVerified,
                         )
+                    if (!member.member.emailVerified) {
+                        _emailVerifiedState.value = EmailVerifiedState.Visible
+                    }
+                }
 
                 auth == AuthState.Authorised && member is MemberState.UserNotFound ->
                     _uiState.value = UiState.UserNotFound(member.message)
@@ -77,6 +83,22 @@ class MainScreenViewModel(
 
     fun onLogOutTapped() {
         accessUseCase.logOut()
+    }
+
+    fun verifyEmail() {
+        _emailVerifiedState.value = EmailVerifiedState.Hidden
+        viewModelScope.launch {
+            accessUseCase.verifyEmail().also { result ->
+                when (result) {
+                    is DomainResult.Success -> {
+                        _emailVerifiedState.value = EmailVerifiedState.Success
+                    }
+                    is DomainResult.Error -> {
+                        _emailVerifiedState.value = EmailVerifiedState.Error(converter.getMessage(result.error))
+                    }
+                }
+            }
+        }
     }
 
     private fun getVersionState() =
@@ -145,6 +167,17 @@ class MainScreenViewModel(
     }
 
     @Immutable
+    sealed interface EmailVerifiedState {
+        data object Visible : EmailVerifiedState
+
+        data object Hidden : EmailVerifiedState
+
+        data object Success : EmailVerifiedState
+
+        data class Error(val message: String) : EmailVerifiedState
+    }
+
+    @Immutable
     sealed interface UiState {
         data object Loading : UiState
 
@@ -153,7 +186,6 @@ class MainScreenViewModel(
         data class Ready(
             val isAuthenticated: Boolean,
             val isAdmin: Boolean,
-            val showEmailVerificationWarning: Boolean,
         ) : UiState
 
         data class UserNotFound(val message: String) : UiState

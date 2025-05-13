@@ -24,30 +24,17 @@ keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 android {
     namespace = libs.versions.appNamespaceId.get()
-    compileSdk =
-        libs.versions.appCompileSdk
-            .get()
-            .toInt()
+    compileSdk = libs.versions.appCompileSdk.get().toInt()
 
     defaultConfig {
         applicationId = libs.versions.appNamespaceId.get()
-        minSdk =
-            libs.versions.appMinSdk
-                .get()
-                .toInt()
-        targetSdk =
-            libs.versions.appTargetSdk
-                .get()
-                .toInt()
-        versionCode =
-            libs.versions.appVersionCode
-                .get()
-                .toInt()
+        minSdk = libs.versions.appMinSdk.get().toInt()
+        targetSdk = libs.versions.appTargetSdk.get().toInt()
+        versionCode = libs.versions.appVersionCode.get().toInt()
         versionName = libs.versions.appVersionName.get()
 
         setConfigVariable(variableName = "CURRENCY_CODE", variableSource = "CURRENCY_CODE")
         setConfigVariable(variableName = "API_BASE_URL", variableSource = "API_BASE_URL")
-        setConfigVariable(variableName = "ADMIN_STAGING", variableSource = "ADMIN_STAGING")
         setConfigVariable(variableName = "PATH_PAYMENT", variableSource = "PATH_PAYMENT")
         setConfigVariable(variableName = "PATH_APP_VERSION", variableSource = "PATH_APP_VERSION")
 
@@ -113,6 +100,11 @@ android {
                 variableName = "PATH_USER_IMAGES",
                 variableSource = "PATH_USER_IMAGES",
             )
+            setConfigVariable(variableName = "EMAIL_ADMIN", variableSource = "EMAIL_ADMIN_LIVE")
+            setConfigVariable(variableName = "EMAIL_SUPER_ADMIN", variableSource = "EMAIL_SUPER_ADMIN_LIVE")
+            setConfigVariable(variableName = "EMAIL_SUPERVISOR", variableSource = "EMAIL_SUPERVISOR_LIVE")
+            setConfigVariable(variableName = "EMAIL_MEMBER", variableSource = "EMAIL_MEMBER_LIVE")
+            setConfigVariable(variableName = "TEST_PASS", variableSource = "TEST_PASS")
             setProperty(
                 "archivesBaseName",
                 "${libs.versions.appName.get()} (${libs.versions.appVersionName.get()})",
@@ -141,6 +133,12 @@ android {
                 variableName = "PATH_USER_IMAGES",
                 variableSource = "DEBUG_PATH_USER_IMAGES",
             )
+            setConfigVariable(variableName = "EMAIL_ADMIN", variableSource = "EMAIL_ADMIN_STAGING")
+            setConfigVariable(variableName = "EMAIL_SUPER_ADMIN", variableSource = "EMAIL_SUPER_ADMIN_STAGING")
+            setConfigVariable(variableName = "EMAIL_SUPERVISOR", variableSource = "EMAIL_SUPERVISOR_STAGING")
+            setConfigVariable(variableName = "EMAIL_MEMBER", variableSource = "EMAIL_MEMBER_STAGING")
+            setConfigVariable(variableName = "TEST_PASS", variableSource = "TEST_PASS")
+
             setProperty(
                 "archivesBaseName",
                 "${libs.versions.appName.get()} (${libs.versions.appVersionName.get()})",

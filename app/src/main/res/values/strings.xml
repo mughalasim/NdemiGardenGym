@@ -125,6 +125,7 @@
     <string name="txt_download">Download</string>
     <string name="txt_search_members">Search amongst %1$s members</string>
     <string name="txt_select">Select</string>
+    <string name="txt_email_successfully_sent">Email successfully sent</string>
 
     <!-- Plurals-->
     <plurals name="plural_months">

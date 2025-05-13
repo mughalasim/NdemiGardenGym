@@ -3,6 +3,7 @@ package com.ndemi.garden.gym.ui.screens.login
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.BuildConfig
+import com.ndemi.garden.gym.autoFillInformation
 import com.ndemi.garden.gym.ui.enums.LoginScreenInputType
 import com.ndemi.garden.gym.ui.enums.UiErrorType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
@@ -12,6 +13,7 @@ import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
+import cv.domain.enums.MemberType
 import cv.domain.usecase.AccessUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +31,7 @@ class LoginScreenViewModel(
     private val _inputData =
         MutableStateFlow(
             InputData(
-                email = if (BuildConfig.DEBUG) BuildConfig.ADMIN_STAGING else "",
+                email = "",
                 password = "",
             ),
         )
@@ -78,6 +80,13 @@ class LoginScreenViewModel(
                 }
             }
         }
+    }
+
+    fun onAutoCompleteTapped(memberType: MemberType) {
+        if (!BuildConfig.DEBUG) return
+        val pair = autoFillInformation(memberType)
+        setString(pair.first, LoginScreenInputType.EMAIL)
+        setString(pair.second, LoginScreenInputType.PASSWORD)
     }
 
     @Immutable

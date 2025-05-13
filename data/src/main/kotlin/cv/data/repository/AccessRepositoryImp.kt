@@ -54,5 +54,13 @@ class AccessRepositoryImp(
             onFailure = { handleError(it, logger) },
         )
 
+    override suspend fun verifyEmail(): DomainResult<Unit> =
+        runCatching {
+            firebaseAuth.currentUser!!.sendEmailVerification().await()
+        }.fold(
+            onSuccess = { DomainResult.Success(Unit) },
+            onFailure = { handleError(it, logger) },
+        )
+
     override fun logOut() = firebaseAuth.signOut()
 }

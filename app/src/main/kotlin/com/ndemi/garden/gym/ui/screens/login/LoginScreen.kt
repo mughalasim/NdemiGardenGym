@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.ui.enums.LoginScreenInputType
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
+import cv.domain.enums.MemberType
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -21,6 +22,7 @@ fun LoginScreen(
             LoginScreenListeners(
                 onValueChanged = viewModel::setString,
                 onLoginTapped = viewModel::onLoginTapped,
+                onAutoCompleteTapped = viewModel::onAutoCompleteTapped,
             ),
         email = inputData.email,
         password = inputData.password,
@@ -30,5 +32,6 @@ fun LoginScreen(
 
 data class LoginScreenListeners(
     val onValueChanged: (String, LoginScreenInputType) -> Unit = { _, _ -> },
+    val onAutoCompleteTapped: (MemberType) -> Unit = {},
     val onLoginTapped: () -> Unit = {},
 )

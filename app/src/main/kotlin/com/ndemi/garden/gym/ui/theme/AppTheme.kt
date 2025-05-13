@@ -1,8 +1,9 @@
 package com.ndemi.garden.gym.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -24,10 +25,17 @@ fun getColors(): AppColors {
 }
 
 @Composable
-fun AppThemeComposable(content: @Composable () -> Unit) {
-    Surface(
+fun AppThemeComposable(
+    bottomBar: @Composable () -> Unit = {},
+    snackbarHost: @Composable () -> Unit = {},
+    content: @Composable (PaddingValues) -> Unit,
+) {
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
-        color = getColors().backgroundScreen,
+        containerColor = getColors().backgroundScreen,
+        contentColor = getColors().backgroundScreen,
+        bottomBar = bottomBar,
+        snackbarHost = snackbarHost,
         content = content,
     )
 }

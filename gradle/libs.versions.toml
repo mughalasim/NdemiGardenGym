@@ -1,8 +1,8 @@
 [versions]
 appName = "Ndemi Garden Gym"
 appNamespaceId = "com.ndemi.garden.gym"
-appVersionCode = "160"
-appVersionName = "16.0"
+appVersionCode = "161"
+appVersionName = "16.1"
 appCompileSdk = "35"
 appTargetSdk = "35"
 appMinSdk = "24"

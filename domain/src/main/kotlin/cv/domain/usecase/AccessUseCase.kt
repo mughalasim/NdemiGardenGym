@@ -17,5 +17,7 @@ class AccessUseCase(
 
     suspend fun resetPasswordForEmail(email: String) = accessRepository.resetPasswordForEmail(email)
 
+    suspend fun verifyEmail() = accessRepository.verifyEmail()
+
     fun logOut() = accessRepository.logOut()
 }

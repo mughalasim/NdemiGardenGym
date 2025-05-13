@@ -1,6 +1,7 @@
 package com.ndemi.garden.gym.ui.screens.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,12 +28,15 @@ import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.image_size_large
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_large
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.theme.page_width
 import com.ndemi.garden.gym.ui.utils.AppPreview
+import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
+import cv.domain.enums.MemberType
 
 @Composable
 fun LoginScreenDetails(
@@ -124,11 +128,24 @@ fun LoginScreenDetails(
             TextWidget(
                 modifier =
                     Modifier
-                        .padding(top = padding_screen_large)
+                        .padding(vertical = padding_screen_large)
                         .padding(horizontal = padding_screen),
                 text = stringResource(R.string.txt_app_version) + BuildConfig.VERSION_NAME,
                 style = AppTheme.textStyles.small,
             )
+
+            if (BuildConfig.DEBUG) {
+                for (member in MemberType.entries) {
+                    TextWidget(
+                        modifier =
+                            Modifier
+                                .padding(top = padding_screen_small)
+                                .toAppCardStyle()
+                                .clickable { listeners.onAutoCompleteTapped(member) },
+                        text = member.name,
+                    )
+                }
+            }
         }
     }
 }
