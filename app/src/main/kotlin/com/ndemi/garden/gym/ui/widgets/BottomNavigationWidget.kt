@@ -111,8 +111,14 @@ sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: I
         R.string.txt_reset,
     )
 
-    data object ProfileScreen : BottomNavItem(
-        Route.ProfileScreen,
+    data object ProfileAdminScreen : BottomNavItem(
+        Route.ProfileAdminScreen,
+        Icons.Rounded.Person,
+        R.string.txt_profile,
+    )
+
+    data object ProfileMemberScreen : BottomNavItem(
+        Route.ProfileMemberScreen,
         Icons.Rounded.Person,
         R.string.txt_profile,
     )
@@ -156,7 +162,7 @@ sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: I
     companion object {
         fun getMemberBottomItems() =
             listOf(
-                ProfileScreen,
+                ProfileMemberScreen,
                 AttendanceScreen,
                 PaymentsScreen,
                 LiveAttendanceScreen,
@@ -174,7 +180,7 @@ sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: I
                 MembersScreen,
                 MembersExpiredScreen,
                 MembersActiveScreen,
-                ProfileScreen,
+                ProfileAdminScreen,
             )
     }
 }

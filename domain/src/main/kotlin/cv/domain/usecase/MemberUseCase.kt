@@ -1,6 +1,5 @@
 package cv.domain.usecase
 
-import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.Variables.EVENT_ACTIVE
 import cv.domain.Variables.EVENT_CREATE_MEMBER
@@ -18,8 +17,10 @@ import cv.domain.Variables.PARAM_PHOTO_DELETE
 import cv.domain.Variables.PARAM_REGISTRATION_ADMIN
 import cv.domain.Variables.PARAM_REGISTRATION_SELF
 import cv.domain.entities.MemberEntity
+import cv.domain.enums.DomainErrorType
+import cv.domain.enums.MemberFetchType
+import cv.domain.enums.MemberUpdateType
 import cv.domain.repositories.AnalyticsRepository
-import cv.domain.repositories.MemberFetchType
 import cv.domain.repositories.MemberRepository
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -37,17 +38,17 @@ class MemberUseCase(
 
     suspend fun updateMember(
         memberEntity: MemberEntity,
-        updateType: UpdateType,
+        memberUpdateType: MemberUpdateType,
     ): DomainResult<Unit> {
-        when (updateType) {
-            UpdateType.CREATE_MEMBER -> {
+        when (memberUpdateType) {
+            MemberUpdateType.CREATE -> {
                 when (val result = memberRepository.getMembers(fetchType = MemberFetchType.ALL).firstOrNull()) {
                     is DomainResult.Success -> {
                         if (result.data.find { it.email == memberEntity.email } != null) {
-                            return DomainResult.Error(DomainError.EMAIL_ALREADY_EXISTS)
+                            return DomainResult.Error(DomainErrorType.EMAIL_ALREADY_EXISTS)
                         }
                     }
-                    else -> return DomainResult.Error(DomainError.SERVER)
+                    else -> return DomainResult.Error(DomainErrorType.SERVER)
                 }
                 analyticsRepository.logEvent(
                     eventName = EVENT_CREATE_MEMBER,
@@ -57,7 +58,7 @@ class MemberUseCase(
                         ),
                 )
             }
-            UpdateType.REGISTRATION -> {
+            MemberUpdateType.REGISTRATION -> {
                 analyticsRepository.logEvent(
                     eventName = EVENT_REGISTRATION,
                     params =
@@ -66,7 +67,7 @@ class MemberUseCase(
                         ),
                 )
             }
-            UpdateType.MEMBERSHIP -> {
+            MemberUpdateType.MEMBERSHIP -> {
                 analyticsRepository.logEvent(
                     eventName = EVENT_MEMBERSHIP,
                     params =
@@ -76,7 +77,7 @@ class MemberUseCase(
                 )
             }
 
-            UpdateType.PHOTO_DELETE -> {
+            MemberUpdateType.PHOTO_DELETE -> {
                 analyticsRepository.logEvent(
                     eventName = EVENT_PHOTO,
                     params =
@@ -85,7 +86,7 @@ class MemberUseCase(
                         ),
                 )
             }
-            UpdateType.ACTIVE_SESSION -> {
+            MemberUpdateType.ACTIVE_SESSION -> {
                 val paramName =
                     if (memberEntity.isActiveNow()) {
                         PARAM_ACTIVE_SESSION_TRUE
@@ -97,7 +98,7 @@ class MemberUseCase(
                     params = listOf(Pair(paramName, memberEntity.id)),
                 )
             }
-            UpdateType.MEMBER -> {
+            MemberUpdateType.DETAILS -> {
                 analyticsRepository.logEvent(
                     eventName = EVENT_MEMBER_UPDATE,
                     params = listOf(Pair(PARAM_MEMBER_UPDATE, memberEntity.id)),
@@ -121,13 +122,4 @@ class MemberUseCase(
         )
         return memberRepository.deleteMember(memberEntity)
     }
-}
-
-enum class UpdateType {
-    CREATE_MEMBER,
-    REGISTRATION,
-    MEMBERSHIP,
-    PHOTO_DELETE,
-    ACTIVE_SESSION,
-    MEMBER,
 }

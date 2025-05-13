@@ -22,9 +22,9 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun MainDetailsScreen(
     viewModel: MainScreenViewModel = koinViewModel<MainScreenViewModel>(),
-    isAuthenticated: Boolean = false,
-    isAdmin: Boolean = false,
-    showEmailVerificationWarning: Boolean = false,
+    isAuthenticated: Boolean,
+    isAdmin: Boolean,
+    showEmailVerificationWarning: Boolean,
     navController: NavHostController,
     navigationService: NavigationService,
 ) {
@@ -41,10 +41,7 @@ fun MainDetailsScreen(
                     isAuthenticated -> BottomNavItem.getMemberBottomItems()
                     else -> BottomNavItem.getLoginBottomItems()
                 }
-            BottomNavigationWidget(
-                navController,
-                bottomNavItems,
-            )
+            BottomNavigationWidget(navController, bottomNavItems)
         },
         snackbarHost = {
             SnackbarHost(hostState = viewModel.snackbarHostState.hostState) {

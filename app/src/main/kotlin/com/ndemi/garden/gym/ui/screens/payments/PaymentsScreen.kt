@@ -21,11 +21,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
-import com.ndemi.garden.gym.ui.widgets.SnackbarType
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.YearSelectionWidget
@@ -44,6 +44,7 @@ fun PaymentsScreen(
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
     val canAddPayment by viewModel.canAddPayment.collectAsStateWithLifecycle()
+    val permissionState by viewModel.getPermissions(memberId).collectAsStateWithLifecycle()
 
     viewModel.setMemberId(memberId)
 
@@ -57,9 +58,9 @@ fun PaymentsScreen(
                 } else {
                     stringResource(R.string.txt_payments_by, memberName)
                 },
-            secondaryIcon = if (viewModel.canUpdatePayment()) Icons.Default.AddCircle else null,
+            secondaryIcon = if (permissionState.canUpdatePayment) Icons.Default.AddCircle else null,
             onSecondaryIconPressed = {
-                if (canAddPayment) {
+                if (canAddPayment && permissionState.canUpdatePayment) {
                     viewModel.navigateToPaymentAddScreen()
                 } else {
                     showDialog = true
@@ -94,7 +95,7 @@ fun PaymentsScreen(
                             PaymentsListScreen(
                                 payments = state.payments,
                                 totalAmount = state.totalAmount,
-                                canDeletePayment = viewModel.canUpdatePayment(),
+                                canDeletePayment = permissionState.canUpdatePayment,
                                 onDeletePayment = viewModel::deletePayment,
                             )
                         }

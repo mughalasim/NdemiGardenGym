@@ -4,7 +4,8 @@ import androidx.compose.runtime.Immutable
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
-import com.ndemi.garden.gym.ui.UiError
+import com.ndemi.garden.gym.ui.enums.MemberEditScreenInputType
+import com.ndemi.garden.gym.ui.enums.UiErrorType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
@@ -15,10 +16,10 @@ import com.ndemi.garden.gym.ui.utils.isValidApartmentNumber
 import com.ndemi.garden.gym.ui.utils.isValidPhoneNumber
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.enums.MemberUpdateType
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.PermissionsUseCase
 import cv.domain.usecase.StorageUseCase
-import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -55,16 +56,16 @@ class MemberEditScreenViewModel(
 
     fun setString(
         value: String,
-        inPutType: InputType,
+        inPutType: MemberEditScreenInputType,
     ) {
         _memberEntity.value =
             when (inPutType) {
-                InputType.FIRST_NAME -> _memberEntity.value.copy(firstName = value)
-                InputType.LAST_NAME -> _memberEntity.value.copy(lastName = value)
-                InputType.APARTMENT_NUMBER -> _memberEntity.value.copy(apartmentNumber = value)
-                InputType.PHONE_NUMBER -> _memberEntity.value.copy(phoneNumber = value)
-                InputType.HAS_COACH -> _memberEntity.value.copy(hasCoach = value.toBoolean())
-                InputType.NONE -> _memberEntity.value
+                MemberEditScreenInputType.FIRST_NAME -> _memberEntity.value.copy(firstName = value)
+                MemberEditScreenInputType.LAST_NAME -> _memberEntity.value.copy(lastName = value)
+                MemberEditScreenInputType.APARTMENT_NUMBER -> _memberEntity.value.copy(apartmentNumber = value)
+                MemberEditScreenInputType.PHONE_NUMBER -> _memberEntity.value.copy(phoneNumber = value)
+                MemberEditScreenInputType.HAS_COACH -> _memberEntity.value.copy(hasCoach = value.toBoolean())
+                MemberEditScreenInputType.NONE -> _memberEntity.value
             }
         validateInput()
     }
@@ -78,29 +79,29 @@ class MemberEditScreenViewModel(
         if (firstName.isEmpty() || firstName.isDigitsOnly()) {
             sendAction(
                 Action.ShowError(
-                    converter.getMessage(UiError.INVALID_FIRST_NAME),
-                    InputType.FIRST_NAME,
+                    converter.getMessage(UiErrorType.INVALID_FIRST_NAME),
+                    MemberEditScreenInputType.FIRST_NAME,
                 ),
             )
         } else if (lastName.isEmpty() || lastName.isDigitsOnly()) {
             sendAction(
                 Action.ShowError(
-                    converter.getMessage(UiError.INVALID_LAST_NAME),
-                    InputType.LAST_NAME,
+                    converter.getMessage(UiErrorType.INVALID_LAST_NAME),
+                    MemberEditScreenInputType.LAST_NAME,
                 ),
             )
         } else if (phoneNumber.isNotEmpty() && !phoneNumber.isValidPhoneNumber()) {
             sendAction(
                 Action.ShowError(
-                    converter.getMessage(UiError.INVALID_PHONE_NUMBER),
-                    InputType.PHONE_NUMBER,
+                    converter.getMessage(UiErrorType.INVALID_PHONE_NUMBER),
+                    MemberEditScreenInputType.PHONE_NUMBER,
                 ),
             )
         } else if (apartmentNumber.isNotEmpty() && !apartmentNumber.isValidApartmentNumber()) {
             sendAction(
                 Action.ShowError(
-                    converter.getMessage(UiError.INVALID_APARTMENT_NUMBER),
-                    InputType.APARTMENT_NUMBER,
+                    converter.getMessage(UiErrorType.INVALID_APARTMENT_NUMBER),
+                    MemberEditScreenInputType.APARTMENT_NUMBER,
                 ),
             )
         } else if (initialMemberEntity.value.isNotEqualTo(_memberEntity.value)) {
@@ -114,7 +115,7 @@ class MemberEditScreenViewModel(
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             memberUseCase
-                .updateMember(_memberEntity.value.copy(profileImageUrl = ""), UpdateType.PHOTO_DELETE)
+                .updateMember(_memberEntity.value.copy(profileImageUrl = ""), MemberUpdateType.PHOTO_DELETE)
                 .also { getMemberForId(initialMemberEntity.value.id) }
         }
     }
@@ -157,26 +158,13 @@ class MemberEditScreenViewModel(
             viewModelScope.launch {
                 memberUseCase.updateMember(
                     memberEntity = _memberEntity.value,
-                    updateType = UpdateType.MEMBER,
+                    memberUpdateType = MemberUpdateType.DETAILS,
                 ).also { getMemberForId(initialMemberEntity.value.id) }
             }
         }
     }
 
-    fun canDeleteMember() = permissionsUseCase.canDeleteMember()
-
-    fun canEditMember() = permissionsUseCase.canEditMember(_memberEntity.value.id)
-
-    fun canAssignCoach() = permissionsUseCase.hasAdminRights()
-
-    enum class InputType {
-        NONE,
-        FIRST_NAME,
-        LAST_NAME,
-        APARTMENT_NUMBER,
-        PHONE_NUMBER,
-        HAS_COACH,
-    }
+    fun getPermissions() = permissionsUseCase.getPermissions(_memberEntity.value.id)
 
     @Immutable
     sealed interface UiState : BaseState {
@@ -184,7 +172,7 @@ class MemberEditScreenViewModel(
 
         data object ReadyToUpdate : UiState
 
-        data class Error(val message: String, val inputType: InputType) : UiState
+        data class Error(val message: String, val inputType: MemberEditScreenInputType) : UiState
 
         data object Success : UiState
     }
@@ -198,7 +186,7 @@ class MemberEditScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowError(val message: String, val inputType: InputType = InputType.NONE) : Action {
+        data class ShowError(val message: String, val inputType: MemberEditScreenInputType = MemberEditScreenInputType.NONE) : Action {
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
 

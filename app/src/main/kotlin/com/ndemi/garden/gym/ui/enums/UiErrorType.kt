@@ -1,6 +1,6 @@
-package com.ndemi.garden.gym.ui
+package com.ndemi.garden.gym.ui.enums
 
-enum class UiError {
+enum class UiErrorType {
     INVALID_EMAIL,
     INVALID_PASSWORD,
     INVALID_PASSWORD_CONFIRM,

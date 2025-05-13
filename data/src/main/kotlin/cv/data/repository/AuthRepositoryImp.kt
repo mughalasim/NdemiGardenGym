@@ -7,11 +7,11 @@ import cv.data.mappers.toMemberEntity
 import cv.data.models.AuthRepositoryUrls
 import cv.data.models.MemberModel
 import cv.data.models.VersionModel
-import cv.data.retrofit.toDomainError
-import cv.domain.DomainError
+import cv.data.toDomainError
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
-import cv.domain.repositories.AppLogLevel
+import cv.domain.enums.AppLogType
+import cv.domain.enums.DomainErrorType
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.AuthRepository
 import kotlinx.coroutines.channels.awaitClose
@@ -39,7 +39,7 @@ class AuthRepositoryImp(
         callbackFlow {
             firebaseAuth.addAuthStateListener {
                 if (it.uid.isNullOrEmpty()) {
-                    trySend(DomainResult.Error(DomainError.UNAUTHORISED))
+                    trySend(DomainResult.Error(DomainErrorType.UNAUTHORISED))
                 } else {
                     trySend(DomainResult.Success(Unit))
                 }
@@ -60,14 +60,14 @@ class AuthRepositoryImp(
                             if (it.version > repositoryUrls.currentAppVersion) {
                                 trySend(DomainResult.Success(it.url))
                             } else {
-                                trySend(DomainResult.Error(DomainError.NO_DATA))
+                                trySend(DomainResult.Error(DomainErrorType.NO_DATA))
                             }
                         } ?: run {
-                            trySend(DomainResult.Error(DomainError.NO_DATA))
+                            trySend(DomainResult.Error(DomainErrorType.NO_DATA))
                         }
                     }
                     error?.let {
-                        logger.log("Exception: $error", AppLogLevel.ERROR)
+                        logger.log("Exception: $error", AppLogType.ERROR)
                         trySend(DomainResult.Error(error.toDomainError()))
                     }
                 }
@@ -88,18 +88,18 @@ class AuthRepositoryImp(
                                 _memberEntity.value = memberModel.toMemberEntity(firebaseAuth.currentUser?.isEmailVerified == true)
                                 trySend(DomainResult.Success(_memberEntity.value))
                             } ?: run {
-                                trySend(DomainResult.Error(DomainError.UNAUTHORISED))
+                                trySend(DomainResult.Error(DomainErrorType.UNAUTHORISED))
                             }
                         }
                         error?.let {
-                            logger.log("Exception: $error", AppLogLevel.ERROR)
+                            logger.log("Exception: $error", AppLogType.ERROR)
                             trySend(DomainResult.Error(error.toDomainError()))
                         }
                     }
                 awaitClose { subscription.remove() }
             }.run {
-                logger.log("Member UID is null or empty", AppLogLevel.ERROR)
-                trySend(DomainResult.Error(DomainError.UNAUTHORISED))
+                logger.log("Member UID is null or empty", AppLogType.ERROR)
+                trySend(DomainResult.Error(DomainErrorType.UNAUTHORISED))
                 awaitClose()
             }
         }

@@ -3,7 +3,8 @@ package com.ndemi.garden.gym.ui.screens.login
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.BuildConfig
-import com.ndemi.garden.gym.ui.UiError
+import com.ndemi.garden.gym.ui.enums.LoginScreenInputType
+import com.ndemi.garden.gym.ui.enums.UiErrorType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
@@ -36,13 +37,13 @@ class LoginScreenViewModel(
 
     fun setString(
         value: String,
-        inputType: InputType,
+        inputType: LoginScreenInputType,
     ) {
         _inputData.value =
             when (inputType) {
-                InputType.NONE -> _inputData.value
-                InputType.EMAIL -> _inputData.value.copy(email = value)
-                InputType.PASSWORD -> _inputData.value.copy(password = value)
+                LoginScreenInputType.NONE -> _inputData.value
+                LoginScreenInputType.EMAIL -> _inputData.value.copy(email = value)
+                LoginScreenInputType.PASSWORD -> _inputData.value.copy(password = value)
             }
         validateInput()
     }
@@ -56,9 +57,9 @@ class LoginScreenViewModel(
                 .matcher(email)
                 .matches()
         ) {
-            sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_EMAIL), InputType.EMAIL))
+            sendAction(Action.ShowError(converter.getMessage(UiErrorType.INVALID_EMAIL), LoginScreenInputType.EMAIL))
         } else if (password.isEmpty()) {
-            sendAction(Action.ShowError(converter.getMessage(UiError.INVALID_PASSWORD), InputType.PASSWORD))
+            sendAction(Action.ShowError(converter.getMessage(UiErrorType.INVALID_PASSWORD), LoginScreenInputType.PASSWORD))
         } else {
             sendAction(Action.SetReady)
         }
@@ -89,16 +90,10 @@ class LoginScreenViewModel(
 
         data class Error(
             val message: String,
-            val inputType: InputType,
+            val inputType: LoginScreenInputType,
         ) : UiState
 
         data object Success : UiState
-    }
-
-    enum class InputType {
-        NONE,
-        EMAIL,
-        PASSWORD,
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -112,7 +107,7 @@ class LoginScreenViewModel(
 
         data class ShowError(
             val message: String,
-            val inputType: InputType = InputType.NONE,
+            val inputType: LoginScreenInputType = LoginScreenInputType.NONE,
         ) : Action {
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }

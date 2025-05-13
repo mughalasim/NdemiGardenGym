@@ -3,7 +3,7 @@ package cv.data.mappers
 import com.google.firebase.Timestamp
 import cv.data.models.MemberModel
 import cv.domain.entities.MemberEntity
-import cv.domain.entities.MemberType
+import cv.domain.enums.MemberType
 import org.joda.time.DateTime
 import java.util.Date
 

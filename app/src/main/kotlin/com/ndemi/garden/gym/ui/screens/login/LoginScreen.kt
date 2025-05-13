@@ -3,7 +3,7 @@ package com.ndemi.garden.gym.ui.screens.login
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.InputType
+import com.ndemi.garden.gym.ui.enums.LoginScreenInputType
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import org.koin.androidx.compose.koinViewModel
 
@@ -29,6 +29,6 @@ fun LoginScreen(
 }
 
 data class LoginScreenListeners(
-    val onValueChanged: (String, InputType) -> Unit = { _, _ -> },
+    val onValueChanged: (String, LoginScreenInputType) -> Unit = { _, _ -> },
     val onLoginTapped: () -> Unit = {},
 )

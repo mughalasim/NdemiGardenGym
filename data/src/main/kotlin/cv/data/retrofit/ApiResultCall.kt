@@ -1,5 +1,6 @@
 package cv.data.retrofit
 
+import cv.data.enums.ApiError
 import okhttp3.Request
 import okio.Timeout
 import retrofit2.Call

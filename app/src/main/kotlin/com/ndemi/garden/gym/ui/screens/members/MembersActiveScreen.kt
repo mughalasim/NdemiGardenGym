@@ -27,7 +27,6 @@ fun MembersActiveScreen(
     MembersSharedScreen(
         pageTitleRes = R.string.txt_who_is_in,
         defaultMessageRes = R.string.txt_no_active_members,
-        hasAdminRights = viewModel.hasAdminRights(),
         searchTerm = searchTerm,
         uiState = uiState,
         snackbarHostState = snackbarHostState,

@@ -1,10 +1,10 @@
 package cv.domain.usecase
 
-import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.Variables.EVENT_PHOTO
 import cv.domain.Variables.PARAM_PHOTO_UPLOAD
 import cv.domain.entities.MemberEntity
+import cv.domain.enums.DomainErrorType
 import cv.domain.repositories.AnalyticsRepository
 import cv.domain.repositories.MemberRepository
 import cv.domain.repositories.StorageRepository
@@ -26,7 +26,7 @@ class StorageUseCase(
                 ),
         )
         return when (val responseUploadFile = storageRepository.updateImageForMember(memberEntity.id, byteArray)) {
-            is DomainResult.Error -> DomainResult.Error(DomainError.UPLOAD_FAILURE)
+            is DomainResult.Error -> DomainResult.Error(DomainErrorType.UPLOAD_FAILURE)
             is DomainResult.Success -> {
                 memberRepository.updateMember(memberEntity.copy(profileImageUrl = responseUploadFile.data))
             }

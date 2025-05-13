@@ -82,7 +82,11 @@ sealed class Route {
 
     @Keep
     @Serializable
-    data object ProfileScreen : Route()
+    data object ProfileMemberScreen : Route()
+
+    @Keep
+    @Serializable
+    data object ProfileAdminScreen : Route()
 
     @Keep
     @Serializable
@@ -135,12 +139,10 @@ sealed class Route {
             isAuthenticated: Boolean,
             isAdmin: Boolean,
         ): Route =
-            if (isAuthenticated && isAdmin) {
-                MembersScreen
-            } else if (isAuthenticated) {
-                ProfileScreen
-            } else {
-                LoginScreen
+            when {
+                isAuthenticated && isAdmin -> MembersScreen
+                isAuthenticated -> ProfileMemberScreen
+                else -> LoginScreen
             }
 
         @Suppress("detekt.CyclomaticComplexMethod")
@@ -149,7 +151,8 @@ sealed class Route {
                 this.contains(ResetPasswordScreen.javaClass.simpleName) -> ResetPasswordScreen
                 this.contains(RegisterScreen.javaClass.simpleName) -> RegisterScreen
                 this.contains(RegisterNewScreen.javaClass.simpleName) -> RegisterNewScreen
-                this.contains(ProfileScreen.javaClass.simpleName) -> ProfileScreen
+                this.contains(ProfileAdminScreen.javaClass.simpleName) -> ProfileAdminScreen
+                this.contains(ProfileMemberScreen.javaClass.simpleName) -> ProfileMemberScreen
                 this.contains(LiveAttendanceScreen.javaClass.simpleName) -> LiveAttendanceScreen
                 this.contains(AttendanceScreen.javaClass.simpleName) -> AttendanceScreen
                 this.contains(MembersScreen.javaClass.simpleName) -> MembersScreen
