@@ -9,7 +9,7 @@ interface MemberRepository {
 
     fun getMembers(fetchType: MemberFetchType): Flow<DomainResult<List<MemberEntity>>>
 
-    suspend fun updateMember(memberEntity: MemberEntity): DomainResult<Boolean>
+    suspend fun updateMember(memberEntity: MemberEntity): DomainResult<Unit>
 
     suspend fun deleteMember(memberEntity: MemberEntity): DomainResult<Unit>
 }

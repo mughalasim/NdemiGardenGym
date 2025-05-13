@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
@@ -15,20 +14,20 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationHost
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.ui.theme.AppTheme
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.BottomNavItem
 import com.ndemi.garden.gym.ui.widgets.BottomNavigationWidget
 import com.ndemi.garden.gym.ui.widgets.WarningWidget
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MainDetailsScreen(
+    viewModel: MainScreenViewModel = koinViewModel<MainScreenViewModel>(),
     isAuthenticated: Boolean = false,
     isAdmin: Boolean = false,
     showEmailVerificationWarning: Boolean = false,
     navController: NavHostController,
     navigationService: NavigationService,
 ) {
-    val snackbarHostState = remember { AppSnackbarHostState() }
     Scaffold(
         topBar = {},
         bottomBar = {
@@ -48,8 +47,8 @@ fun MainDetailsScreen(
             )
         },
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState.hostState) {
-                snackbarHostState.SnackbarContent(snackbarData = it)
+            SnackbarHost(hostState = viewModel.snackbarHostState.hostState) {
+                viewModel.snackbarHostState.SnackbarContent(snackbarData = it)
             }
         },
     ) { innerPadding ->
@@ -67,7 +66,7 @@ fun MainDetailsScreen(
             NavigationHost(
                 navController = navController,
                 navigationService = navigationService,
-                snackbarHostState = snackbarHostState,
+                snackbarHostState = viewModel.snackbarHostState,
             )
         }
     }

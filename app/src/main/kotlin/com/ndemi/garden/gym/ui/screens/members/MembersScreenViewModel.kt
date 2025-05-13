@@ -14,8 +14,8 @@ import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.usecase.AttendanceUseCase
-import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
+import cv.domain.usecase.PermissionsUseCase
 import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +26,7 @@ class MembersScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val memberUseCase: MemberUseCase,
     private val attendanceUseCase: AttendanceUseCase,
-    private val authUseCase: AuthUseCase,
+    private val permissionsUseCase: PermissionsUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
     private val membersUnfiltered = MutableStateFlow<MutableList<MemberEntity>>(mutableListOf())
@@ -63,7 +63,7 @@ class MembersScreenViewModel(
         }
     }
 
-    fun hasAdminRights() = authUseCase.hasAdminRights()
+    fun hasAdminRights() = permissionsUseCase.hasAdminRights()
 
     fun onMemberTapped(memberEntity: MemberEntity) {
         navigationService.open(Route.MemberEditScreen(memberEntity.id))

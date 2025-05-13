@@ -16,20 +16,14 @@ import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.Inpu
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
-import cv.domain.entities.MemberEntity
-import cv.domain.entities.PaymentEntity
-import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.PaymentUseCase
-import cv.domain.usecase.UpdateType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
-import java.util.UUID
 
 class PaymentAddScreenViewModel(
     private val converter: ErrorCodeConverter,
-    private val memberUseCase: MemberUseCase,
     private val paymentUseCase: PaymentUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
@@ -91,83 +85,27 @@ class PaymentAddScreenViewModel(
         }
     }
 
-    // TODO - Move to useCase
     fun onPaymentAddTapped() {
         sendAction(Action.SetLoading)
 
         val startDate = _inputData.value.startDate
         val monthDuration = _inputData.value.monthDuration
         val amount = _inputData.value.amount.toDouble()
+        val endDate = startDate.plusMonths(monthDuration)
 
         viewModelScope.launch {
             paymentUseCase.addPaymentPlanForMember(
-                PaymentEntity(
-                    paymentId = memberId + UUID.randomUUID().toString(),
-                    memberId = memberId,
-                    startDateMillis = startDate.millis,
-                    endDateMillis = startDate.plusMonths(monthDuration).millis,
-                    amount = amount,
-                ),
+                memberId = memberId,
+                startDate = startDate.millis,
+                endDate = endDate.millis,
+                amount = amount,
+                isInTheFuture = endDate.isAfterNow,
             ).also {
                 when (it) {
                     is DomainResult.Error ->
-                        sendAction(
-                            Action.ShowError(
-                                converter.getMessage(it.error),
-                                AMOUNT,
-                            ),
-                        )
+                        sendAction(Action.ShowError(converter.getMessage(it.error), AMOUNT))
 
-                    is DomainResult.Success -> {
-                        if (startDate.plusMonths(monthDuration).isAfterNow) {
-                            getMember(
-                                endDate = startDate.plusMonths(monthDuration),
-                                amount = amount,
-                            )
-                        } else {
-                            navigationService.popBack()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun getMember(
-        endDate: DateTime,
-        amount: Double,
-    ) {
-        viewModelScope.launch {
-            memberUseCase.getMemberById(memberId).also { result ->
-                when (result) {
-                    is DomainResult.Error ->
-                        sendAction(Action.ShowError(converter.getMessage(result.error), NONE))
-
-                    is DomainResult.Success -> {
-                        updateMembershipRegistration(result.data, endDate, amount)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun updateMembershipRegistration(
-        memberEntity: MemberEntity,
-        endDate: DateTime,
-        amount: Double,
-    ) {
-        viewModelScope.launch {
-            memberUseCase.updateMember(
-                memberEntity.copy(renewalFutureDateMillis = endDate.millis, amountDue = amount),
-                UpdateType.MEMBERSHIP,
-            ).also { result ->
-                when (result) {
-                    is DomainResult.Error -> {
-                        sendAction(Action.ShowError(converter.getMessage(result.error), NONE))
-                    }
-
-                    is DomainResult.Success ->
-                        navigationService.popBack()
+                    is DomainResult.Success -> navigationService.popBack()
                 }
             }
         }

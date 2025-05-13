@@ -14,7 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
@@ -41,8 +41,8 @@ fun MemberEditScreen(
     viewModel: MemberEditScreenViewModel = koinViewModel<MemberEditScreenViewModel>(),
 ) {
     val context = LocalContext.current
-    val uiState by viewModel.uiStateFlow.collectAsState()
-    val memberEntity by viewModel.memberEntity.collectAsState()
+    val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
+    val memberEntity by viewModel.memberEntity.collectAsStateWithLifecycle()
     var showDeleteUserDialog by remember { mutableStateOf(false) }
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
@@ -59,7 +59,7 @@ fun MemberEditScreen(
         ToolBarWidget(
             title = stringResource(R.string.txt_edit_member),
             canNavigateBack = true,
-            secondaryIcon = if (viewModel.hasAdminRights()) Icons.Default.DeleteForever else null,
+            secondaryIcon = if (viewModel.canDeleteMember()) Icons.Default.DeleteForever else null,
             onSecondaryIconPressed = { showDeleteUserDialog = true },
             onBackPressed = viewModel::navigateBack,
         )
@@ -81,7 +81,7 @@ fun MemberEditScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 MemberImageWidget(
-                    isEnabled = viewModel.hasAdminRights(),
+                    canEditImage = viewModel.canEditMember(),
                     imageUrl = memberEntity.profileImageUrl,
                     onImageSelect = {
                         galleryLauncher.launch("image/*")
@@ -92,7 +92,8 @@ fun MemberEditScreen(
                 )
 
                 MemberEditDetailsScreen(
-                    hasAdminRights = viewModel.hasAdminRights(),
+                    canUpdateMemberDetails = viewModel.canEditMember(),
+                    canAssignCoach = viewModel.canAssignCoach(),
                     uiState = uiState,
                     memberEntity = memberEntity,
                     onSetString = viewModel::setString,

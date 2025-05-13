@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
@@ -30,6 +30,7 @@ import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberImageWidget
 import org.koin.androidx.compose.koinViewModel
 
+// TODO - Split profile screens for Members Admin and Super Admin
 @Composable
 fun ProfileScreen(
     viewModel: ProfileScreenViewModel = koinViewModel<ProfileScreenViewModel>(),
@@ -37,8 +38,8 @@ fun ProfileScreen(
 ) {
     LaunchedEffect(Unit) { viewModel.observeMember() }
     val context = LocalContext.current
-    val uiState by viewModel.uiStateFlow.collectAsState()
-    val sessionStartTime by viewModel.sessionStartTime.collectAsState()
+    val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
+    val sessionStartTime by viewModel.sessionStartTime.collectAsStateWithLifecycle()
     var showDialog by remember { mutableStateOf(false) }
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
@@ -106,6 +107,7 @@ fun ProfileScreen(
                         onSessionCompleted = viewModel::setAttendance,
                     )
                 }
+                // TODO - Handle session handling error with a snackbar
                 is UiState.Loading -> {
                     LoadingScreenWidget()
                 }

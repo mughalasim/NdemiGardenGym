@@ -1,6 +1,7 @@
 package com.ndemi.garden.gym.ui.screens.reset
 
 import androidx.compose.runtime.Immutable
+import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.ui.UiError
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
@@ -9,13 +10,14 @@ import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
-import cv.domain.usecase.AuthUseCase
+import cv.domain.usecase.AccessUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class ResetPasswordScreenViewModel(
     private val converter: ErrorCodeConverter,
-    private val authUseCase: AuthUseCase,
+    private val accessUseCase: AccessUseCase,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     private val _inputData: MutableStateFlow<String> = MutableStateFlow("")
     val inputData: StateFlow<String> = _inputData
@@ -40,10 +42,12 @@ class ResetPasswordScreenViewModel(
 
     fun onResetPasswordTapped() {
         sendAction(Action.SetLoading)
-        authUseCase.resetPasswordForEmail(_inputData.value) {
-            when (it) {
-                is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
-                is DomainResult.Success -> sendAction(Action.Success(_inputData.value))
+        viewModelScope.launch {
+            accessUseCase.resetPasswordForEmail(_inputData.value).also {
+                when (it) {
+                    is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
+                    is DomainResult.Success -> sendAction(Action.Success(_inputData.value))
+                }
             }
         }
     }

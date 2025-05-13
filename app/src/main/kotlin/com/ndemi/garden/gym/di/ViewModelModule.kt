@@ -12,103 +12,48 @@ import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val viewModelModule =
     module {
-        viewModel {
-            MainScreenViewModel(
-                navigationService = get(),
-                authUseCase = get(),
-                converter = get(),
-            )
-        }
+        viewModelOf(::MainScreenViewModel)
 
-        viewModel {
-            LoginScreenViewModel(
-                converter = get(),
-                authUseCase = get(),
-            )
-        }
+        viewModelOf(::LoginScreenViewModel)
 
-        viewModel {
-            ProfileScreenViewModel(
-                converter = get(),
-                authUseCase = get(),
-                memberUseCase = get(),
-                attendanceUseCase = get(),
-                storageUseCase = get(),
-                navigationService = get(),
-            )
-        }
+        viewModelOf(::ProfileScreenViewModel)
 
-        viewModel {
-            AttendanceScreenViewModel(
-                converter = get(),
-                attendanceUseCase = get(),
-                authUseCase = get(),
-                navigationService = get(),
-            )
-        }
+        viewModelOf(::AttendanceScreenViewModel)
 
-        viewModel {
-            PaymentsScreenViewModel(
-                converter = get(),
-                paymentUseCase = get(),
-                authUseCase = get(),
-                navigationService = get(),
-            )
-        }
+        viewModelOf(::PaymentsScreenViewModel)
 
-        viewModel {
-            PaymentAddScreenViewModel(
-                converter = get(),
-                memberUseCase = get(),
-                paymentUseCase = get(),
-                navigationService = get(),
-            )
-        }
+        viewModelOf(::PaymentAddScreenViewModel)
 
-        viewModel {
-            LiveAttendanceScreenViewModel(
-                converter = get(),
-                memberUseCase = get(),
-            )
-        }
+        viewModelOf(::LiveAttendanceScreenViewModel)
 
-        viewModel {
-            MembersScreenViewModel(
-                converter = get(),
-                memberUseCase = get(),
-                attendanceUseCase = get(),
-                authUseCase = get(),
-                navigationService = get(),
-            )
-        }
+        viewModelOf(::MembersScreenViewModel)
 
-        viewModel {
-            MemberEditScreenViewModel(
-                converter = get(),
-                memberUseCase = get(),
-                authUseCase = get(),
-                storageUseCase = get(),
-                navigationService = get(),
-            )
-        }
+        viewModelOf(::MemberEditScreenViewModel)
 
-        viewModel {
+        viewModelOf(::ResetPasswordScreenViewModel)
+
+        viewModel(named<CreateMember>()) {
             RegisterScreenViewModel(
                 converter = get(),
-                authUseCase = get(),
+                accessUseCase = get(),
                 memberUseCase = get(),
                 navigationService = get(),
+                hidePassword = true,
             )
         }
-
-        viewModel {
-            ResetPasswordScreenViewModel(
+        viewModel(named<RegisterMember>()) {
+            RegisterScreenViewModel(
                 converter = get(),
-                authUseCase = get(),
+                accessUseCase = get(),
+                memberUseCase = get(),
+                navigationService = get(),
+                hidePassword = false,
             )
         }
     }

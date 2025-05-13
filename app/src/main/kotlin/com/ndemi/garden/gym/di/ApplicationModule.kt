@@ -2,9 +2,6 @@ package com.ndemi.garden.gym.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.google.firebase.FirebaseApp
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
@@ -21,11 +18,9 @@ import org.koin.dsl.module
 
 val applicationModule =
     module {
-        single { FirebaseApp.initializeApp(androidApplication()) }
-
         single<AnalyticsRepository> {
             AnalyticsRepositoryImp(
-                firebaseAnalytics = Firebase.analytics,
+                firebaseAnalytics = get(),
                 logger = get(),
             )
         }
@@ -46,7 +41,7 @@ val applicationModule =
         single<NavigationService> {
             NavigationServiceImp(
                 analyticsRepository = get(),
-                authUseCase = get(),
+                permissionsUseCase = get(),
             )
         }
 

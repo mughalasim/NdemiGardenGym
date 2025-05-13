@@ -1,13 +1,12 @@
 package cv.data.repository
 
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.FirebaseFirestoreException.Code
 import com.google.firebase.storage.StorageReference
-import cv.data.retrofit.toDomainError
-import cv.domain.DomainError
 import cv.domain.DomainResult
 import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.StorageRepository
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.tasks.await
 
 class StorageRepositoryImp(
@@ -18,22 +17,25 @@ class StorageRepositoryImp(
     override suspend fun updateImageForMember(
         memberId: String,
         byteArray: ByteArray,
-    ): DomainResult<String> {
-        if (memberId.isEmpty()) {
-            logger.log("Not Authorised", AppLogLevel.ERROR)
-            return DomainResult.Error(DomainError.UNAUTHORISED)
-        }
-        val completable: CompletableDeferred<DomainResult<String>> = CompletableDeferred()
+    ): DomainResult<String> =
+        runCatching {
+            if (memberId.isEmpty()) {
+                logger.log("Not authorised", AppLogLevel.ERROR)
+                throw FirebaseFirestoreException("", Code.UNAUTHENTICATED)
+            }
 
-        storageReference.child("$pathUserImage$memberId.jpg").putBytes(byteArray).await().storage.downloadUrl
-            .addOnSuccessListener { result ->
-                val url = "https://" + result.encodedAuthority + result.encodedPath + "?" + result.encodedQuery
-                completable.complete(DomainResult.Success(url))
-            }
-            .addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
-        return completable.await()
-    }
+            storageReference
+                .child("$pathUserImage$memberId.jpg")
+                .putBytes(byteArray)
+                .await()
+                .storage
+                .downloadUrl
+                .await()
+        }.fold(
+            onSuccess = { result ->
+                val url = "https://${result.encodedAuthority}${result.encodedPath}?${result.encodedQuery}"
+                DomainResult.Success(url)
+            },
+            onFailure = { handleError(it, logger) },
+        )
 }

@@ -30,7 +30,7 @@ import com.ndemi.garden.gym.ui.widgets.AsyncImageWidget
 
 @Composable
 fun MemberImageWidget(
-    isEnabled: Boolean = true,
+    canEditImage: Boolean = true,
     imageUrl: String,
     onImageSelect: () -> Unit = {},
     onImageDelete: () -> Unit = {},
@@ -56,7 +56,7 @@ fun MemberImageWidget(
                     .padding(padding_screen),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            if (isEnabled) {
+            if (canEditImage) {
                 if (imageUrl.isNotEmpty()) {
                     ImageIcon(Icons.Rounded.DeleteForever, onImageDelete, AppTheme.colors.error)
                 }

@@ -5,10 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.ndemi.garden.gym.navigation.NavigationService
-import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
+import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.AuthUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 class MainScreenViewModel(
     private val navigationService: NavigationService,
     private val authUseCase: AuthUseCase,
+    private val accessUseCase: AccessUseCase,
     private val converter: ErrorCodeConverter,
 ) : ViewModel() {
     private val authState: MutableStateFlow<AuthState> = MutableStateFlow(AuthState.Loading)
@@ -26,6 +28,8 @@ class MainScreenViewModel(
     private val memberState: MutableStateFlow<MemberState> = MutableStateFlow(MemberState.Loading)
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
+
+    val snackbarHostState: AppSnackbarHostState = AppSnackbarHostState()
 
     init {
         combine(
@@ -38,10 +42,20 @@ class MainScreenViewModel(
                     _uiState.value = UiState.UpdateRequired(version.url)
 
                 auth == AuthState.UnAuthorised ->
-                    _uiState.value = UiState.Login
+                    _uiState.value =
+                        UiState.Ready(
+                            isAuthenticated = false,
+                            isAdmin = false,
+                            showEmailVerificationWarning = false,
+                        )
 
                 auth == AuthState.Authorised && member is MemberState.Authenticated ->
-                    _uiState.value = UiState.Authenticated(member.member)
+                    _uiState.value =
+                        UiState.Ready(
+                            isAuthenticated = true,
+                            isAdmin = member.member.isAdmin(),
+                            showEmailVerificationWarning = !member.member.emailVerified,
+                        )
 
                 auth == AuthState.Authorised && member is MemberState.UserNotFound ->
                     _uiState.value = UiState.UserNotFound(member.message)
@@ -60,8 +74,7 @@ class MainScreenViewModel(
     }
 
     fun onLogOutTapped() {
-        authUseCase.logOut()
-        navigationService.open(Route.LoginScreen, true)
+        accessUseCase.logOut()
     }
 
     private fun getVersionState() =
@@ -135,9 +148,11 @@ class MainScreenViewModel(
 
         data class UpdateRequired(val url: String) : UiState
 
-        data object Login : UiState
-
-        data class Authenticated(val member: MemberEntity) : UiState
+        data class Ready(
+            val isAuthenticated: Boolean,
+            val isAdmin: Boolean,
+            val showEmailVerificationWarning: Boolean,
+        ) : UiState
 
         data class UserNotFound(val message: String) : UiState
     }

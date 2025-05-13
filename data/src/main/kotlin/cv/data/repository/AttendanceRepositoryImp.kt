@@ -3,6 +3,8 @@ package cv.data.repository
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.FirebaseFirestoreException.Code
 import com.google.firebase.firestore.toObjects
 import cv.data.mappers.toAttendanceEntity
 import cv.data.mappers.toAttendanceModel
@@ -15,10 +17,10 @@ import cv.domain.entities.AttendanceMonthEntity
 import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.AttendanceRepository
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import org.joda.time.DateTime
 import org.joda.time.Days
 import org.joda.time.Minutes
@@ -90,72 +92,56 @@ class AttendanceRepositoryImp(
         memberId: String,
         startDate: Date,
         endDate: Date,
-    ): DomainResult<Unit> {
-        val setMemberId =
-            memberId.ifEmpty {
-                firebaseAuth.currentUser?.uid ?: run {
-                    logger.log("Not Authorised", AppLogLevel.ERROR)
-                    return DomainResult.Error(DomainError.UNAUTHORISED)
+    ): DomainResult<Unit> =
+        runCatching {
+            val setMemberId =
+                memberId.ifEmpty {
+                    firebaseAuth.currentUser?.uid ?: run {
+                        logger.log("Not authorised", AppLogLevel.ERROR)
+                        throw FirebaseFirestoreException("", Code.UNAUTHENTICATED)
+                    }
                 }
+
+            val startDateTime = DateTime(startDate)
+            val endDateTime = DateTime(endDate)
+
+            if (endDateTime.isBefore(startDateTime) ||
+                Days.daysBetween(startDateTime, endDateTime).days > 1 ||
+                Minutes.minutesBetween(startDateTime, endDateTime).minutes < 1
+            ) {
+                logger.log("Invalid argument passed", AppLogLevel.ERROR)
+                throw FirebaseFirestoreException("", Code.INVALID_ARGUMENT)
             }
 
-        val startDateTime = DateTime(startDate)
-        val endDateTime = DateTime(endDate)
-
-        if (endDateTime.isBefore(startDateTime) ||
-            Days.daysBetween(startDateTime, endDateTime).days > 1 ||
-            Minutes.minutesBetween(startDateTime, endDateTime).minutes < 1
-        ) {
-            return DomainResult.Error(DomainError.INVALID_SESSION_TIME)
-        }
-
-        val attendanceModel =
-            AttendanceModel(
-                memberId = setMemberId,
-                startDate = Timestamp(startDate),
-                endDate = Timestamp(endDate),
-            )
-        val collection =
+            val attendanceModel =
+                AttendanceModel(
+                    memberId = setMemberId,
+                    startDate = Timestamp(startDate),
+                    endDate = Timestamp(endDate),
+                )
             firebaseFirestore
                 .collection(pathAttendance)
                 .document(startDateTime.year.toString())
                 .collection(startDateTime.monthOfYear.toString())
                 .document(attendanceModel.getAttendanceId())
+                .set(attendanceModel)
+        }.fold(
+            onSuccess = { DomainResult.Success(Unit) },
+            onFailure = { throwable -> handleError(throwable, logger) },
+        )
 
-        val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
-        collection.set(attendanceModel)
-            .addOnSuccessListener {
-                logger.log("Attendance Added")
-                completable.complete(DomainResult.Success(Unit))
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
-
-        return completable.await()
-    }
-
-    override suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit> {
-        val attendanceModel = attendanceEntity.toAttendanceModel()
-        val startDateTime = DateTime(attendanceEntity.startDateMillis)
-
-        val collection =
+    override suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit> =
+        runCatching {
+            val startDateTime = DateTime(attendanceEntity.startDateMillis)
             firebaseFirestore
                 .collection(pathAttendance)
                 .document(startDateTime.year.toString())
                 .collection(startDateTime.monthOfYear.toString())
-                .document(attendanceModel.getAttendanceId())
-
-        val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
-        collection.delete()
-            .addOnSuccessListener {
-                logger.log("Attendance Deleted")
-                completable.complete(DomainResult.Success(Unit))
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
-
-        return completable.await()
-    }
+                .document(attendanceEntity.toAttendanceModel().getAttendanceId())
+                .delete()
+                .await()
+        }.fold(
+            onSuccess = { DomainResult.Success(Unit) },
+            onFailure = { throwable -> handleError(throwable, logger) },
+        )
 }

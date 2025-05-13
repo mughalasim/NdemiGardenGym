@@ -15,34 +15,31 @@ import cv.domain.repositories.AppLogLevel
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.MemberFetchType
 import cv.domain.repositories.MemberRepository
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class MemberRepositoryImp(
     private val firebaseFirestore: FirebaseFirestore,
     private val pathUser: String,
     private val logger: AppLoggerRepository,
 ) : MemberRepository {
-    override suspend fun getMemberById(memberId: String): DomainResult<MemberEntity> {
-        val completable: CompletableDeferred<DomainResult<MemberEntity>> = CompletableDeferred()
-        firebaseFirestore.collection(pathUser).document(memberId).get()
-            .addOnSuccessListener { document ->
-                logger.log("Data received: ${document.toObject<Any>()}")
-                val response = document.toObject<MemberModel>()
-                response?.let {
-                    completable.complete(DomainResult.Success(it.toMemberEntity()))
+    override suspend fun getMemberById(memberId: String): DomainResult<MemberEntity> =
+        runCatching {
+            firebaseFirestore.collection(pathUser).document(memberId).get().await()
+        }.fold(
+            onSuccess = { result ->
+                logger.log("Data received: ${result.toObject<Any>()}")
+                val response = result.toObject<MemberModel>()
+                return response?.let {
+                    DomainResult.Success(it.toMemberEntity())
                 } ?: run {
-                    completable.complete(DomainResult.Error(DomainError.NO_DATA))
+                    DomainResult.Error(DomainError.NO_DATA)
                 }
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
-
-        return completable.await()
-    }
+            },
+            onFailure = { handleError(it, logger) },
+        )
 
     override fun getMembers(fetchType: MemberFetchType): Flow<DomainResult<List<MemberEntity>>> =
         callbackFlow {
@@ -97,40 +94,29 @@ class MemberRepositoryImp(
             awaitClose { subscription.remove() }
         }
 
-    override suspend fun updateMember(memberEntity: MemberEntity): DomainResult<Boolean> {
-        val completable: CompletableDeferred<DomainResult<Boolean>> = CompletableDeferred()
-        val memberModel = memberEntity.toMemberModel()
-
-        firebaseFirestore.collection(pathUser).document(memberModel.id).set(memberModel)
-            .addOnSuccessListener {
-                completable.complete(DomainResult.Success(true))
-            }
-            .addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
-
-        return completable.await()
-    }
-
-    override suspend fun deleteMember(memberEntity: MemberEntity): DomainResult<Unit> {
-        val memberModel = memberEntity.toMemberModel()
-
-        val collection =
+    override suspend fun updateMember(memberEntity: MemberEntity): DomainResult<Unit> =
+        runCatching {
+            val memberModel = memberEntity.toMemberModel()
             firebaseFirestore
                 .collection(pathUser)
                 .document(memberModel.id)
+                .set(memberModel)
+                .await()
+        }.fold(
+            onSuccess = { DomainResult.Success(Unit) },
+            onFailure = { handleError(it, logger) },
+        )
 
-        val completable: CompletableDeferred<DomainResult<Unit>> = CompletableDeferred()
-        collection.delete()
-            .addOnSuccessListener {
-                logger.log("Member Deleted")
-                completable.complete(DomainResult.Success(Unit))
-            }.addOnFailureListener {
-                logger.log("Exception: $it", AppLogLevel.ERROR)
-                completable.complete(DomainResult.Error(it.toDomainError()))
-            }
-
-        return completable.await()
-    }
+    override suspend fun deleteMember(memberEntity: MemberEntity): DomainResult<Unit> =
+        runCatching {
+            val memberModel = memberEntity.toMemberModel()
+            firebaseFirestore
+                .collection(pathUser)
+                .document(memberModel.id)
+                .delete()
+                .await()
+        }.fold(
+            onSuccess = { DomainResult.Success(Unit) },
+            onFailure = { handleError(it, logger) },
+        )
 }

@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseAuthEmailException
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import cv.domain.DomainError
@@ -16,14 +17,6 @@ enum class ApiError {
     UNAUTHORISED,
 }
 
-fun ApiError.toDomainError(): DomainError =
-    when (this) {
-        ApiError.UNKNOWN -> DomainError.UNKNOWN
-        ApiError.NETWORK -> DomainError.NETWORK
-        ApiError.UNAUTHORISED -> DomainError.UNAUTHORISED
-        else -> DomainError.SERVER
-    }
-
 @Suppress("detekt.CyclomaticComplexMethod")
 fun Exception.toDomainError(): DomainError {
     return when (this) {
@@ -31,6 +24,7 @@ fun Exception.toDomainError(): DomainError {
         is FirebaseAuthInvalidCredentialsException -> DomainError.INVALID_LOGIN_CREDENTIALS
         is FirebaseAuthEmailException -> DomainError.INVALID_LOGIN_CREDENTIALS
         is FirebaseAuthInvalidUserException -> DomainError.USER_DISABLED
+        is FirebaseAuthUserCollisionException -> DomainError.EMAIL_ALREADY_EXISTS
         is FirebaseAuthException -> DomainError.UNKNOWN
         is FirebaseFirestoreException -> {
             return when (this.code) {

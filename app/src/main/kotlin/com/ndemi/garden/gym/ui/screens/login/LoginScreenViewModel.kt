@@ -1,6 +1,7 @@
 package com.ndemi.garden.gym.ui.screens.login
 
 import androidx.compose.runtime.Immutable
+import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.ui.UiError
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
@@ -10,13 +11,14 @@ import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
-import cv.domain.usecase.AuthUseCase
+import cv.domain.usecase.AccessUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class LoginScreenViewModel(
     private val converter: ErrorCodeConverter,
-    private val authUseCase: AuthUseCase,
+    private val accessUseCase: AccessUseCase,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     data class InputData(
         val email: String,
@@ -64,13 +66,15 @@ class LoginScreenViewModel(
 
     fun onLoginTapped() {
         sendAction(Action.SetLoading)
-        authUseCase.login(_inputData.value.email, _inputData.value.password) {
-            when (it) {
-                is DomainResult.Success ->
-                    sendAction(Action.Success)
+        viewModelScope.launch {
+            accessUseCase.login(_inputData.value.email, _inputData.value.password).also {
+                when (it) {
+                    is DomainResult.Success ->
+                        sendAction(Action.Success)
 
-                is DomainResult.Error ->
-                    sendAction(Action.ShowError(converter.getMessage(it.error)))
+                    is DomainResult.Error ->
+                        sendAction(Action.ShowError(converter.getMessage(it.error)))
+                }
             }
         }
     }
