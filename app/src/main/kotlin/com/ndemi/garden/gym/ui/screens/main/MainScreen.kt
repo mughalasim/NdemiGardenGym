@@ -47,8 +47,6 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel<MainScreenViewMode
 
         is UiState.Ready -> {
             MainDetailsScreen(
-                isAuthenticated = state.isAuthenticated,
-                isAdmin = state.isAdmin,
                 navController = navController,
                 navigationService = viewModel.getNavigationService(),
             )

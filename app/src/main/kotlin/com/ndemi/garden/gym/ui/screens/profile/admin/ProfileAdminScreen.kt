@@ -9,7 +9,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,7 +19,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.profile.ProfileDetailsScreen
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel
 import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
@@ -37,7 +35,6 @@ fun ProfileAdminScreen(
     viewModel: ProfileScreenViewModel = koinViewModel<ProfileScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    LaunchedEffect(Unit) { viewModel.observeMember() }
     val context = LocalContext.current
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val sessionStartTime by viewModel.sessionStartTime.collectAsStateWithLifecycle()
@@ -84,12 +81,6 @@ fun ProfileAdminScreen(
         ) {
             when (val state = uiState) {
                 is UiState.Success -> {
-                    if (state.errorMessage.isNotEmpty()) {
-                        snackbarHostState.Show(
-                            type = SnackbarType.ERROR,
-                            message = state.errorMessage,
-                        )
-                    }
                     MemberImageWidget(
                         imageUrl = state.memberEntity.profileImageUrl,
                         onImageDelete = {
@@ -102,7 +93,7 @@ fun ProfileAdminScreen(
                     ProfileDetailsScreen(
                         memberEntity = state.memberEntity,
                         isAdmin = true,
-                        message = state.errorMessage,
+                        message = "",
                         sessionStartTime = sessionStartTime,
                         onSessionStarted = viewModel::setStartedSession,
                         onSessionCompleted = viewModel::setAttendance,

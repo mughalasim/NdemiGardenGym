@@ -50,6 +50,10 @@ class MemberRepositoryImp(
                         firebaseFirestore.collection(pathUser)
                             .whereNotEqualTo("memberType", MemberType.SUPER_ADMIN)
 
+                    MemberFetchType.NON_MEMBERS ->
+                        firebaseFirestore.collection(pathUser)
+                            .whereNotEqualTo("memberType", MemberType.MEMBER)
+
                     else ->
                         firebaseFirestore.collection(pathUser)
                             .whereEqualTo("memberType", MemberType.MEMBER)
@@ -66,7 +70,7 @@ class MemberRepositoryImp(
                         trySend(
                             DomainResult.Success(
                                 when (fetchType) {
-                                    MemberFetchType.ALL ->
+                                    MemberFetchType.ALL, MemberFetchType.NON_MEMBERS ->
                                         response.sortedByDescending { it.registrationDateMillis }
 
                                     MemberFetchType.MEMBERS ->

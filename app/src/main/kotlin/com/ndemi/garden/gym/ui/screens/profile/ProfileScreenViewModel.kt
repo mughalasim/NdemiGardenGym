@@ -3,6 +3,7 @@ package com.ndemi.garden.gym.ui.screens.profile
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
+import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
@@ -33,19 +34,20 @@ class ProfileScreenViewModel(
     private val permissionsUseCase: PermissionsUseCase,
     private val navigationService: NavigationService,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-    private val _sessionStartTime = MutableStateFlow<DateTime?>(null)
-    val sessionStartTime: StateFlow<DateTime?> = _sessionStartTime
 
     private val memberEntity = MutableStateFlow(MemberEntity())
 
-    fun observeMember() {
+    private val _sessionStartTime = MutableStateFlow<DateTime?>(null)
+    val sessionStartTime: StateFlow<DateTime?> = _sessionStartTime
+
+    init {
         sendAction(Action.Loading)
         viewModelScope.launch {
-            authUseCase.observeUser().collect { memberEntity ->
-                this@ProfileScreenViewModel.memberEntity.value = memberEntity
-                val sessionTime = this@ProfileScreenViewModel.memberEntity.value.activeNowDateMillis
-                _sessionStartTime.value = if (sessionTime != null) DateTime(sessionTime) else null
-                sendAction(Action.Success(memberEntity))
+            authUseCase.observeUser().collect { result ->
+                memberEntity.value = result
+                _sessionStartTime.value =
+                    if (result.activeNowDateMillis != null) DateTime(result.activeNowDateMillis) else null
+                sendAction(Action.Success(result))
             }
         }
     }
@@ -79,14 +81,11 @@ class ProfileScreenViewModel(
         }
     }
 
-    fun isAdmin() = permissionsUseCase.isNotMember()
-
     fun onLogOutTapped() {
         accessUseCase.logOut()
     }
 
     fun deleteMemberImage() {
-        sendAction(Action.Loading)
         viewModelScope.launch {
             memberUseCase
                 .updateMember(
@@ -97,14 +96,14 @@ class ProfileScreenViewModel(
     }
 
     fun updateMemberImage(byteArray: ByteArray) {
-        sendAction(Action.Loading)
         viewModelScope.launch {
-            val message =
+            val snackbarState =
                 when (val result = storageUseCase.updateImageForMember(memberEntity.value, byteArray)) {
-                    is DomainResult.Error -> converter.getMessage(result.error)
-                    else -> ""
+                    is DomainResult.Error -> SnackbarState.Visible(SnackbarType.ERROR,
+                        converter.getMessage(result.error))
+                    else -> SnackbarState.Visible(SnackbarType.SUCCESS, "Successfully updated")
                 }
-            sendAction(Action.Success(memberEntity = memberEntity.value, errorMessage = message))
+            showSnackbar(snackbarState)
         }
     }
 
@@ -112,7 +111,7 @@ class ProfileScreenViewModel(
     sealed interface UiState : BaseState {
         data object Loading : UiState
 
-        data class Success(val memberEntity: MemberEntity, val errorMessage: String) : UiState
+        data class Success(val memberEntity: MemberEntity) : UiState
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -120,8 +119,8 @@ class ProfileScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class Success(val memberEntity: MemberEntity, val errorMessage: String = "") : Action {
-            override fun reduce(state: UiState): UiState = UiState.Success(memberEntity, errorMessage)
+        data class Success(val memberEntity: MemberEntity) : Action {
+            override fun reduce(state: UiState): UiState = UiState.Success(memberEntity)
         }
     }
 }

@@ -44,6 +44,7 @@ fun MemberModel.toMemberEntity(emailVerified: Boolean = false) =
 
 private fun String.toMemberType(): MemberType =
     when (this) {
+        "SUPER_ADMIN" -> MemberType.SUPER_ADMIN
         "ADMIN" -> MemberType.ADMIN
         "SUPERVISOR" -> MemberType.SUPERVISOR
         else -> MemberType.MEMBER

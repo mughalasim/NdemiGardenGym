@@ -13,7 +13,7 @@ class PermissionsUseCase(
 ) {
     fun isAuthenticated() = authRepository.isAuthenticated()
 
-    fun isNotMember() = authRepository.getMemberType() != MemberType.MEMBER
+    fun getMemberType() = authRepository.getMemberType()
 
     fun getPermissions(memberId: String = ""): StateFlow<PermissionsEntity> {
         val memberType = authRepository.getMemberType()

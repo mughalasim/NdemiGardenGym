@@ -15,4 +15,6 @@ interface NavigationService {
     fun getCurrentRoute(): Route
 
     fun getInitialRoute(): Route
+
+    fun getBottomNavItems(): List<BottomNavItem>
 }

@@ -8,14 +8,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.core.net.toUri
 import androidx.core.os.ConfigurationCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
@@ -25,6 +28,8 @@ import com.ndemi.garden.gym.ui.utils.DateConstants.MINUTES_IN_HOUR
 import com.ndemi.garden.gym.ui.utils.DateConstants.SECONDS_IN_HOUR
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatMonth
+import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
+import kotlinx.coroutines.flow.StateFlow
 import org.joda.time.DateTime
 import org.joda.time.Days
 import org.joda.time.Hours
@@ -155,6 +160,19 @@ fun Modifier.toAppCardStyle(overridePadding: Dp = padding_screen_small) =
             shape = RoundedCornerShape(border_radius),
         )
         .padding(overridePadding)
+
+@Composable
+fun StateFlow<BaseViewModel.SnackbarState>.ObserveAppSnackbar(snackbarHostState: AppSnackbarHostState){
+    val snackbarState by this.collectAsStateWithLifecycle()
+    when(snackbarState){
+        is BaseViewModel.SnackbarState.Visible ->
+            snackbarHostState.Show(
+                type = (snackbarState as BaseViewModel.SnackbarState.Visible).snackbarType,
+                message = (snackbarState as BaseViewModel.SnackbarState.Visible).message,
+            )
+        else -> Unit
+    }
+}
 
 fun Double.toAmountString(): String = DecimalFormat("${BuildConfig.CURRENCY_CODE} #,###").format(this)
 

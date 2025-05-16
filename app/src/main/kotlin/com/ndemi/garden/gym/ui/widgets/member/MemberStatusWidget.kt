@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
@@ -60,7 +61,8 @@ fun MemberStatusWidget(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(image_size_large),
+                    .height(image_size_large)
+                    .clip(RoundedCornerShape(topEnd = border_radius, topStart = border_radius)),
             profileImageUrl = memberEntity.profileImageUrl,
         )
 

@@ -47,6 +47,7 @@ class MembersScreenViewModel(
                     MemberScreenType.ALL_MEMBERS -> memberUseCase.getAllMembers()
                     MemberScreenType.EXPIRED_MEMBERS -> memberUseCase.getExpiredMembers()
                     MemberScreenType.LIVE_MEMBERS -> memberUseCase.getLiveMembers()
+                    MemberScreenType.NON_MEMBERS -> memberUseCase.getNonMembers()
                 }
             useCaseAction.collect { result ->
                 when (result) {

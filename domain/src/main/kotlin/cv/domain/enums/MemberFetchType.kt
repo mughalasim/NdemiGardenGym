@@ -5,4 +5,5 @@ enum class MemberFetchType {
     MEMBERS,
     ACTIVE,
     EXPIRED_REGISTRATIONS,
+    NON_MEMBERS,
 }

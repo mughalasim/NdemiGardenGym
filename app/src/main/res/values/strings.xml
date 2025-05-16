@@ -42,6 +42,7 @@
 
     <string name="txt_profile">My profile</string>
     <string name="txt_active_members">Active Members</string>
+    <string name="txt_non_members">Admins and Supervisors</string>
     <string name="txt_active">Active</string>
     <string name="txt_inactive_members">Inactive Members</string>
     <string name="txt_inactive">Inactive</string>
@@ -54,6 +55,7 @@
     <string name="txt_password_reset">Password reset</string>
     <string name="txt_register">Register</string>
     <string name="txt_reset">Reset</string>
+    <string name="txt_members">Members</string>
 
     <string name="txt_full_name">Full name</string>
     <string name="txt_first_name">First Name</string>
@@ -75,6 +77,7 @@
     <string name="txt_view_payments">View Payments</string>
     <string name="txt_view_attendance">View Attendance</string>
     <string name="txt_no_members">No registered members</string>
+    <string name="txt_no_non_members">No admins or supervisors</string>
     <string name="txt_attendance_for">Attendance for %1$s</string>
     <string name="txt_register_info">Register with us by filling in the details below, Contact the Gym Coach in order to activate your account</string>
     <string name="txt_reset_desc">Oh no! Did you forget your password? Worry not! Enter the email address you used to register with us and we shall send you a reset password link</string>

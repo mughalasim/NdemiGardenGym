@@ -1,21 +1,23 @@
 package com.ndemi.garden.gym.ui.widgets.member
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CameraAlt
 import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -44,23 +46,23 @@ fun MemberImageWidget(
         AsyncImageWidget(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .height(image_size_large),
+                    .size(image_size_large)
+                    .clip(RoundedCornerShape(percent = 100))
+                    .background(AppTheme.colors.backgroundCard),
             profileImageUrl = imageUrl,
         )
         Row(
             modifier =
                 Modifier
-                    .align(alignment = Alignment.BottomCenter)
-                    .fillMaxWidth()
+                    .align(Alignment.BottomEnd)
                     .padding(padding_screen),
-            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             if (canEditImage) {
                 if (imageUrl.isNotEmpty()) {
                     ImageIcon(Icons.Rounded.DeleteForever, onImageDelete, AppTheme.colors.error)
+                } else {
+                    ImageIcon(Icons.Rounded.CameraAlt, onImageSelect, AppTheme.colors.textPrimary)
                 }
-                ImageIcon(Icons.Rounded.CameraAlt, onImageSelect, AppTheme.colors.textPrimary)
             }
         }
     }

@@ -36,6 +36,8 @@ class MemberUseCase(
 
     fun getExpiredMembers() = memberRepository.getMembers(fetchType = MemberFetchType.EXPIRED_REGISTRATIONS)
 
+    fun getNonMembers() = memberRepository.getMembers(fetchType = MemberFetchType.NON_MEMBERS)
+
     suspend fun updateMember(
         memberEntity: MemberEntity,
         memberUpdateType: MemberUpdateType,

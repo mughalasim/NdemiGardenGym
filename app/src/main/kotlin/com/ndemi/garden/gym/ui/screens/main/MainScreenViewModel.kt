@@ -11,7 +11,6 @@ import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.AuthUseCase
-import cv.domain.usecase.PermissionsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -22,7 +21,6 @@ class MainScreenViewModel(
     private val navigationService: NavigationService,
     private val authUseCase: AuthUseCase,
     private val accessUseCase: AccessUseCase,
-    private val permissionsUseCase: PermissionsUseCase,
     private val converter: ErrorCodeConverter,
 ) : ViewModel() {
     private val authState: MutableStateFlow<AuthState> = MutableStateFlow(AuthState.Loading)
@@ -48,18 +46,10 @@ class MainScreenViewModel(
                     _uiState.value = UiState.UpdateRequired(version.url)
 
                 auth == AuthState.UnAuthorised ->
-                    _uiState.value =
-                        UiState.Ready(
-                            isAuthenticated = false,
-                            isAdmin = false,
-                        )
+                    _uiState.value = UiState.Ready
 
                 auth == AuthState.Authorised && member is MemberState.Authenticated -> {
-                    _uiState.value =
-                        UiState.Ready(
-                            isAuthenticated = true,
-                            isAdmin = permissionsUseCase.isNotMember(),
-                        )
+                    _uiState.value = UiState.Ready
                     if (!member.member.emailVerified) {
                         _emailVerifiedState.value = EmailVerifiedState.Visible
                     }
@@ -183,10 +173,7 @@ class MainScreenViewModel(
 
         data class UpdateRequired(val url: String) : UiState
 
-        data class Ready(
-            val isAuthenticated: Boolean,
-            val isAdmin: Boolean,
-        ) : UiState
+        data object Ready : UiState
 
         data class UserNotFound(val message: String) : UiState
     }
