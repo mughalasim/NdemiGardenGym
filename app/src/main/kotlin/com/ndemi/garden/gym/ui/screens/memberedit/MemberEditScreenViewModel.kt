@@ -38,7 +38,10 @@ class MemberEditScreenViewModel(
 
     val memberEntity: StateFlow<MemberEntity> = _memberEntity
 
-    fun getMemberForId(memberId: String, showMessage: Boolean = false) {
+    fun getMemberForId(
+        memberId: String,
+        showMessage: Boolean = false,
+    ) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             memberUseCase.getMemberById(memberId).also { result ->
@@ -51,7 +54,7 @@ class MemberEditScreenViewModel(
                         initialMemberEntity.value = result.data
                         _memberEntity.value = result.data
                         sendAction(Action.SetWaiting)
-                        if (showMessage){
+                        if (showMessage) {
                             showSnackbar(SnackbarType.SUCCESS, "Update successful")
                         }
                     }
@@ -142,7 +145,7 @@ class MemberEditScreenViewModel(
             if (success is DomainResult.Success) {
                 getMemberForId(initialMemberEntity.value.id, showMessage = true)
             } else {
-               showSnackbar(SnackbarType.ERROR, converter.getMessage((success as DomainResult.Error).error))
+                showSnackbar(SnackbarType.ERROR, converter.getMessage((success as DomainResult.Error).error))
             }
         }
     }
@@ -209,6 +212,5 @@ class MemberEditScreenViewModel(
         data class ShowError(val message: String, val inputType: MemberEditScreenInputType = MemberEditScreenInputType.NONE) : Action {
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
-
     }
 }

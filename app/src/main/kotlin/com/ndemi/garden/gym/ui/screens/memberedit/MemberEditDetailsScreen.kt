@@ -71,9 +71,10 @@ fun MemberEditDetailsScreen(
             onBackPressed = listeners.onBackTapped,
         )
         Column(
-            modifier = Modifier
-                .padding(horizontal = padding_screen)
-                .verticalScroll(rememberScrollState()),
+            modifier =
+                Modifier
+                    .padding(horizontal = padding_screen)
+                    .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             MemberImageWidget(
@@ -86,9 +87,10 @@ fun MemberEditDetailsScreen(
             )
 
             Column(
-                modifier = Modifier
-                    .padding(top = padding_screen)
-                    .toAppCardStyle(),
+                modifier =
+                    Modifier
+                        .padding(top = padding_screen)
+                        .toAppCardStyle(),
             ) {
                 EditTextWidget(
                     hint = stringResource(R.string.txt_email),
@@ -184,7 +186,7 @@ fun MemberEditDetailsScreen(
                     isEnabled = uiState is UiState.ReadyToUpdate,
                     isLoading = uiState is UiState.Loading,
                     hideKeyboardOnClick = true,
-                    onButtonClicked = listeners.onUpdateTapped
+                    onButtonClicked = listeners.onUpdateTapped,
                 )
             }
         }
@@ -199,7 +201,7 @@ private fun MemberEditDetailsScreenPreview() {
             uiState = UiState.ReadyToUpdate,
             memberEntity = getMockRegisteredMemberEntity(),
             permissionState = getAdminPermissions(),
-            toolbarTitle = "Edit your details"
+            toolbarTitle = "Edit your details",
         )
     }
 }

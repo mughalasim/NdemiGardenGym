@@ -62,21 +62,22 @@ fun MemberEditScreen(
         uiState = uiState,
         permissionState = permissionState,
         memberEntity = memberEntity,
-        toolbarTitle = if (memberId.isEmpty()) {
-            stringResource(R.string.txt_edit_your_details)
-        } else {
-            stringResource(R.string.txt_edit_member)
-        },
-        listeners = MemberEditScreenListeners(
-            onImageSelect = { galleryLauncher.launch("image/*") },
-            onImageDelete = viewModel::deleteMemberImage,
-            onSetString = viewModel::setString,
-            onUpdateTapped = viewModel::onUpdateTapped,
-            onDeleteMemberTapped = { showDeleteUserDialog = true },
-            onBackTapped = viewModel::navigateBack
-        )
+        toolbarTitle =
+            if (memberId.isEmpty()) {
+                stringResource(R.string.txt_edit_your_details)
+            } else {
+                stringResource(R.string.txt_edit_member)
+            },
+        listeners =
+            MemberEditScreenListeners(
+                onImageSelect = { galleryLauncher.launch("image/*") },
+                onImageDelete = viewModel::deleteMemberImage,
+                onSetString = viewModel::setString,
+                onUpdateTapped = viewModel::onUpdateTapped,
+                onDeleteMemberTapped = { showDeleteUserDialog = true },
+                onBackTapped = viewModel::navigateBack,
+            ),
     )
-
 }
 
 data class MemberEditScreenListeners(
