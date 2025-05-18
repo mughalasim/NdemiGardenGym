@@ -11,7 +11,7 @@ data class PermissionsEntity(
     val canDeleteAttendance: Boolean = false,
 )
 
-internal fun getAdminPermissions() =
+fun getAdminPermissions() =
     PermissionsEntity(
         canAddMember = true,
         canViewMemberDetails = true,
@@ -23,7 +23,7 @@ internal fun getAdminPermissions() =
         canDeleteAttendance = true,
     )
 
-internal fun getSupervisorPermissions() =
+fun getSupervisorPermissions() =
     PermissionsEntity(
         canAddMember = false,
         canViewMemberDetails = true,

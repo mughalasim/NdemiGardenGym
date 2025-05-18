@@ -15,7 +15,7 @@ val icon_size_small = 25.dp
 val icon_size_large = 35.dp
 
 val image_size_medium = 100.dp
-val image_size_large = 220.dp
+val image_size_large = 200.dp
 
 val text_size_small = 14.sp
 val text_size_regular = 16.sp

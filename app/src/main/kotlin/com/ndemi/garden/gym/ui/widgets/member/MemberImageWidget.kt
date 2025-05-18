@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.icon_size_small
@@ -34,18 +35,20 @@ import com.ndemi.garden.gym.ui.widgets.AsyncImageWidget
 
 @Composable
 fun MemberImageWidget(
-    canEditImage: Boolean = true,
+    modifier: Modifier = Modifier,
     imageUrl: String,
+    canEditImage: Boolean = true,
+    overrideImageSize: Dp = image_size_medium,
     onImageSelect: () -> Unit = {},
     onImageDelete: () -> Unit = {},
 ) {
     Box(
-        modifier = Modifier.wrapContentSize(),
+        modifier = modifier.wrapContentSize(),
     ) {
         AsyncImageWidget(
             modifier =
                 Modifier
-                    .size(image_size_medium)
+                    .size(overrideImageSize)
                     .clip(RoundedCornerShape(percent = 100))
                     .background(AppTheme.colors.backgroundCard)
                     .border(

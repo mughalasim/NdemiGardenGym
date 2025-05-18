@@ -5,6 +5,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.ui.enums.MemberEditScreenInputType
+import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.enums.UiErrorType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
@@ -37,18 +38,22 @@ class MemberEditScreenViewModel(
 
     val memberEntity: StateFlow<MemberEntity> = _memberEntity
 
-    fun getMemberForId(memberId: String) {
+    fun getMemberForId(memberId: String, showMessage: Boolean = false) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             memberUseCase.getMemberById(memberId).also { result ->
                 when (result) {
-                    is DomainResult.Error ->
-                        sendAction(Action.ShowError(converter.getMessage(result.error)))
+                    is DomainResult.Error -> {
+                        showSnackbar(SnackbarType.ERROR, converter.getMessage(result.error))
+                    }
 
                     is DomainResult.Success -> {
-                        sendAction(Action.Success)
                         initialMemberEntity.value = result.data
                         _memberEntity.value = result.data
+                        sendAction(Action.SetWaiting)
+                        if (showMessage){
+                            showSnackbar(SnackbarType.SUCCESS, "Update successful")
+                        }
                     }
                 }
             }
@@ -117,7 +122,7 @@ class MemberEditScreenViewModel(
         } else if (initialMemberEntity.value.isNotEqualTo(_memberEntity.value)) {
             sendAction(Action.SetReadyToUpdate)
         } else {
-            sendAction(Action.Success)
+            sendAction(Action.SetWaiting)
         }
     }
 
@@ -126,7 +131,7 @@ class MemberEditScreenViewModel(
         viewModelScope.launch {
             memberUseCase
                 .updateMember(_memberEntity.value.copy(profileImageUrl = ""), MemberUpdateType.PHOTO_DELETE)
-                .also { getMemberForId(initialMemberEntity.value.id) }
+                .also { getMemberForId(initialMemberEntity.value.id, showMessage = true) }
         }
     }
 
@@ -135,9 +140,9 @@ class MemberEditScreenViewModel(
         viewModelScope.launch {
             val success = storageUseCase.updateImageForMember(_memberEntity.value, byteArray)
             if (success is DomainResult.Success) {
-                getMemberForId(initialMemberEntity.value.id)
+                getMemberForId(initialMemberEntity.value.id, showMessage = true)
             } else {
-                sendAction(Action.Success)
+               showSnackbar(SnackbarType.ERROR, converter.getMessage((success as DomainResult.Error).error))
             }
         }
     }
@@ -152,11 +157,12 @@ class MemberEditScreenViewModel(
             memberUseCase.deleteMember(_memberEntity.value).also {
                 when (it) {
                     is DomainResult.Error ->
-                        Action.ShowError(
-                            converter.getMessage(it.error),
-                        )
+                        showSnackbar(SnackbarType.ERROR, converter.getMessage(it.error))
 
-                    is DomainResult.Success -> navigationService.popBack()
+                    is DomainResult.Success -> {
+                        showSnackbar(SnackbarType.SUCCESS, "Successfully deleted member")
+                        navigateBack()
+                    }
                 }
             }
         }
@@ -169,7 +175,7 @@ class MemberEditScreenViewModel(
                 memberUseCase.updateMember(
                     memberEntity = _memberEntity.value,
                     memberUpdateType = MemberUpdateType.DETAILS,
-                ).also { getMemberForId(initialMemberEntity.value.id) }
+                ).also { getMemberForId(initialMemberEntity.value.id, showMessage = true) }
             }
         }
     }
@@ -182,9 +188,9 @@ class MemberEditScreenViewModel(
 
         data object ReadyToUpdate : UiState
 
-        data class Error(val message: String, val inputType: MemberEditScreenInputType) : UiState
+        data object Waiting : UiState
 
-        data object Success : UiState
+        data class Error(val message: String, val inputType: MemberEditScreenInputType) : UiState
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -196,12 +202,13 @@ class MemberEditScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
+        data object SetWaiting : Action {
+            override fun reduce(state: UiState): UiState = UiState.Waiting
+        }
+
         data class ShowError(val message: String, val inputType: MemberEditScreenInputType = MemberEditScreenInputType.NONE) : Action {
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
 
-        data object Success : Action {
-            override fun reduce(state: UiState): UiState = UiState.Success
-        }
     }
 }

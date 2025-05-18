@@ -73,6 +73,7 @@
     <string name="txt_expired_memberships">Expired memberships</string>
     <string name="txt_in_the_gym">In the Gym</string>
     <string name="txt_edit_member">Edit Member</string>
+    <string name="txt_edit_your_details">Edit your details</string>
     <string name="txt_live_view">Live view</string>
     <string name="txt_password_reset">Password reset</string>
     <string name="txt_full_name">Full name</string>
@@ -118,7 +119,7 @@
     <string name="txt_membership_due_date">Membership due</string>
     <string name="txt_workout_session">Workout session</string>
     <string name="txt_started_at">Started at %1$s</string>
-    <string name="txt_workout_session_desc">Record your workout time by tapping the button below</string>
+    <string name="txt_workout_session_desc">Start your work out session here</string>
     <string name="txt_membership_expired">Membership expired</string>
     <string name="txt_payment_due">"Payment due: "</string>
     <string name="txt_cannot_add_payment">You cannot add a new payment plan when there is one which is still active</string>
