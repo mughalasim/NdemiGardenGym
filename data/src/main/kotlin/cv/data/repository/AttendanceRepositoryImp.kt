@@ -56,7 +56,6 @@ class AttendanceRepositoryImp(
                 reference
                     .addSnapshotListener { snapshot, error ->
                         snapshot?.let {
-                            logger.log("Data received: ${snapshot.toObjects<Any>()}")
                             val response = snapshot.toObjects<AttendanceModel>()
                             val list =
                                 response
@@ -70,6 +69,7 @@ class AttendanceRepositoryImp(
                                         DateTime(it.startDateMillis),
                                         DateTime(it.endDateMillis),
                                     ).minutes
+                                logger.log("Attendance received: $it")
                             }
                             trySend(
                                 DomainResult.Success(
@@ -82,7 +82,7 @@ class AttendanceRepositoryImp(
                             )
                         }
                         error?.let {
-                            logger.log("Exception: $it", AppLogType.ERROR)
+                            logger.log("Exception attendance: $it", AppLogType.ERROR)
                             trySend(DomainResult.Error(it.toDomainError()))
                         }
                     }
@@ -99,7 +99,7 @@ class AttendanceRepositoryImp(
                 memberId.ifEmpty {
                     firebaseAuth.currentUser?.uid ?: run {
                         logger.log("Not authorised", AppLogType.ERROR)
-                        throw FirebaseFirestoreException("", Code.UNAUTHENTICATED)
+                        throw FirebaseFirestoreException("Not authorised", Code.UNAUTHENTICATED)
                     }
                 }
 
@@ -111,7 +111,7 @@ class AttendanceRepositoryImp(
                 Minutes.minutesBetween(startDateTime, endDateTime).minutes < 1
             ) {
                 logger.log("Invalid argument passed", AppLogType.ERROR)
-                throw FirebaseFirestoreException("", Code.INVALID_ARGUMENT)
+                throw FirebaseFirestoreException("Invalid argument passed", Code.FAILED_PRECONDITION)
             }
 
             val attendanceModel =

@@ -13,6 +13,7 @@ import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.Acti
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import com.ndemi.garden.gym.ui.utils.isValidApartmentNumber
+import com.ndemi.garden.gym.ui.utils.isValidHeight
 import com.ndemi.garden.gym.ui.utils.isValidPhoneNumber
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
@@ -65,6 +66,7 @@ class MemberEditScreenViewModel(
                 MemberEditScreenInputType.APARTMENT_NUMBER -> _memberEntity.value.copy(apartmentNumber = value)
                 MemberEditScreenInputType.PHONE_NUMBER -> _memberEntity.value.copy(phoneNumber = value)
                 MemberEditScreenInputType.HAS_COACH -> _memberEntity.value.copy(hasCoach = value.toBoolean())
+                MemberEditScreenInputType.HEIGHT -> _memberEntity.value.copy(height = value)
                 MemberEditScreenInputType.NONE -> _memberEntity.value
             }
         validateInput()
@@ -75,6 +77,7 @@ class MemberEditScreenViewModel(
         val lastName = _memberEntity.value.lastName
         val apartmentNumber = _memberEntity.value.apartmentNumber.orEmpty()
         val phoneNumber = _memberEntity.value.phoneNumber
+        val height = _memberEntity.value.height
 
         if (firstName.isEmpty() || firstName.isDigitsOnly()) {
             sendAction(
@@ -95,6 +98,13 @@ class MemberEditScreenViewModel(
                 Action.ShowError(
                     converter.getMessage(UiErrorType.INVALID_PHONE_NUMBER),
                     MemberEditScreenInputType.PHONE_NUMBER,
+                ),
+            )
+        } else if (!height.isValidHeight()) {
+            sendAction(
+                Action.ShowError(
+                    converter.getMessage(UiErrorType.INVALID_HEIGHT),
+                    MemberEditScreenInputType.HEIGHT,
                 ),
             )
         } else if (apartmentNumber.isNotEmpty() && !apartmentNumber.isValidApartmentNumber()) {

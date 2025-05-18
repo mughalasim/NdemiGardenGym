@@ -1,8 +1,10 @@
 package cv.domain.usecase
 
 import cv.domain.repositories.AccessRepository
+import kotlinx.coroutines.Job
 
 class AccessUseCase(
+    private val job: MutableList<Job>,
     private val accessRepository: AccessRepository,
 ) {
     suspend fun login(
@@ -19,5 +21,11 @@ class AccessUseCase(
 
     suspend fun verifyEmail() = accessRepository.verifyEmail()
 
-    fun logOut() = accessRepository.logOut()
+    fun logOut() {
+        job.forEach {
+            it.cancel()
+        }
+        job.clear()
+        accessRepository.logOut()
+    }
 }

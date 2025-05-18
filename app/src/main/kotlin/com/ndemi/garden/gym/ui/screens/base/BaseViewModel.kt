@@ -31,9 +31,12 @@ open class BaseViewModel<State : BaseState, Action : BaseAction<State>>(initialV
         viewState = action.reduce(state = viewState)
     }
 
-    fun showSnackbar(newSnackbarState: SnackbarState){
+    fun showSnackbar(
+        type: SnackbarType,
+        message: String,
+    ) {
         viewModelScope.launch {
-            _snackbarState.value = newSnackbarState
+            _snackbarState.value = SnackbarState.Visible(type, message)
             delay(SNACKBAR_CLEAR_TIME)
             _snackbarState.value = SnackbarState.Gone
         }
@@ -47,4 +50,4 @@ open class BaseViewModel<State : BaseState, Action : BaseAction<State>>(initialV
     }
 }
 
-private const val SNACKBAR_CLEAR_TIME = 3000L
+private const val SNACKBAR_CLEAR_TIME = 5000L

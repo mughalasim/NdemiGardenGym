@@ -44,6 +44,7 @@ fun MemberEditDetailsScreen(
     var errorLastName = ""
     var errorApartmentNumber = ""
     var errorPhoneNumber = ""
+    var errorHeight = ""
 
     if (uiState is UiState.Error) {
         when (uiState.inputType) {
@@ -51,6 +52,7 @@ fun MemberEditDetailsScreen(
             MemberEditScreenInputType.LAST_NAME -> errorLastName = uiState.message
             MemberEditScreenInputType.APARTMENT_NUMBER -> errorApartmentNumber = uiState.message
             MemberEditScreenInputType.PHONE_NUMBER -> errorPhoneNumber = uiState.message
+            MemberEditScreenInputType.HEIGHT -> errorHeight = uiState.message
             MemberEditScreenInputType.NONE ->
                 snackbarHostState.Show(
                     type = SnackbarType.ERROR,
@@ -117,6 +119,17 @@ fun MemberEditDetailsScreen(
             isEnabled = canUpdateMemberDetails,
         ) {
             onSetString.invoke(it, MemberEditScreenInputType.PHONE_NUMBER)
+        }
+
+        EditTextWidget(
+            modifier = Modifier.padding(top = padding_screen),
+            hint = stringResource(R.string.txt_height),
+            textInput = memberEntity.height,
+            errorText = errorHeight,
+            keyboardType = KeyboardType.Number,
+            isEnabled = canUpdateMemberDetails,
+        ) {
+            onSetString.invoke(it, MemberEditScreenInputType.HEIGHT)
         }
 
         Row(

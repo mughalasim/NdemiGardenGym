@@ -51,7 +51,6 @@ class PaymentRepositoryImp(
             val subscription =
                 reference.addSnapshotListener { document, error ->
                     document?.let {
-                        logger.log("Data received: ${document.toObjects<Any>()}")
                         val response = document.toObjects<PaymentModel>()
                         val list =
                             response
@@ -66,6 +65,7 @@ class PaymentRepositoryImp(
                             if (DateTime(it.endDateMillis).isAfterNow) {
                                 canAddPayment = false
                             }
+                            logger.log("Payment data received: $it")
                         }
                         trySend(
                             DomainResult.Success(
@@ -78,11 +78,10 @@ class PaymentRepositoryImp(
                         )
                     }
                     error?.let {
-                        logger.log("Exception: $it", AppLogType.ERROR)
+                        logger.log("Exception payment fetch: $it", AppLogType.ERROR)
                         trySend(DomainResult.Error(it.toDomainError()))
                     }
                 }
-
             awaitClose { subscription.remove() }
         }
 

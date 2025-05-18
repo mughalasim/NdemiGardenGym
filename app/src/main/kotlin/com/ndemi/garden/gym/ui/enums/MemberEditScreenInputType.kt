@@ -6,5 +6,6 @@ enum class MemberEditScreenInputType {
     LAST_NAME,
     APARTMENT_NUMBER,
     PHONE_NUMBER,
+    HEIGHT,
     HAS_COACH,
 }

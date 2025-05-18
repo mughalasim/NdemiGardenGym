@@ -20,4 +20,6 @@ data class MemberModel(
     val phoneNumber: String = "",
     val memberType: String = "",
     val emailVerified: Boolean = false,
+    val height: Double = 0.0,
+    val trackedWeights: List<WeightModel> = listOf(),
 )

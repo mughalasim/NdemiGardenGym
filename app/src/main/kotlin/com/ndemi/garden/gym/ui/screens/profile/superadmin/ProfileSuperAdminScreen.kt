@@ -11,15 +11,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel
+import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel
 import com.ndemi.garden.gym.ui.utils.ObserveAppSnackbar
-import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
+import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ProfileSuperAdminScreen(
-    viewModel: ProfileScreenViewModel = koinViewModel<ProfileScreenViewModel>(),
+    viewModel: ProfileMemberScreenViewModel = koinViewModel<ProfileMemberScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
     val context = LocalContext.current
@@ -53,11 +53,11 @@ fun ProfileSuperAdminScreen(
 
     ProfileSuperAdminDetailsScreen(
         uiState = uiState,
-        listener = ProfileSuperAdminListeners(
-            deleteMemberImage = viewModel::deleteMemberImage,
-            onImageSelect = { galleryLauncher.launch("image/*") },
-            onLogoutTapped = viewModel::onLogOutTapped
-        ),
+        listener =
+            ProfileSuperAdminListeners(
+                deleteMemberImage = viewModel::onImageDeleted,
+                onImageSelect = { galleryLauncher.launch("image/*") },
+                onLogoutTapped = viewModel::onLogOutTapped,
+            ),
     )
-
 }

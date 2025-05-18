@@ -3,9 +3,6 @@ package com.ndemi.garden.gym.ui.screens.profile.member
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.runtime.Composable
@@ -13,31 +10,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.screens.profile.ProfileDetailsScreen
-import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel
-import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
-import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
+import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel.UiState
+import com.ndemi.garden.gym.ui.utils.ObserveAppSnackbar
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.LoadingScreenWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import com.ndemi.garden.gym.ui.widgets.member.MemberImageWidget
+import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ProfileMemberScreen(
-    viewModel: ProfileScreenViewModel = koinViewModel<ProfileScreenViewModel>(),
+    viewModel: ProfileMemberScreenViewModel = koinViewModel<ProfileMemberScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
-    val sessionStartTime by viewModel.sessionStartTime.collectAsStateWithLifecycle()
+    val countdown by viewModel.countdown.collectAsStateWithLifecycle()
+    val weightState by viewModel.weightState.collectAsStateWithLifecycle()
+
     var showDialog by remember { mutableStateOf(false) }
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
@@ -47,6 +41,7 @@ fun ProfileMemberScreen(
                     ?.let { byteArray -> viewModel.updateMemberImage(byteArray) }
             }
         }
+    viewModel.snackbarState.ObserveAppSnackbar(snackbarHostState)
 
     if (showDialog) {
         AlertDialogWidget(
@@ -72,38 +67,28 @@ fun ProfileMemberScreen(
             onSecondaryIconPressed = { showDialog = !showDialog },
         )
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier =
-                Modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = padding_screen),
-        ) {
-            when (val state = uiState) {
-                is UiState.Success -> {
-                    MemberImageWidget(
-                        imageUrl = state.memberEntity.profileImageUrl,
-                        onImageDelete = {
-                            viewModel.deleteMemberImage()
-                        },
-                        onImageSelect = {
-                            galleryLauncher.launch("image/*")
-                        },
-                    )
-                    ProfileDetailsScreen(
-                        memberEntity = state.memberEntity,
-                        isAdmin = false,
-                        message = "",
-                        sessionStartTime = sessionStartTime,
-                        onSessionStarted = viewModel::setStartedSession,
-                        onSessionCompleted = viewModel::setAttendance,
-                    )
-                }
-                // TODO - Handle session handling error with a snackbar
-                is UiState.Loading -> {
-                    LoadingScreenWidget()
-                }
-            }
+        when (val state = uiState) {
+            is UiState.Success ->
+                ProfileMemberDetailsScreen(
+                    state = state,
+                    weightState = weightState,
+                    countdown = countdown,
+                    listeners =
+                        ProfileMemberScreenListeners(
+                            onImageDeleted = viewModel::onImageDeleted,
+                            onImageSelected = {
+                                galleryLauncher.launch("image/*")
+                            },
+                            onEditDetailsTapped = viewModel::onEditDetailsTapped,
+                            onSessionTapped = viewModel::onSessionTapped,
+                            onDeleteWeightTapped = viewModel::onDeleteWeightTapped,
+                            onAddWeightTapped = viewModel::onAddWeightTapped,
+                            onWeightValueChanged = viewModel::onWeightValueChanged,
+                        ),
+                )
+
+            is UiState.Loading ->
+                LoadingScreenWidget()
         }
     }
 }

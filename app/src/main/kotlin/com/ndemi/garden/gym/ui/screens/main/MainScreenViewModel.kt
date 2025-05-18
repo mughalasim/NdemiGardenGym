@@ -11,6 +11,7 @@ import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.AuthUseCase
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
 class MainScreenViewModel(
+    private val job: MutableList<Job>,
     private val navigationService: NavigationService,
     private val authUseCase: AuthUseCase,
     private val accessUseCase: AccessUseCase,
@@ -45,31 +47,27 @@ class MainScreenViewModel(
                 version is VersionState.UpdateRequired ->
                     _uiState.value = UiState.UpdateRequired(version.url)
 
-                auth == AuthState.UnAuthorised ->
-                    _uiState.value = UiState.Ready
-
                 auth == AuthState.Authorised && member is MemberState.Authenticated -> {
-                    _uiState.value = UiState.Ready
                     if (!member.member.emailVerified) {
                         _emailVerifiedState.value = EmailVerifiedState.Visible
                     }
+                    _uiState.value = UiState.Ready
                 }
 
                 auth == AuthState.Authorised && member is MemberState.UserNotFound ->
                     _uiState.value = UiState.UserNotFound(member.message)
+
+                auth == AuthState.UnAuthorised ->
+                    _uiState.value = UiState.Ready
             }
         }.launchIn(viewModelScope)
+        getVersionState()
+        getAuthState()
     }
 
     fun setNavController(navController: NavHostController) = navigationService.setNavController(navController)
 
     fun getNavigationService(): NavigationService = navigationService
-
-    fun startUp() {
-        getVersionState()
-        getAuthState()
-        getMemberState()
-    }
 
     fun onLogOutTapped() {
         accessUseCase.logOut()
@@ -107,8 +105,10 @@ class MainScreenViewModel(
         viewModelScope.launch {
             authUseCase.getAuthState().collect {
                 when (it) {
-                    is DomainResult.Success ->
+                    is DomainResult.Success -> {
                         authState.value = AuthState.Authorised
+                        job += getMemberState()
+                    }
 
                     is DomainResult.Error ->
                         authState.value = AuthState.UnAuthorised

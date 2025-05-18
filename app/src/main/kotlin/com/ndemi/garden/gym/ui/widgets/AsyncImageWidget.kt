@@ -24,7 +24,7 @@ fun AsyncImageWidget(
         fallback = painterResource(R.drawable.ic_app),
         error = painterResource(R.drawable.ic_app),
         contentDescription = "profile picture",
-        contentScale = ContentScale.FillWidth,
+        contentScale = ContentScale.FillHeight,
         modifier = modifier,
     )
 }

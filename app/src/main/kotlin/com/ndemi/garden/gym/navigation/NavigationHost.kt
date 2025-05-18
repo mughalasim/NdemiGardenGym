@@ -6,7 +6,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreen
-import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreen
 import com.ndemi.garden.gym.ui.screens.login.LoginScreen
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreen
 import com.ndemi.garden.gym.ui.screens.members.MembersActiveScreen
@@ -48,8 +47,6 @@ fun NavigationHost(
         composable<Route.ProfileMemberScreen> { ProfileMemberScreen(snackbarHostState = snackbarHostState) }
 
         composable<Route.AttendanceScreen> { AttendanceScreen(snackbarHostState = snackbarHostState) }
-
-        composable<Route.LiveAttendanceScreen> { LiveAttendanceScreen(snackbarHostState = snackbarHostState) }
 
         composable<Route.MembersScreen> { MembersScreen(snackbarHostState = snackbarHostState) }
 

@@ -40,10 +40,6 @@ sealed class Route {
 
     @Keep
     @Serializable
-    data object LiveAttendanceScreen : Route()
-
-    @Keep
-    @Serializable
     data object MembersScreen : Route()
 
     @Keep
@@ -94,7 +90,6 @@ sealed class Route {
                 this.contains(ProfileAdminScreen.javaClass.simpleName) -> ProfileAdminScreen
                 this.contains(ProfileSuperAdminScreen.javaClass.simpleName) -> ProfileSuperAdminScreen
                 this.contains(ProfileMemberScreen.javaClass.simpleName) -> ProfileMemberScreen
-                this.contains(LiveAttendanceScreen.javaClass.simpleName) -> LiveAttendanceScreen
                 this.contains(AttendanceScreen.javaClass.simpleName) -> AttendanceScreen
                 this.contains(MembersScreen.javaClass.simpleName) -> MembersScreen
                 this.contains(MembersActiveScreen.javaClass.simpleName) -> MembersActiveScreen

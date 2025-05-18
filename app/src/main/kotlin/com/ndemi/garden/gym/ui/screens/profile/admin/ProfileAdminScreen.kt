@@ -20,24 +20,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.screens.profile.ProfileDetailsScreen
-import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel
-import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel.UiState
+import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel
+import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
+import com.ndemi.garden.gym.ui.utils.ObserveAppSnackbar
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.LoadingScreenWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
+import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberImageWidget
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ProfileAdminScreen(
-    viewModel: ProfileScreenViewModel = koinViewModel<ProfileScreenViewModel>(),
+    viewModel: ProfileMemberScreenViewModel = koinViewModel<ProfileMemberScreenViewModel>(),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
-    val sessionStartTime by viewModel.sessionStartTime.collectAsStateWithLifecycle()
+
     var showDialog by remember { mutableStateOf(false) }
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
@@ -47,6 +48,7 @@ fun ProfileAdminScreen(
                     ?.let { byteArray -> viewModel.updateMemberImage(byteArray) }
             }
         }
+    viewModel.snackbarState.ObserveAppSnackbar(snackbarHostState)
 
     if (showDialog) {
         AlertDialogWidget(
@@ -84,7 +86,7 @@ fun ProfileAdminScreen(
                     MemberImageWidget(
                         imageUrl = state.memberEntity.profileImageUrl,
                         onImageDelete = {
-                            viewModel.deleteMemberImage()
+                            viewModel.onImageDeleted()
                         },
                         onImageSelect = {
                             galleryLauncher.launch("image/*")
@@ -94,12 +96,8 @@ fun ProfileAdminScreen(
                         memberEntity = state.memberEntity,
                         isAdmin = true,
                         message = "",
-                        sessionStartTime = sessionStartTime,
-                        onSessionStarted = viewModel::setStartedSession,
-                        onSessionCompleted = viewModel::setAttendance,
                     )
                 }
-                // TODO - Handle session handling error with a snackbar
                 is UiState.Loading -> {
                     LoadingScreenWidget()
                 }

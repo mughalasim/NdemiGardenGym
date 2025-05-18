@@ -22,7 +22,7 @@ class StorageRepositoryImp(
         runCatching {
             if (memberId.isEmpty()) {
                 logger.log("Not authorised", AppLogType.ERROR)
-                throw FirebaseFirestoreException("", Code.UNAUTHENTICATED)
+                throw FirebaseFirestoreException("Not authorised", Code.UNAUTHENTICATED)
             }
 
             storageReference

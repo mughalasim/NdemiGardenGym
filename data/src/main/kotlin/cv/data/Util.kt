@@ -41,6 +41,7 @@ fun Exception.toDomainError(): DomainErrorType {
                 FirebaseFirestoreException.Code.NOT_FOUND -> DomainErrorType.NO_DATA
                 FirebaseFirestoreException.Code.PERMISSION_DENIED -> DomainErrorType.UNAUTHORISED
                 FirebaseFirestoreException.Code.UNAUTHENTICATED -> DomainErrorType.UNAUTHORISED
+                FirebaseFirestoreException.Code.FAILED_PRECONDITION -> DomainErrorType.INVALID_SESSION_TIME
                 else -> DomainErrorType.SERVER
             }
         }

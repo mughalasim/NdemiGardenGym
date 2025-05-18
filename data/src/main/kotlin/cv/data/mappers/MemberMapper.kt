@@ -2,7 +2,9 @@ package cv.data.mappers
 
 import com.google.firebase.Timestamp
 import cv.data.models.MemberModel
+import cv.data.models.WeightModel
 import cv.domain.entities.MemberEntity
+import cv.domain.entities.WeightEntity
 import cv.domain.enums.MemberType
 import org.joda.time.DateTime
 import java.util.Date
@@ -22,10 +24,13 @@ fun MemberEntity.toMemberModel() =
         amountDue = amountDue,
         phoneNumber = phoneNumber,
         memberType = memberType.name,
+        height = if (height.isEmpty()) 0.0 else height.toDouble(),
+        trackedWeights = trackedWeights.toWeightModel(),
     )
 
-fun MemberModel.toMemberEntity(emailVerified: Boolean = false) =
-    MemberEntity(
+fun MemberModel.toMemberEntity(emailVerified: Boolean = false): MemberEntity {
+    val sortedWeights = trackedWeights.sortedByDescending { it.dateMillis }.take(10)
+    return MemberEntity(
         id = id,
         firstName = firstName,
         lastName = lastName,
@@ -40,7 +45,11 @@ fun MemberModel.toMemberEntity(emailVerified: Boolean = false) =
         phoneNumber = phoneNumber,
         memberType = memberType.toMemberType(),
         emailVerified = emailVerified,
+        height = height.toString(),
+        trackedWeights = sortedWeights.toWeightEntity(),
+        bmi = sortedWeights.getBMI(height),
     )
+}
 
 private fun String.toMemberType(): MemberType =
     when (this) {
@@ -48,6 +57,31 @@ private fun String.toMemberType(): MemberType =
         "ADMIN" -> MemberType.ADMIN
         "SUPERVISOR" -> MemberType.SUPERVISOR
         else -> MemberType.MEMBER
+    }
+
+private fun List<WeightModel>.getBMI(height: Double): Double =
+    if (this.isEmpty() || height == 0.0) {
+        0.0
+    } else {
+        val heightMeters = height * 0.3048
+        val weight = this.first().weight
+        weight / (heightMeters * heightMeters)
+    }
+
+private fun List<WeightModel>.toWeightEntity(): List<WeightEntity> =
+    this.map {
+        WeightEntity(
+            weight = it.weight.toString(),
+            dateMillis = it.dateMillis.toDate().time,
+        )
+    }
+
+private fun List<WeightEntity>.toWeightModel(): List<WeightModel> =
+    this.map {
+        WeightModel(
+            weight = if (it.weight.isEmpty()) 0.0 else it.weight.toDouble(),
+            dateMillis = Timestamp(Date(it.dateMillis)),
+        )
     }
 
 private fun isAfterNow(millis: Long?): Long? {

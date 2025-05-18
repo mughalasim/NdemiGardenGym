@@ -54,7 +54,7 @@ class AuthRepositoryImp(
             val subscription =
                 eventDocument.addSnapshotListener { snapshot, error ->
                     snapshot?.let { response ->
-                        logger.log("Data received: $response")
+                        logger.log("Version Data: $response")
                         val versionModel = response.toObject<VersionModel>()
                         versionModel?.let {
                             if (it.version > repositoryUrls.currentAppVersion) {
@@ -67,7 +67,7 @@ class AuthRepositoryImp(
                         }
                     }
                     error?.let {
-                        logger.log("Exception: $error", AppLogType.ERROR)
+                        logger.log("Exception version: $error", AppLogType.ERROR)
                         trySend(DomainResult.Error(error.toDomainError()))
                     }
                 }
@@ -82,7 +82,7 @@ class AuthRepositoryImp(
                 val subscription =
                     eventDocument.addSnapshotListener { snapshot, error ->
                         snapshot?.let { response ->
-                            logger.log("Data received: $response")
+                            logger.log("Logged In member: $response")
                             val memberModel = response.toObject<MemberModel>()
                             memberModel?.let {
                                 _memberEntity.value = memberModel.toMemberEntity(firebaseAuth.currentUser?.isEmailVerified == true)
@@ -92,7 +92,7 @@ class AuthRepositoryImp(
                             }
                         }
                         error?.let {
-                            logger.log("Exception: $error", AppLogType.ERROR)
+                            logger.log("Exception logged in member: $error", AppLogType.ERROR)
                             trySend(DomainResult.Error(error.toDomainError()))
                         }
                     }

@@ -20,8 +20,6 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel<MainScreenViewMode
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
 
-    viewModel.startUp()
-
     when (val state = uiState) {
         UiState.Loading -> LoadingScreenWidget()
 

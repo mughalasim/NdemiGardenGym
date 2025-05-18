@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ContactMail
 import androidx.compose.material.icons.rounded.FormatListNumbered
 import androidx.compose.material.icons.rounded.Group
-import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.InsertChartOutlined
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Lock
@@ -54,12 +53,6 @@ sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: I
         Route.AttendanceScreen,
         Icons.Rounded.InsertChartOutlined,
         R.string.txt_attendance,
-    )
-
-    data object LiveAttendanceScreen : BottomNavItem(
-        Route.LiveAttendanceScreen,
-        Icons.Rounded.Groups,
-        R.string.txt_live_view,
     )
 
     data object PaymentsScreen : BottomNavItem(

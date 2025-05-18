@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -35,6 +36,7 @@ fun ButtonWidget(
     isLoading: Boolean = false,
     isOutlined: Boolean = false,
     hideKeyboardOnClick: Boolean = false,
+    overridePadding: Dp = padding_screen,
     onButtonClicked: () -> Unit = {},
 ) {
     var backgroundColor: Color = AppTheme.colors.backgroundButtonDisabled
@@ -81,7 +83,7 @@ fun ButtonWidget(
                     color = outlineColor,
                     shape = RoundedCornerShape(border_radius),
                 )
-                .padding(padding_screen),
+                .padding(overridePadding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {

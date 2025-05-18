@@ -21,7 +21,10 @@ class NavigationServiceImp(
         this.initialRoute = initialRoute
     }
 
-    override fun open(route: Route, removeCurrentFromStack: Boolean) {
+    override fun open(
+        route: Route,
+        removeCurrentFromStack: Boolean,
+    ) {
         if (route == getCurrentRoute()) {
             return
         }
@@ -54,7 +57,7 @@ class NavigationServiceImp(
         navController.currentDestination?.route?.toRoute()
             ?: processInitialRoute()
 
-    override fun getInitialRoute(): Route = initialRoute
+    override fun getInitialRoute(): Route = processInitialRoute()
 
     private fun processInitialRoute(): Route =
         if (!permissionsUseCase.isAuthenticated()) {
@@ -81,12 +84,13 @@ class NavigationServiceImp(
             )
         } else {
             when (permissionsUseCase.getMemberType()) {
-                MemberType.MEMBER -> listOf(
-                    BottomNavItem.ProfileMemberScreen,
-                    BottomNavItem.AttendanceScreen,
-                    BottomNavItem.PaymentsScreen,
-                    BottomNavItem.LiveAttendanceScreen,
-                )
+                MemberType.MEMBER ->
+                    listOf(
+                        BottomNavItem.ProfileMemberScreen,
+                        BottomNavItem.AttendanceScreen,
+                        BottomNavItem.PaymentsScreen,
+                        BottomNavItem.MembersActiveScreen,
+                    )
                 MemberType.ADMIN, MemberType.SUPERVISOR ->
                     listOf(
                         BottomNavItem.MembersScreen,

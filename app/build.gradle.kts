@@ -210,6 +210,7 @@ dependencies {
 
     // Image loading - Coil
     implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
 
     // Navigation
     implementation(libs.navigation.compose)

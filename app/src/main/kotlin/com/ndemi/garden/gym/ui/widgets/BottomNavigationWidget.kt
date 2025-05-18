@@ -18,7 +18,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ndemi.garden.gym.navigation.BottomNavItem
 import com.ndemi.garden.gym.navigation.BottomNavItem.AttendanceScreen
-import com.ndemi.garden.gym.navigation.BottomNavItem.LiveAttendanceScreen
 import com.ndemi.garden.gym.navigation.BottomNavItem.LoginScreen
 import com.ndemi.garden.gym.navigation.BottomNavItem.MembersActiveScreen
 import com.ndemi.garden.gym.navigation.BottomNavItem.MembersExpiredScreen
@@ -98,7 +97,7 @@ private fun BottomNavigationWidgetPreview() {
             ProfileMemberScreen,
             AttendanceScreen,
             PaymentsScreen,
-            LiveAttendanceScreen,
+            MembersActiveScreen,
         )
 
     val getLoginBottomItems =

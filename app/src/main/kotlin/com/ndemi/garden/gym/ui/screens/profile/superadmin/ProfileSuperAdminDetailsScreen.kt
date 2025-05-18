@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
-import com.ndemi.garden.gym.ui.screens.profile.ProfileScreenViewModel
+import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
@@ -22,7 +22,8 @@ import com.ndemi.garden.gym.ui.widgets.member.MemberImageWidget
 
 @Composable
 internal fun ProfileSuperAdminDetailsScreen(
-    uiState: ProfileScreenViewModel.UiState = ProfileScreenViewModel.UiState.Success(memberEntity = getMockActiveMemberEntity()),
+    uiState: ProfileMemberScreenViewModel.UiState =
+        ProfileMemberScreenViewModel.UiState.Success(memberEntity = getMockActiveMemberEntity()),
     listener: ProfileSuperAdminListeners = ProfileSuperAdminListeners(),
 ) {
     Column {
@@ -40,7 +41,7 @@ internal fun ProfileSuperAdminDetailsScreen(
                     .padding(horizontal = padding_screen),
         ) {
             when (uiState) {
-                is ProfileScreenViewModel.UiState.Success -> {
+                is ProfileMemberScreenViewModel.UiState.Success -> {
                     MemberImageWidget(
                         imageUrl = uiState.memberEntity.profileImageUrl,
                         onImageDelete = listener.deleteMemberImage,
@@ -48,7 +49,7 @@ internal fun ProfileSuperAdminDetailsScreen(
                     )
                 }
 
-                is ProfileScreenViewModel.UiState.Loading -> LoadingScreenWidget()
+                is ProfileMemberScreenViewModel.UiState.Loading -> LoadingScreenWidget()
             }
         }
     }
@@ -62,6 +63,7 @@ internal data class ProfileSuperAdminListeners(
 
 @AppPreview
 @Composable
-private fun ProfileSuperAdminDetailsScreenPreview() = AppThemeComposable {
-    ProfileSuperAdminDetailsScreen()
-}
+private fun ProfileSuperAdminDetailsScreenPreview() =
+    AppThemeComposable {
+        ProfileSuperAdminDetailsScreen()
+    }

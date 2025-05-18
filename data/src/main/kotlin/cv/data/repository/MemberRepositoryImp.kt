@@ -31,7 +31,7 @@ class MemberRepositoryImp(
             firebaseFirestore.collection(pathUser).document(memberId).get().await()
         }.fold(
             onSuccess = { result ->
-                logger.log("Data received: ${result.toObject<Any>()}")
+                logger.log("Member by ID: ${result.toObject<Any>()}")
                 val response = result.toObject<MemberModel>()
                 return response?.let {
                     DomainResult.Success(it.toMemberEntity())
@@ -62,7 +62,7 @@ class MemberRepositoryImp(
             val subscription =
                 query.addSnapshotListener { snapshot, error ->
                     snapshot?.let { querySnapshot ->
-                        logger.log("Data received: ${querySnapshot.toObjects<Any>()}")
+                        logger.log("Members list: ${querySnapshot.toObjects<Any>()}")
                         val response =
                             querySnapshot
                                 .toObjects<MemberModel>()
@@ -92,7 +92,7 @@ class MemberRepositoryImp(
                         )
                     }
                     error?.let {
-                        logger.log("Exception: $it", AppLogType.ERROR)
+                        logger.log("Exception members list: $it", AppLogType.ERROR)
                         trySend(DomainResult.Error(it.toDomainError()))
                     }
                 }
