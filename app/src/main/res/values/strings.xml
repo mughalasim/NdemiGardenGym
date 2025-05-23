@@ -11,8 +11,8 @@
     <string name="error_password">Invalid password</string>
     <string name="error_password_confirm">Invalid confirm password</string>
     <string name="error_password_match">Your password and confirm password do not match</string>
-    <string name="error_first_name">First name cannot be empty</string>
-    <string name="error_last_name">Last name cannot be empty</string>
+    <string name="error_first_name">First name is invalid</string>
+    <string name="error_last_name">Last name is invalid</string>
     <string name="error_invalid_credentials">Credentials are invalid</string>
     <string name="error_registration_failed">Registration failed</string>
     <string name="error_invalid_info">Information supplied is invalid</string>

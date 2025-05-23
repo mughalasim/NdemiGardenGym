@@ -26,7 +26,7 @@ import coil.size.Size
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.image_size_medium
+import com.ndemi.garden.gym.ui.theme.image_size_small
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
@@ -132,7 +132,7 @@ private fun GifImage() {
     Image(
         modifier =
             Modifier
-                .size(image_size_medium)
+                .size(image_size_small)
                 .clip(shape = CircleShape),
         painter =
             rememberAsyncImagePainter(

@@ -25,12 +25,12 @@ import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 @Composable
 fun NavigationHost(
     navController: NavHostController,
-    navigationService: NavigationService,
+    initialRoute: Route,
     snackbarHostState: AppSnackbarHostState,
 ) {
     NavHost(
         navController = navController,
-        startDestination = navigationService.getInitialRoute(),
+        startDestination = initialRoute,
     ) {
         composable<Route.LoginScreen> { LoginScreen(snackbarHostState = snackbarHostState) }
 

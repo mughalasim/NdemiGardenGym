@@ -14,11 +14,13 @@ val line_thickness = 1.dp
 val icon_size_small = 25.dp
 val icon_size_large = 35.dp
 
-val image_size_medium = 100.dp
+val image_size_small = 100.dp
+val image_size_medium = 150.dp
 val image_size_large = 200.dp
 
 val text_size_small = 14.sp
 val text_size_regular = 16.sp
 val text_size_large = 20.sp
+val text_size_large_extra = 26.sp
 
 val page_width = 360.dp

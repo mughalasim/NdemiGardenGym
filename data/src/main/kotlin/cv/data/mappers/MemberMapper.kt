@@ -18,7 +18,7 @@ fun MemberEntity.toMemberModel() =
         activeNowDate = activeNowDateMillis?.let { Timestamp(Date(it)) } ?: run { null },
         renewalFutureDate = renewalFutureDateMillis?.let { Timestamp(Date(it)) } ?: run { null },
         registrationDate = Timestamp(Date(registrationDateMillis)),
-        apartmentNumber = apartmentNumber?.replaceFirstChar(Char::uppercase)?.trim(),
+        apartmentNumber = apartmentNumber.replaceFirstChar(Char::uppercase).trim(),
         profileImageUrl = profileImageUrl,
         hasCoach = hasCoach,
         amountDue = amountDue,
@@ -45,7 +45,7 @@ fun MemberModel.toMemberEntity(emailVerified: Boolean = false): MemberEntity {
         phoneNumber = phoneNumber,
         memberType = memberType.toMemberType(),
         emailVerified = emailVerified,
-        height = height.toString(),
+        height = if (height == 0.0) "" else height.toString(),
         trackedWeights = sortedWeights.toWeightEntity(),
         bmi = sortedWeights.getBMI(height),
     )

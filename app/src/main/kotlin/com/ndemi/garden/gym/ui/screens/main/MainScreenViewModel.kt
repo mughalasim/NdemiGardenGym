@@ -4,7 +4,9 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.ndemi.garden.gym.navigation.BottomNavItem
 import com.ndemi.garden.gym.navigation.NavigationService
+import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import cv.domain.DomainResult
@@ -51,14 +53,22 @@ class MainScreenViewModel(
                     if (!member.member.emailVerified) {
                         _emailVerifiedState.value = EmailVerifiedState.Visible
                     }
-                    _uiState.value = UiState.Ready
+                    _uiState.value =
+                        UiState.Ready(
+                            initialRoute = navigationService.getInitialRoute(),
+                            bottomNavItems = navigationService.getBottomNavItems(),
+                        )
                 }
 
                 auth == AuthState.Authorised && member is MemberState.UserNotFound ->
                     _uiState.value = UiState.UserNotFound(member.message)
 
                 auth == AuthState.UnAuthorised ->
-                    _uiState.value = UiState.Ready
+                    _uiState.value =
+                        UiState.Ready(
+                            initialRoute = navigationService.getInitialRoute(),
+                            bottomNavItems = navigationService.getBottomNavItems(),
+                        )
             }
         }.launchIn(viewModelScope)
         getVersionState()
@@ -66,8 +76,6 @@ class MainScreenViewModel(
     }
 
     fun setNavController(navController: NavHostController) = navigationService.setNavController(navController)
-
-    fun getNavigationService(): NavigationService = navigationService
 
     fun onLogOutTapped() {
         accessUseCase.logOut()
@@ -173,7 +181,7 @@ class MainScreenViewModel(
 
         data class UpdateRequired(val url: String) : UiState
 
-        data object Ready : UiState
+        data class Ready(val initialRoute: Route, val bottomNavItems: List<BottomNavItem>) : UiState
 
         data class UserNotFound(val message: String) : UiState
     }

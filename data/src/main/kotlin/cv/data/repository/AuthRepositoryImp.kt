@@ -39,8 +39,10 @@ class AuthRepositoryImp(
         callbackFlow {
             firebaseAuth.addAuthStateListener {
                 if (it.uid.isNullOrEmpty()) {
+                    logger.log("getAuthState: Unauthorised")
                     trySend(DomainResult.Error(DomainErrorType.UNAUTHORISED))
                 } else {
+                    logger.log("getAuthState: Authorised")
                     trySend(DomainResult.Success(Unit))
                 }
             }
@@ -54,7 +56,7 @@ class AuthRepositoryImp(
             val subscription =
                 eventDocument.addSnapshotListener { snapshot, error ->
                     snapshot?.let { response ->
-                        logger.log("Version Data: $response")
+                        logger.log("getAppVersion: $response")
                         val versionModel = response.toObject<VersionModel>()
                         versionModel?.let {
                             if (it.version > repositoryUrls.currentAppVersion) {
@@ -67,7 +69,7 @@ class AuthRepositoryImp(
                         }
                     }
                     error?.let {
-                        logger.log("Exception version: $error", AppLogType.ERROR)
+                        logger.log("getAppVersion: $error", AppLogType.ERROR)
                         trySend(DomainResult.Error(error.toDomainError()))
                     }
                 }
@@ -76,32 +78,26 @@ class AuthRepositoryImp(
 
     override suspend fun getLoggedInUser(): Flow<DomainResult<MemberEntity>> =
         callbackFlow {
-            firebaseAuth.currentUser?.uid?.let {
-                val eventDocument = firebaseFirestore.collection(repositoryUrls.pathUser).document(it)
-
-                val subscription =
-                    eventDocument.addSnapshotListener { snapshot, error ->
-                        snapshot?.let { response ->
-                            logger.log("Logged In member: $response")
-                            val memberModel = response.toObject<MemberModel>()
-                            memberModel?.let {
-                                _memberEntity.value = memberModel.toMemberEntity(firebaseAuth.currentUser?.isEmailVerified == true)
-                                trySend(DomainResult.Success(_memberEntity.value))
-                            } ?: run {
-                                trySend(DomainResult.Error(DomainErrorType.UNAUTHORISED))
-                            }
-                        }
-                        error?.let {
-                            logger.log("Exception logged in member: $error", AppLogType.ERROR)
-                            trySend(DomainResult.Error(error.toDomainError()))
+            val memberId = firebaseAuth.currentUser?.uid ?: ""
+            val eventDocument = firebaseFirestore.collection(repositoryUrls.pathUser).document(memberId)
+            val subscription =
+                eventDocument.addSnapshotListener { snapshot, error ->
+                    snapshot?.let { response ->
+                        logger.log("getLoggedInUser: $response")
+                        val memberModel = response.toObject<MemberModel>()
+                        memberModel?.let {
+                            _memberEntity.value = memberModel.toMemberEntity(firebaseAuth.currentUser?.isEmailVerified == true)
+                            trySend(DomainResult.Success(_memberEntity.value))
+                        } ?: run {
+                            trySend(DomainResult.Error(DomainErrorType.UNAUTHORISED))
                         }
                     }
-                awaitClose { subscription.remove() }
-            }.run {
-                logger.log("Member UID is null or empty", AppLogType.ERROR)
-                trySend(DomainResult.Error(DomainErrorType.UNAUTHORISED))
-                awaitClose()
-            }
+                    error?.let {
+                        logger.log("getLoggedInUser: $error", AppLogType.ERROR)
+                        trySend(DomainResult.Error(error.toDomainError()))
+                    }
+                }
+            awaitClose { subscription.remove() }
         }
 
     override fun observeUser() = memberEntity

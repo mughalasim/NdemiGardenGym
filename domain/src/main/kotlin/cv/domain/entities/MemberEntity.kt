@@ -11,7 +11,7 @@ data class MemberEntity(
     val registrationDateMillis: Long = 0L,
     val renewalFutureDateMillis: Long? = null,
     val activeNowDateMillis: Long? = null,
-    val apartmentNumber: String? = null,
+    val apartmentNumber: String = "",
     val profileImageUrl: String = "",
     val hasCoach: Boolean = false,
     val amountDue: Double = 0.0,
@@ -29,7 +29,7 @@ data class MemberEntity(
     fun isActiveNow(): Boolean = activeNowDateMillis != null
 
     fun getResidentialStatus(): String =
-        if (apartmentNumber.isNullOrEmpty()) {
+        if (apartmentNumber.isEmpty()) {
             "Guest"
         } else {
             "Apartment $apartmentNumber"

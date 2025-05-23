@@ -22,9 +22,7 @@ class AccessUseCase(
     suspend fun verifyEmail() = accessRepository.verifyEmail()
 
     fun logOut() {
-        job.forEach {
-            it.cancel()
-        }
+        job.forEach { it.cancel() }
         job.clear()
         accessRepository.logOut()
     }

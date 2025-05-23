@@ -13,7 +13,7 @@ data class MemberModel(
     val registrationDate: Timestamp = Timestamp(Date()),
     val renewalFutureDate: Timestamp? = null,
     val activeNowDate: Timestamp? = null,
-    val apartmentNumber: String? = null,
+    val apartmentNumber: String = "",
     val profileImageUrl: String? = null,
     val hasCoach: Boolean = false,
     val amountDue: Double = 0.0,

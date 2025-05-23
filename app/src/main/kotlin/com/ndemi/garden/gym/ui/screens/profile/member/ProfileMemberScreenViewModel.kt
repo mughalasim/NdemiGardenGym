@@ -11,11 +11,9 @@ import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
-import com.ndemi.garden.gym.ui.utils.isValidWeight
 import com.ndemi.garden.gym.ui.utils.toCountdownTimer
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
-import cv.domain.entities.WeightEntity
 import cv.domain.enums.MemberUpdateType
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.AttendanceUseCase
@@ -26,14 +24,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
-// TODO - split out the timer and weight capture features
-@Suppress("Detekt:TooManyFunctions")
 class ProfileMemberScreenViewModel(
     private val job: MutableList<Job>,
     private val converter: ErrorCodeConverter,
@@ -49,9 +44,6 @@ class ProfileMemberScreenViewModel(
 
     private val _countdown = MutableStateFlow("")
     val countdown: StateFlow<String> = _countdown
-
-    private val _weightState = MutableStateFlow(WeightState())
-    val weightState = _weightState.asStateFlow()
 
     init {
         sendAction(Action.Loading)
@@ -127,49 +119,6 @@ class ProfileMemberScreenViewModel(
         navigationService.open(Route.MemberEditScreen(memberId = memberEntity.value.id))
     }
 
-    fun onDeleteWeightTapped(weightEntity: WeightEntity) {
-        val recordedWeights = memberEntity.value.trackedWeights.toMutableList()
-        recordedWeights.remove(weightEntity)
-        viewModelScope.launch {
-            memberUseCase.updateMember(
-                memberEntity.value.copy(trackedWeights = recordedWeights),
-                MemberUpdateType.DETAILS,
-            )
-        }
-    }
-
-    fun onAddWeightTapped() {
-        val recordedWeights = memberEntity.value.trackedWeights.toMutableList()
-        recordedWeights.add(
-            WeightEntity(
-                weight = _weightState.value.inputText,
-                dateMillis = DateTime.now().millis,
-            ),
-        )
-        viewModelScope.launch {
-            memberUseCase.updateMember(
-                memberEntity.value.copy(trackedWeights = recordedWeights),
-                MemberUpdateType.DETAILS,
-            )
-        }
-    }
-
-    // TODO - Validators in one location
-    fun onWeightValueChanged(value: String) {
-        val errorMessage =
-            if (!value.isValidWeight()) {
-                "Invalid input"
-            } else {
-                val weightDouble = value.toDouble()
-                if (weightDouble < 25 || weightDouble > 500) {
-                    "Out of range"
-                } else {
-                    ""
-                }
-            }
-        _weightState.value = WeightState(value, errorMessage)
-    }
-
     fun onSessionTapped() {
         val startedTime = memberEntity.value.activeNowDateMillis
         if (startedTime == null) {
@@ -203,11 +152,6 @@ class ProfileMemberScreenViewModel(
             showSnackbar(snackbarState.first, snackbarState.second)
         }
     }
-
-    data class WeightState(
-        val inputText: String = "",
-        val errorText: String = "",
-    )
 
     @Immutable
     sealed interface UiState : BaseState {

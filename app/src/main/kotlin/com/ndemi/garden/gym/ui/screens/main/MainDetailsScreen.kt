@@ -10,8 +10,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.navigation.BottomNavItem
 import com.ndemi.garden.gym.navigation.NavigationHost
-import com.ndemi.garden.gym.navigation.NavigationService
+import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.widgets.BottomNavigationWidget
@@ -22,13 +23,14 @@ import org.koin.androidx.compose.koinViewModel
 fun MainDetailsScreen(
     viewModel: MainScreenViewModel = koinViewModel<MainScreenViewModel>(),
     navController: NavHostController,
-    navigationService: NavigationService,
+    initialRoute: Route,
+    bottomNavItems: List<BottomNavItem>,
 ) {
     val emailVerifyState by viewModel.emailVerifiedState.collectAsStateWithLifecycle()
 
     AppThemeComposable(
         bottomBar = {
-            BottomNavigationWidget(navController, navigationService.getBottomNavItems())
+            BottomNavigationWidget(navController, bottomNavItems)
         },
         snackbarHost = {
             SnackbarHost(hostState = viewModel.snackbarHostState.hostState) {
@@ -42,7 +44,7 @@ fun MainDetailsScreen(
             }
             NavigationHost(
                 navController = navController,
-                navigationService = navigationService,
+                initialRoute = initialRoute,
                 snackbarHostState = viewModel.snackbarHostState,
             )
         }

@@ -8,6 +8,7 @@ import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel
 import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel
+import com.ndemi.garden.gym.ui.screens.profile.member.WeightViewModel
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -35,12 +36,15 @@ val viewModelModule =
 
         viewModelOf(::ResetPasswordScreenViewModel)
 
+        viewModelOf(::WeightViewModel)
+
         viewModel(named<CreateMember>()) {
             RegisterScreenViewModel(
                 converter = get(),
                 accessUseCase = get(),
                 memberUseCase = get(),
                 navigationService = get(),
+                validators = get(),
                 hidePassword = true,
             )
         }
@@ -50,6 +54,7 @@ val viewModelModule =
                 accessUseCase = get(),
                 memberUseCase = get(),
                 navigationService = get(),
+                validators = get(),
                 hidePassword = false,
             )
         }

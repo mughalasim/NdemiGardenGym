@@ -1,7 +1,6 @@
 package com.ndemi.garden.gym.ui.screens.memberedit
 
 import androidx.compose.runtime.Immutable
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.ui.enums.MemberEditScreenInputType
@@ -13,15 +12,13 @@ import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
-import com.ndemi.garden.gym.ui.utils.isValidApartmentNumber
-import com.ndemi.garden.gym.ui.utils.isValidHeight
-import com.ndemi.garden.gym.ui.utils.isValidPhoneNumber
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.enums.MemberUpdateType
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.PermissionsUseCase
 import cv.domain.usecase.StorageUseCase
+import cv.domain.validator.MemberValidators
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -32,6 +29,7 @@ class MemberEditScreenViewModel(
     private val permissionsUseCase: PermissionsUseCase,
     private val storageUseCase: StorageUseCase,
     private val navigationService: NavigationService,
+    private val validators: MemberValidators,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
     private val initialMemberEntity = MutableStateFlow(MemberEntity())
     private val _memberEntity = MutableStateFlow(initialMemberEntity.value)
@@ -81,51 +79,44 @@ class MemberEditScreenViewModel(
     }
 
     private fun validateInput() {
-        val firstName = _memberEntity.value.firstName
-        val lastName = _memberEntity.value.lastName
-        val apartmentNumber = _memberEntity.value.apartmentNumber.orEmpty()
-        val phoneNumber = _memberEntity.value.phoneNumber
-        val height = _memberEntity.value.height
-
-        if (firstName.isEmpty() || firstName.isDigitsOnly()) {
-            sendAction(
-                Action.ShowError(
-                    converter.getMessage(UiErrorType.INVALID_FIRST_NAME),
-                    MemberEditScreenInputType.FIRST_NAME,
-                ),
-            )
-        } else if (lastName.isEmpty() || lastName.isDigitsOnly()) {
-            sendAction(
-                Action.ShowError(
-                    converter.getMessage(UiErrorType.INVALID_LAST_NAME),
-                    MemberEditScreenInputType.LAST_NAME,
-                ),
-            )
-        } else if (phoneNumber.isNotEmpty() && !phoneNumber.isValidPhoneNumber()) {
-            sendAction(
-                Action.ShowError(
-                    converter.getMessage(UiErrorType.INVALID_PHONE_NUMBER),
-                    MemberEditScreenInputType.PHONE_NUMBER,
-                ),
-            )
-        } else if (!height.isValidHeight()) {
-            sendAction(
-                Action.ShowError(
-                    converter.getMessage(UiErrorType.INVALID_HEIGHT),
-                    MemberEditScreenInputType.HEIGHT,
-                ),
-            )
-        } else if (apartmentNumber.isNotEmpty() && !apartmentNumber.isValidApartmentNumber()) {
-            sendAction(
-                Action.ShowError(
-                    converter.getMessage(UiErrorType.INVALID_APARTMENT_NUMBER),
-                    MemberEditScreenInputType.APARTMENT_NUMBER,
-                ),
-            )
-        } else if (initialMemberEntity.value.isNotEqualTo(_memberEntity.value)) {
-            sendAction(Action.SetReadyToUpdate)
-        } else {
-            sendAction(Action.SetWaiting)
+        when {
+            validators.name.isNotValid(_memberEntity.value.firstName) ->
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiErrorType.INVALID_FIRST_NAME),
+                        MemberEditScreenInputType.FIRST_NAME,
+                    ),
+                )
+            validators.name.isNotValid(_memberEntity.value.lastName) ->
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiErrorType.INVALID_LAST_NAME),
+                        MemberEditScreenInputType.LAST_NAME,
+                    ),
+                )
+            validators.phone.isNotValid(_memberEntity.value.phoneNumber) ->
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiErrorType.INVALID_PHONE_NUMBER),
+                        MemberEditScreenInputType.PHONE_NUMBER,
+                    ),
+                )
+            validators.height.isNotValid(_memberEntity.value.height) ->
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiErrorType.INVALID_HEIGHT),
+                        MemberEditScreenInputType.HEIGHT,
+                    ),
+                )
+            validators.apartmentNumber.isNotValid(_memberEntity.value.apartmentNumber) ->
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiErrorType.INVALID_APARTMENT_NUMBER),
+                        MemberEditScreenInputType.APARTMENT_NUMBER,
+                    ),
+                )
+            initialMemberEntity.value.isNotEqualTo(_memberEntity.value) -> sendAction(Action.SetReadyToUpdate)
+            else -> sendAction(Action.SetWaiting)
         }
     }
 

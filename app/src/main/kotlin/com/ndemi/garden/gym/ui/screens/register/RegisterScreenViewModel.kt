@@ -1,7 +1,6 @@
 package com.ndemi.garden.gym.ui.screens.register
 
 import androidx.compose.runtime.Immutable
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.ui.enums.RegisterScreenInputType
@@ -12,12 +11,12 @@ import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
-import com.ndemi.garden.gym.ui.utils.isValidApartmentNumber
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.enums.MemberUpdateType
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.MemberUseCase
+import cv.domain.validator.MemberValidators
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -30,6 +29,7 @@ class RegisterScreenViewModel(
     private val memberUseCase: MemberUseCase,
     private val navigationService: NavigationService,
     private val hidePassword: Boolean,
+    private val validators: MemberValidators,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     data class InputData(
         val firstName: String = "",
@@ -64,12 +64,8 @@ class RegisterScreenViewModel(
 
     private fun validateInput() {
         val email = _inputData.value.email
-        val firstName = _inputData.value.firstName
-        val lastName = _inputData.value.lastName
-        val apartmentNumber = _inputData.value.apartmentNumber
-
         when {
-            firstName.isEmpty() || firstName.isDigitsOnly() -> {
+            validators.name.isNotValid(_inputData.value.firstName) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_FIRST_NAME),
@@ -78,7 +74,7 @@ class RegisterScreenViewModel(
                 )
             }
 
-            lastName.isEmpty() || lastName.isDigitsOnly() -> {
+            validators.name.isNotValid(_inputData.value.lastName) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_LAST_NAME),
@@ -96,7 +92,7 @@ class RegisterScreenViewModel(
                 )
             }
 
-            apartmentNumber.isNotEmpty() && !apartmentNumber.isValidApartmentNumber() -> {
+            validators.apartmentNumber.isNotValid(_inputData.value.apartmentNumber) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_APARTMENT_NUMBER),

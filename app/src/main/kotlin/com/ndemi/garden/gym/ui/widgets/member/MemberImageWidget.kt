@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.Dp
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.icon_size_small
-import com.ndemi.garden.gym.ui.theme.image_size_medium
+import com.ndemi.garden.gym.ui.theme.image_size_small
 import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
@@ -38,7 +38,7 @@ fun MemberImageWidget(
     modifier: Modifier = Modifier,
     imageUrl: String,
     canEditImage: Boolean = true,
-    overrideImageSize: Dp = image_size_medium,
+    overrideImageSize: Dp = image_size_small,
     onImageSelect: () -> Unit = {},
     onImageDelete: () -> Unit = {},
 ) {
