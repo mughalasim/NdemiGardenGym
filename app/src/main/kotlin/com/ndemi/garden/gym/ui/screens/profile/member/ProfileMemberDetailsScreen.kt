@@ -108,7 +108,7 @@ fun ProfileMemberDetailsScreen(
                 onSessionTapped = listeners.onSessionTapped,
             )
 
-            TrackedWeightComponent()
+//            TrackedWeightComponent()
         }
     }
 }

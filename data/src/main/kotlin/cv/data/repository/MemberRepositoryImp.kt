@@ -75,7 +75,6 @@ class MemberRepositoryImp(
 
                                     MemberFetchType.MEMBERS ->
                                         response
-                                            .filter { it.renewalFutureDateMillis != null }
                                             .sortedBy { it.renewalFutureDateMillis }
 
                                     MemberFetchType.ACTIVE ->

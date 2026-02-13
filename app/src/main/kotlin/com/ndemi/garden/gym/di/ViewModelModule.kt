@@ -7,6 +7,7 @@ import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel
 import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel
+import com.ndemi.garden.gym.ui.screens.profile.admin.ProfileAdminScreenViewModel
 import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel
 import com.ndemi.garden.gym.ui.screens.profile.member.WeightViewModel
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel
@@ -23,6 +24,8 @@ val viewModelModule =
         viewModelOf(::LoginScreenViewModel)
 
         viewModelOf(::ProfileMemberScreenViewModel)
+
+        viewModelOf(::ProfileAdminScreenViewModel)
 
         viewModelOf(::AttendanceScreenViewModel)
 

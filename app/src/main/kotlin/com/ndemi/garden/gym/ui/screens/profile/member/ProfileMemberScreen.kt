@@ -39,13 +39,11 @@ fun ProfileMemberScreen(
                     countdown = countdown,
                     listeners =
                         ProfileMemberScreenListeners(
-                            onImageDeleted = viewModel::onImageDeleted,
-                            onImageSelected = {
-                                galleryLauncher.launch("image/*")
-                            },
+                            onLogoutTapped = viewModel::onLogOutTapped,
                             onEditDetailsTapped = viewModel::onEditDetailsTapped,
                             onSessionTapped = viewModel::onSessionTapped,
-                            onLogoutTapped = viewModel::onLogOutTapped,
+                            onImageDeleted = viewModel::onImageDeleted,
+                            onImageSelected = { galleryLauncher.launch("image/*") },
                         ),
                 )
 

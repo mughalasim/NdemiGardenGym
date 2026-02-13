@@ -1,6 +1,7 @@
 package com.ndemi.garden.gym.di
 
 import cv.domain.usecase.AccessUseCase
+import cv.domain.usecase.AdminDashboardUseCase
 import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
@@ -32,6 +33,8 @@ val useCaseModule =
         singleOf(::PaymentUseCase)
 
         singleOf(::StorageUseCase)
+
+        singleOf(::AdminDashboardUseCase)
 
         @WeightValidator
         single<Validator> {
