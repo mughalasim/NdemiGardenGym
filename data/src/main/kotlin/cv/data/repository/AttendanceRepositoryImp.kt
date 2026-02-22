@@ -50,7 +50,8 @@ class AttendanceRepositoryImp(
                 firebaseFirestore
                     .collection(pathAttendance)
                     .document(year.toString())
-                    .collection(month.toString()).whereEqualTo("memberId", setMemberId)
+                    .collection(month.toString())
+                    .whereEqualTo("memberId", setMemberId)
 
             val subscription =
                 reference
@@ -65,10 +66,11 @@ class AttendanceRepositoryImp(
                             var totalMinutes = 0
                             list.forEach {
                                 totalMinutes +=
-                                    Minutes.minutesBetween(
-                                        DateTime(it.startDateMillis),
-                                        DateTime(it.endDateMillis),
-                                    ).minutes
+                                    Minutes
+                                        .minutesBetween(
+                                            DateTime(it.startDateMillis),
+                                            DateTime(it.endDateMillis),
+                                        ).minutes
                                 logger.log("Attendance received: $it")
                             }
                             trySend(

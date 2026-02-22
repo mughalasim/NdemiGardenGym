@@ -33,30 +33,32 @@ import org.joda.time.Months
 import org.joda.time.Seconds
 
 @Composable
-fun Long?.toMembershipStatusString(): String {
-    return this?.let {
+fun Long?.toMembershipStatusString(): String =
+    this?.let {
         val date = DateTime(it)
         date.toString(formatDayMonthYear) + " (${date.toDaysDuration()})"
     } ?: run { stringResource(R.string.txt_expired) }
-}
 
 @Composable
 fun DateTime.toActiveStatusDuration(startDate: DateTime): String {
     val hours =
-        Hours.hoursBetween(
-            startDate.toInstant(),
-            this.toInstant(),
-        ).hours
+        Hours
+            .hoursBetween(
+                startDate.toInstant(),
+                this.toInstant(),
+            ).hours
     val minutes =
-        Minutes.minutesBetween(
-            startDate.toInstant(),
-            this.toInstant(),
-        ).minutes % MINUTES_IN_HOUR
+        Minutes
+            .minutesBetween(
+                startDate.toInstant(),
+                this.toInstant(),
+            ).minutes % MINUTES_IN_HOUR
     val seconds =
-        Seconds.secondsBetween(
-            startDate.toInstant(),
-            this.toInstant(),
-        ).seconds % SECONDS_IN_HOUR
+        Seconds
+            .secondsBetween(
+                startDate.toInstant(),
+                this.toInstant(),
+            ).seconds % SECONDS_IN_HOUR
 
     val hoursString = String.format(pluralStringResource(R.plurals.plural_hours, hours), hours)
     val minutesString =
@@ -74,16 +76,18 @@ fun DateTime.toActiveStatusDuration(startDate: DateTime): String {
 @Composable
 fun DateTime.toDaysDuration(): String {
     val days =
-        Days.daysBetween(
-            DateTime.now().toInstant(),
-            this.toInstant(),
-        ).days
+        Days
+            .daysBetween(
+                DateTime.now().toInstant(),
+                this.toInstant(),
+            ).days
 
     val hours =
-        Hours.hoursBetween(
-            DateTime.now().toInstant(),
-            this.toInstant(),
-        ).hours
+        Hours
+            .hoursBetween(
+                DateTime.now().toInstant(),
+                this.toInstant(),
+            ).hours
 
     val daysString = String.format(pluralStringResource(R.plurals.plural_days, days), days)
 
@@ -101,28 +105,32 @@ fun DateTime.toPaymentPlanDuration(): String {
     if (this.isBeforeNow) return ""
 
     val months =
-        Months.monthsBetween(
-            DateTime.now().toInstant(),
-            this.toInstant(),
-        ).months
+        Months
+            .monthsBetween(
+                DateTime.now().toInstant(),
+                this.toInstant(),
+            ).months
 
     val totalDays =
-        Days.daysBetween(
-            DateTime.now().toInstant(),
-            this.toInstant(),
-        ).days
+        Days
+            .daysBetween(
+                DateTime.now().toInstant(),
+                this.toInstant(),
+            ).days
 
     val daysLeft =
-        Days.daysBetween(
-            DateTime.now().toInstant(),
-            this.toInstant(),
-        ).days % DAYS_IN_MONTH
+        Days
+            .daysBetween(
+                DateTime.now().toInstant(),
+                this.toInstant(),
+            ).days % DAYS_IN_MONTH
 
     val hours =
-        Hours.hoursBetween(
-            DateTime.now().toInstant(),
-            this.toInstant(),
-        ).hours
+        Hours
+            .hoursBetween(
+                DateTime.now().toInstant(),
+                this.toInstant(),
+            ).hours
 
     val monthsString =
         String.format(pluralStringResource(R.plurals.plural_months, months), months)
@@ -142,13 +150,13 @@ fun DateTime.toPaymentPlanDuration(): String {
 
 @Composable
 fun Modifier.toAppCardStyle(overridePadding: Dp = padding_screen_small) =
-    this.fillMaxWidth()
+    this
+        .fillMaxWidth()
         .wrapContentHeight()
         .background(
             color = AppTheme.colors.backgroundCard,
             shape = RoundedCornerShape(border_radius),
-        )
-        .padding(overridePadding)
+        ).padding(overridePadding)
 
 @Composable
 @Suppress("Detekt:MagicNumber")
@@ -164,11 +172,15 @@ fun getBMIColor(bmi: Double) =
 fun StateFlow<BaseViewModel.SnackbarState>.ObserveAppSnackbar(snackbarHostState: AppSnackbarHostState) {
     val snackbarState by this.collectAsStateWithLifecycle()
     when (snackbarState) {
-        is BaseViewModel.SnackbarState.Visible ->
+        is BaseViewModel.SnackbarState.Visible -> {
             snackbarHostState.Show(
                 type = (snackbarState as BaseViewModel.SnackbarState.Visible).snackbarType,
                 message = (snackbarState as BaseViewModel.SnackbarState.Visible).message,
             )
-        else -> Unit
+        }
+
+        else -> {
+            Unit
+        }
     }
 }

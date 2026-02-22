@@ -53,17 +53,36 @@ fun RegisterDetailScreen(
 
     if (uiState is UiState.Error) {
         when (uiState.inputType) {
-            RegisterScreenInputType.FIRST_NAME -> errorFirstName = uiState.message
-            RegisterScreenInputType.LAST_NAME -> errorLastName = uiState.message
-            RegisterScreenInputType.EMAIL -> errorEmail = uiState.message
-            RegisterScreenInputType.APARTMENT_NUMBER -> errorApartmentNumber = uiState.message
-            RegisterScreenInputType.PASSWORD -> errorPassword = uiState.message
-            RegisterScreenInputType.CONFIRM_PASSWORD -> errorConfirmPassword = uiState.message
-            RegisterScreenInputType.NONE ->
+            RegisterScreenInputType.FIRST_NAME -> {
+                errorFirstName = uiState.message
+            }
+
+            RegisterScreenInputType.LAST_NAME -> {
+                errorLastName = uiState.message
+            }
+
+            RegisterScreenInputType.EMAIL -> {
+                errorEmail = uiState.message
+            }
+
+            RegisterScreenInputType.APARTMENT_NUMBER -> {
+                errorApartmentNumber = uiState.message
+            }
+
+            RegisterScreenInputType.PASSWORD -> {
+                errorPassword = uiState.message
+            }
+
+            RegisterScreenInputType.CONFIRM_PASSWORD -> {
+                errorConfirmPassword = uiState.message
+            }
+
+            RegisterScreenInputType.NONE -> {
                 snackbarHostState.Show(
                     type = SnackbarType.ERROR,
                     message = uiState.message,
                 )
+            }
         }
     }
 

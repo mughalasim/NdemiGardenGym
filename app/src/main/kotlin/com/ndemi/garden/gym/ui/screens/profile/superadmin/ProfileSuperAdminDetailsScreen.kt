@@ -41,7 +41,9 @@ internal fun ProfileSuperAdminDetailsScreen(
                     )
                 }
 
-                is ProfileMemberScreenViewModel.UiState.Loading -> LoadingScreenWidget()
+                is ProfileMemberScreenViewModel.UiState.Loading -> {
+                    LoadingScreenWidget()
+                }
             }
         }
     }

@@ -28,7 +28,11 @@ class MemberRepositoryImp(
 ) : MemberRepository {
     override suspend fun getMemberById(memberId: String): DomainResult<MemberEntity> =
         runCatching {
-            firebaseFirestore.collection(pathUser).document(memberId).get().await()
+            firebaseFirestore
+                .collection(pathUser)
+                .document(memberId)
+                .get()
+                .await()
         }.fold(
             onSuccess = { result ->
                 logger.log("Member by ID: ${result.toObject<Any>()}")
@@ -46,17 +50,23 @@ class MemberRepositoryImp(
         callbackFlow {
             val query =
                 when (fetchType) {
-                    MemberFetchType.ALL ->
-                        firebaseFirestore.collection(pathUser)
+                    MemberFetchType.ALL -> {
+                        firebaseFirestore
+                            .collection(pathUser)
                             .whereNotEqualTo("memberType", MemberType.SUPER_ADMIN)
+                    }
 
-                    MemberFetchType.NON_MEMBERS ->
-                        firebaseFirestore.collection(pathUser)
+                    MemberFetchType.NON_MEMBERS -> {
+                        firebaseFirestore
+                            .collection(pathUser)
                             .whereNotEqualTo("memberType", MemberType.MEMBER)
+                    }
 
-                    else ->
-                        firebaseFirestore.collection(pathUser)
+                    else -> {
+                        firebaseFirestore
+                            .collection(pathUser)
                             .whereEqualTo("memberType", MemberType.MEMBER)
+                    }
                 }
 
             val subscription =
@@ -70,22 +80,26 @@ class MemberRepositoryImp(
                         trySend(
                             DomainResult.Success(
                                 when (fetchType) {
-                                    MemberFetchType.ALL, MemberFetchType.NON_MEMBERS ->
+                                    MemberFetchType.ALL, MemberFetchType.NON_MEMBERS -> {
                                         response.sortedByDescending { it.registrationDateMillis }
+                                    }
 
-                                    MemberFetchType.MEMBERS ->
+                                    MemberFetchType.MEMBERS -> {
                                         response
                                             .sortedBy { it.renewalFutureDateMillis }
+                                    }
 
-                                    MemberFetchType.ACTIVE ->
+                                    MemberFetchType.ACTIVE -> {
                                         response
                                             .filter { it.activeNowDateMillis != null }
                                             .sortedBy { it.activeNowDateMillis }
+                                    }
 
-                                    MemberFetchType.EXPIRED_REGISTRATIONS ->
+                                    MemberFetchType.EXPIRED_REGISTRATIONS -> {
                                         response
                                             .filter { it.renewalFutureDateMillis == null }
                                             .sortedByDescending { it.registrationDateMillis }
+                                    }
                                 },
                             ),
                         )

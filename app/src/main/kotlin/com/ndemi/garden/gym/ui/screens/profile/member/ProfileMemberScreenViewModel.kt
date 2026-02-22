@@ -65,12 +65,14 @@ class ProfileMemberScreenViewModel(
         sessionCountdownJob?.cancel()
         sessionCountdownJob =
             viewModelScope.launch {
-                _countdown.onStart {
-                    while (memberEntity.value.activeNowDateMillis != null) {
-                        emit(DateTime.now().toCountdownTimer(DateTime(memberEntity.value.activeNowDateMillis ?: 0.0)))
-                        delay(COUNTDOWN_SECONDS)
-                    }
-                }.onCompletion { _countdown.emit("") }.collect { _countdown.emit(it) }
+                _countdown
+                    .onStart {
+                        while (memberEntity.value.activeNowDateMillis != null) {
+                            emit(DateTime.now().toCountdownTimer(DateTime(memberEntity.value.activeNowDateMillis ?: 0.0)))
+                            delay(COUNTDOWN_SECONDS)
+                        }
+                    }.onCompletion { _countdown.emit("") }
+                    .collect { _countdown.emit(it) }
             }
     }
 
@@ -102,7 +104,8 @@ class ProfileMemberScreenViewModel(
 
     private fun setAttendance() {
         viewModelScope.launch {
-            attendanceUseCase.addAttendance(DateTime(memberEntity.value.activeNowDateMillis).toDate(), DateTime.now().toDate())
+            attendanceUseCase
+                .addAttendance(DateTime(memberEntity.value.activeNowDateMillis).toDate(), DateTime.now().toDate())
                 .also { result ->
                     val snackbarState: Pair<SnackbarType, String> =
                         when (result) {

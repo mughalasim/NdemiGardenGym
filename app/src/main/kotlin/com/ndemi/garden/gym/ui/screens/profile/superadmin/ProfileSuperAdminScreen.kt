@@ -22,7 +22,8 @@ fun ProfileSuperAdminScreen(
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
             imageUri?.let {
-                context.contentResolver.openInputStream(imageUri)
+                context.contentResolver
+                    .openInputStream(imageUri)
                     ?.use { inputStream -> inputStream.buffered().readBytes() }
                     ?.let { byteArray -> viewModel.updateMemberImage(byteArray) }
             }

@@ -12,8 +12,8 @@ import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewMod
 import com.ndemi.garden.gym.ui.screens.profile.member.WeightViewModel
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 

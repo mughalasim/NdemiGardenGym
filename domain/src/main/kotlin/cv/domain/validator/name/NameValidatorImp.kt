@@ -6,7 +6,6 @@ class NameValidatorImp : Validator {
     override fun isNotValid(value: String): Boolean =
         when {
             value.isNotEmpty() && value.matches(Regex(REGEX_NAME)) -> false
-
             else -> true
         }
 }

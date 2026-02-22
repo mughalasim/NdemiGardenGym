@@ -79,7 +79,8 @@ fun MemberStatusWidget(
                 TextWidget(
                     style = AppTheme.textStyles.small,
                     text =
-                        DateTime.now()
+                        DateTime
+                            .now()
                             .toActiveStatusDuration(DateTime(memberEntity.activeNowDateMillis)),
                 )
             } else if (canViewMemberDetails) {
@@ -141,8 +142,7 @@ fun MemberStatusWidget(
                             .background(
                                 color = if (memberEntity.isActiveNow()) Color.Green else Color.Transparent,
                                 shape = RoundedCornerShape(border_radius),
-                            )
-                            .clickable {
+                            ).clickable {
                                 listener.onSessionTapped.invoke(memberEntity)
                             },
                     imageVector = Icons.AutoMirrored.Rounded.DirectionsRun,

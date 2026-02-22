@@ -6,9 +6,7 @@ class HeightValidatorImp : Validator {
     override fun isNotValid(value: String): Boolean =
         when {
             value.isEmpty() -> false
-
             value.matches(Regex(REGEX_HEIGHT)) -> false
-
             else -> true
         }
 }

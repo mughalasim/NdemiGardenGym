@@ -17,12 +17,14 @@ import cv.domain.enums.MemberUpdateType
 import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.PermissionsUseCase
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
 class MembersScreenViewModel(
+    private val job: MutableList<Job>,
     private val converter: ErrorCodeConverter,
     private val memberUseCase: MemberUseCase,
     private val attendanceUseCase: AttendanceUseCase,
@@ -41,27 +43,30 @@ class MembersScreenViewModel(
     fun getMembers(memberScreenType: MemberScreenType) {
         screenType = memberScreenType
         sendAction(Action.SetLoading)
-        viewModelScope.launch {
-            val useCaseAction =
-                when (memberScreenType) {
-                    MemberScreenType.ALL_MEMBERS -> memberUseCase.getAllMembers()
-                    MemberScreenType.EXPIRED_MEMBERS -> memberUseCase.getExpiredMembers()
-                    MemberScreenType.LIVE_MEMBERS -> memberUseCase.getLiveMembers()
-                    MemberScreenType.NON_MEMBERS -> memberUseCase.getNonMembers()
-                }
-            useCaseAction.collect { result ->
-                when (result) {
-                    is DomainResult.Error ->
-                        sendAction(Action.ShowDomainError(result.error, converter))
-                    is DomainResult.Success -> {
-                        membersUnfiltered.value.clear()
-                        membersUnfiltered.value.addAll(result.data)
-                        filterResults()
-                        sendAction(Action.Success)
+        job +=
+            viewModelScope.launch {
+                val useCaseAction =
+                    when (memberScreenType) {
+                        MemberScreenType.ALL_MEMBERS -> memberUseCase.getAllMembers()
+                        MemberScreenType.EXPIRED_MEMBERS -> memberUseCase.getExpiredMembers()
+                        MemberScreenType.LIVE_MEMBERS -> memberUseCase.getLiveMembers()
+                        MemberScreenType.NON_MEMBERS -> memberUseCase.getNonMembers()
+                    }
+                useCaseAction.collect { result ->
+                    when (result) {
+                        is DomainResult.Error -> {
+                            sendAction(Action.ShowDomainError(result.error, converter))
+                        }
+
+                        is DomainResult.Success -> {
+                            membersUnfiltered.value.clear()
+                            membersUnfiltered.value.addAll(result.data)
+                            filterResults()
+                            sendAction(Action.Success)
+                        }
                     }
                 }
             }
-        }
     }
 
     fun getPermissions() = permissionsUseCase.getPermissions()
@@ -97,12 +102,13 @@ class MembersScreenViewModel(
 
         // Update the member model
         viewModelScope.launch {
-            memberUseCase.updateMember(
-                memberEntity.copy(activeNowDateMillis = if (memberEntity.isActiveNow()) null else DateTime.now().millis),
-                MemberUpdateType.ACTIVE_SESSION,
-            ).also {
-                getMembers(screenType)
-            }
+            memberUseCase
+                .updateMember(
+                    memberEntity.copy(activeNowDateMillis = if (memberEntity.isActiveNow()) null else DateTime.now().millis),
+                    MemberUpdateType.ACTIVE_SESSION,
+                ).also {
+                    getMembers(screenType)
+                }
         }
     }
 
@@ -126,7 +132,9 @@ class MembersScreenViewModel(
     sealed interface UiState : BaseState {
         data object Loading : UiState
 
-        data class Error(val message: String) : UiState
+        data class Error(
+            val message: String,
+        ) : UiState
 
         data object Success : UiState
     }

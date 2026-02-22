@@ -120,15 +120,15 @@ fun MemberSessionWidget(
 private fun GifImage() {
     val context = LocalContext.current
     val imageLoader =
-        ImageLoader.Builder(context)
+        ImageLoader
+            .Builder(context)
             .components {
                 if (SDK_INT >= 28) {
                     add(ImageDecoderDecoder.Factory())
                 } else {
                     add(GifDecoder.Factory())
                 }
-            }
-            .build()
+            }.build()
     Image(
         modifier =
             Modifier

@@ -25,7 +25,8 @@ fun ProfileMemberScreen(
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
             imageUri?.let {
-                context.contentResolver.openInputStream(imageUri)
+                context.contentResolver
+                    .openInputStream(imageUri)
                     ?.use { inputStream -> inputStream.buffered().readBytes() }
                     ?.let { byteArray -> viewModel.updateMemberImage(byteArray) }
             }
@@ -33,7 +34,7 @@ fun ProfileMemberScreen(
 
     Column {
         when (val state = uiState) {
-            is UiState.Success ->
+            is UiState.Success -> {
                 ProfileMemberDetailsScreen(
                     state = state,
                     countdown = countdown,
@@ -46,9 +47,11 @@ fun ProfileMemberScreen(
                             onImageSelected = { galleryLauncher.launch("image/*") },
                         ),
                 )
+            }
 
-            is UiState.Loading ->
+            is UiState.Loading -> {
                 LoadingScreenWidget()
+            }
         }
     }
 }

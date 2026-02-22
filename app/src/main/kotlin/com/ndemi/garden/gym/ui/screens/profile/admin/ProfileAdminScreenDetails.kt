@@ -194,8 +194,7 @@ private fun Tile(
                 .background(
                     color = AppTheme.colors.backgroundCard,
                     shape = RoundedCornerShape(border_radius),
-                )
-                .padding(padding_screen_small),
+                ).padding(padding_screen_small),
     ) {
         TextWidget(
             text = value,

@@ -42,25 +42,27 @@ class PaymentsScreenViewModel(
         _canAddPayment.value = false
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            paymentUseCase.getPaymentPlanForMember(
-                year = _selectedDate.value.year,
-                memberId = memberId,
-            ).collect { result ->
-                when (result) {
-                    is DomainResult.Error ->
-                        sendAction(Action.ShowDomainError(result.error, converter))
+            paymentUseCase
+                .getPaymentPlanForMember(
+                    year = _selectedDate.value.year,
+                    memberId = memberId,
+                ).collect { result ->
+                    when (result) {
+                        is DomainResult.Error -> {
+                            sendAction(Action.ShowDomainError(result.error, converter))
+                        }
 
-                    is DomainResult.Success -> {
-                        _canAddPayment.value = result.data.canAddNewPayment
-                        sendAction(
-                            Action.Success(
-                                payments = result.data.payments,
-                                totalAmount = result.data.totalAmount,
-                            ),
-                        )
+                        is DomainResult.Success -> {
+                            _canAddPayment.value = result.data.canAddNewPayment
+                            sendAction(
+                                Action.Success(
+                                    payments = result.data.payments,
+                                    totalAmount = result.data.totalAmount,
+                                ),
+                            )
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -83,15 +85,18 @@ class PaymentsScreenViewModel(
         viewModelScope.launch {
             paymentUseCase.deletePaymentPlanForMember(paymentEntity).also { result ->
                 when (result) {
-                    is DomainResult.Error ->
+                    is DomainResult.Error -> {
                         sendAction(
                             Action.ShowDomainError(
                                 result.error,
                                 converter,
                             ),
                         )
+                    }
 
-                    is DomainResult.Success -> getPaymentsForMember()
+                    is DomainResult.Success -> {
+                        getPaymentsForMember()
+                    }
                 }
             }
         }
@@ -107,9 +112,14 @@ class PaymentsScreenViewModel(
     sealed interface UiState : BaseState {
         data object Loading : UiState
 
-        data class Error(val message: String) : UiState
+        data class Error(
+            val message: String,
+        ) : UiState
 
-        data class Success(val payments: List<PaymentEntity>, val totalAmount: Double) : UiState
+        data class Success(
+            val payments: List<PaymentEntity>,
+            val totalAmount: Double,
+        ) : UiState
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -124,7 +134,10 @@ class PaymentsScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainErrorType))
         }
 
-        data class Success(val payments: List<PaymentEntity>, val totalAmount: Double) : Action {
+        data class Success(
+            val payments: List<PaymentEntity>,
+            val totalAmount: Double,
+        ) : Action {
             override fun reduce(state: UiState): UiState = UiState.Success(payments, totalAmount)
         }
     }

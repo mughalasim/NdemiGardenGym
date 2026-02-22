@@ -49,16 +49,19 @@ fun ButtonWidget(
             backgroundColor = AppTheme.colors.backgroundButtonDisabled
             textColor = Color.Transparent
         }
+
         isOutlined && isEnabled -> {
             outlineColor = AppTheme.colors.primary
             backgroundColor = Color.Transparent
             textColor = AppTheme.colors.primary
         }
+
         isOutlined && !isEnabled -> {
             outlineColor = AppTheme.colors.backgroundButtonDisabled
             backgroundColor = Color.Transparent
             textColor = AppTheme.colors.textSecondary
         }
+
         !isOutlined && isEnabled -> {
             outlineColor = Color.Transparent
             backgroundColor = AppTheme.colors.backgroundButtonEnabled
@@ -73,17 +76,14 @@ fun ButtonWidget(
                 .clickable {
                     if (hideKeyboardOnClick) keyboardController?.hide()
                     if (isEnabled && !isLoading) onButtonClicked()
-                }
-                .background(
+                }.background(
                     if (!isOutlined) backgroundColor else Color.Transparent,
                     shape = RoundedCornerShape(border_radius),
-                )
-                .border(
+                ).border(
                     width = line_thickness,
                     color = outlineColor,
                     shape = RoundedCornerShape(border_radius),
-                )
-                .padding(overridePadding),
+                ).padding(overridePadding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {

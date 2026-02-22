@@ -16,20 +16,23 @@ fun Double.toAmountString(): String = DecimalFormat("${BuildConfig.CURRENCY_CODE
 
 fun DateTime.toCountdownTimer(startDate: DateTime): String {
     val hours =
-        Hours.hoursBetween(
-            startDate.toInstant(),
-            this.toInstant(),
-        ).hours
+        Hours
+            .hoursBetween(
+                startDate.toInstant(),
+                this.toInstant(),
+            ).hours
     val minutes =
-        Minutes.minutesBetween(
-            startDate.toInstant(),
-            this.toInstant(),
-        ).minutes % MINUTES_IN_HOUR
+        Minutes
+            .minutesBetween(
+                startDate.toInstant(),
+                this.toInstant(),
+            ).minutes % MINUTES_IN_HOUR
     val seconds =
-        Seconds.secondsBetween(
-            startDate.toInstant(),
-            this.toInstant(),
-        ).seconds % SECONDS_IN_MINUTE
+        Seconds
+            .secondsBetween(
+                startDate.toInstant(),
+                this.toInstant(),
+            ).seconds % SECONDS_IN_MINUTE
 
     return "${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}"
 }

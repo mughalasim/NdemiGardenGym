@@ -21,13 +21,20 @@ class PermissionsUseCase(
 
         val permission =
             when (memberType) {
-                MemberType.SUPER_ADMIN, MemberType.ADMIN -> getAdminPermissions()
-                MemberType.SUPERVISOR -> getSupervisorPermissions()
-                MemberType.MEMBER ->
+                MemberType.SUPER_ADMIN, MemberType.ADMIN -> {
+                    getAdminPermissions()
+                }
+
+                MemberType.SUPERVISOR -> {
+                    getSupervisorPermissions()
+                }
+
+                MemberType.MEMBER -> {
                     getSupervisorPermissions().copy(
                         canEditMember = canUpdateSelf,
                         canDeleteAttendance = canUpdateSelf,
                     )
+                }
             }
         return MutableStateFlow(permission)
     }

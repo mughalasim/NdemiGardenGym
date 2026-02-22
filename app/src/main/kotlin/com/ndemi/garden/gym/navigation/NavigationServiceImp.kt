@@ -64,14 +64,17 @@ class NavigationServiceImp(
             Route.LoginScreen
         } else {
             when (permissionsUseCase.getMemberType()) {
-                MemberType.MEMBER ->
+                MemberType.MEMBER -> {
                     Route.ProfileMemberScreen
+                }
 
-                MemberType.ADMIN, MemberType.SUPERVISOR ->
+                MemberType.ADMIN, MemberType.SUPERVISOR -> {
                     Route.MembersScreen
+                }
 
-                MemberType.SUPER_ADMIN ->
+                MemberType.SUPER_ADMIN -> {
                     Route.ProfileSuperAdminScreen
+                }
             }
         }
 
@@ -84,25 +87,30 @@ class NavigationServiceImp(
             )
         } else {
             when (permissionsUseCase.getMemberType()) {
-                MemberType.MEMBER ->
+                MemberType.MEMBER -> {
                     listOf(
                         BottomNavItem.ProfileMemberScreen,
                         BottomNavItem.AttendanceScreen,
                         BottomNavItem.PaymentsScreen,
                         BottomNavItem.MembersActiveScreen,
                     )
-                MemberType.ADMIN, MemberType.SUPERVISOR ->
+                }
+
+                MemberType.ADMIN, MemberType.SUPERVISOR -> {
                     listOf(
                         BottomNavItem.MembersScreen,
                         BottomNavItem.MembersExpiredScreen,
                         BottomNavItem.MembersActiveScreen,
                         BottomNavItem.ProfileAdminScreen,
                     )
-                MemberType.SUPER_ADMIN ->
+                }
+
+                MemberType.SUPER_ADMIN -> {
                     listOf(
                         BottomNavItem.ProfileSuperAdminScreen,
                         BottomNavItem.NonMembersScreen,
                     )
+                }
             }
         }
 }

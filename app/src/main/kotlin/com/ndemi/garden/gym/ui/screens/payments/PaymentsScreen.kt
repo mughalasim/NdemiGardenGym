@@ -108,7 +108,9 @@ fun PaymentsScreen(
                         )
                     }
 
-                    else -> Unit
+                    else -> {
+                        Unit
+                    }
                 }
             }
         }

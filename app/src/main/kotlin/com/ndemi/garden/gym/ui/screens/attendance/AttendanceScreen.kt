@@ -89,7 +89,9 @@ fun AttendanceScreen(
                     )
                 }
 
-                else -> Unit
+                else -> {
+                    Unit
+                }
             }
         }
     }

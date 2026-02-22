@@ -92,13 +92,11 @@ private fun ImageIcon(
                 .background(
                     color = AppTheme.colors.backgroundCard,
                     shape = RoundedCornerShape(percent = 100),
-                )
-                .border(
+                ).border(
                     width = line_thickness,
                     color = AppTheme.colors.backgroundScreen,
                     shape = RoundedCornerShape(percent = 100),
-                )
-                .padding(padding_screen_tiny)
+                ).padding(padding_screen_tiny)
                 .clickable {
                     onClickListener.invoke()
                 },

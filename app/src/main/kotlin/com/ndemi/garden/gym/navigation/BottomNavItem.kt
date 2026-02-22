@@ -12,7 +12,11 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.ndemi.garden.gym.R
 
-sealed class BottomNavItem(val route: Route, val icon: ImageVector, val label: Int) {
+sealed class BottomNavItem(
+    val route: Route,
+    val icon: ImageVector,
+    val label: Int,
+) {
     data object LoginScreen : BottomNavItem(
         Route.LoginScreen,
         Icons.Rounded.Lock,

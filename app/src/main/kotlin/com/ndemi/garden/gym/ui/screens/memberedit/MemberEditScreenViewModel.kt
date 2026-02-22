@@ -80,43 +80,58 @@ class MemberEditScreenViewModel(
 
     private fun validateInput() {
         when {
-            validators.name.isNotValid(_memberEntity.value.firstName) ->
+            validators.name.isNotValid(_memberEntity.value.firstName) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_FIRST_NAME),
                         MemberEditScreenInputType.FIRST_NAME,
                     ),
                 )
-            validators.name.isNotValid(_memberEntity.value.lastName) ->
+            }
+
+            validators.name.isNotValid(_memberEntity.value.lastName) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_LAST_NAME),
                         MemberEditScreenInputType.LAST_NAME,
                     ),
                 )
-            validators.phone.isNotValid(_memberEntity.value.phoneNumber) ->
+            }
+
+            validators.phone.isNotValid(_memberEntity.value.phoneNumber) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_PHONE_NUMBER),
                         MemberEditScreenInputType.PHONE_NUMBER,
                     ),
                 )
-            validators.height.isNotValid(_memberEntity.value.height) ->
+            }
+
+            validators.height.isNotValid(_memberEntity.value.height) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_HEIGHT),
                         MemberEditScreenInputType.HEIGHT,
                     ),
                 )
-            validators.apartmentNumber.isNotValid(_memberEntity.value.apartmentNumber) ->
+            }
+
+            validators.apartmentNumber.isNotValid(_memberEntity.value.apartmentNumber) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_APARTMENT_NUMBER),
                         MemberEditScreenInputType.APARTMENT_NUMBER,
                     ),
                 )
-            initialMemberEntity.value.isNotEqualTo(_memberEntity.value) -> sendAction(Action.SetReadyToUpdate)
-            else -> sendAction(Action.SetWaiting)
+            }
+
+            initialMemberEntity.value.isNotEqualTo(_memberEntity.value) -> {
+                sendAction(Action.SetReadyToUpdate)
+            }
+
+            else -> {
+                sendAction(Action.SetWaiting)
+            }
         }
     }
 
@@ -150,8 +165,9 @@ class MemberEditScreenViewModel(
         viewModelScope.launch {
             memberUseCase.deleteMember(_memberEntity.value).also {
                 when (it) {
-                    is DomainResult.Error ->
+                    is DomainResult.Error -> {
                         showSnackbar(SnackbarType.ERROR, converter.getMessage(it.error))
+                    }
 
                     is DomainResult.Success -> {
                         showSnackbar(SnackbarType.SUCCESS, "Successfully deleted member")
@@ -166,10 +182,11 @@ class MemberEditScreenViewModel(
         if (uiStateFlow.value == UiState.ReadyToUpdate) {
             sendAction(Action.SetLoading)
             viewModelScope.launch {
-                memberUseCase.updateMember(
-                    memberEntity = _memberEntity.value,
-                    memberUpdateType = MemberUpdateType.DETAILS,
-                ).also { getMemberForId(initialMemberEntity.value.id, showMessage = true) }
+                memberUseCase
+                    .updateMember(
+                        memberEntity = _memberEntity.value,
+                        memberUpdateType = MemberUpdateType.DETAILS,
+                    ).also { getMemberForId(initialMemberEntity.value.id, showMessage = true) }
             }
         }
     }
@@ -184,7 +201,10 @@ class MemberEditScreenViewModel(
 
         data object Waiting : UiState
 
-        data class Error(val message: String, val inputType: MemberEditScreenInputType) : UiState
+        data class Error(
+            val message: String,
+            val inputType: MemberEditScreenInputType,
+        ) : UiState
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -200,7 +220,10 @@ class MemberEditScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Waiting
         }
 
-        data class ShowError(val message: String, val inputType: MemberEditScreenInputType = MemberEditScreenInputType.NONE) : Action {
+        data class ShowError(
+            val message: String,
+            val inputType: MemberEditScreenInputType = MemberEditScreenInputType.NONE,
+        ) : Action {
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
     }

@@ -72,11 +72,13 @@ class LoginScreenViewModel(
         viewModelScope.launch {
             accessUseCase.login(_inputData.value.email, _inputData.value.password).also {
                 when (it) {
-                    is DomainResult.Success ->
+                    is DomainResult.Success -> {
                         sendAction(Action.Success)
+                    }
 
-                    is DomainResult.Error ->
+                    is DomainResult.Error -> {
                         sendAction(Action.ShowError(converter.getMessage(it.error)))
+                    }
                 }
             }
         }

@@ -82,8 +82,8 @@ sealed class Route {
 
     companion object {
         @Suppress("detekt.CyclomaticComplexMethod")
-        fun String.toRoute(): Route {
-            return when {
+        fun String.toRoute(): Route =
+            when {
                 this.contains(ResetPasswordScreen.javaClass.simpleName) -> ResetPasswordScreen
                 this.contains(RegisterScreen.javaClass.simpleName) -> RegisterScreen
                 this.contains(RegisterNewScreen.javaClass.simpleName) -> RegisterNewScreen
@@ -101,6 +101,5 @@ sealed class Route {
                 this.contains("MemberEditScreen") -> MemberEditScreen()
                 else -> LoginScreen
             }
-        }
     }
 }

@@ -60,13 +60,16 @@ fun ResetPasswordDetailsScreen(
 
         if (uiState is UiState.Error) {
             when (uiState.inputType) {
-                ResetScreenInputType.NONE ->
+                ResetScreenInputType.NONE -> {
                     snackbarHostState.Show(
                         type = SnackbarType.ERROR,
                         message = uiState.message,
                     )
+                }
 
-                ResetScreenInputType.EMAIL -> errorEmail = uiState.message
+                ResetScreenInputType.EMAIL -> {
+                    errorEmail = uiState.message
+                }
             }
         }
 

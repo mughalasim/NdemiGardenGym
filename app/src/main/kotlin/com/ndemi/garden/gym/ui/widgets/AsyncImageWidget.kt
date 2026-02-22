@@ -16,7 +16,8 @@ fun AsyncImageWidget(
 ) {
     AsyncImage(
         model =
-            ImageRequest.Builder(LocalContext.current)
+            ImageRequest
+                .Builder(LocalContext.current)
                 .data(profileImageUrl)
                 .crossfade(true)
                 .build(),

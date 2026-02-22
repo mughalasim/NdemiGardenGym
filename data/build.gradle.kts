@@ -1,7 +1,5 @@
 plugins {
-    alias(libs.plugins.kapt)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.detekt)
     alias(libs.plugins.spotless)
     alias(libs.plugins.kotlin.serialization)
@@ -11,19 +9,21 @@ apply(from = "${rootProject.projectDir}/lint.gradle")
 
 android {
     namespace = "cv.data"
-    compileSdk = libs.versions.appCompileSdk.get().toInt()
+    compileSdk =
+        libs.versions.appCompileSdk
+            .get()
+            .toInt()
 
     defaultConfig {
-        minSdk = libs.versions.appMinSdk.get().toInt()
+        minSdk =
+            libs.versions.appMinSdk
+                .get()
+                .toInt()
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_21.toString()
     }
 }
 

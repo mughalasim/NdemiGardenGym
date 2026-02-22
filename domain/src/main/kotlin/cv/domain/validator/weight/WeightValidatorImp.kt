@@ -6,11 +6,8 @@ class WeightValidatorImp : Validator {
     override fun isNotValid(value: String): Boolean =
         when {
             value.isEmpty() -> true
-
             !value.matches(Regex(REGEX_WEIGHT)) -> true
-
             value.toDouble() < LOWEST_WEIGHT || value.toDouble() > HIGHEST_WEIGHT -> true
-
             else -> false
         }
 }

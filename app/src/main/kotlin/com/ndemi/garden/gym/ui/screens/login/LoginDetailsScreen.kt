@@ -52,15 +52,20 @@ fun LoginScreenDetails(
 
         if (uiState is UiState.Error) {
             when (uiState.inputType) {
-                LoginScreenInputType.NONE ->
+                LoginScreenInputType.NONE -> {
                     snackbarHostState.Show(
                         type = SnackbarType.ERROR,
                         message = uiState.message,
                     )
+                }
 
-                LoginScreenInputType.EMAIL -> emailError = uiState.message
+                LoginScreenInputType.EMAIL -> {
+                    emailError = uiState.message
+                }
 
-                LoginScreenInputType.PASSWORD -> passwordError = uiState.message
+                LoginScreenInputType.PASSWORD -> {
+                    passwordError = uiState.message
+                }
             }
         }
 

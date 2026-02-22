@@ -47,8 +47,14 @@ class PaymentAddScreenViewModel(
     ) {
         _inputData.value =
             when (inputType) {
-                NONE -> _inputData.value
-                START_DATE -> _inputData.value.copy(startDate = startDate)
+                NONE -> {
+                    _inputData.value
+                }
+
+                START_DATE -> {
+                    _inputData.value.copy(startDate = startDate)
+                }
+
                 MONTH_DURATION -> {
                     if (monthDuration.isNotEmpty() && monthDuration.isDigitsOnly()) {
                         _inputData.value.copy(monthDuration = monthDuration.toInt())
@@ -56,6 +62,7 @@ class PaymentAddScreenViewModel(
                         _inputData.value.copy(monthDuration = 0)
                     }
                 }
+
                 AMOUNT -> {
                     if (amount.isNotEmpty() && amount.isDigitsOnly()) {
                         _inputData.value.copy(amount = amount.toInt())
@@ -95,20 +102,24 @@ class PaymentAddScreenViewModel(
         val endDate = startDate.plusMonths(monthDuration)
 
         viewModelScope.launch {
-            paymentUseCase.addPaymentPlanForMember(
-                memberId = memberId,
-                startDate = startDate.millis,
-                endDate = endDate.millis,
-                amount = amount,
-                isInTheFuture = endDate.isAfterNow,
-            ).also {
-                when (it) {
-                    is DomainResult.Error ->
-                        sendAction(Action.ShowError(converter.getMessage(it.error), AMOUNT))
+            paymentUseCase
+                .addPaymentPlanForMember(
+                    memberId = memberId,
+                    startDate = startDate.millis,
+                    endDate = endDate.millis,
+                    amount = amount,
+                    isInTheFuture = endDate.isAfterNow,
+                ).also {
+                    when (it) {
+                        is DomainResult.Error -> {
+                            sendAction(Action.ShowError(converter.getMessage(it.error), AMOUNT))
+                        }
 
-                    is DomainResult.Success -> navigationService.popBack()
+                        is DomainResult.Success -> {
+                            navigationService.popBack()
+                        }
+                    }
                 }
-            }
         }
     }
 
@@ -124,7 +135,10 @@ class PaymentAddScreenViewModel(
 
         data object Loading : UiState
 
-        data class Error(val message: String, val inputType: PaymentAddScreenInputType) : UiState
+        data class Error(
+            val message: String,
+            val inputType: PaymentAddScreenInputType,
+        ) : UiState
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -136,7 +150,10 @@ class PaymentAddScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowError(val message: String, val inputType: PaymentAddScreenInputType) : Action {
+        data class ShowError(
+            val message: String,
+            val inputType: PaymentAddScreenInputType,
+        ) : Action {
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
     }

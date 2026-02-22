@@ -15,7 +15,8 @@ import retrofit2.Retrofit
 val apiModule =
     module {
         single<OkHttpClient> {
-            OkHttpClient.Builder()
+            OkHttpClient
+                .Builder()
                 .addInterceptor(
                     HttpLoggingInterceptor { message ->
                         get<AppLoggerRepository>().log("Http: $message")
@@ -27,20 +28,21 @@ val apiModule =
                                 HttpLoggingInterceptor.Level.NONE
                             }
                     },
-                )
-                .build()
+                ).build()
         }
 
         single<Converter.Factory> {
             @Suppress("JSON_FORMAT_REDUNDANT")
-            kotlinx.serialization.json.Json {
-                ignoreUnknownKeys = true
-                isLenient = true
-            }.asConverterFactory("application/json".toMediaType())
+            kotlinx.serialization.json
+                .Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                }.asConverterFactory("application/json".toMediaType())
         }
 
         single<Retrofit> {
-            Retrofit.Builder()
+            Retrofit
+                .Builder()
                 .baseUrl(BuildConfig.API_BASE_URL)
                 .client(get())
                 .addConverterFactory(get())

@@ -58,14 +58,24 @@ fun PaymentAddDetailsScreen(
 
     if (uiState is UiState.Error) {
         when (uiState.inputType) {
-            PaymentAddScreenInputType.START_DATE -> errorStartDate = uiState.message
-            PaymentAddScreenInputType.MONTH_DURATION -> errorMonthDuration = uiState.message
-            PaymentAddScreenInputType.AMOUNT -> errorAmount = uiState.message
-            PaymentAddScreenInputType.NONE ->
+            PaymentAddScreenInputType.START_DATE -> {
+                errorStartDate = uiState.message
+            }
+
+            PaymentAddScreenInputType.MONTH_DURATION -> {
+                errorMonthDuration = uiState.message
+            }
+
+            PaymentAddScreenInputType.AMOUNT -> {
+                errorAmount = uiState.message
+            }
+
+            PaymentAddScreenInputType.NONE -> {
                 snackbarHostState.Show(
                     type = SnackbarType.ERROR,
                     message = uiState.message,
                 )
+            }
         }
     }
 

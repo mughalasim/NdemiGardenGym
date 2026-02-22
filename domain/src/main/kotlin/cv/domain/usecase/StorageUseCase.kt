@@ -26,7 +26,10 @@ class StorageUseCase(
                 ),
         )
         return when (val responseUploadFile = storageRepository.updateImageForMember(memberEntity.id, byteArray)) {
-            is DomainResult.Error -> DomainResult.Error(DomainErrorType.UPLOAD_FAILURE)
+            is DomainResult.Error -> {
+                DomainResult.Error(DomainErrorType.UPLOAD_FAILURE)
+            }
+
             is DomainResult.Success -> {
                 memberRepository.updateMember(memberEntity.copy(profileImageUrl = responseUploadFile.data))
             }

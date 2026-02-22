@@ -46,8 +46,9 @@ class MainScreenViewModel(
         ) { auth, version, member ->
             _emailVerifiedState.value = EmailVerifiedState.Hidden
             when {
-                version is VersionState.UpdateRequired ->
+                version is VersionState.UpdateRequired -> {
                     _uiState.value = UiState.UpdateRequired(version.url)
+                }
 
                 auth == AuthState.Authorised && member is MemberState.Authenticated -> {
                     if (!member.member.emailVerified) {
@@ -60,15 +61,17 @@ class MainScreenViewModel(
                         )
                 }
 
-                auth == AuthState.Authorised && member is MemberState.UserNotFound ->
+                auth == AuthState.Authorised && member is MemberState.UserNotFound -> {
                     _uiState.value = UiState.UserNotFound(member.message)
+                }
 
-                auth == AuthState.UnAuthorised ->
+                auth == AuthState.UnAuthorised -> {
                     _uiState.value =
                         UiState.Ready(
                             initialRoute = navigationService.getInitialRoute(),
                             bottomNavItems = navigationService.getBottomNavItems(),
                         )
+                }
             }
         }.launchIn(viewModelScope)
         getVersionState()
@@ -89,6 +92,7 @@ class MainScreenViewModel(
                     is DomainResult.Success -> {
                         _emailVerifiedState.value = EmailVerifiedState.Success
                     }
+
                     is DomainResult.Error -> {
                         _emailVerifiedState.value = EmailVerifiedState.Error(converter.getMessage(result.error))
                     }
@@ -101,10 +105,13 @@ class MainScreenViewModel(
         viewModelScope.launch {
             authUseCase.getAppVersion().collect {
                 when (it) {
-                    is DomainResult.Success ->
+                    is DomainResult.Success -> {
                         versionState.value = VersionState.UpdateRequired(it.data)
+                    }
 
-                    is DomainResult.Error -> versionState.value = VersionState.UpdateNotRequired
+                    is DomainResult.Error -> {
+                        versionState.value = VersionState.UpdateNotRequired
+                    }
                 }
             }
         }
@@ -118,8 +125,9 @@ class MainScreenViewModel(
                         job += getMemberState()
                     }
 
-                    is DomainResult.Error ->
+                    is DomainResult.Error -> {
                         authState.value = AuthState.UnAuthorised
+                    }
                 }
             }
         }
@@ -128,11 +136,13 @@ class MainScreenViewModel(
         viewModelScope.launch {
             authUseCase.getLoggedInUser().collect {
                 when (it) {
-                    is DomainResult.Success ->
+                    is DomainResult.Success -> {
                         memberState.value = MemberState.Authenticated(it.data)
+                    }
 
-                    is DomainResult.Error ->
+                    is DomainResult.Error -> {
                         memberState.value = MemberState.UserNotFound(converter.getMessage(it.error))
+                    }
                 }
             }
         }
@@ -143,7 +153,9 @@ class MainScreenViewModel(
 
         data object UpdateNotRequired : VersionState
 
-        data class UpdateRequired(val url: String) : VersionState
+        data class UpdateRequired(
+            val url: String,
+        ) : VersionState
     }
 
     @Immutable
@@ -159,9 +171,13 @@ class MainScreenViewModel(
     sealed interface MemberState {
         data object Loading : MemberState
 
-        data class UserNotFound(val message: String) : MemberState
+        data class UserNotFound(
+            val message: String,
+        ) : MemberState
 
-        data class Authenticated(val member: MemberEntity) : MemberState
+        data class Authenticated(
+            val member: MemberEntity,
+        ) : MemberState
     }
 
     @Immutable
@@ -172,17 +188,26 @@ class MainScreenViewModel(
 
         data object Success : EmailVerifiedState
 
-        data class Error(val message: String) : EmailVerifiedState
+        data class Error(
+            val message: String,
+        ) : EmailVerifiedState
     }
 
     @Immutable
     sealed interface UiState {
         data object Loading : UiState
 
-        data class UpdateRequired(val url: String) : UiState
+        data class UpdateRequired(
+            val url: String,
+        ) : UiState
 
-        data class Ready(val initialRoute: Route, val bottomNavItems: List<BottomNavItem>) : UiState
+        data class Ready(
+            val initialRoute: Route,
+            val bottomNavItems: List<BottomNavItem>,
+        ) : UiState
 
-        data class UserNotFound(val message: String) : UiState
+        data class UserNotFound(
+            val message: String,
+        ) : UiState
     }
 }

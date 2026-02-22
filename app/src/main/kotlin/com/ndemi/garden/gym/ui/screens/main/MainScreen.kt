@@ -21,9 +21,11 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel<MainScreenViewMode
     val uriHandler = LocalUriHandler.current
 
     when (val state = uiState) {
-        UiState.Loading -> LoadingScreenWidget()
+        UiState.Loading -> {
+            LoadingScreenWidget()
+        }
 
-        is UiState.UpdateRequired ->
+        is UiState.UpdateRequired -> {
             MessageScreen(
                 title = stringResource(R.string.txt_app_update_title),
                 message = stringResource(R.string.txt_app_update_desc),
@@ -34,14 +36,16 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel<MainScreenViewMode
                     }
                 },
             )
+        }
 
-        is UiState.UserNotFound ->
+        is UiState.UserNotFound -> {
             MessageScreen(
                 title = stringResource(R.string.txt_alert),
                 message = state.message,
                 buttonText = stringResource(R.string.txt_logout),
                 onButtonTapped = viewModel::onLogOutTapped,
             )
+        }
 
         is UiState.Ready -> {
             MainDetailsScreen(

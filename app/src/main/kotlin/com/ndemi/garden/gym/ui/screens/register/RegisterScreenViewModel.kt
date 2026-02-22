@@ -83,7 +83,11 @@ class RegisterScreenViewModel(
                 )
             }
 
-            email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+            email.isEmpty() ||
+                !android.util.Patterns.EMAIL_ADDRESS
+                    .matcher(email)
+                    .matches()
+            -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_EMAIL),
@@ -101,7 +105,9 @@ class RegisterScreenViewModel(
                 )
             }
 
-            shouldValidatePassword -> passwordCheck()
+            shouldValidatePassword -> {
+                passwordCheck()
+            }
 
             else -> {
                 sendAction(Action.SetReady)
@@ -154,15 +160,16 @@ class RegisterScreenViewModel(
     fun onRegisterTapped() {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            accessUseCase.register(
-                inputData.value.email,
-                inputData.value.password,
-            ).also {
-                when (it) {
-                    is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
-                    is DomainResult.Success -> updateMember(it.data, MemberUpdateType.REGISTRATION)
+            accessUseCase
+                .register(
+                    inputData.value.email,
+                    inputData.value.password,
+                ).also {
+                    when (it) {
+                        is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
+                        is DomainResult.Success -> updateMember(it.data, MemberUpdateType.REGISTRATION)
+                    }
                 }
-            }
         }
     }
 
@@ -200,10 +207,13 @@ class RegisterScreenViewModel(
                     memberUpdateType,
                 ).also {
                     when (it) {
-                        is DomainResult.Error ->
+                        is DomainResult.Error -> {
                             sendAction(Action.ShowError(converter.getMessage(it.error)))
+                        }
 
-                        is DomainResult.Success -> sendAction(Action.Success)
+                        is DomainResult.Success -> {
+                            sendAction(Action.Success)
+                        }
                     }
                 }
         }

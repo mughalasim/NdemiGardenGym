@@ -23,7 +23,8 @@ fun ProfileAdminScreen(
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
             imageUri?.let {
-                context.contentResolver.openInputStream(imageUri)
+                context.contentResolver
+                    .openInputStream(imageUri)
                     ?.use { inputStream -> inputStream.buffered().readBytes() }
                     ?.let { byteArray -> viewModel.updateMemberImage(byteArray) }
             }
@@ -38,9 +39,11 @@ fun ProfileAdminScreen(
     // 10 top active members - List or members and attendance count
 
     when (val state = uiState) {
-        is UiState.Loading -> LoadingScreenWidget()
+        is UiState.Loading -> {
+            LoadingScreenWidget()
+        }
 
-        is UiState.Success ->
+        is UiState.Success -> {
             ProfileAdminScreenDetails(
                 state = state.adminDashboard,
                 listeners =
@@ -51,5 +54,6 @@ fun ProfileAdminScreen(
                         onImageSelected = { galleryLauncher.launch("image/*") },
                     ),
             )
+        }
     }
 }

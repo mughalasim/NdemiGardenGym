@@ -26,6 +26,7 @@ internal class ApiResultCall<D>(
                                     Response.success(ApiResult.Success(it)),
                                 )
                             }
+
                             in 400..409 -> {
                                 callback.onResponse(
                                     this@ApiResultCall,
@@ -54,9 +55,7 @@ internal class ApiResultCall<D>(
 
     override fun clone(): Call<ApiResult<D>> = ApiResultCall(callDelegate.clone())
 
-    override fun execute(): Response<ApiResult<D>> {
-        throw UnsupportedOperationException("ResponseCall does not support execute.")
-    }
+    override fun execute(): Response<ApiResult<D>> = throw UnsupportedOperationException("ResponseCall does not support execute.")
 
     override fun isExecuted(): Boolean = callDelegate.isExecuted
 

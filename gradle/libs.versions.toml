@@ -1,36 +1,37 @@
 [versions]
 appName = "Ndemi Garden Gym"
 appNamespaceId = "com.ndemi.garden.gym"
-appVersionCode = "161"
-appVersionName = "16.1"
-appCompileSdk = "35"
-appTargetSdk = "35"
+appVersionCode = "170"
+appVersionName = "17.0"
+appCompileSdk = "36"
+appTargetSdk = "36"
 appMinSdk = "24"
 materialIconsExtendedAndroid = "1.7.8"
-coilCompose = "2.6.0"
-firebaseBom = "33.13.0"
-kotlinxSerializationJson = "1.6.3"
-activity-compose = "1.10.1"
+coilCompose = "2.7.0"
+firebaseBom = "34.9.0"
+kotlinxSerializationJson = "1.10.0"
+activity-compose = "1.12.4"
 android-joda = "2.12.7"
 annotation-jvm = "1.9.1"
-compose = "1.8.0"
-core-ktx = "1.16.0"
-coroutines = "1.8.0"
+compose = "1.10.3"
+core-ktx = "1.17.0"
+coroutines = "1.10.2"
 junit = "4.13.2"
-koin-android = "3.5.3"
-lifecycle = "2.8.7"
+koin-android = "4.1.1"
+lifecycle = "2.10.0"
 lifecycle-extensions = "2.2.0"
 navigation-compose = "2.8.9"
 okhttpBom = "4.12.0"
 retrofit = "2.11.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
-spotless = "6.25.0"
-detekt = "1.23.5"
-kotlin = "2.0.0"
-androidGradlePlugin = "8.9.2"
-google = "4.4.2"
-crashlytics = "3.0.3"
-material3Android = "1.3.2"
+spotless = "8.2.1"
+detekt = "1.23.8"
+kotlin = "2.3.10"
+androidGradlePlugin = "9.0.1"
+google = "4.4.4"
+crashlytics = "3.0.6"
+material3Android = "1.4.0"
+inject = "1"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -71,6 +72,7 @@ runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata", versi
 ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
+javax-inject = { module = "javax.inject:javax.inject", version.ref = "inject" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

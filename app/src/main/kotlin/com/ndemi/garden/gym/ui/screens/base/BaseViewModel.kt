@@ -12,7 +12,9 @@ import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
 @Suppress("ktPropBy")
-open class BaseViewModel<State : BaseState, Action : BaseAction<State>>(initialViewState: State) : ViewModel() {
+open class BaseViewModel<State : BaseState, Action : BaseAction<State>>(
+    initialViewState: State,
+) : ViewModel() {
     private val _uiStateFlow = MutableStateFlow(initialViewState)
     val uiStateFlow = _uiStateFlow.asStateFlow()
 
@@ -46,7 +48,10 @@ open class BaseViewModel<State : BaseState, Action : BaseAction<State>>(initialV
     sealed interface SnackbarState {
         data object Gone : SnackbarState
 
-        data class Visible(val snackbarType: SnackbarType, val message: String) : SnackbarState
+        data class Visible(
+            val snackbarType: SnackbarType,
+            val message: String,
+        ) : SnackbarState
     }
 }
 

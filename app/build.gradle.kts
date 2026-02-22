@@ -6,10 +6,8 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kapt)
     alias(libs.plugins.google.services)
     alias(libs.plugins.crashlytics)
     alias(libs.plugins.detekt)
@@ -18,19 +16,31 @@ plugins {
 
 apply(from = "${rootProject.projectDir}/lint.gradle")
 
-val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystorePropertiesFile: File = rootProject.file("keystore.properties")
 val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 android {
     namespace = libs.versions.appNamespaceId.get()
-    compileSdk = libs.versions.appCompileSdk.get().toInt()
+    compileSdk =
+        libs.versions.appCompileSdk
+            .get()
+            .toInt()
 
     defaultConfig {
         applicationId = libs.versions.appNamespaceId.get()
-        minSdk = libs.versions.appMinSdk.get().toInt()
-        targetSdk = libs.versions.appTargetSdk.get().toInt()
-        versionCode = libs.versions.appVersionCode.get().toInt()
+        minSdk =
+            libs.versions.appMinSdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.appTargetSdk
+                .get()
+                .toInt()
+        versionCode =
+            libs.versions.appVersionCode
+                .get()
+                .toInt()
         versionName = libs.versions.appVersionName.get()
 
         setConfigVariable(variableName = "CURRENCY_CODE", variableSource = "CURRENCY_CODE")
@@ -70,15 +80,12 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        resValues = true
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_21.toString()
     }
 
     flavorDimensions += "version"
@@ -105,10 +112,6 @@ android {
             setConfigVariable(variableName = "EMAIL_SUPERVISOR", variableSource = "EMAIL_SUPERVISOR_LIVE")
             setConfigVariable(variableName = "EMAIL_MEMBER", variableSource = "EMAIL_MEMBER_LIVE")
             setConfigVariable(variableName = "TEST_PASS", variableSource = "TEST_PASS")
-            setProperty(
-                "archivesBaseName",
-                "${libs.versions.appName.get()} (${libs.versions.appVersionName.get()})",
-            )
         }
 
         create("Staging") {
@@ -138,16 +141,7 @@ android {
             setConfigVariable(variableName = "EMAIL_SUPERVISOR", variableSource = "EMAIL_SUPERVISOR_STAGING")
             setConfigVariable(variableName = "EMAIL_MEMBER", variableSource = "EMAIL_MEMBER_STAGING")
             setConfigVariable(variableName = "TEST_PASS", variableSource = "TEST_PASS")
-
-            setProperty(
-                "archivesBaseName",
-                "${libs.versions.appName.get()} (${libs.versions.appVersionName.get()})",
-            )
         }
-    }
-
-    kapt {
-        correctErrorTypes = true
     }
 
     firebaseCrashlytics {
@@ -223,6 +217,8 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.javax.inject)
 
     // TESTING -------------------------------------------------------------------------------------
     testImplementation(libs.junit)

@@ -39,7 +39,9 @@ class PaymentUseCase(
         if (paymentResult is DomainResult.Error || !isInTheFuture) return paymentResult
 
         return when (val memberResult = memberRepository.getMemberById(memberId)) {
-            is DomainResult.Error -> DomainResult.Error(memberResult.error)
+            is DomainResult.Error -> {
+                DomainResult.Error(memberResult.error)
+            }
 
             is DomainResult.Success -> {
                 memberRepository.updateMember(
@@ -56,7 +58,9 @@ class PaymentUseCase(
         if (paymentResult is DomainResult.Error) return paymentResult
 
         return when (val memberResult = memberRepository.getMemberById(paymentEntity.memberId)) {
-            is DomainResult.Error -> DomainResult.Error(memberResult.error)
+            is DomainResult.Error -> {
+                DomainResult.Error(memberResult.error)
+            }
 
             is DomainResult.Success -> {
                 if (memberResult.data.renewalFutureDateMillis == paymentEntity.endDateMillis) {
