@@ -13,6 +13,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
+import java.util.Date
 
 class AdminDashboardUseCase(
     private val authRepository: AuthRepository,
@@ -21,62 +22,87 @@ class AdminDashboardUseCase(
     private val attendanceRepository: AttendanceRepository,
     private val dateProviderRepository: DateProviderRepository,
 ) {
-    fun invoke() =
+    fun invoke(currentDate: Date) =
         callbackFlow {
-            val currentYear = dateProviderRepository.getYear()
-            val currentMonth = dateProviderRepository.getMonth()
-
-            var totalRegisteredUsers: Int
-            var totalExpiredUsers: Int
-            var totalRevenueYear: Double
-            var totalRevenueMonth: Double
-            val topTenActiveMembers = mutableListOf<Pair<MemberEntity, Int>>()
-            val topTenPayingMembers = mutableListOf<Pair<MemberEntity, Double>>()
+            val currentYear = dateProviderRepository.getYear(currentDate)
+            val currentMonth = dateProviderRepository.getMonth(currentDate)
 
             val loggedInUser = authRepository.getLoggedInUser().first()
             val allMembers = memberRepository.getMembers(MemberFetchType.MEMBERS).first()
             val allPayments = paymentRepository.getAllPayments(year = currentYear).first()
-            val allAttendances = attendanceRepository.getAllAttendances(year = currentYear, month = currentMonth).first()
+            val allMonthlyAttendances = attendanceRepository.getAllAttendances(year = currentYear, month = currentMonth).first()
 
             when {
                 loggedInUser is DomainResult.Error ||
                     allMembers is DomainResult.Error ||
                     allPayments is DomainResult.Error ||
-                    allAttendances is DomainResult.Error -> {
-                    trySend(AdminDashboard())
+                    allMonthlyAttendances is DomainResult.Error -> {
+                    trySend(
+                        AdminDashboard(
+                            selectedYear = currentYear,
+                            selectedMonth = currentMonth,
+                        ),
+                    )
                     cancel()
                 }
 
                 loggedInUser is DomainResult.Success &&
                     allMembers is DomainResult.Success &&
                     allPayments is DomainResult.Success &&
-                    allAttendances is DomainResult.Success -> {
-                    totalRegisteredUsers = allMembers.data.size
-                    totalExpiredUsers = allMembers.data.filter { !it.hasPaidMembership() }.size
-                    totalRevenueYear = allPayments.data.totalAmount
-                    totalRevenueMonth =
+                    allMonthlyAttendances is DomainResult.Success -> {
+                    val topTenActiveMembers = mutableListOf<Pair<MemberEntity, Int>>()
+                    val topTenPayingMembers = mutableListOf<Pair<MemberEntity, Double>>()
+                    val memberAttendanceInfo = mutableListOf<Pair<MemberEntity, Int>>()
+                    val memberPaymentInfo = mutableListOf<Pair<MemberEntity, Double>>()
+                    val totalRegisteredUsers = allMembers.data.size
+                    val totalExpiredUsers = allMembers.data.filter { !it.hasPaidMembership() }.size
+                    val totalRevenueYear = allPayments.data.totalAmount
+                    val totalRevenueMonth =
                         allPayments.data.payments
                             .filter {
-                                dateProviderRepository.isWithinCurrentMonth(startTime = it.startDateMillis, endTime = it.startDateMillis)
+                                dateProviderRepository.isWithinCurrentMonth(
+                                    startTime = it.startDateMillis,
+                                    endTime = it.startDateMillis,
+                                    currentDate,
+                                )
                             }.sumOf { it.amount }
 
-                    val memberInfo = mutableListOf<Triple<MemberEntity, Int, Double>>()
+                    memberAttendanceInfo.clear()
+                    memberPaymentInfo.clear()
                     allMembers.data.forEach {
-                        val memberAttendances = allAttendances.data.attendances.filter { attendance -> attendance.memberId == it.id }
-                        val memberPayments = allPayments.data.payments.filter { payment -> payment.memberId == it.id }
-                        memberInfo.add(
-                            Triple(
-                                it,
-                                memberAttendances.size,
-                                memberPayments.sumOf { payment -> payment.amount },
-                            ),
-                        )
+                        val memberAttendances =
+                            allMonthlyAttendances.data.attendances
+                                .filter { attendance -> attendance.memberId == it.id }
+                                .size
+                        val memberPayments =
+                            allPayments.data.payments.filter { payment -> payment.memberId == it.id && payment.amount != 0.0 }
+                        val paymentTotal = memberPayments.sumOf { payment -> payment.amount }
+                        if (memberAttendances > 0) {
+                            memberAttendanceInfo.add(Pair(it, memberAttendances))
+                        }
+                        if (paymentTotal != 0.0) {
+                            memberPaymentInfo.add(Pair(it, paymentTotal))
+                        }
                     }
-                    topTenActiveMembers.addAll(memberInfo.sortedByDescending { it.second }.map { Pair(it.first, it.second) }.take(TOP_10))
-                    topTenPayingMembers.addAll(memberInfo.sortedByDescending { it.third }.map { Pair(it.first, it.third) }.take(TOP_10))
+                    topTenActiveMembers.clear()
+                    topTenPayingMembers.clear()
+                    topTenActiveMembers.addAll(
+                        memberAttendanceInfo
+                            .sortedByDescending { it.second }
+                            .map { Pair(it.first, it.second) }
+                            .take(TOP_10),
+                    )
+                    topTenPayingMembers.addAll(
+                        memberPaymentInfo
+                            .sortedByDescending { it.second }
+                            .map { Pair(it.first, it.second) }
+                            .take(TOP_10),
+                    )
 
                     trySend(
                         AdminDashboard(
+                            selectedYear = currentYear,
+                            selectedMonth = currentMonth,
                             memberEntity = loggedInUser.data,
                             totalRegisteredUsers = totalRegisteredUsers,
                             totalExpiredUsers = totalExpiredUsers,

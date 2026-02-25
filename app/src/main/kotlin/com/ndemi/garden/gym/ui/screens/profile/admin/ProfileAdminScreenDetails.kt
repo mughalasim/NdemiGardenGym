@@ -15,8 +15,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.BuildConfig
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
 import com.ndemi.garden.gym.ui.screens.profile.ProfileTopSection
 import com.ndemi.garden.gym.ui.theme.AppTheme
@@ -27,6 +29,8 @@ import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
+import com.ndemi.garden.gym.ui.utils.toMonthName
+import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.AdminDashboard
 
@@ -45,16 +49,34 @@ fun ProfileAdminScreenDetails(
                     .verticalScroll(rememberScrollState()),
         ) {
             Row {
+                DateSelectionWidget(
+                    modifier = Modifier.weight(1f),
+                    selectedText = state.selectedYear.toString(),
+                    label = stringResource(R.string.txt_selected_year),
+                    onPlusTapped = listeners.onYearPlusTapped,
+                    onMinusTapped = listeners.onYearMinusTapped,
+                )
+                Spacer(modifier = Modifier.padding(start = padding_screen_small))
+                DateSelectionWidget(
+                    modifier = Modifier.weight(1f),
+                    selectedText = state.selectedMonth.toMonthName(),
+                    label = stringResource(R.string.txt_selected_month),
+                    onPlusTapped = listeners.onMonthPlusTapped,
+                    onMinusTapped = listeners.onMonthMinusTapped,
+                )
+            }
+
+            Row {
                 Tile(
                     modifier = Modifier.weight(1f),
                     value = state.totalRegisteredUsers.toString(),
-                    description = "Total registered Users",
+                    description = "Total users",
                 )
                 Spacer(modifier = Modifier.padding(start = padding_screen_small))
                 Tile(
                     modifier = Modifier.weight(1f),
                     value = state.totalExpiredUsers.toString(),
-                    description = "Not renewed Membership",
+                    description = "Expired memberships",
                 )
             }
 
@@ -62,13 +84,13 @@ fun ProfileAdminScreenDetails(
                 Tile(
                     modifier = Modifier.weight(1f),
                     value = currencyFormater(state.totalRevenueYear),
-                    description = "Total revenue this year",
+                    description = "Revenue for ${state.selectedYear}",
                 )
                 Spacer(modifier = Modifier.padding(start = padding_screen_small))
                 Tile(
                     modifier = Modifier.weight(1f),
                     value = currencyFormater(state.totalRevenueMonth),
-                    description = "Total revenue this month",
+                    description = "Revenue for ${state.selectedMonth.toMonthName()}",
                 )
             }
 
@@ -79,7 +101,7 @@ fun ProfileAdminScreenDetails(
             ) {
                 TextWidget(
                     style = AppTheme.textStyles.regularBold,
-                    text = "Top 10 paying members",
+                    text = "Top 10 paying members for ${state.selectedYear}",
                 )
                 if (state.topTenPayingMembers.isEmpty()) {
                     TextWidget(
@@ -99,7 +121,7 @@ fun ProfileAdminScreenDetails(
             ) {
                 TextWidget(
                     style = AppTheme.textStyles.regularBold,
-                    text = "Top 10 active members",
+                    text = "Top 10 active members for ${state.selectedMonth.toMonthName()}",
                 )
                 if (state.topTenActiveMembers.isEmpty()) {
                     TextWidget(
@@ -134,15 +156,16 @@ private fun MemberInfoStat(
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         TextWidget(text = name)
-        TextWidget(text = value)
+        TextWidget(text = value, color = AppTheme.colors.primary)
     }
 }
 
 data class ProfileAdminScreenDetailsListeners(
-    val onImageDeleted: () -> Unit = {},
-    val onImageSelected: () -> Unit = {},
-    val onEditDetailsTapped: () -> Unit = {},
     val onLogoutTapped: () -> Unit = {},
+    val onYearPlusTapped: () -> Unit = {},
+    val onYearMinusTapped: () -> Unit = {},
+    val onMonthPlusTapped: () -> Unit = {},
+    val onMonthMinusTapped: () -> Unit = {},
 )
 
 @Composable
@@ -173,7 +196,7 @@ private fun Tile(
         TextWidget(
             modifier = Modifier.align(Alignment.BottomCenter),
             textAlign = TextAlign.Center,
-            style = AppTheme.textStyles.small,
+            style = AppTheme.textStyles.regularBold,
             text = description,
         )
     }

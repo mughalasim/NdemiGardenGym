@@ -1,6 +1,8 @@
 package cv.domain.entities
 
 data class AdminDashboard(
+    val selectedYear: Int = 2025,
+    val selectedMonth: Int = 1,
     val memberEntity: MemberEntity = MemberEntity(),
     val totalRegisteredUsers: Int = 0,
     val totalExpiredUsers: Int = 0,

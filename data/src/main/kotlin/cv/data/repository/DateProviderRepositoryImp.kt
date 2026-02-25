@@ -11,11 +11,16 @@ class DateProviderRepositoryImp : DateProviderRepository {
 
     override fun getYear() = dateTime.year
 
+    override fun getYear(date: Date) = DateTime(date).year
+
     override fun getMonth() = dateTime.monthOfYear
+
+    override fun getMonth(date: Date) = DateTime(date).monthOfYear
 
     override fun isWithinCurrentMonth(
         startTime: Long,
         endTime: Long,
+        currentDate: Date,
     ): Boolean {
         val startDateMonth = DateTime(startTime).monthOfYear
         val endDateMonth = DateTime(endTime).monthOfYear
@@ -23,7 +28,7 @@ class DateProviderRepositoryImp : DateProviderRepository {
         return when {
             startDateMonth > endDateMonth ||
                 endDateMonth - startDateMonth > 1 ||
-                startDateMonth != dateTime.monthOfYear -> false
+                startDateMonth != DateTime(currentDate).monthOfYear -> false
 
             else -> true
         }

@@ -44,7 +44,7 @@ sealed class BottomNavItem(
     data object ProfileSuperAdminScreen : BottomNavItem(
         Route.ProfileSuperAdminScreen,
         Icons.Rounded.Person,
-        R.string.txt_profile,
+        R.string.txt_super_admin,
     )
 
     data object ProfileMemberScreen : BottomNavItem(

@@ -1,11 +1,16 @@
 package com.ndemi.garden.gym.ui.widgets
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
@@ -18,31 +23,38 @@ import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
+import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.icon_size_large
-import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.icon_size_small
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 
 @Composable
-fun YearSelectionWidget(
-    selectedYear: String,
+fun DateSelectionWidget(
+    modifier: Modifier = Modifier,
+    label: String = stringResource(R.string.txt_selected_year),
+    selectedText: String,
     isLoading: Boolean = false,
-    onYearMinusTapped: () -> Unit = {},
-    onYearPlusTapped: () -> Unit = {},
+    onMinusTapped: () -> Unit = {},
+    onPlusTapped: () -> Unit = {},
 ) {
     Row(
         modifier =
-            Modifier
-                .padding(padding_screen)
-                .toAppCardStyle(),
+            modifier
+                .padding(top = padding_screen_small)
+                .wrapContentHeight()
+                .background(
+                    color = AppTheme.colors.backgroundCard,
+                    shape = RoundedCornerShape(border_radius),
+                ).padding(padding_screen_small),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Icon(
             modifier =
                 Modifier
-                    .size(icon_size_large)
-                    .clickable { onYearMinusTapped.invoke() },
+                    .size(icon_size_small)
+                    .clickable { onMinusTapped.invoke() },
             tint = AppTheme.colors.primary,
             imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
             contentDescription = null,
@@ -57,20 +69,20 @@ fun YearSelectionWidget(
                 )
             } else {
                 TextWidget(
-                    text = stringResource(R.string.txt_selected_year),
+                    text = label,
                     style = AppTheme.textStyles.small,
                 )
                 TextWidget(
-                    text = selectedYear,
-                    style = AppTheme.textStyles.large,
+                    text = selectedText,
+                    style = AppTheme.textStyles.regularBold,
                 )
             }
         }
         Icon(
             modifier =
                 Modifier
-                    .size(icon_size_large)
-                    .clickable { onYearPlusTapped.invoke() },
+                    .size(icon_size_small)
+                    .clickable { onPlusTapped.invoke() },
             tint = AppTheme.colors.primary,
             imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
             contentDescription = null,
@@ -80,10 +92,20 @@ fun YearSelectionWidget(
 
 @AppPreview
 @Composable
-private fun AttendanceDateSelectionWidgetPreview() {
+private fun DateSelectionWidgetPreview() {
     AppThemeComposable {
-        YearSelectionWidget(
-            selectedYear = "2025",
-        ) {}
+        Row(modifier = Modifier.fillMaxWidth()) {
+            DateSelectionWidget(
+                modifier = Modifier.weight(1f),
+                label = "Selected Year",
+                selectedText = "2023",
+            )
+            Spacer(modifier = Modifier.padding(start = padding_screen_small))
+            DateSelectionWidget(
+                modifier = Modifier.weight(1f),
+                label = "Selected Month",
+                selectedText = "September",
+            )
+        }
     }
 }

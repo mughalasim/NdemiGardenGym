@@ -17,9 +17,9 @@ import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
+import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import com.ndemi.garden.gym.ui.widgets.YearSelectionWidget
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -52,11 +52,15 @@ fun AttendanceScreen(
             viewModel.navigateBack()
         }
 
-        YearSelectionWidget(
-            selectedYear = selectedDate.year.toString(),
+        DateSelectionWidget(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = padding_screen),
+            selectedText = selectedDate.year.toString(),
             isLoading = uiState is UiState.Loading,
-            onYearPlusTapped = viewModel::increaseYear,
-            onYearMinusTapped = viewModel::decreaseYear,
+            onPlusTapped = viewModel::increaseYear,
+            onMinusTapped = viewModel::decreaseYear,
         )
 
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -89,9 +93,7 @@ fun AttendanceScreen(
                     )
                 }
 
-                else -> {
-                    Unit
-                }
+                else -> {}
             }
         }
     }
