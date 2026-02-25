@@ -33,7 +33,17 @@ val viewModelModule =
 
         viewModelOf(::PaymentAddScreenViewModel)
 
-        viewModelOf(::MembersScreenViewModel)
+        viewModel { params ->
+            MembersScreenViewModel(
+                screenType = params.get(),
+                job = get(),
+                converter = get(),
+                memberUseCase = get(),
+                attendanceUseCase = get(),
+                permissionsUseCase = get(),
+                navigationService = get(),
+            )
+        }
 
         viewModelOf(::MemberEditScreenViewModel)
 

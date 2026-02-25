@@ -28,6 +28,46 @@ class PaymentRepositoryImp(
     private val pathPaymentPlan: String,
     private val logger: AppLoggerRepository,
 ) : PaymentRepository {
+    override fun getAllPayments(year: Int): Flow<DomainResult<PaymentYearEntity>> =
+        callbackFlow {
+            val reference =
+                firebaseFirestore
+                    .collection(pathPayment)
+                    .document(pathPaymentPlan)
+                    .collection(year.toString())
+
+            val subscription =
+                reference.addSnapshotListener { document, error ->
+                    document?.let {
+                        val response = document.toObjects<PaymentModel>()
+                        val list =
+                            response
+                                .map { it.toPaymentEntity() }
+                                .sortedByDescending { it.startDateMillis }
+
+                        var totalAmount = 0.0
+                        list.forEach {
+                            totalAmount += it.amount
+                            logger.log("Payment data received: $it")
+                        }
+                        trySend(
+                            DomainResult.Success(
+                                PaymentYearEntity(
+                                    payments = list,
+                                    canAddNewPayment = false,
+                                    totalAmount = totalAmount,
+                                ),
+                            ),
+                        )
+                    }
+                    error?.let {
+                        logger.log("Exception payment fetch: $it", AppLogType.ERROR)
+                        trySend(DomainResult.Error(it.toDomainError()))
+                    }
+                }
+            awaitClose { subscription.remove() }
+        }
+
     override fun getPayments(
         isMembersPayment: Boolean,
         memberId: String,
@@ -47,6 +87,7 @@ class PaymentRepositoryImp(
                     .collection(pathPayment)
                     .document(pathPaymentPlan)
                     .collection(year.toString())
+                    .whereEqualTo("memberId", setMemberId)
 
             val subscription =
                 reference.addSnapshotListener { document, error ->
@@ -56,7 +97,6 @@ class PaymentRepositoryImp(
                             response
                                 .map { it.toPaymentEntity() }
                                 .sortedByDescending { it.startDateMillis }
-                                .filter { it.memberId == setMemberId && isMembersPayment }
 
                         var canAddPayment = memberId.isNotEmpty() && DateTime.now().year == year
                         var totalAmount = 0.0

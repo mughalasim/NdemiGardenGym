@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.navigation.BottomNavItem
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
@@ -51,7 +52,7 @@ class MainScreenViewModel(
                 }
 
                 auth == AuthState.Authorised && member is MemberState.Authenticated -> {
-                    if (!member.member.emailVerified) {
+                    if (!member.member.emailVerified && !BuildConfig.DEBUG) {
                         _emailVerifiedState.value = EmailVerifiedState.Visible
                     }
                     _uiState.value =

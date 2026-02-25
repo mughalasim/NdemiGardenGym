@@ -20,7 +20,6 @@ import com.ndemi.garden.gym.ui.enums.MemberEditScreenInputType
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.image_size_large
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
@@ -29,7 +28,7 @@ import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import com.ndemi.garden.gym.ui.widgets.member.MemberImageWidget
+import com.ndemi.garden.gym.ui.widgets.member.MemberImageFullWidget
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.PermissionsEntity
 import cv.domain.entities.getAdminPermissions
@@ -77,11 +76,9 @@ fun MemberEditDetailsScreen(
                     .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            MemberImageWidget(
-                modifier = Modifier.padding(top = padding_screen),
+            MemberImageFullWidget(
                 imageUrl = memberEntity.profileImageUrl,
                 canEditImage = permissionState.canEditMember,
-                overrideImageSize = image_size_large,
                 onImageSelect = listeners.onImageSelect,
                 onImageDelete = listeners.onImageDelete,
             )
@@ -128,7 +125,7 @@ fun MemberEditDetailsScreen(
                 EditTextWidget(
                     modifier = Modifier.padding(top = padding_screen),
                     hint = stringResource(R.string.txt_apartment_number),
-                    textInput = memberEntity.apartmentNumber.orEmpty(),
+                    textInput = memberEntity.apartmentNumber,
                     errorText = errorApartmentNumber,
                     isEnabled = permissionState.canEditMember,
                 ) {
