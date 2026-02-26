@@ -11,22 +11,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ndemi.garden.gym.navigation.BottomNavItem
+import com.ndemi.garden.gym.navigation.BottomNavItem.AllMembersScreen
 import com.ndemi.garden.gym.navigation.BottomNavItem.AttendanceScreen
 import com.ndemi.garden.gym.navigation.BottomNavItem.LoginScreen
 import com.ndemi.garden.gym.navigation.BottomNavItem.MembersActiveScreen
 import com.ndemi.garden.gym.navigation.BottomNavItem.MembersExpiredScreen
-import com.ndemi.garden.gym.navigation.BottomNavItem.MembersScreen
 import com.ndemi.garden.gym.navigation.BottomNavItem.NonMembersScreen
 import com.ndemi.garden.gym.navigation.BottomNavItem.PaymentsScreen
 import com.ndemi.garden.gym.navigation.BottomNavItem.ProfileAdminScreen
 import com.ndemi.garden.gym.navigation.BottomNavItem.ProfileMemberScreen
-import com.ndemi.garden.gym.navigation.BottomNavItem.ProfileSuperAdminScreen
 import com.ndemi.garden.gym.navigation.BottomNavItem.RegisterScreen
 import com.ndemi.garden.gym.navigation.BottomNavItem.ResetPasswordScreen
 import com.ndemi.garden.gym.navigation.Route.Companion.toRoute
@@ -72,7 +72,12 @@ fun BottomNavigationWidget(
                     )
                 },
                 label = {
-                    TextWidget(text = stringResource(id = item.label), style = AppTheme.textStyles.small, color = item.icon.tintColor)
+                    TextWidget(
+                        textAlign = TextAlign.Center,
+                        text = stringResource(id = item.label),
+                        style = AppTheme.textStyles.small,
+                        color = item.icon.tintColor,
+                    )
                 },
                 colors =
                     NavigationBarItemColors(
@@ -109,15 +114,16 @@ private fun BottomNavigationWidgetPreview() {
 
     val getAdminBottomItems =
         listOf(
-            MembersScreen,
+            ProfileAdminScreen,
+            AllMembersScreen,
             MembersExpiredScreen,
             MembersActiveScreen,
-            ProfileAdminScreen,
         )
     val getSuperAdminBottomItems =
         listOf(
-            ProfileSuperAdminScreen,
+            ProfileAdminScreen,
             NonMembersScreen,
+            AllMembersScreen,
         )
 
     AppThemeComposable {

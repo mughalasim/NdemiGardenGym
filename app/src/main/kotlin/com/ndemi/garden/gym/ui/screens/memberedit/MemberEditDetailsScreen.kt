@@ -21,6 +21,7 @@ import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
@@ -89,6 +90,17 @@ fun MemberEditDetailsScreen(
                         .padding(top = padding_screen)
                         .toAppCardStyle(),
             ) {
+                if (permissionState.canSetMemberType) {
+                    ButtonWidget(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = padding_screen_small),
+                        title = stringResource(R.string.txt_member_type, memberEntity.memberType.name),
+                        onButtonClicked = listeners.onMemberTypeTapped,
+                    )
+                }
+
                 EditTextWidget(
                     hint = stringResource(R.string.txt_email),
                     textInput = memberEntity.email,

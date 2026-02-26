@@ -32,15 +32,11 @@ sealed class Route {
 
     @Keep
     @Serializable
-    data object ProfileSuperAdminScreen : Route()
-
-    @Keep
-    @Serializable
     data object AttendanceScreen : Route()
 
     @Keep
     @Serializable
-    data object MembersScreen : Route()
+    data object AllMembersScreen : Route()
 
     @Keep
     @Serializable
@@ -88,10 +84,9 @@ sealed class Route {
                 this.contains(RegisterScreen.javaClass.simpleName) -> RegisterScreen
                 this.contains(RegisterNewScreen.javaClass.simpleName) -> RegisterNewScreen
                 this.contains(ProfileAdminScreen.javaClass.simpleName) -> ProfileAdminScreen
-                this.contains(ProfileSuperAdminScreen.javaClass.simpleName) -> ProfileSuperAdminScreen
                 this.contains(ProfileMemberScreen.javaClass.simpleName) -> ProfileMemberScreen
                 this.contains(AttendanceScreen.javaClass.simpleName) -> AttendanceScreen
-                this.contains(MembersScreen.javaClass.simpleName) -> MembersScreen
+                this.contains(AllMembersScreen.javaClass.simpleName) -> AllMembersScreen
                 this.contains(MembersActiveScreen.javaClass.simpleName) -> MembersActiveScreen
                 this.contains(MembersExpiredScreen.javaClass.simpleName) -> MembersExpiredScreen
                 this.contains(NonMembersScreen.javaClass.simpleName) -> NonMembersScreen

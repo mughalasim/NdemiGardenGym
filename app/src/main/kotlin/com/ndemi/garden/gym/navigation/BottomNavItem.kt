@@ -38,13 +38,7 @@ sealed class BottomNavItem(
     data object ProfileAdminScreen : BottomNavItem(
         Route.ProfileAdminScreen,
         Icons.Rounded.Person,
-        R.string.txt_profile,
-    )
-
-    data object ProfileSuperAdminScreen : BottomNavItem(
-        Route.ProfileSuperAdminScreen,
-        Icons.Rounded.Person,
-        R.string.txt_super_admin,
+        R.string.txt_admin,
     )
 
     data object ProfileMemberScreen : BottomNavItem(
@@ -65,16 +59,16 @@ sealed class BottomNavItem(
         R.string.txt_payments,
     )
 
-    data object MembersScreen : BottomNavItem(
-        Route.MembersScreen,
+    data object AllMembersScreen : BottomNavItem(
+        Route.AllMembersScreen,
         Icons.Rounded.Group,
-        R.string.txt_active,
+        R.string.txt_all_members,
     )
 
     data object NonMembersScreen : BottomNavItem(
         Route.NonMembersScreen,
         Icons.Rounded.FormatListNumbered,
-        R.string.txt_members,
+        R.string.txt_non_members,
     )
 
     data object MembersExpiredScreen : BottomNavItem(

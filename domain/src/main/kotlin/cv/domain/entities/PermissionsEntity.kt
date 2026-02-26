@@ -9,6 +9,7 @@ data class PermissionsEntity(
     val canDeleteMember: Boolean = false,
     val canUpdatePayment: Boolean = false,
     val canDeleteAttendance: Boolean = false,
+    val canSetMemberType: Boolean = false,
 )
 
 fun getAdminPermissions() =
@@ -21,16 +22,11 @@ fun getAdminPermissions() =
         canDeleteMember = true,
         canUpdatePayment = true,
         canDeleteAttendance = true,
+        canSetMemberType = true,
     )
 
 fun getSupervisorPermissions() =
     PermissionsEntity(
-        canAddMember = false,
         canViewMemberDetails = true,
         canViewMemberStats = true,
-        canAssignCoach = false,
-        canEditMember = false,
-        canDeleteMember = false,
-        canUpdatePayment = false,
-        canDeleteAttendance = false,
     )

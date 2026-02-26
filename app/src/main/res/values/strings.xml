@@ -67,7 +67,8 @@
     <string name="txt_register_new_member">Register a new member</string>
     <string name="txt_your_attendances">Your Attendances</string>
     <string name="txt_profile">My profile</string>
-    <string name="txt_super_admin">Super Admin</string>
+    <string name="txt_admin">Admin</string>
+    <string name="txt_all_members">All members</string>
     <string name="txt_active_members">Active Members</string>
     <string name="txt_non_members">Admins and Supervisors</string>
     <string name="txt_inactive_members">Inactive Members</string>
@@ -108,6 +109,8 @@
     <string name="txt_are_you_sure_delete_payment">Are you sure you wish to delete payment record, This action is permanent.</string>
     <string name="txt_are_you_sure_delete_member">Are you sure you wish to delete this Member. Their respective attendance will also be deleted. This action is permanent.</string>
     <string name="txt_are_you_sure_log_out">Are you sure you wish to log out.</string>
+    <string name="txt_update_member_type">Update member type</string>
+    <string name="txt_update_member_type_desc">Select a new member type for this member</string>
     <string name="txt_not_active">Not active</string>
     <string name="txt_no_active_members">No active members in the gym</string>
     <string name="txt_no_active_registered_members">No active registered members</string>
@@ -143,6 +146,7 @@
     <string name="txt_member_since">Member since %1$s</string>
     <string name="txt_capture_weight">Capture weight</string>
     <string name="txt_capture_weight_desc">What is your current weight in (Kgs)</string>
+    <string name="txt_member_type">Member Type: %1$s</string>
 
     <!-- Plurals-->
     <plurals name="plural_months">

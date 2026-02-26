@@ -43,6 +43,7 @@ import cv.domain.entities.PermissionsEntity
 internal fun MembersSharedScreen(
     @StringRes pageTitleRes: Int = R.string.txt_active_members,
     @StringRes defaultMessageRes: Int = R.string.txt_no_members,
+    screenType: MemberScreenType = MemberScreenType.ALL_MEMBERS,
     permissionState: PermissionsEntity = PermissionsEntity(),
     searchTerm: String = "",
     uiState: UiState = UiState.Loading,
@@ -93,7 +94,7 @@ internal fun MembersSharedScreen(
                     MemberStatusWidget(
                         memberEntity = it,
                         canViewMemberDetails = permissionState.canViewMemberDetails,
-                        canViewMemberStats = permissionState.canViewMemberStats,
+                        canViewMemberStats = permissionState.canViewMemberStats && screenType != MemberScreenType.NON_MEMBERS,
                         listener = listeners.memberStatusWidgetListener,
                     )
                 }

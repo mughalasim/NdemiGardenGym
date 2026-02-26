@@ -14,6 +14,7 @@ import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiSt
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.enums.MemberType
 import cv.domain.enums.MemberUpdateType
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.PermissionsUseCase
@@ -192,6 +193,13 @@ class MemberEditScreenViewModel(
     }
 
     fun getPermissions() = permissionsUseCase.getPermissions(_memberEntity.value.id)
+
+    fun setNewMemberType(memberType: String) {
+        _memberEntity.value = _memberEntity.value.copy(memberType = MemberType.valueOf(memberType))
+        if (initialMemberEntity.value.memberType != _memberEntity.value.memberType) {
+            sendAction(Action.SetReadyToUpdate)
+        }
+    }
 
     @Immutable
     sealed interface UiState : BaseState {

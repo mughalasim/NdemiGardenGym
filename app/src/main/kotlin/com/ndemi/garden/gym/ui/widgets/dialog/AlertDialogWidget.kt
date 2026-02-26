@@ -1,5 +1,7 @@
 package com.ndemi.garden.gym.ui.widgets.dialog
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -13,6 +15,8 @@ import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
@@ -22,8 +26,10 @@ fun AlertDialogWidget(
     modifier: Modifier = Modifier,
     title: String,
     message: String,
-    isDismissed: Boolean = true,
+    listItems: List<String> = emptyList(),
+    isDismissable: Boolean = true,
     onDismissed: () -> Unit = {},
+    onListItemClicked: (String) -> Unit = {},
     positiveButton: String = stringResource(R.string.txt_ok),
     positiveOnClick: () -> Unit = {},
     negativeButton: String = "",
@@ -41,7 +47,18 @@ fun AlertDialogWidget(
             )
         },
         text = {
-            TextWidget(text = message)
+            Column {
+                TextWidget(text = message)
+                for (item in listItems) {
+                    ButtonWidget(
+                        modifier = Modifier.fillMaxWidth().padding(top = padding_screen_small),
+                        overridePadding = padding_screen_tiny,
+                        title = item,
+                        isOutlined = true,
+                        onButtonClicked = { onListItemClicked(item) },
+                    )
+                }
+            }
         },
         onDismissRequest = onDismissed,
         confirmButton = {
@@ -62,8 +79,8 @@ fun AlertDialogWidget(
         },
         properties =
             DialogProperties(
-                dismissOnClickOutside = isDismissed,
-                dismissOnBackPress = isDismissed,
+                dismissOnClickOutside = isDismissable,
+                dismissOnBackPress = isDismissable,
             ),
     )
 }
@@ -75,6 +92,7 @@ private fun AlertDialogWidgetPreview() =
         AlertDialogWidget(
             title = "Some title",
             message = "Some long message will be shown here",
+            listItems = listOf("Option 1", "option 2"),
             positiveButton = "Yes",
             negativeButton = "NO",
         )

@@ -68,12 +68,8 @@ class NavigationServiceImp(
                     Route.ProfileMemberScreen
                 }
 
-                MemberType.ADMIN, MemberType.SUPERVISOR -> {
-                    Route.MembersScreen
-                }
-
-                MemberType.SUPER_ADMIN -> {
-                    Route.ProfileSuperAdminScreen
+                else -> {
+                    Route.ProfileAdminScreen
                 }
             }
         }
@@ -98,17 +94,18 @@ class NavigationServiceImp(
 
                 MemberType.ADMIN, MemberType.SUPERVISOR -> {
                     listOf(
-                        BottomNavItem.MembersScreen,
+                        BottomNavItem.ProfileAdminScreen,
+                        BottomNavItem.AllMembersScreen,
                         BottomNavItem.MembersExpiredScreen,
                         BottomNavItem.MembersActiveScreen,
-                        BottomNavItem.ProfileAdminScreen,
                     )
                 }
 
                 MemberType.SUPER_ADMIN -> {
                     listOf(
-                        BottomNavItem.ProfileSuperAdminScreen,
+                        BottomNavItem.ProfileAdminScreen,
                         BottomNavItem.NonMembersScreen,
+                        BottomNavItem.AllMembersScreen,
                     )
                 }
             }

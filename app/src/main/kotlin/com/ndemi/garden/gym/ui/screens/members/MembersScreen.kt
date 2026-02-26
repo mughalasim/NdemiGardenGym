@@ -20,8 +20,9 @@ fun MembersScreen(
     val permissionState by viewModel.getPermissions().collectAsStateWithLifecycle()
 
     MembersSharedScreen(
-        pageTitleRes = R.string.txt_active_members,
+        pageTitleRes = R.string.txt_all_members,
         defaultMessageRes = R.string.txt_no_active_registered_members,
+        screenType = MemberScreenType.ALL_MEMBERS,
         permissionState = permissionState,
         searchTerm = searchTerm,
         uiState = uiState,

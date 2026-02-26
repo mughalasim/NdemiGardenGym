@@ -22,6 +22,7 @@ fun NonMembersScreen(
     MembersSharedScreen(
         pageTitleRes = R.string.txt_non_members,
         defaultMessageRes = R.string.txt_no_non_members,
+        screenType = MemberScreenType.NON_MEMBERS,
         permissionState = permissionState,
         searchTerm = searchTerm,
         uiState = uiState,

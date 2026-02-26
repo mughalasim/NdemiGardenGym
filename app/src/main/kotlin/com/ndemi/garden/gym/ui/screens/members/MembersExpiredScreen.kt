@@ -23,6 +23,7 @@ fun MembersExpiredScreen(
     MembersSharedScreen(
         pageTitleRes = R.string.txt_expired_memberships,
         defaultMessageRes = R.string.txt_no_members,
+        screenType = MemberScreenType.EXPIRED_MEMBERS,
         permissionState = permissionState,
         searchTerm = searchTerm,
         uiState = uiState,

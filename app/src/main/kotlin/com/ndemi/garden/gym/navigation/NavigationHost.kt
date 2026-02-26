@@ -41,13 +41,11 @@ fun NavigationHost(
 
         composable<Route.ProfileAdminScreen> { ProfileAdminScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.ProfileSuperAdminScreen> { ProfileAdminScreen(snackbarHostState = snackbarHostState) }
-
         composable<Route.ProfileMemberScreen> { ProfileMemberScreen(snackbarHostState = snackbarHostState) }
 
         composable<Route.AttendanceScreen> { AttendanceScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.MembersScreen> { MembersScreen(snackbarHostState = snackbarHostState) }
+        composable<Route.AllMembersScreen> { MembersScreen(snackbarHostState = snackbarHostState) }
 
         composable<Route.MembersActiveScreen> { MembersActiveScreen(snackbarHostState = snackbarHostState) }
 

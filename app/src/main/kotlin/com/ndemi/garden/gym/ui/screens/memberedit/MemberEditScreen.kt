@@ -16,6 +16,7 @@ import com.ndemi.garden.gym.ui.enums.MemberEditScreenInputType
 import com.ndemi.garden.gym.ui.utils.ObserveAppSnackbar
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
+import cv.domain.enums.MemberType
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -29,6 +30,7 @@ fun MemberEditScreen(
     val permissionState by viewModel.getPermissions().collectAsStateWithLifecycle()
     val memberEntity by viewModel.memberEntity.collectAsStateWithLifecycle()
     var showDeleteUserDialog by remember { mutableStateOf(false) }
+    var showMemberTypeSelectionDialog by remember { mutableStateOf(false) }
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
             imageUri?.let {
@@ -58,6 +60,22 @@ fun MemberEditScreen(
             },
         )
     }
+    if (showMemberTypeSelectionDialog) {
+        AlertDialogWidget(
+            title = stringResource(R.string.txt_update_member_type),
+            message = stringResource(R.string.txt_update_member_type_desc),
+            onDismissed = { showMemberTypeSelectionDialog = !showMemberTypeSelectionDialog },
+            listItems = MemberType.entries.map { it.name },
+            positiveButton = stringResource(R.string.txt_cancel),
+            positiveOnClick = {
+                showMemberTypeSelectionDialog = !showMemberTypeSelectionDialog
+            },
+            onListItemClicked = {
+                showMemberTypeSelectionDialog = !showMemberTypeSelectionDialog
+                viewModel.setNewMemberType(it)
+            },
+        )
+    }
 
     MemberEditDetailsScreen(
         uiState = uiState,
@@ -76,6 +94,7 @@ fun MemberEditScreen(
                 onSetString = viewModel::setString,
                 onUpdateTapped = viewModel::onUpdateTapped,
                 onDeleteMemberTapped = { showDeleteUserDialog = true },
+                onMemberTypeTapped = { showMemberTypeSelectionDialog = true },
                 onBackTapped = viewModel::navigateBack,
             ),
     )
@@ -88,4 +107,5 @@ data class MemberEditScreenListeners(
     val onUpdateTapped: () -> Unit = {},
     val onDeleteMemberTapped: () -> Unit = {},
     val onBackTapped: () -> Unit = {},
+    val onMemberTypeTapped: () -> Unit = {},
 )
