@@ -2,6 +2,7 @@ package cv.domain.usecase
 
 import cv.domain.entities.PermissionsEntity
 import cv.domain.entities.getAdminPermissions
+import cv.domain.entities.getSuperAdminPermissions
 import cv.domain.entities.getSupervisorPermissions
 import cv.domain.enums.MemberType
 import cv.domain.repositories.AuthRepository
@@ -21,7 +22,11 @@ class PermissionsUseCase(
 
         val permission =
             when (memberType) {
-                MemberType.SUPER_ADMIN, MemberType.ADMIN -> {
+                MemberType.SUPER_ADMIN -> {
+                    getSuperAdminPermissions()
+                }
+
+                MemberType.ADMIN -> {
                     getAdminPermissions()
                 }
 
