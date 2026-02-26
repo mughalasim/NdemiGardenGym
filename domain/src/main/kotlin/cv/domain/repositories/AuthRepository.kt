@@ -4,7 +4,7 @@ import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.enums.MemberType
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharedFlow
 
 interface AuthRepository {
     fun isAuthenticated(): Boolean
@@ -19,5 +19,5 @@ interface AuthRepository {
 
     suspend fun getAppVersion(): Flow<DomainResult<String>>
 
-    fun observeUser(): StateFlow<MemberEntity>
+    fun observeUser(): SharedFlow<MemberEntity>
 }

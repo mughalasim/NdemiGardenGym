@@ -11,6 +11,10 @@ app [here](https://github.com/mughalasim/NdemiGardenGym/raw/master/release/Ndemi
 - Flow attached to user state and app version to update UI if app version changes, user is authenticated or updated
 - Supports Light and Dark Theme
 
+*Functionality for Super Admin user*
+- Register and manage new members and non-members
+- All features other user types have access to
+
 *Functionality for Admin user*
 - Register and manage a new members information
 - Track and manage each members gym attendance
@@ -34,27 +38,27 @@ app [here](https://github.com/mughalasim/NdemiGardenGym/raw/master/release/Ndemi
 ## Admin Previews
 
 <p float="left">
-  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc1.png" width="180" />
-  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc2.png" width="180" /> 
-  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc3.png" width="180" />
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc1.png" width="180" alt=""/>
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc2.png" width="180" alt=""/> 
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc3.png" width="180" alt=""/>
 </p>
 <p float="left">
-  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc4.png" width="180" />
-  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc5.png" width="180" /> 
-  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc6.png" width="180" />
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc4.png" width="180" alt=""/>
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc5.png" width="180" alt=""/> 
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc6.png" width="180" alt=""/>
 </p>
 <p float="left">
-  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc7.png" width="180" />
-  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc8.png" width="180" /> 
-  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc9.png" width="180" />
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc7.png" width="180" alt=""/>
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc8.png" width="180" alt=""/> 
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc9.png" width="180" alt=""/>
 </p>
 
 ## User Previews
 
 <p float="left">
-  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc10.png" width="180" />
-  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc11.png" width="180" /> 
-  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc12.png" width="180" />
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc10.png" width="180" alt=""/>
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc11.png" width="180" alt=""/> 
+  <img src="https://github.com/mughalasim/NdemiGardenGym/blob/master/release/sc12.png" width="180" alt=""/>
 </p>
 
 
@@ -62,5 +66,4 @@ app [here](https://github.com/mughalasim/NdemiGardenGym/raw/master/release/Ndemi
 
 - Add app settings to be fetched and refreshed from database
 - Add unit tests to all modules - repositories, mappers/ factories, useCases and viewModels
-- Change staging app icon
 - Running push notifications triggered when session(s) have started for one or more users, will require deep linking

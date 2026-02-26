@@ -6,12 +6,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreen
-import com.ndemi.garden.gym.ui.screens.live.LiveAttendanceScreen
 import com.ndemi.garden.gym.ui.screens.login.LoginScreen
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreen
 import com.ndemi.garden.gym.ui.screens.members.MembersActiveScreen
 import com.ndemi.garden.gym.ui.screens.members.MembersExpiredScreen
 import com.ndemi.garden.gym.ui.screens.members.MembersScreen
+import com.ndemi.garden.gym.ui.screens.members.NonMembersScreen
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreen
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreen
 import com.ndemi.garden.gym.ui.screens.profile.admin.ProfileAdminScreen
@@ -24,12 +24,12 @@ import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 @Composable
 fun NavigationHost(
     navController: NavHostController,
-    navigationService: NavigationService,
+    initialRoute: Route,
     snackbarHostState: AppSnackbarHostState,
 ) {
     NavHost(
         navController = navController,
-        startDestination = navigationService.getInitialRoute(),
+        startDestination = initialRoute,
     ) {
         composable<Route.LoginScreen> { LoginScreen(snackbarHostState = snackbarHostState) }
 
@@ -45,13 +45,13 @@ fun NavigationHost(
 
         composable<Route.AttendanceScreen> { AttendanceScreen(snackbarHostState = snackbarHostState) }
 
-        composable<Route.LiveAttendanceScreen> { LiveAttendanceScreen(snackbarHostState = snackbarHostState) }
-
-        composable<Route.MembersScreen> { MembersScreen(snackbarHostState = snackbarHostState) }
+        composable<Route.AllMembersScreen> { MembersScreen(snackbarHostState = snackbarHostState) }
 
         composable<Route.MembersActiveScreen> { MembersActiveScreen(snackbarHostState = snackbarHostState) }
 
         composable<Route.MembersExpiredScreen> { MembersExpiredScreen(snackbarHostState = snackbarHostState) }
+
+        composable<Route.NonMembersScreen> { NonMembersScreen(snackbarHostState = snackbarHostState) }
 
         composable<Route.MemberEditScreen> {
             val args = it.toRoute<Route.MemberEditScreen>()

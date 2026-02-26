@@ -2,38 +2,23 @@ package com.ndemi.garden.gym.ui.screens.memberedit
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
-import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.theme.page_width
-import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
+import com.ndemi.garden.gym.ui.enums.MemberEditScreenInputType
+import com.ndemi.garden.gym.ui.utils.ObserveAppSnackbar
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
-import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import com.ndemi.garden.gym.ui.widgets.member.MemberImageWidget
+import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
+import cv.domain.enums.MemberType
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MemberEditScreen(
     memberId: String,
@@ -42,84 +27,85 @@ fun MemberEditScreen(
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
-    val memberEntity by viewModel.memberEntity.collectAsStateWithLifecycle()
     val permissionState by viewModel.getPermissions().collectAsStateWithLifecycle()
-
+    val memberEntity by viewModel.memberEntity.collectAsStateWithLifecycle()
     var showDeleteUserDialog by remember { mutableStateOf(false) }
+    var showMemberTypeSelectionDialog by remember { mutableStateOf(false) }
     val galleryLauncher =
         rememberLauncherForActivityResult(GetContent()) { imageUri ->
             imageUri?.let {
-                context.contentResolver.openInputStream(imageUri)
+                context.contentResolver
+                    .openInputStream(imageUri)
                     ?.use { inputStream -> inputStream.buffered().readBytes() }
                     ?.let { byteArray -> viewModel.updateMemberImage(byteArray) }
             }
         }
+    viewModel.snackbarState.ObserveAppSnackbar(snackbarHostState)
 
     LaunchedEffect(Unit) { viewModel.getMemberForId(memberId) }
 
-    Column {
-        ToolBarWidget(
-            title = stringResource(R.string.txt_edit_member),
-            canNavigateBack = true,
-            secondaryIcon = if (permissionState.canDeleteMember) Icons.Default.DeleteForever else null,
-            onSecondaryIconPressed = { showDeleteUserDialog = true },
-            onBackPressed = viewModel::navigateBack,
+    if (showDeleteUserDialog) {
+        AlertDialogWidget(
+            title = stringResource(R.string.txt_are_you_sure),
+            message = stringResource(R.string.txt_are_you_sure_delete_member),
+            onDismissed = { showDeleteUserDialog = !showDeleteUserDialog },
+            positiveButton = stringResource(R.string.txt_delete),
+            positiveOnClick = {
+                showDeleteUserDialog = !showDeleteUserDialog
+                viewModel.deleteMember()
+            },
+            negativeButton = stringResource(R.string.txt_cancel),
+            negativeOnClick = {
+                showDeleteUserDialog = !showDeleteUserDialog
+            },
         )
-
-        PullToRefreshBox(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = padding_screen),
-            isRefreshing = uiState is UiState.Loading,
-            contentAlignment = Alignment.TopCenter,
-            onRefresh = { viewModel.getMemberForId(memberId) },
-        ) {
-            Column(
-                modifier =
-                    Modifier
-                        .verticalScroll(rememberScrollState())
-                        .requiredWidth(page_width),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                MemberImageWidget(
-                    canEditImage = permissionState.canEditMember,
-                    imageUrl = memberEntity.profileImageUrl,
-                    onImageSelect = {
-                        galleryLauncher.launch("image/*")
-                    },
-                    onImageDelete = {
-                        viewModel.deleteMemberImage()
-                    },
-                )
-
-                MemberEditDetailsScreen(
-                    canUpdateMemberDetails = permissionState.canEditMember,
-                    canAssignCoach = permissionState.canAssignCoach,
-                    uiState = uiState,
-                    memberEntity = memberEntity,
-                    onSetString = viewModel::setString,
-                    snackbarHostState = snackbarHostState,
-                    onUpdateTapped = viewModel::onUpdateTapped,
-                )
-            }
-        }
-
-        if (showDeleteUserDialog) {
-            AlertDialogWidget(
-                title = stringResource(R.string.txt_are_you_sure),
-                message = stringResource(R.string.txt_are_you_sure_delete_member),
-                onDismissed = { showDeleteUserDialog = !showDeleteUserDialog },
-                positiveButton = stringResource(R.string.txt_delete),
-                positiveOnClick = {
-                    showDeleteUserDialog = !showDeleteUserDialog
-                    viewModel.deleteMember()
-                },
-                negativeButton = stringResource(R.string.txt_cancel),
-                negativeOnClick = {
-                    showDeleteUserDialog = !showDeleteUserDialog
-                },
-            )
-        }
     }
+    if (showMemberTypeSelectionDialog) {
+        AlertDialogWidget(
+            title = stringResource(R.string.txt_update_member_type),
+            message = stringResource(R.string.txt_update_member_type_desc),
+            onDismissed = { showMemberTypeSelectionDialog = !showMemberTypeSelectionDialog },
+            listItems = MemberType.entries.map { it.name },
+            positiveButton = stringResource(R.string.txt_cancel),
+            positiveOnClick = {
+                showMemberTypeSelectionDialog = !showMemberTypeSelectionDialog
+            },
+            onListItemClicked = {
+                showMemberTypeSelectionDialog = !showMemberTypeSelectionDialog
+                viewModel.setNewMemberType(it)
+            },
+        )
+    }
+
+    MemberEditDetailsScreen(
+        uiState = uiState,
+        permissionState = permissionState,
+        memberEntity = memberEntity,
+        toolbarTitle =
+            if (memberId.isEmpty()) {
+                stringResource(R.string.txt_edit_your_details)
+            } else {
+                stringResource(R.string.txt_edit_member)
+            },
+        listeners =
+            MemberEditScreenListeners(
+                onImageSelect = { galleryLauncher.launch("image/*") },
+                onImageDelete = viewModel::deleteMemberImage,
+                onSetString = viewModel::setString,
+                onUpdateTapped = viewModel::onUpdateTapped,
+                onDeleteMemberTapped = { showDeleteUserDialog = true },
+                onMemberTypeTapped = { showMemberTypeSelectionDialog = true },
+                onBackTapped = viewModel::navigateBack,
+            ),
+    )
 }
+
+data class MemberEditScreenListeners(
+    val onImageSelect: () -> Unit = {},
+    val onImageDelete: () -> Unit = {},
+    val onSetString: (String, MemberEditScreenInputType) -> Unit = { _, _ -> },
+    val onUpdateTapped: () -> Unit = {},
+    val onDeleteMemberTapped: () -> Unit = {},
+    val onBackTapped: () -> Unit = {},
+    val onMemberTypeTapped: () -> Unit = {},
+)

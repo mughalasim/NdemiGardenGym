@@ -33,6 +33,53 @@ class AttendanceRepositoryImp(
     private val pathAttendance: String,
     private val logger: AppLoggerRepository,
 ) : AttendanceRepository {
+    override fun getAllAttendances(
+        year: Int,
+        month: Int,
+    ): Flow<DomainResult<AttendanceMonthEntity>> =
+        callbackFlow {
+            val reference =
+                firebaseFirestore
+                    .collection(pathAttendance)
+                    .document(year.toString())
+                    .collection(month.toString())
+
+            val subscription =
+                reference
+                    .addSnapshotListener { snapshot, error ->
+                        snapshot?.let {
+                            val response = snapshot.toObjects<AttendanceModel>()
+                            val list =
+                                response.map { it.toAttendanceEntity() }
+
+                            var totalMinutes = 0
+                            list.forEach {
+                                totalMinutes +=
+                                    Minutes
+                                        .minutesBetween(
+                                            DateTime(it.startDateMillis),
+                                            DateTime(it.endDateMillis),
+                                        ).minutes
+                                logger.log("Attendance received: $it")
+                            }
+                            trySend(
+                                DomainResult.Success(
+                                    AttendanceMonthEntity(
+                                        monthNumber = month,
+                                        totalMinutes = totalMinutes,
+                                        attendances = list,
+                                    ),
+                                ),
+                            )
+                        }
+                        error?.let {
+                            logger.log("Exception attendance: $it", AppLogType.ERROR)
+                            trySend(DomainResult.Error(it.toDomainError()))
+                        }
+                    }
+            awaitClose { subscription.remove() }
+        }
+
     override fun getAttendances(
         memberId: String,
         year: Int,
@@ -50,13 +97,13 @@ class AttendanceRepositoryImp(
                 firebaseFirestore
                     .collection(pathAttendance)
                     .document(year.toString())
-                    .collection(month.toString()).whereEqualTo("memberId", setMemberId)
+                    .collection(month.toString())
+                    .whereEqualTo("memberId", setMemberId)
 
             val subscription =
                 reference
                     .addSnapshotListener { snapshot, error ->
                         snapshot?.let {
-                            logger.log("Data received: ${snapshot.toObjects<Any>()}")
                             val response = snapshot.toObjects<AttendanceModel>()
                             val list =
                                 response
@@ -66,10 +113,12 @@ class AttendanceRepositoryImp(
                             var totalMinutes = 0
                             list.forEach {
                                 totalMinutes +=
-                                    Minutes.minutesBetween(
-                                        DateTime(it.startDateMillis),
-                                        DateTime(it.endDateMillis),
-                                    ).minutes
+                                    Minutes
+                                        .minutesBetween(
+                                            DateTime(it.startDateMillis),
+                                            DateTime(it.endDateMillis),
+                                        ).minutes
+                                logger.log("Attendance received: $it")
                             }
                             trySend(
                                 DomainResult.Success(
@@ -82,7 +131,7 @@ class AttendanceRepositoryImp(
                             )
                         }
                         error?.let {
-                            logger.log("Exception: $it", AppLogType.ERROR)
+                            logger.log("Exception attendance: $it", AppLogType.ERROR)
                             trySend(DomainResult.Error(it.toDomainError()))
                         }
                     }
@@ -99,7 +148,7 @@ class AttendanceRepositoryImp(
                 memberId.ifEmpty {
                     firebaseAuth.currentUser?.uid ?: run {
                         logger.log("Not authorised", AppLogType.ERROR)
-                        throw FirebaseFirestoreException("", Code.UNAUTHENTICATED)
+                        throw FirebaseFirestoreException("Not authorised", Code.UNAUTHENTICATED)
                     }
                 }
 
@@ -111,7 +160,7 @@ class AttendanceRepositoryImp(
                 Minutes.minutesBetween(startDateTime, endDateTime).minutes < 1
             ) {
                 logger.log("Invalid argument passed", AppLogType.ERROR)
-                throw FirebaseFirestoreException("", Code.INVALID_ARGUMENT)
+                throw FirebaseFirestoreException("Invalid argument passed", Code.FAILED_PRECONDITION)
             }
 
             val attendanceModel =

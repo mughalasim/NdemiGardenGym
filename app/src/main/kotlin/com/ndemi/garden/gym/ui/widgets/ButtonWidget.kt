@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -35,6 +36,7 @@ fun ButtonWidget(
     isLoading: Boolean = false,
     isOutlined: Boolean = false,
     hideKeyboardOnClick: Boolean = false,
+    overridePadding: Dp = padding_screen,
     onButtonClicked: () -> Unit = {},
 ) {
     var backgroundColor: Color = AppTheme.colors.backgroundButtonDisabled
@@ -47,16 +49,19 @@ fun ButtonWidget(
             backgroundColor = AppTheme.colors.backgroundButtonDisabled
             textColor = Color.Transparent
         }
+
         isOutlined && isEnabled -> {
             outlineColor = AppTheme.colors.primary
             backgroundColor = Color.Transparent
             textColor = AppTheme.colors.primary
         }
+
         isOutlined && !isEnabled -> {
             outlineColor = AppTheme.colors.backgroundButtonDisabled
             backgroundColor = Color.Transparent
             textColor = AppTheme.colors.textSecondary
         }
+
         !isOutlined && isEnabled -> {
             outlineColor = Color.Transparent
             backgroundColor = AppTheme.colors.backgroundButtonEnabled
@@ -71,17 +76,14 @@ fun ButtonWidget(
                 .clickable {
                     if (hideKeyboardOnClick) keyboardController?.hide()
                     if (isEnabled && !isLoading) onButtonClicked()
-                }
-                .background(
+                }.background(
                     if (!isOutlined) backgroundColor else Color.Transparent,
                     shape = RoundedCornerShape(border_radius),
-                )
-                .border(
+                ).border(
                     width = line_thickness,
                     color = outlineColor,
                     shape = RoundedCornerShape(border_radius),
-                )
-                .padding(padding_screen),
+                ).padding(overridePadding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {

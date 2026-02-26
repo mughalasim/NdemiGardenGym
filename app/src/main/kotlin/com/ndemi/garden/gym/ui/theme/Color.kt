@@ -15,10 +15,7 @@ val green = Color(0xFF368139)
 val lightBlue = Color(0xFFC0CADA)
 
 @Suppress("detekt.MagicNumber")
-val lighterBlue = Color(0xFFF4F7FD)
-
-@Suppress("detekt.MagicNumber")
-val darkBlue = Color(0xFF31078F)
+val lighterBlue = Color(0xFFC6CBD7)
 
 @Suppress("detekt.MagicNumber")
 val lightGrey = Color(0xFF8D939C)

@@ -24,9 +24,10 @@ class AttendanceUseCase(
         callbackFlow {
             val result: MutableList<AttendanceMonthEntity> = mutableListOf()
 
-            (JANUARY..DECEMBER).map { month ->
-                attendanceRepository.getAttendances(memberId, year, month)
-            }.merge()
+            (JANUARY..DECEMBER)
+                .map { month ->
+                    attendanceRepository.getAttendances(memberId, year, month)
+                }.merge()
                 .collect { response ->
                     if (response is DomainResult.Success && response.data.attendances.isNotEmpty()) {
                         result.removeIf { it.monthNumber == response.data.monthNumber }

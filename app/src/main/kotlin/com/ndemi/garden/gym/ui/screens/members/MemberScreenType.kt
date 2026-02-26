@@ -4,4 +4,5 @@ enum class MemberScreenType {
     ALL_MEMBERS,
     EXPIRED_MEMBERS,
     LIVE_MEMBERS,
+    NON_MEMBERS,
 }

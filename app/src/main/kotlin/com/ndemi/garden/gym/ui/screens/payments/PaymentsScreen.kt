@@ -24,11 +24,11 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
+import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import com.ndemi.garden.gym.ui.widgets.YearSelectionWidget
+import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,11 +70,15 @@ fun PaymentsScreen(
             onBackPressed = viewModel::navigateBack,
         )
 
-        YearSelectionWidget(
-            selectedYear = selectedDate.year.toString(),
+        DateSelectionWidget(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = padding_screen),
+            selectedText = selectedDate.year.toString(),
             isLoading = uiState is UiState.Loading,
-            onYearPlusTapped = viewModel::increaseYear,
-            onYearMinusTapped = viewModel::decreaseYear,
+            onPlusTapped = viewModel::increaseYear,
+            onMinusTapped = viewModel::decreaseYear,
         )
 
         PullToRefreshBox(
@@ -87,7 +91,10 @@ fun PaymentsScreen(
                     is UiState.Success -> {
                         if (state.payments.isEmpty()) {
                             TextWidget(
-                                modifier = Modifier.fillMaxWidth().padding(padding_screen),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(padding_screen),
                                 text = stringResource(R.string.txt_no_payments),
                                 textAlign = TextAlign.Center,
                             )
@@ -108,7 +115,7 @@ fun PaymentsScreen(
                         )
                     }
 
-                    else -> Unit
+                    else -> {}
                 }
             }
         }

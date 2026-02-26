@@ -12,7 +12,12 @@ fun getMockActiveMemberEntity() =
         email = "asim@test.com",
         registrationDateMillis = DateTime.now().millis,
         renewalFutureDateMillis = DateTime.now().plusDays(25).millis,
-        activeNowDateMillis = DateTime.now().minusHours(1).minusMinutes(13).millis,
+        activeNowDateMillis =
+            DateTime
+                .now()
+                .minusHours(1)
+                .minusMinutes(13)
+                .millis,
         apartmentNumber = "B903",
         profileImageUrl = "",
         hasCoach = true,

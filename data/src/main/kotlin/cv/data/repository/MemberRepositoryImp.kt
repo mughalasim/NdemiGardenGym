@@ -28,10 +28,14 @@ class MemberRepositoryImp(
 ) : MemberRepository {
     override suspend fun getMemberById(memberId: String): DomainResult<MemberEntity> =
         runCatching {
-            firebaseFirestore.collection(pathUser).document(memberId).get().await()
+            firebaseFirestore
+                .collection(pathUser)
+                .document(memberId)
+                .get()
+                .await()
         }.fold(
             onSuccess = { result ->
-                logger.log("Data received: ${result.toObject<Any>()}")
+                logger.log("Member by ID: ${result.toObject<Any>()}")
                 val response = result.toObject<MemberModel>()
                 return response?.let {
                     DomainResult.Success(it.toMemberEntity())
@@ -46,19 +50,29 @@ class MemberRepositoryImp(
         callbackFlow {
             val query =
                 when (fetchType) {
-                    MemberFetchType.ALL ->
-                        firebaseFirestore.collection(pathUser)
+                    MemberFetchType.ALL -> {
+                        firebaseFirestore
+                            .collection(pathUser)
                             .whereNotEqualTo("memberType", MemberType.SUPER_ADMIN)
+                    }
 
-                    else ->
-                        firebaseFirestore.collection(pathUser)
+                    MemberFetchType.NON_MEMBERS -> {
+                        firebaseFirestore
+                            .collection(pathUser)
+                            .whereNotEqualTo("memberType", MemberType.MEMBER)
+                    }
+
+                    else -> {
+                        firebaseFirestore
+                            .collection(pathUser)
                             .whereEqualTo("memberType", MemberType.MEMBER)
+                    }
                 }
 
             val subscription =
                 query.addSnapshotListener { snapshot, error ->
                     snapshot?.let { querySnapshot ->
-                        logger.log("Data received: ${querySnapshot.toObjects<Any>()}")
+                        logger.log("Members list: ${querySnapshot.toObjects<Any>()}")
                         val response =
                             querySnapshot
                                 .toObjects<MemberModel>()
@@ -66,29 +80,32 @@ class MemberRepositoryImp(
                         trySend(
                             DomainResult.Success(
                                 when (fetchType) {
-                                    MemberFetchType.ALL ->
+                                    MemberFetchType.ALL, MemberFetchType.NON_MEMBERS -> {
                                         response.sortedByDescending { it.registrationDateMillis }
+                                    }
 
-                                    MemberFetchType.MEMBERS ->
+                                    MemberFetchType.MEMBERS -> {
                                         response
-                                            .filter { it.renewalFutureDateMillis != null }
                                             .sortedBy { it.renewalFutureDateMillis }
+                                    }
 
-                                    MemberFetchType.ACTIVE ->
+                                    MemberFetchType.ACTIVE -> {
                                         response
                                             .filter { it.activeNowDateMillis != null }
                                             .sortedBy { it.activeNowDateMillis }
+                                    }
 
-                                    MemberFetchType.EXPIRED_REGISTRATIONS ->
+                                    MemberFetchType.EXPIRED_REGISTRATIONS -> {
                                         response
                                             .filter { it.renewalFutureDateMillis == null }
                                             .sortedByDescending { it.registrationDateMillis }
+                                    }
                                 },
                             ),
                         )
                     }
                     error?.let {
-                        logger.log("Exception: $it", AppLogType.ERROR)
+                        logger.log("Exception members list: $it", AppLogType.ERROR)
                         trySend(DomainResult.Error(it.toDomainError()))
                     }
                 }

@@ -1,5 +1,6 @@
 package com.ndemi.garden.gym.ui.widgets
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,9 +17,13 @@ import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
-fun LoadingScreenWidget() {
+fun LoadingScreenWidget(
+    @SuppressLint("ModifierParameter")
+    modifier: Modifier = Modifier.fillMaxSize(),
+    customMessage: String = "Loading... please wait...",
+) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -30,7 +35,7 @@ fun LoadingScreenWidget() {
         )
         TextWidget(
             modifier = Modifier.padding(top = padding_screen),
-            text = "Loading... Please wait...",
+            text = customMessage,
         )
     }
 }

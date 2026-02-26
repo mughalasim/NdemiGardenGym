@@ -20,4 +20,9 @@ interface AttendanceRepository {
     ): DomainResult<Unit>
 
     suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit>
+
+    fun getAllAttendances(
+        year: Int,
+        month: Int,
+    ): Flow<DomainResult<AttendanceMonthEntity>>
 }

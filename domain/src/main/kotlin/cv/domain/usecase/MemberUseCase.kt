@@ -36,6 +36,8 @@ class MemberUseCase(
 
     fun getExpiredMembers() = memberRepository.getMembers(fetchType = MemberFetchType.EXPIRED_REGISTRATIONS)
 
+    fun getNonMembers() = memberRepository.getMembers(fetchType = MemberFetchType.NON_MEMBERS)
+
     suspend fun updateMember(
         memberEntity: MemberEntity,
         memberUpdateType: MemberUpdateType,
@@ -48,7 +50,10 @@ class MemberUseCase(
                             return DomainResult.Error(DomainErrorType.EMAIL_ALREADY_EXISTS)
                         }
                     }
-                    else -> return DomainResult.Error(DomainErrorType.SERVER)
+
+                    else -> {
+                        return DomainResult.Error(DomainErrorType.SERVER)
+                    }
                 }
                 analyticsRepository.logEvent(
                     eventName = EVENT_CREATE_MEMBER,
@@ -58,6 +63,7 @@ class MemberUseCase(
                         ),
                 )
             }
+
             MemberUpdateType.REGISTRATION -> {
                 analyticsRepository.logEvent(
                     eventName = EVENT_REGISTRATION,
@@ -67,6 +73,7 @@ class MemberUseCase(
                         ),
                 )
             }
+
             MemberUpdateType.MEMBERSHIP -> {
                 analyticsRepository.logEvent(
                     eventName = EVENT_MEMBERSHIP,
@@ -86,6 +93,7 @@ class MemberUseCase(
                         ),
                 )
             }
+
             MemberUpdateType.ACTIVE_SESSION -> {
                 val paramName =
                     if (memberEntity.isActiveNow()) {
@@ -98,6 +106,7 @@ class MemberUseCase(
                     params = listOf(Pair(paramName, memberEntity.id)),
                 )
             }
+
             MemberUpdateType.DETAILS -> {
                 analyticsRepository.logEvent(
                     eventName = EVENT_MEMBER_UPDATE,

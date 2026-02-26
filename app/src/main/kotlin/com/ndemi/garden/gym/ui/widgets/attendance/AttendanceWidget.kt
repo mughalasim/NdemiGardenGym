@@ -26,8 +26,8 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
 import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
 import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
-import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
+import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
 import cv.domain.entities.AttendanceEntity
 import org.joda.time.DateTime
 

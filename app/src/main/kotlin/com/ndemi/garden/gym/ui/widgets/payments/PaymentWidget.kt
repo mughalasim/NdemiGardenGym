@@ -29,8 +29,8 @@ import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.utils.toPaymentPlanDuration
-import com.ndemi.garden.gym.ui.widgets.AlertDialogWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
+import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
 import cv.domain.entities.PaymentEntity
 import org.joda.time.DateTime
 

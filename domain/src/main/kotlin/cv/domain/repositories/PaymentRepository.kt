@@ -6,6 +6,8 @@ import cv.domain.entities.PaymentYearEntity
 import kotlinx.coroutines.flow.Flow
 
 interface PaymentRepository {
+    fun getAllPayments(year: Int): Flow<DomainResult<PaymentYearEntity>>
+
     fun getPayments(
         isMembersPayment: Boolean,
         memberId: String,

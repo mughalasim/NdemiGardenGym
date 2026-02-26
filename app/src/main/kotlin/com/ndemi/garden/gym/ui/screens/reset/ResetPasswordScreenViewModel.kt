@@ -29,7 +29,11 @@ class ResetPasswordScreenViewModel(
     }
 
     private fun validateInput() {
-        if (_inputData.value.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(_inputData.value).matches()) {
+        if (_inputData.value.isEmpty() ||
+            !android.util.Patterns.EMAIL_ADDRESS
+                .matcher(_inputData.value)
+                .matches()
+        ) {
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiErrorType.INVALID_EMAIL),
@@ -61,9 +65,14 @@ class ResetPasswordScreenViewModel(
 
         data object Loading : UiState
 
-        data class Error(val message: String, val inputType: ResetScreenInputType) : UiState
+        data class Error(
+            val message: String,
+            val inputType: ResetScreenInputType,
+        ) : UiState
 
-        data class Success(val email: String) : UiState
+        data class Success(
+            val email: String,
+        ) : UiState
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -75,11 +84,16 @@ class ResetPasswordScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowError(val message: String, val inputType: ResetScreenInputType = ResetScreenInputType.NONE) : Action {
+        data class ShowError(
+            val message: String,
+            val inputType: ResetScreenInputType = ResetScreenInputType.NONE,
+        ) : Action {
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }
 
-        data class Success(val email: String) : Action {
+        data class Success(
+            val email: String,
+        ) : Action {
             override fun reduce(state: UiState): UiState = UiState.Success(email)
         }
     }

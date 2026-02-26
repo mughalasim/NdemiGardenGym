@@ -1,90 +1,66 @@
 package com.ndemi.garden.gym.ui.widgets.member
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CameraAlt
 import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.Dp
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
-import com.ndemi.garden.gym.ui.theme.icon_size_large
-import com.ndemi.garden.gym.ui.theme.image_size_large
-import com.ndemi.garden.gym.ui.theme.padding_screen
+import com.ndemi.garden.gym.ui.theme.image_size_small
+import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.AsyncImageWidget
 
 @Composable
 fun MemberImageWidget(
-    canEditImage: Boolean = true,
+    modifier: Modifier = Modifier,
     imageUrl: String,
+    canEditImage: Boolean = true,
+    overrideImageSize: Dp = image_size_small,
     onImageSelect: () -> Unit = {},
     onImageDelete: () -> Unit = {},
 ) {
     Box(
-        modifier =
-            Modifier
-                .padding(vertical = padding_screen)
-                .wrapContentHeight(),
+        modifier = modifier.wrapContentSize(),
     ) {
         AsyncImageWidget(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .height(image_size_large),
+                    .size(overrideImageSize)
+                    .clip(RoundedCornerShape(percent = 100))
+                    .background(AppTheme.colors.backgroundCard)
+                    .border(
+                        width = line_thickness,
+                        color = AppTheme.colors.backgroundScreen,
+                        shape = RoundedCornerShape(percent = 100),
+                    ),
             profileImageUrl = imageUrl,
         )
         Row(
             modifier =
                 Modifier
-                    .align(alignment = Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(padding_screen),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                    .align(Alignment.BottomEnd),
         ) {
             if (canEditImage) {
                 if (imageUrl.isNotEmpty()) {
-                    ImageIcon(Icons.Rounded.DeleteForever, onImageDelete, AppTheme.colors.error)
+                    RoundedIconWidget(Icons.Rounded.DeleteForever, onImageDelete, AppTheme.colors.error)
+                } else {
+                    RoundedIconWidget(Icons.Rounded.CameraAlt, onImageSelect, AppTheme.colors.textPrimary)
                 }
-                ImageIcon(Icons.Rounded.CameraAlt, onImageSelect, AppTheme.colors.textPrimary)
             }
         }
     }
-}
-
-@Composable
-private fun ImageIcon(
-    icon: ImageVector,
-    onClickListener: () -> Unit,
-    tintColor: Color,
-) {
-    Image(
-        imageVector = icon,
-        contentDescription = "",
-        contentScale = ContentScale.Inside,
-        colorFilter = ColorFilter.tint(tintColor),
-        modifier =
-            Modifier
-                .width(icon_size_large)
-                .height(icon_size_large)
-                .clickable {
-                    onClickListener.invoke()
-                },
-    )
 }
 
 @AppPreview

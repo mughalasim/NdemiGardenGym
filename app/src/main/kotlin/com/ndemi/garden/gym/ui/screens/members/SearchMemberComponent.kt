@@ -11,7 +11,7 @@ import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
@@ -28,7 +28,7 @@ fun SearchMemberComponent(
         Box(
             modifier =
                 Modifier
-                    .padding(vertical = padding_screen_small)
+                    .padding(vertical = padding_screen_tiny)
                     .padding(horizontal = padding_screen)
                     .fillMaxWidth()
                     .toAppCardStyle(),

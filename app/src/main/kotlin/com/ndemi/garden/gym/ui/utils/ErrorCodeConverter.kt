@@ -51,6 +51,7 @@ class ErrorCodeConverterImp(
             UiErrorType.REGISTRATION_FAILED -> application.resources.getString(R.string.error_registration_failed)
             UiErrorType.INVALID_APARTMENT_NUMBER -> application.resources.getString(R.string.error_apartment_number)
             UiErrorType.INVALID_AMOUNT -> application.resources.getString(R.string.error_invalid_amount)
+            UiErrorType.INVALID_HEIGHT -> application.resources.getString(R.string.error_invalid_height)
             UiErrorType.INVALID_MONTH_DURATION -> application.resources.getString(R.string.error_invalid_month_duration)
             UiErrorType.INVALID_PHONE_NUMBER -> application.resources.getString(R.string.error_invalid_phone_number)
         }

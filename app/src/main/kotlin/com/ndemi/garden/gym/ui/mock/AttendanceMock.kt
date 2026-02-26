@@ -8,5 +8,10 @@ fun getMockAttendanceEntity() =
     AttendanceEntity(
         memberId = "1234567890",
         startDateMillis = DateTime.now().millis,
-        endDateMillis = DateTime.now().plusHours(1).plusMinutes(13).millis,
+        endDateMillis =
+            DateTime
+                .now()
+                .plusHours(1)
+                .plusMinutes(13)
+                .millis,
     )

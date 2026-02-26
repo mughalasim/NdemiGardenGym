@@ -26,25 +26,49 @@ internal fun <T> handleError(
 }
 
 @Suppress("detekt.CyclomaticComplexMethod")
-fun Exception.toDomainError(): DomainErrorType {
-    return when (this) {
-        is FirebaseAuthWeakPasswordException -> DomainErrorType.INVALID_PASSWORD_LENGTH
-        is FirebaseAuthInvalidCredentialsException -> DomainErrorType.INVALID_LOGIN_CREDENTIALS
-        is FirebaseAuthEmailException -> DomainErrorType.INVALID_LOGIN_CREDENTIALS
-        is FirebaseAuthInvalidUserException -> DomainErrorType.USER_DISABLED
-        is FirebaseAuthUserCollisionException -> DomainErrorType.EMAIL_ALREADY_EXISTS
-        is FirebaseAuthException -> DomainErrorType.UNKNOWN
+fun Exception.toDomainError(): DomainErrorType =
+    when (this) {
+        is FirebaseAuthWeakPasswordException -> {
+            DomainErrorType.INVALID_PASSWORD_LENGTH
+        }
+
+        is FirebaseAuthInvalidCredentialsException -> {
+            DomainErrorType.INVALID_LOGIN_CREDENTIALS
+        }
+
+        is FirebaseAuthEmailException -> {
+            DomainErrorType.INVALID_LOGIN_CREDENTIALS
+        }
+
+        is FirebaseAuthInvalidUserException -> {
+            DomainErrorType.USER_DISABLED
+        }
+
+        is FirebaseAuthUserCollisionException -> {
+            DomainErrorType.EMAIL_ALREADY_EXISTS
+        }
+
+        is FirebaseAuthException -> {
+            DomainErrorType.UNKNOWN
+        }
+
         is FirebaseFirestoreException -> {
-            return when (this.code) {
+            when (this.code) {
                 FirebaseFirestoreException.Code.UNKNOWN -> DomainErrorType.NETWORK
                 FirebaseFirestoreException.Code.INVALID_ARGUMENT -> DomainErrorType.INVALID_ARGUMENT
                 FirebaseFirestoreException.Code.NOT_FOUND -> DomainErrorType.NO_DATA
                 FirebaseFirestoreException.Code.PERMISSION_DENIED -> DomainErrorType.UNAUTHORISED
                 FirebaseFirestoreException.Code.UNAUTHENTICATED -> DomainErrorType.UNAUTHORISED
+                FirebaseFirestoreException.Code.FAILED_PRECONDITION -> DomainErrorType.INVALID_SESSION_TIME
                 else -> DomainErrorType.SERVER
             }
         }
-        is FirebaseNetworkException -> DomainErrorType.NETWORK
-        else -> DomainErrorType.UNKNOWN
+
+        is FirebaseNetworkException -> {
+            DomainErrorType.NETWORK
+        }
+
+        else -> {
+            DomainErrorType.UNKNOWN
+        }
     }
-}

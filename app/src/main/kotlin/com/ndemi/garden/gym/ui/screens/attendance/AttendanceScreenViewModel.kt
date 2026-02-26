@@ -38,19 +38,21 @@ class AttendanceScreenViewModel(
     fun getAttendances() {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            attendanceUseCase.getMemberAttendancesForId(
-                memberId = memberId,
-                year = selectedDate.value.year,
-            ).collect { result ->
-                when (result) {
-                    is DomainResult.Error ->
-                        sendAction(Action.ShowDomainError(result.error, converter))
+            attendanceUseCase
+                .getMemberAttendancesForId(
+                    memberId = memberId,
+                    year = selectedDate.value.year,
+                ).collect { result ->
+                    when (result) {
+                        is DomainResult.Error -> {
+                            sendAction(Action.ShowDomainError(result.error, converter))
+                        }
 
-                    is DomainResult.Success -> {
-                        sendAction(Action.Success(result.data))
+                        is DomainResult.Success -> {
+                            sendAction(Action.Success(result.data))
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -69,15 +71,18 @@ class AttendanceScreenViewModel(
         viewModelScope.launch {
             attendanceUseCase.deleteAttendance(attendanceEntity).also { result ->
                 when (result) {
-                    is DomainResult.Error ->
+                    is DomainResult.Error -> {
                         sendAction(
                             Action.ShowDomainError(
                                 result.error,
                                 converter,
                             ),
                         )
+                    }
 
-                    is DomainResult.Success -> getAttendances()
+                    is DomainResult.Success -> {
+                        getAttendances()
+                    }
                 }
             }
         }
@@ -93,9 +98,13 @@ class AttendanceScreenViewModel(
     sealed interface UiState : BaseState {
         data object Loading : UiState
 
-        data class Error(val message: String) : UiState
+        data class Error(
+            val message: String,
+        ) : UiState
 
-        data class Success(val attendancesMonthly: List<AttendanceMonthEntity>) : UiState
+        data class Success(
+            val attendancesMonthly: List<AttendanceMonthEntity>,
+        ) : UiState
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -110,7 +119,9 @@ class AttendanceScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainErrorType))
         }
 
-        data class Success(val attendancesMonthly: List<AttendanceMonthEntity>) : Action {
+        data class Success(
+            val attendancesMonthly: List<AttendanceMonthEntity>,
+        ) : Action {
             override fun reduce(state: UiState): UiState = UiState.Success(attendancesMonthly)
         }
     }

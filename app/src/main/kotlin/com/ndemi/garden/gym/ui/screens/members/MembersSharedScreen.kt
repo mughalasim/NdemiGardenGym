@@ -2,6 +2,7 @@ package com.ndemi.garden.gym.ui.screens.members
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,8 +13,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -25,9 +26,11 @@ import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
 import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
+import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
+import com.ndemi.garden.gym.ui.widgets.LoadingScreenWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberStatusWidget
@@ -40,6 +43,7 @@ import cv.domain.entities.PermissionsEntity
 internal fun MembersSharedScreen(
     @StringRes pageTitleRes: Int = R.string.txt_active_members,
     @StringRes defaultMessageRes: Int = R.string.txt_no_members,
+    screenType: MemberScreenType = MemberScreenType.ALL_MEMBERS,
     permissionState: PermissionsEntity = PermissionsEntity(),
     searchTerm: String = "",
     uiState: UiState = UiState.Loading,
@@ -47,58 +51,65 @@ internal fun MembersSharedScreen(
     members: List<MemberEntity> = listOf(),
     listeners: MembersSharedScreenListeners = MembersSharedScreenListeners(),
 ) {
-    Column {
-        ToolBarWidget(
-            title = stringResource(pageTitleRes),
-            secondaryIcon = if (permissionState.canAddMember) Icons.Default.PersonAdd else null,
-            onSecondaryIconPressed = listeners.onRegisterMemberTapped,
-        )
-
-        if (uiState is UiState.Error) {
-            snackbarHostState.Show(
-                type = SnackbarType.ERROR,
-                message = uiState.message,
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column {
+            ToolBarWidget(
+                title = stringResource(pageTitleRes),
+                secondaryIcon = if (permissionState.canAddMember) Icons.Default.PersonAdd else null,
+                onSecondaryIconPressed = listeners.onRegisterMemberTapped,
             )
-        }
 
-        SearchMemberComponent(
-            textInput = searchTerm,
-            isVisible = members.isNotEmpty() || searchTerm.isNotEmpty(),
-            memberCount = members.size,
-            onTextChanged = listeners.onSearchTextChanged,
-        )
+            if (uiState is UiState.Error) {
+                snackbarHostState.Show(
+                    type = SnackbarType.ERROR,
+                    message = uiState.message,
+                )
+            }
 
-        if (members.isEmpty() && uiState !is UiState.Loading) {
-            TextWidget(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(padding_screen),
-                textAlign = TextAlign.Center,
-                text = stringResource(defaultMessageRes),
+            SearchMemberComponent(
+                textInput = searchTerm,
+                isVisible = members.isNotEmpty() || searchTerm.isNotEmpty(),
+                memberCount = members.size,
+                onTextChanged = listeners.onSearchTextChanged,
             )
-        }
 
-        PullToRefreshBox(
-            modifier = Modifier.fillMaxSize(),
-            isRefreshing = uiState is UiState.Loading,
-            onRefresh = { listeners.getMembers() },
-        ) {
+            if (members.isEmpty() && uiState !is UiState.Loading) {
+                TextWidget(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(padding_screen),
+                    textAlign = TextAlign.Center,
+                    text = stringResource(defaultMessageRes),
+                )
+            }
+
             LazyVerticalStaggeredGrid(
                 modifier = Modifier.padding(horizontal = padding_screen),
-                verticalItemSpacing = padding_screen_small,
-                horizontalArrangement = Arrangement.spacedBy(padding_screen_small),
-                columns = StaggeredGridCells.Fixed(2),
+                verticalItemSpacing = padding_screen_tiny,
+                horizontalArrangement = Arrangement.spacedBy(padding_screen_tiny),
+                columns = StaggeredGridCells.Fixed(COLUMN_COUNT),
             ) {
                 items(members) {
                     MemberStatusWidget(
                         memberEntity = it,
                         canViewMemberDetails = permissionState.canViewMemberDetails,
-                        canViewMemberStats = permissionState.canViewMemberStats,
+                        canViewMemberStats = permissionState.canViewMemberStats && screenType != MemberScreenType.NON_MEMBERS,
                         listener = listeners.memberStatusWidgetListener,
                     )
                 }
             }
+        }
+
+        if (uiState is UiState.Loading) {
+            LoadingScreenWidget(
+                modifier =
+                    Modifier
+                        .align(Alignment.Center)
+                        .padding(padding_screen)
+                        .toAppCardStyle(),
+                customMessage = "Updating members...",
+            )
         }
     }
 }
@@ -106,7 +117,6 @@ internal fun MembersSharedScreen(
 data class MembersSharedScreenListeners(
     val onRegisterMemberTapped: () -> Unit = {},
     val onSearchTextChanged: (String) -> Unit = {},
-    val getMembers: () -> Unit = {},
     val memberStatusWidgetListener: MemberStatusWidgetListener = MemberStatusWidgetListener(),
 )
 
@@ -128,3 +138,5 @@ private fun MembersSharedScreenPreview() =
                 ),
         )
     }
+
+private const val COLUMN_COUNT = 3
