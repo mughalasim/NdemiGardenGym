@@ -20,19 +20,19 @@ import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.DateConstants
 import com.ndemi.garden.gym.ui.utils.getBMIColor
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.StatsTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberImageWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberSessionWidget
-import org.joda.time.DateTime
 
 @Composable
 fun ProfileMemberDetailsScreen(
     state: ProfileMemberScreenViewModel.UiState.Success,
     countdown: String = "",
+    registrationDate: String = "",
+    sessionStartTime: String = "",
     listeners: ProfileMemberScreenListeners = ProfileMemberScreenListeners(),
 ) {
     Column {
@@ -70,7 +70,7 @@ fun ProfileMemberDetailsScreen(
                             text =
                                 stringResource(
                                     R.string.txt_member_since,
-                                    DateTime(state.memberEntity.registrationDateMillis).toString(DateConstants.formatMonthYear),
+                                    registrationDate,
                                 ),
                         )
                     }
@@ -103,7 +103,7 @@ fun ProfileMemberDetailsScreen(
             }
 
             MemberSessionWidget(
-                sessionStartTime = state.memberEntity.activeNowDateMillis,
+                sessionStartTime = sessionStartTime,
                 countdown = countdown,
                 onSessionTapped = listeners.onSessionTapped,
             )

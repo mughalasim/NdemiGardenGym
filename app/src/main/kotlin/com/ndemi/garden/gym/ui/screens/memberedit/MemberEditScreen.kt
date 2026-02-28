@@ -29,6 +29,7 @@ fun MemberEditScreen(
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val permissionState by viewModel.getPermissions().collectAsStateWithLifecycle()
     val memberEntity by viewModel.memberEntity.collectAsStateWithLifecycle()
+    val registrationDate by viewModel.registrationDate.collectAsStateWithLifecycle()
     var showDeleteUserDialog by remember { mutableStateOf(false) }
     var showMemberTypeSelectionDialog by remember { mutableStateOf(false) }
     val galleryLauncher =
@@ -81,6 +82,7 @@ fun MemberEditScreen(
         uiState = uiState,
         permissionState = permissionState,
         memberEntity = memberEntity,
+        registrationDate = registrationDate,
         toolbarTitle =
             if (memberId.isEmpty()) {
                 stringResource(R.string.txt_edit_your_details)

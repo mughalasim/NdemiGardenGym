@@ -15,6 +15,7 @@ import cv.domain.enums.DomainErrorType
 import cv.domain.enums.MemberFetchType
 import cv.domain.enums.MemberType
 import cv.domain.repositories.AppLoggerRepository
+import cv.domain.repositories.DateProviderRepository
 import cv.domain.repositories.MemberRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -25,6 +26,7 @@ class MemberRepositoryImp(
     private val firebaseFirestore: FirebaseFirestore,
     private val pathUser: String,
     private val logger: AppLoggerRepository,
+    private val dateProviderRepository: DateProviderRepository,
 ) : MemberRepository {
     override suspend fun getMemberById(memberId: String): DomainResult<MemberEntity> =
         runCatching {
@@ -38,7 +40,7 @@ class MemberRepositoryImp(
                 logger.log("Member by ID: ${result.toObject<Any>()}")
                 val response = result.toObject<MemberModel>()
                 return response?.let {
-                    DomainResult.Success(it.toMemberEntity())
+                    DomainResult.Success(it.toMemberEntity(dateProviderRepository = dateProviderRepository))
                 } ?: run {
                     DomainResult.Error(DomainErrorType.NO_DATA)
                 }
@@ -76,7 +78,7 @@ class MemberRepositoryImp(
                         val response =
                             querySnapshot
                                 .toObjects<MemberModel>()
-                                .map { it.toMemberEntity() }
+                                .map { it.toMemberEntity(dateProviderRepository = dateProviderRepository) }
                         trySend(
                             DomainResult.Success(
                                 when (fetchType) {

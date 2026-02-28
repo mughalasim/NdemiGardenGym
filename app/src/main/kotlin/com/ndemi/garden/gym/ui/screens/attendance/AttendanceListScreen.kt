@@ -1,11 +1,8 @@
 package com.ndemi.garden.gym.ui.screens.attendance
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -25,18 +22,14 @@ import com.ndemi.garden.gym.ui.mock.getMockAttendanceEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.icon_size_large
-import com.ndemi.garden.gym.ui.theme.line_thickness
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
-import com.ndemi.garden.gym.ui.utils.toMonthName
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.attendance.AttendanceWidget
 import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.AttendanceMonthEntity
-import org.joda.time.DateTime
 
 @Composable
 fun AttendanceListScreen(
@@ -47,7 +40,7 @@ fun AttendanceListScreen(
     Column(
         modifier =
             Modifier
-                .padding(bottom = padding_screen)
+                .padding(top = padding_screen_small)
                 .padding(horizontal = padding_screen)
                 .toAppCardStyle(),
     ) {
@@ -57,7 +50,7 @@ fun AttendanceListScreen(
                 modifier = Modifier.weight(1f),
             ) {
                 TextWidget(
-                    text = attendanceMonthly.monthNumber.toMonthName(),
+                    text = attendanceMonthly.monthName,
                     style = AppTheme.textStyles.large,
                 )
                 TextWidget(
@@ -68,9 +61,7 @@ fun AttendanceListScreen(
                     text =
                         stringResource(
                             R.string.txt_total_time_spent,
-                            DateTime.now().plusMinutes(attendanceMonthly.totalMinutes).toActiveStatusDuration(
-                                startDate = DateTime.now(),
-                            ),
+                            attendanceMonthly.activeDuration,
                         ),
                 )
             }
@@ -93,14 +84,6 @@ fun AttendanceListScreen(
         }
         if (collapsedState) {
             repeat(attendanceMonthly.attendances.size) {
-                Spacer(
-                    modifier =
-                        Modifier
-                            .padding(top = padding_screen_small)
-                            .fillMaxWidth()
-                            .height(line_thickness)
-                            .background(AppTheme.colors.backgroundButtonDisabled),
-                )
                 AttendanceWidget(
                     attendanceEntity = attendanceMonthly.attendances[it],
                     canDeleteAttendance = canDeleteAttendance,
@@ -121,6 +104,8 @@ private fun AttendanceScreenPreview() {
                     AttendanceMonthEntity(
                         monthNumber = 1,
                         totalMinutes = 45,
+                        monthName = "September",
+                        activeDuration = "12 minutes",
                         attendances =
                             listOf(
                                 getMockAttendanceEntity(),
@@ -129,10 +114,14 @@ private fun AttendanceScreenPreview() {
                                 getMockAttendanceEntity(),
                             ),
                     ),
-                canDeleteAttendance = false,
+                canDeleteAttendance = true,
             )
             AttendanceListScreen(
-                attendanceMonthly = AttendanceMonthEntity(),
+                attendanceMonthly =
+                    AttendanceMonthEntity(
+                        monthName = "October",
+                        activeDuration = "12 minutes",
+                    ),
             )
         }
     }

@@ -22,14 +22,11 @@ import com.ndemi.garden.gym.ui.mock.getMockAttendanceEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
+import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.DateConstants.formatDateDay
-import com.ndemi.garden.gym.ui.utils.DateConstants.formatTime
-import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
 import cv.domain.entities.AttendanceEntity
-import org.joda.time.DateTime
 
 @Composable
 fun AttendanceWidget(
@@ -38,8 +35,6 @@ fun AttendanceWidget(
     canDeleteAttendance: Boolean = false,
     onDeleteAttendance: (AttendanceEntity) -> Unit = {},
 ) {
-    val startDate = DateTime(attendanceEntity.startDateMillis)
-    val endDate = DateTime(attendanceEntity.endDateMillis)
     var showDialog by remember { mutableStateOf(false) }
 
     Column(
@@ -55,7 +50,7 @@ fun AttendanceWidget(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             TextWidget(
-                text = startDate.toString(formatDateDay),
+                text = attendanceEntity.startDateDay,
                 style = AppTheme.textStyles.small,
                 color = AppTheme.colors.primary,
             )
@@ -71,20 +66,17 @@ fun AttendanceWidget(
         Row(
             modifier =
                 Modifier
-                    .padding(top = padding_screen_small)
+                    .padding(top = padding_screen_tiny)
                     .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             TextWidget(
-                text =
-                    startDate.toString(formatTime) +
-                        " - " +
-                        endDate.toString(formatTime),
+                text = attendanceEntity.startTime + " - " + attendanceEntity.endTime,
             )
 
             TextWidget(
-                text = endDate.toActiveStatusDuration(startDate),
+                text = attendanceEntity.activeStatusDuration,
             )
 
             if (showDialog) {

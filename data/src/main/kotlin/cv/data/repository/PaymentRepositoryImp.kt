@@ -14,16 +14,17 @@ import cv.domain.entities.PaymentYearEntity
 import cv.domain.enums.AppLogType
 import cv.domain.enums.DomainErrorType
 import cv.domain.repositories.AppLoggerRepository
+import cv.domain.repositories.DateProviderRepository
 import cv.domain.repositories.PaymentRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import org.joda.time.DateTime
 
 class PaymentRepositoryImp(
     private val firebaseAuth: FirebaseAuth,
     private val firebaseFirestore: FirebaseFirestore,
+    private val dateProviderRepository: DateProviderRepository,
     private val pathPayment: String,
     private val pathPaymentPlan: String,
     private val logger: AppLoggerRepository,
@@ -42,7 +43,7 @@ class PaymentRepositoryImp(
                         val response = document.toObjects<PaymentModel>()
                         val list =
                             response
-                                .map { it.toPaymentEntity() }
+                                .map { it.toPaymentEntity(dateProviderRepository = dateProviderRepository) }
                                 .sortedByDescending { it.startDateMillis }
 
                         var totalAmount = 0.0
@@ -95,14 +96,14 @@ class PaymentRepositoryImp(
                         val response = document.toObjects<PaymentModel>()
                         val list =
                             response
-                                .map { it.toPaymentEntity() }
+                                .map { it.toPaymentEntity(dateProviderRepository = dateProviderRepository) }
                                 .sortedByDescending { it.startDateMillis }
 
-                        var canAddPayment = memberId.isNotEmpty() && DateTime.now().year == year
+                        var canAddPayment = memberId.isNotEmpty() && dateProviderRepository.getYear() == year
                         var totalAmount = 0.0
                         list.forEach {
                             totalAmount += it.amount
-                            if (DateTime(it.endDateMillis).isAfterNow) {
+                            if (dateProviderRepository.isAfterNow(it.endDateMillis)) {
                                 canAddPayment = false
                             }
                             logger.log("Payment data received: $it")
@@ -131,7 +132,7 @@ class PaymentRepositoryImp(
             firebaseFirestore
                 .collection(pathPayment)
                 .document(pathPaymentPlan)
-                .collection(DateTime(paymentEntity.startDateMillis).year.toString())
+                .collection(dateProviderRepository.getYear(paymentEntity.startDateMillis).toString())
                 .document(paymentModel.paymentId)
                 .set(paymentModel)
                 .await()
@@ -145,7 +146,7 @@ class PaymentRepositoryImp(
             firebaseFirestore
                 .collection(pathPayment)
                 .document(pathPaymentPlan)
-                .collection(DateTime(paymentEntity.startDateMillis).year.toString())
+                .collection(dateProviderRepository.getYear(paymentEntity.startDateMillis).toString())
                 .document(paymentEntity.paymentId)
                 .delete()
                 .await()

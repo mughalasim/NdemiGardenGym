@@ -18,20 +18,19 @@ import cv.domain.enums.AppLogType
 import cv.domain.enums.DomainErrorType
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.AttendanceRepository
+import cv.domain.repositories.DateProviderRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import org.joda.time.DateTime
-import org.joda.time.Days
-import org.joda.time.Minutes
 import java.util.Date
 
 class AttendanceRepositoryImp(
-    private val firebaseAuth: FirebaseAuth,
-    private val firebaseFirestore: FirebaseFirestore,
     private val pathAttendance: String,
+    private val firebaseAuth: FirebaseAuth,
     private val logger: AppLoggerRepository,
+    private val firebaseFirestore: FirebaseFirestore,
+    private val dateProviderRepository: DateProviderRepository,
 ) : AttendanceRepository {
     override fun getAllAttendances(
         year: Int,
@@ -50,16 +49,15 @@ class AttendanceRepositoryImp(
                         snapshot?.let {
                             val response = snapshot.toObjects<AttendanceModel>()
                             val list =
-                                response.map { it.toAttendanceEntity() }
+                                response.map { it.toAttendanceEntity(dateProviderRepository = dateProviderRepository) }
 
                             var totalMinutes = 0
                             list.forEach {
                                 totalMinutes +=
-                                    Minutes
-                                        .minutesBetween(
-                                            DateTime(it.startDateMillis),
-                                            DateTime(it.endDateMillis),
-                                        ).minutes
+                                    dateProviderRepository.minutesBetween(
+                                        startDateMillis = it.startDateMillis,
+                                        endDateMillis = it.endDateMillis,
+                                    )
                                 logger.log("Attendance received: $it")
                             }
                             trySend(
@@ -107,17 +105,16 @@ class AttendanceRepositoryImp(
                             val response = snapshot.toObjects<AttendanceModel>()
                             val list =
                                 response
-                                    .map { it.toAttendanceEntity() }
+                                    .map { it.toAttendanceEntity(dateProviderRepository = dateProviderRepository) }
                                     .sortedByDescending { it.startDateMillis }
 
                             var totalMinutes = 0
                             list.forEach {
                                 totalMinutes +=
-                                    Minutes
-                                        .minutesBetween(
-                                            DateTime(it.startDateMillis),
-                                            DateTime(it.endDateMillis),
-                                        ).minutes
+                                    dateProviderRepository.minutesBetween(
+                                        startDateMillis = it.startDateMillis,
+                                        endDateMillis = it.endDateMillis,
+                                    )
                                 logger.log("Attendance received: $it")
                             }
                             trySend(
@@ -152,13 +149,7 @@ class AttendanceRepositoryImp(
                     }
                 }
 
-            val startDateTime = DateTime(startDate)
-            val endDateTime = DateTime(endDate)
-
-            if (endDateTime.isBefore(startDateTime) ||
-                Days.daysBetween(startDateTime, endDateTime).days > 1 ||
-                Minutes.minutesBetween(startDateTime, endDateTime).minutes < 1
-            ) {
+            if (dateProviderRepository.isWithinCurrentDay(startDate, endDate)) {
                 logger.log("Invalid argument passed", AppLogType.ERROR)
                 throw FirebaseFirestoreException("Invalid argument passed", Code.FAILED_PRECONDITION)
             }
@@ -171,8 +162,8 @@ class AttendanceRepositoryImp(
                 )
             firebaseFirestore
                 .collection(pathAttendance)
-                .document(startDateTime.year.toString())
-                .collection(startDateTime.monthOfYear.toString())
+                .document(dateProviderRepository.getYear(startDate).toString())
+                .collection(dateProviderRepository.getMonth(startDate).toString())
                 .document(attendanceModel.getAttendanceId())
                 .set(attendanceModel)
         }.fold(
@@ -182,11 +173,10 @@ class AttendanceRepositoryImp(
 
     override suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit> =
         runCatching {
-            val startDateTime = DateTime(attendanceEntity.startDateMillis)
             firebaseFirestore
                 .collection(pathAttendance)
-                .document(startDateTime.year.toString())
-                .collection(startDateTime.monthOfYear.toString())
+                .document(dateProviderRepository.getYear(attendanceEntity.startDateMillis).toString())
+                .collection(dateProviderRepository.getMonth(attendanceEntity.startDateMillis).toString())
                 .document(attendanceEntity.toAttendanceModel().getAttendanceId())
                 .delete()
                 .await()

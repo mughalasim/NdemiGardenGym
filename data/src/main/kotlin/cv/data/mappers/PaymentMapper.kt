@@ -3,6 +3,7 @@ package cv.data.mappers
 import com.google.firebase.Timestamp
 import cv.data.models.PaymentModel
 import cv.domain.entities.PaymentEntity
+import cv.domain.repositories.DateProviderRepository
 import java.util.Date
 
 fun PaymentEntity.toPaymentModel() =
@@ -14,11 +15,17 @@ fun PaymentEntity.toPaymentModel() =
         amount = amount,
     )
 
-fun PaymentModel.toPaymentEntity() =
-    PaymentEntity(
+fun PaymentModel.toPaymentEntity(dateProviderRepository: DateProviderRepository): PaymentEntity {
+    val startTime = startDate.toDate().time
+    val endTime = endDate.toDate().time
+    return PaymentEntity(
         paymentId = paymentId,
         memberId = memberId,
-        startDateMillis = startDate.toDate().time,
-        endDateMillis = endDate.toDate().time,
+        startDateMillis = startTime,
+        startDateDayMonthYear = dateProviderRepository.formatDayMonthYear(startTime),
+        endDateMillis = endTime,
+        endDateDayMonthYear = dateProviderRepository.formatDayMonthYear(endTime),
         amount = amount,
+        paymentPlanDuration = dateProviderRepository.toPaymentPlanDuration(endTime),
     )
+}

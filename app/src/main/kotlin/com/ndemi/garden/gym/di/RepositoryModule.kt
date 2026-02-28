@@ -20,6 +20,8 @@ import org.koin.dsl.module
 
 val repositoryModule =
     module {
+        single<DateProviderRepository> { DateProviderRepositoryImp(get()) }
+
         single<AuthRepository> {
             AuthRepositoryImp(
                 firebaseAuth = get(),
@@ -32,6 +34,7 @@ val repositoryModule =
                         currentAppVersion = BuildConfig.VERSION_CODE,
                     ),
                 logger = get(),
+                dateProviderRepository = get(),
             )
         }
 
@@ -47,6 +50,7 @@ val repositoryModule =
                 firebaseFirestore = get(),
                 pathUser = BuildConfig.PATH_USER,
                 logger = get(),
+                dateProviderRepository = get(),
             )
         }
 
@@ -56,6 +60,7 @@ val repositoryModule =
                 firebaseFirestore = get(),
                 pathAttendance = BuildConfig.PATH_ATTENDANCE,
                 logger = get(),
+                dateProviderRepository = get(),
             )
         }
 
@@ -66,6 +71,7 @@ val repositoryModule =
                 pathPayment = BuildConfig.PATH_PAYMENT,
                 pathPaymentPlan = BuildConfig.PATH_PAYMENT_PLAN,
                 logger = get(),
+                dateProviderRepository = get(),
             )
         }
 
@@ -76,6 +82,4 @@ val repositoryModule =
                 logger = get(),
             )
         }
-
-        single<DateProviderRepository> { DateProviderRepositoryImp() }
     }

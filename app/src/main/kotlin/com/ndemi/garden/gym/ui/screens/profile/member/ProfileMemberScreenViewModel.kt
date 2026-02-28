@@ -11,10 +11,10 @@ import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
-import com.ndemi.garden.gym.ui.utils.toCountdownTimer
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.enums.MemberUpdateType
+import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.AuthUseCase
@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import org.joda.time.DateTime
 
 class ProfileMemberScreenViewModel(
     private val job: MutableList<Job>,
@@ -38,6 +37,7 @@ class ProfileMemberScreenViewModel(
     private val attendanceUseCase: AttendanceUseCase,
     private val storageUseCase: StorageUseCase,
     private val navigationService: NavigationService,
+    private val dateProviderRepository: DateProviderRepository,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
     private var sessionCountdownJob: Job? = null
     private val memberEntity = MutableStateFlow(MemberEntity())
@@ -45,12 +45,20 @@ class ProfileMemberScreenViewModel(
     private val _countdown = MutableStateFlow("")
     val countdown: StateFlow<String> = _countdown
 
+    private val _registrationDate = MutableStateFlow("")
+    val registrationDate: StateFlow<String> = _registrationDate
+
+    private val _sessionStartTime = MutableStateFlow("")
+    val sessionStartTime: StateFlow<String> = _sessionStartTime
+
     init {
         sendAction(Action.Loading)
         job +=
             viewModelScope.launch {
                 authUseCase.observeUser().collect { result ->
                     memberEntity.value = result
+                    _registrationDate.value = dateProviderRepository.formatMonthYear(result.registrationDateMillis)
+                    _sessionStartTime.value = ""
                     if (result.activeNowDateMillis != null) {
                         startCounter()
                     } else {
@@ -67,19 +75,23 @@ class ProfileMemberScreenViewModel(
             viewModelScope.launch {
                 _countdown
                     .onStart {
-                        while (memberEntity.value.activeNowDateMillis != null) {
-                            emit(DateTime.now().toCountdownTimer(DateTime(memberEntity.value.activeNowDateMillis ?: 0.0)))
+                        val startTime = memberEntity.value.activeNowDateMillis ?: 0
+                        while (startTime > 0) {
+                            _sessionStartTime.value = dateProviderRepository.formatTime(startTime)
+                            emit(dateProviderRepository.toCountdownTimer(startTime))
                             delay(COUNTDOWN_SECONDS)
                         }
-                    }.onCompletion { _countdown.emit("") }
-                    .collect { _countdown.emit(it) }
+                    }.onCompletion {
+                        _sessionStartTime.value = ""
+                        _countdown.emit("")
+                    }.collect { _countdown.emit(it) }
             }
     }
 
     private fun updateWorkoutInformation() {
         job +=
             viewModelScope.launch {
-                attendanceUseCase.getMemberAttendancesForId(memberEntity.value.id, DateTime.now().year).collect { result ->
+                attendanceUseCase.getMemberAttendancesForId(memberEntity.value.id, dateProviderRepository.getYear()).collect { result ->
                     when (result) {
                         is DomainResult.Error -> {
                             sendAction(Action.Success(memberEntity.value))
@@ -105,7 +117,7 @@ class ProfileMemberScreenViewModel(
     private fun setAttendance() {
         viewModelScope.launch {
             attendanceUseCase
-                .addAttendance(DateTime(memberEntity.value.activeNowDateMillis).toDate(), DateTime.now().toDate())
+                .addAttendance(dateProviderRepository.getDate(memberEntity.value.activeNowDateMillis!!), dateProviderRepository.getDate())
                 .also { result ->
                     val snackbarState: Pair<SnackbarType, String> =
                         when (result) {
@@ -125,7 +137,7 @@ class ProfileMemberScreenViewModel(
     fun onSessionTapped() {
         val startedTime = memberEntity.value.activeNowDateMillis
         if (startedTime == null) {
-            updateMemberSession(now = DateTime.now().millis)
+            updateMemberSession(now = dateProviderRepository.getDate().time)
         } else {
             setAttendance()
         }

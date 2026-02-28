@@ -1,7 +1,6 @@
 package com.ndemi.garden.gym.ui.mock
 
 import cv.domain.entities.MemberEntity
-import org.joda.time.DateTime
 
 @Suppress("detekt.MagicNumber")
 fun getMockActiveMemberEntity() =
@@ -10,14 +9,6 @@ fun getMockActiveMemberEntity() =
         firstName = "Asim",
         lastName = "Active",
         email = "asim@test.com",
-        registrationDateMillis = DateTime.now().millis,
-        renewalFutureDateMillis = DateTime.now().plusDays(25).millis,
-        activeNowDateMillis =
-            DateTime
-                .now()
-                .minusHours(1)
-                .minusMinutes(13)
-                .millis,
         apartmentNumber = "B903",
         profileImageUrl = "",
         hasCoach = true,
@@ -31,8 +22,6 @@ fun getMockRegisteredMemberEntity() =
         firstName = "Asim",
         lastName = "Registered",
         email = "asim@test.com",
-        registrationDateMillis = DateTime.now().millis,
-        renewalFutureDateMillis = DateTime.now().plusDays(25).millis,
         activeNowDateMillis = null,
         apartmentNumber = "",
         profileImageUrl = "",
@@ -48,7 +37,6 @@ fun getMockExpiredMemberEntity() =
         firstName = "Asim",
         lastName = "Expired",
         email = "asim@test.com",
-        registrationDateMillis = DateTime.now().millis,
         renewalFutureDateMillis = null,
         activeNowDateMillis = null,
         apartmentNumber = "",

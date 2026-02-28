@@ -6,6 +6,7 @@ import com.ndemi.garden.gym.di.WeightValidator
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.WeightEntity
 import cv.domain.enums.MemberUpdateType
+import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.validator.Validator
@@ -13,13 +14,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.joda.time.DateTime
 
 class WeightViewModel(
     private val job: MutableList<Job>,
     private val authUseCase: AuthUseCase,
     private val memberUseCase: MemberUseCase,
-    @WeightValidator private val weightValidator: Validator,
+    private val dateProviderRepository: DateProviderRepository,
+    @param:WeightValidator private val weightValidator: Validator,
 ) : ViewModel() {
     data class WeightState(
         val inputText: String = "",
@@ -51,7 +52,7 @@ class WeightViewModel(
         recordedWeights.add(
             WeightEntity(
                 weight = _weightState.value.inputText,
-                dateMillis = DateTime.now().millis,
+                dateMillis = dateProviderRepository.getDate().time,
             ),
         )
         viewModelScope.launch {

@@ -42,6 +42,7 @@ val viewModelModule =
                 attendanceUseCase = get(),
                 permissionsUseCase = get(),
                 navigationService = get(),
+                dateProviderRepository = get(),
             )
         }
 
@@ -59,6 +60,7 @@ val viewModelModule =
                 navigationService = get(),
                 validators = get(),
                 hidePassword = true,
+                dateProviderRepository = get(),
             )
         }
         viewModel(named<RegisterMember>()) {
@@ -69,6 +71,7 @@ val viewModelModule =
                 navigationService = get(),
                 validators = get(),
                 hidePassword = false,
+                dateProviderRepository = get(),
             )
         }
     }

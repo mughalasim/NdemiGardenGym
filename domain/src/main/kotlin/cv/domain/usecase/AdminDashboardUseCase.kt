@@ -40,7 +40,7 @@ class AdminDashboardUseCase(
                     trySend(
                         AdminDashboard(
                             selectedYear = currentYear,
-                            selectedMonth = currentMonth,
+                            selectedMonth = dateProviderRepository.getMonthName(currentMonth),
                         ),
                     )
                     cancel()
@@ -62,8 +62,7 @@ class AdminDashboardUseCase(
                             .filter {
                                 dateProviderRepository.isWithinCurrentMonth(
                                     startTime = it.startDateMillis,
-                                    endTime = it.startDateMillis,
-                                    currentDate,
+                                    currentMonth = currentMonth,
                                 )
                             }.sumOf { it.amount }
 
@@ -102,7 +101,7 @@ class AdminDashboardUseCase(
                     trySend(
                         AdminDashboard(
                             selectedYear = currentYear,
-                            selectedMonth = currentMonth,
+                            selectedMonth = dateProviderRepository.getMonthName(currentMonth),
                             memberEntity = loggedInUser.data,
                             totalRegisteredUsers = totalRegisteredUsers,
                             totalExpiredUsers = totalExpiredUsers,

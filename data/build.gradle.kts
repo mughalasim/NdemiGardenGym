@@ -51,7 +51,7 @@ dependencies {
     implementation(libs.annotation.jvm)
 
     // Joda time
-    api(libs.android.joda)
+    implementation(libs.android.joda)
 
     // Testing -------------------------------------------------------------------------------------
     testImplementation(libs.junit)

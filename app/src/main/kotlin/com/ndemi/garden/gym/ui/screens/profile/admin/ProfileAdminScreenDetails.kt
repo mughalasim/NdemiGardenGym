@@ -29,7 +29,6 @@ import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
-import com.ndemi.garden.gym.ui.utils.toMonthName
 import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.AdminDashboard
@@ -59,7 +58,7 @@ fun ProfileAdminScreenDetails(
                 Spacer(modifier = Modifier.padding(start = padding_screen_small))
                 DateSelectionWidget(
                     modifier = Modifier.weight(1f),
-                    selectedText = state.selectedMonth.toMonthName(),
+                    selectedText = state.selectedMonth,
                     label = stringResource(R.string.txt_selected_month),
                     onPlusTapped = listeners.onMonthPlusTapped,
                     onMinusTapped = listeners.onMonthMinusTapped,
@@ -90,7 +89,7 @@ fun ProfileAdminScreenDetails(
                 Tile(
                     modifier = Modifier.weight(1f),
                     value = currencyFormater(state.totalRevenueMonth),
-                    description = "Revenue for ${state.selectedMonth.toMonthName()}",
+                    description = "Revenue for ${state.selectedMonth}",
                 )
             }
 
@@ -121,7 +120,7 @@ fun ProfileAdminScreenDetails(
             ) {
                 TextWidget(
                     style = AppTheme.textStyles.regularBold,
-                    text = "Top 10 active members for ${state.selectedMonth.toMonthName()}",
+                    text = "Top 10 active members for ${state.selectedMonth}",
                 )
                 if (state.topTenActiveMembers.isEmpty()) {
                     TextWidget(

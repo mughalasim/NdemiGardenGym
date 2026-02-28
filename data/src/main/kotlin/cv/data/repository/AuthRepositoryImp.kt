@@ -14,6 +14,7 @@ import cv.domain.enums.AppLogType
 import cv.domain.enums.DomainErrorType
 import cv.domain.repositories.AppLoggerRepository
 import cv.domain.repositories.AuthRepository
+import cv.domain.repositories.DateProviderRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +26,7 @@ class AuthRepositoryImp(
     private val firebaseFirestore: FirebaseFirestore,
     private val repositoryUrls: AuthRepositoryUrls,
     private val logger: AppLoggerRepository,
+    private val dateProviderRepository: DateProviderRepository,
 ) : AuthRepository {
     private val _memberEntity: MutableStateFlow<MemberEntity> = MutableStateFlow(MemberEntity())
     val memberEntity: StateFlow<MemberEntity> = _memberEntity
@@ -86,7 +88,11 @@ class AuthRepositoryImp(
                         logger.log("getLoggedInUser: $response")
                         val memberModel = response.toObject<MemberModel>()
                         memberModel?.let {
-                            _memberEntity.value = memberModel.toMemberEntity(firebaseAuth.currentUser?.isEmailVerified == true)
+                            _memberEntity.value =
+                                memberModel.toMemberEntity(
+                                    dateProviderRepository = dateProviderRepository,
+                                    emailVerified = firebaseAuth.currentUser?.isEmailVerified == true,
+                                )
                             trySend(DomainResult.Success(_memberEntity.value))
                         } ?: run {
                             trySend(DomainResult.Error(DomainErrorType.UNAUTHORISED))

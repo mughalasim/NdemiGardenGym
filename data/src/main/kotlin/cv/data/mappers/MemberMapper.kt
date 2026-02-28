@@ -6,7 +6,7 @@ import cv.data.models.WeightModel
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.WeightEntity
 import cv.domain.enums.MemberType
-import org.joda.time.DateTime
+import cv.domain.repositories.DateProviderRepository
 import java.util.Date
 
 fun MemberEntity.toMemberModel() =
@@ -28,7 +28,10 @@ fun MemberEntity.toMemberModel() =
         trackedWeights = trackedWeights.toWeightModel(),
     )
 
-fun MemberModel.toMemberEntity(emailVerified: Boolean = false): MemberEntity {
+fun MemberModel.toMemberEntity(
+    dateProviderRepository: DateProviderRepository,
+    emailVerified: Boolean = false,
+): MemberEntity {
     val sortedWeights = trackedWeights.sortedByDescending { it.dateMillis }.take(10)
     return MemberEntity(
         id = id,
@@ -36,7 +39,10 @@ fun MemberModel.toMemberEntity(emailVerified: Boolean = false): MemberEntity {
         lastName = lastName,
         email = email,
         registrationDateMillis = registrationDate.toDate().time,
-        renewalFutureDateMillis = isAfterNow(renewalFutureDate?.toDate()?.time),
+        renewalFutureDateMillis =
+            renewalFutureDate?.toDate()?.time?.let {
+                if (dateProviderRepository.isAfterNow(it)) it else null
+            } ?: run { null },
         activeNowDateMillis = activeNowDate?.toDate()?.time ?: run { null },
         apartmentNumber = apartmentNumber,
         profileImageUrl = profileImageUrl.orEmpty(),
@@ -46,7 +52,7 @@ fun MemberModel.toMemberEntity(emailVerified: Boolean = false): MemberEntity {
         memberType = memberType.toMemberType(),
         emailVerified = emailVerified,
         height = if (height == 0.0) "" else height.toString(),
-        trackedWeights = sortedWeights.toWeightEntity(),
+        trackedWeights = sortedWeights.toWeightEntity(dateProviderRepository),
         bmi = sortedWeights.getBMI(height),
     )
 }
@@ -68,11 +74,13 @@ private fun List<WeightModel>.getBMI(height: Double): Double =
         weight / (heightMeters * heightMeters)
     }
 
-private fun List<WeightModel>.toWeightEntity(): List<WeightEntity> =
+private fun List<WeightModel>.toWeightEntity(dateProviderRepository: DateProviderRepository): List<WeightEntity> =
     this.map {
+        val dateTime = it.dateMillis.toDate().time
         WeightEntity(
             weight = it.weight.toString(),
-            dateMillis = it.dateMillis.toDate().time,
+            dateMillis = dateTime,
+            dateDayMonthYear = dateProviderRepository.formatDayMonthYear(dateTime),
         )
     }
 
@@ -83,9 +91,3 @@ private fun List<WeightEntity>.toWeightModel(): List<WeightModel> =
             dateMillis = Timestamp(Date(it.dateMillis)),
         )
     }
-
-private fun isAfterNow(millis: Long?): Long? {
-    if (millis == null) return null
-    if (DateTime(millis).isBefore(DateTime.now())) return null
-    return millis
-}

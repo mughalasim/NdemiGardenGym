@@ -16,6 +16,7 @@ import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.enums.MemberType
 import cv.domain.enums.MemberUpdateType
+import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.PermissionsUseCase
 import cv.domain.usecase.StorageUseCase
@@ -31,11 +32,14 @@ class MemberEditScreenViewModel(
     private val storageUseCase: StorageUseCase,
     private val navigationService: NavigationService,
     private val validators: MemberValidators,
+    private val dateProviderRepository: DateProviderRepository,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
     private val initialMemberEntity = MutableStateFlow(MemberEntity())
     private val _memberEntity = MutableStateFlow(initialMemberEntity.value)
+    private val _registrationDate = MutableStateFlow("")
 
     val memberEntity: StateFlow<MemberEntity> = _memberEntity
+    val registrationDate: StateFlow<String> = _registrationDate
 
     fun getMemberForId(
         memberId: String,
@@ -52,6 +56,8 @@ class MemberEditScreenViewModel(
                     is DomainResult.Success -> {
                         initialMemberEntity.value = result.data
                         _memberEntity.value = result.data
+                        _registrationDate.value =
+                            dateProviderRepository.formatDayMonthYear(result.data.registrationDateMillis)
                         sendAction(Action.SetWaiting)
                         if (showMessage) {
                             showSnackbar(SnackbarType.SUCCESS, "Update successful")

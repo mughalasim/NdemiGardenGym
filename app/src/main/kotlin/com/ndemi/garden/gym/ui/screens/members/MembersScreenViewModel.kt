@@ -15,6 +15,7 @@ import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.enums.DomainErrorType
 import cv.domain.enums.MemberUpdateType
+import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.PermissionsUseCase
@@ -22,7 +23,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.joda.time.DateTime
 
 class MembersScreenViewModel(
     private val job: MutableList<Job>,
@@ -32,6 +32,7 @@ class MembersScreenViewModel(
     private val attendanceUseCase: AttendanceUseCase,
     private val permissionsUseCase: PermissionsUseCase,
     private val navigationService: NavigationService,
+    private val dateProviderRepository: DateProviderRepository,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
     private val membersUnfiltered = MutableStateFlow<MutableList<MemberEntity>>(mutableListOf())
 
@@ -98,8 +99,8 @@ class MembersScreenViewModel(
             viewModelScope.launch {
                 attendanceUseCase.addAttendanceForMember(
                     memberEntity.id,
-                    DateTime(memberEntity.activeNowDateMillis).toDate(),
-                    DateTime.now().toDate(),
+                    dateProviderRepository.getDate(memberEntity.activeNowDateMillis!!),
+                    dateProviderRepository.getDate(),
                 )
             }
         }
@@ -108,7 +109,10 @@ class MembersScreenViewModel(
         viewModelScope.launch {
             memberUseCase
                 .updateMember(
-                    memberEntity.copy(activeNowDateMillis = if (memberEntity.isActiveNow()) null else DateTime.now().millis),
+                    memberEntity.copy(
+                        activeNowDateMillis =
+                            if (memberEntity.isActiveNow()) null else dateProviderRepository.getDate().time,
+                    ),
                     MemberUpdateType.ACTIVE_SESSION,
                 )
         }

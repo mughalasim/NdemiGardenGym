@@ -23,7 +23,6 @@ import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
@@ -33,13 +32,13 @@ import com.ndemi.garden.gym.ui.widgets.member.MemberImageFullWidget
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.PermissionsEntity
 import cv.domain.entities.getAdminPermissions
-import org.joda.time.DateTime
 
 @Composable
 fun MemberEditDetailsScreen(
     uiState: UiState,
     permissionState: PermissionsEntity = PermissionsEntity(),
     memberEntity: MemberEntity,
+    registrationDate: String,
     toolbarTitle: String = "",
     listeners: MemberEditScreenListeners = MemberEditScreenListeners(),
 ) {
@@ -110,7 +109,7 @@ fun MemberEditDetailsScreen(
                 EditTextWidget(
                     modifier = Modifier.padding(top = padding_screen),
                     hint = stringResource(R.string.txt_registration_date),
-                    textInput = DateTime(memberEntity.registrationDateMillis).toString(formatDayMonthYear),
+                    textInput = registrationDate,
                     isEnabled = false,
                 )
 
@@ -211,6 +210,7 @@ private fun MemberEditDetailsScreenPreview() {
             memberEntity = getMockRegisteredMemberEntity(),
             permissionState = getAdminPermissions(),
             toolbarTitle = "Edit your details",
+            registrationDate = "12/12/2022",
         )
     }
 }

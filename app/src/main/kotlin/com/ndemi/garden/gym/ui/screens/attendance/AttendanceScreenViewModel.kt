@@ -13,23 +13,24 @@ import cv.domain.DomainResult
 import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.AttendanceMonthEntity
 import cv.domain.enums.DomainErrorType
+import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.PermissionsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.joda.time.DateTime
 
 class AttendanceScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val attendanceUseCase: AttendanceUseCase,
     private val permissionsUseCase: PermissionsUseCase,
     private val navigationService: NavigationService,
+    dateProviderRepository: DateProviderRepository,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
     private var memberId: String = ""
 
-    private val _selectedDate: MutableStateFlow<DateTime> = MutableStateFlow(DateTime.now())
-    val selectedDate: StateFlow<DateTime> = _selectedDate
+    private val _selectedYear: MutableStateFlow<Int> = MutableStateFlow(dateProviderRepository.getYear())
+    val selectedYear: StateFlow<Int> = _selectedYear
 
     fun setMemberId(memberId: String) {
         this.memberId = memberId
@@ -41,7 +42,7 @@ class AttendanceScreenViewModel(
             attendanceUseCase
                 .getMemberAttendancesForId(
                     memberId = memberId,
-                    year = selectedDate.value.year,
+                    year = selectedYear.value,
                 ).collect { result ->
                     when (result) {
                         is DomainResult.Error -> {
@@ -57,12 +58,12 @@ class AttendanceScreenViewModel(
     }
 
     fun increaseYear() {
-        _selectedDate.value = _selectedDate.value.plusYears(1)
+        _selectedYear.value += 1
         getAttendances()
     }
 
     fun decreaseYear() {
-        _selectedDate.value = _selectedDate.value.minusYears(1)
+        _selectedYear.value -= 1
         getAttendances()
     }
 
