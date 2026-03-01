@@ -2,6 +2,7 @@ package cv.domain.usecase
 
 import cv.domain.DomainResult
 import cv.domain.entities.PaymentEntity
+import cv.domain.repositories.DateProviderRepository
 import cv.domain.repositories.MemberRepository
 import cv.domain.repositories.PaymentRepository
 import java.util.UUID
@@ -9,6 +10,7 @@ import java.util.UUID
 class PaymentUseCase(
     private val paymentRepository: PaymentRepository,
     private val memberRepository: MemberRepository,
+    private val dateProviderRepository: DateProviderRepository,
 ) {
     fun getPaymentPlanForMember(
         memberId: String,
@@ -22,10 +24,12 @@ class PaymentUseCase(
     suspend fun addPaymentPlanForMember(
         memberId: String,
         startDate: Long,
-        endDate: Long,
+        monthDuration: Int,
         amount: Double,
-        isInTheFuture: Boolean,
     ): DomainResult<Unit> {
+        val endDate = dateProviderRepository.getEndDate(startDate, monthDuration)
+        val isInTheFuture = dateProviderRepository.isAfterNow(endDate)
+
         val paymentEntity =
             PaymentEntity(
                 paymentId = memberId + UUID.randomUUID().toString(),

@@ -17,30 +17,39 @@ import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.Acti
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
+import cv.domain.enums.DateFormatType
+import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.PaymentUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.joda.time.DateTime
 
 class PaymentAddScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val paymentUseCase: PaymentUseCase,
     private val navigationService: NavigationService,
+    private val dateProviderRepository: DateProviderRepository,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     private var memberId = ""
 
     data class InputData(
-        val startDate: DateTime = DateTime.now().withTime(0, 0, 0, 0),
+        val startDate: Long = 0,
+        val startDateFormatted: String = "",
         val monthDuration: Int = 0,
         val amount: Int = 0,
     )
 
-    private val _inputData = MutableStateFlow(InputData())
+    private val _inputData =
+        MutableStateFlow(
+            InputData(
+                startDateFormatted =
+                    dateProviderRepository.format(dateProviderRepository.getDate().time, DateFormatType.DAY_MONTH_YEAR),
+            ),
+        )
     val inputData: StateFlow<InputData> = _inputData
 
     fun setData(
-        startDate: DateTime = _inputData.value.startDate,
+        startDate: Long = _inputData.value.startDate,
         monthDuration: String = "",
         amount: String = "",
         inputType: PaymentAddScreenInputType,
@@ -52,7 +61,10 @@ class PaymentAddScreenViewModel(
                 }
 
                 START_DATE -> {
-                    _inputData.value.copy(startDate = startDate)
+                    _inputData.value.copy(
+                        startDate = startDate,
+                        startDateFormatted = dateProviderRepository.format(startDate, DateFormatType.DAY_MONTH_YEAR),
+                    )
                 }
 
                 MONTH_DURATION -> {
@@ -82,11 +94,11 @@ class PaymentAddScreenViewModel(
         val monthDuration = _inputData.value.monthDuration
         val amount = _inputData.value.amount
 
-        if (monthDuration < 1 || monthDuration > MAX_MONTH_DURATION) {
+        if (monthDuration !in 1..MAX_MONTH_DURATION) {
             sendAction(
                 Action.ShowError(converter.getMessage(UiErrorType.INVALID_MONTH_DURATION), MONTH_DURATION),
             )
-        } else if (amount < 1 || amount > MAX_PAYMENT_AMOUNT) {
+        } else if (amount !in 1..MAX_PAYMENT_AMOUNT) {
             sendAction(Action.ShowError(converter.getMessage(UiErrorType.INVALID_AMOUNT), AMOUNT))
         } else {
             sendAction(Action.SetReady)
@@ -99,16 +111,14 @@ class PaymentAddScreenViewModel(
         val startDate = _inputData.value.startDate
         val monthDuration = _inputData.value.monthDuration
         val amount = _inputData.value.amount.toDouble()
-        val endDate = startDate.plusMonths(monthDuration)
 
         viewModelScope.launch {
             paymentUseCase
                 .addPaymentPlanForMember(
                     memberId = memberId,
-                    startDate = startDate.millis,
-                    endDate = endDate.millis,
+                    startDate = startDate,
+                    monthDuration = monthDuration,
                     amount = amount,
-                    isInTheFuture = endDate.isAfterNow,
                 ).also {
                     when (it) {
                         is DomainResult.Error -> {

@@ -30,7 +30,7 @@ fun AttendanceScreen(
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
-    val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
+    val selectedYear by viewModel.selectedYear.collectAsStateWithLifecycle()
     val permissionState by viewModel.getPermissions().collectAsStateWithLifecycle()
 
     val title =
@@ -57,7 +57,7 @@ fun AttendanceScreen(
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = padding_screen),
-            selectedText = selectedDate.year.toString(),
+            selectedText = selectedYear.toString(),
             isLoading = uiState is UiState.Loading,
             onPlusTapped = viewModel::increaseYear,
             onMinusTapped = viewModel::decreaseYear,

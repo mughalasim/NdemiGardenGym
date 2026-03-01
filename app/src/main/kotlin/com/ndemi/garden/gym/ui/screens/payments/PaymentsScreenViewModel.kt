@@ -13,26 +13,27 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.entities.PaymentEntity
 import cv.domain.enums.DomainErrorType
+import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.PaymentUseCase
 import cv.domain.usecase.PermissionsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.joda.time.DateTime
 
 class PaymentsScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val paymentUseCase: PaymentUseCase,
     private val permissionsUseCase: PermissionsUseCase,
     private val navigationService: NavigationService,
+    dateProviderRepository: DateProviderRepository,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
     private lateinit var memberId: String
 
     private val _canAddPayment = MutableStateFlow(false)
     val canAddPayment: StateFlow<Boolean> = _canAddPayment
 
-    private val _selectedDate: MutableStateFlow<DateTime> = MutableStateFlow(DateTime.now())
-    val selectedDate: StateFlow<DateTime> = _selectedDate
+    private val _selectedYear: MutableStateFlow<Int> = MutableStateFlow(dateProviderRepository.getYear())
+    val selectedYear: StateFlow<Int> = _selectedYear
 
     fun setMemberId(memberId: String) {
         this.memberId = memberId
@@ -41,10 +42,11 @@ class PaymentsScreenViewModel(
     fun getPaymentsForMember() {
         _canAddPayment.value = false
         sendAction(Action.SetLoading)
+        // TODO - Cancel previous job before starting a new one
         viewModelScope.launch {
             paymentUseCase
                 .getPaymentPlanForMember(
-                    year = _selectedDate.value.year,
+                    year = _selectedYear.value,
                     memberId = memberId,
                 ).collect { result ->
                     when (result) {
@@ -67,12 +69,12 @@ class PaymentsScreenViewModel(
     }
 
     fun increaseYear() {
-        _selectedDate.value = _selectedDate.value.plusYears(1)
+        _selectedYear.value += 1
         getPaymentsForMember()
     }
 
     fun decreaseYear() {
-        _selectedDate.value = _selectedDate.value.minusYears(1)
+        _selectedYear.value -= 1
         getPaymentsForMember()
     }
 

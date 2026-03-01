@@ -27,14 +27,11 @@ import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.image_size_medium
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.toActiveStatusDuration
 import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
-import com.ndemi.garden.gym.ui.utils.toMembershipStatusString
 import com.ndemi.garden.gym.ui.widgets.AsyncImageWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import cv.domain.entities.MemberEntity
-import org.joda.time.DateTime
 
 @Composable
 fun MemberStatusWidget(
@@ -69,24 +66,24 @@ fun MemberStatusWidget(
                 style = AppTheme.textStyles.regularBold,
             )
             if (memberEntity.isActiveNow()) {
-                TextWidget(
-                    style = AppTheme.textStyles.small,
-                    text =
-                        DateTime
-                            .now()
-                            .toActiveStatusDuration(DateTime(memberEntity.activeNowDateMillis)),
-                )
+//                TextWidget(
+//                    style = AppTheme.textStyles.small,
+//                    text =
+//                        DateTime
+//                            .now()
+//                            .toActiveStatusDuration(DateTime(memberEntity.activeNowDateMillis)),
+//                )
             } else if (canViewMemberDetails) {
                 TextWidget(
                     style = AppTheme.textStyles.small,
                     text = memberEntity.getResidentialStatus(),
                 )
                 if (memberEntity.hasPaidMembership()) {
-                    TextWidget(
-                        style = AppTheme.textStyles.small,
-                        modifier = Modifier.fillMaxWidth(),
-                        text = memberEntity.renewalFutureDateMillis.toMembershipStatusString(),
-                    )
+//                    TextWidget(
+//                        style = AppTheme.textStyles.small,
+//                        modifier = Modifier.fillMaxWidth(),
+//                        text = memberEntity.renewalFutureDateMillis.toMembershipStatusString(),
+//                    )
                     TextWidget(
                         style = AppTheme.textStyles.regularBold,
                         text = memberEntity.amountDue.toAmountString(),

@@ -25,14 +25,11 @@ import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
-import com.ndemi.garden.gym.ui.utils.toPaymentPlanDuration
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
 import cv.domain.entities.PaymentEntity
-import org.joda.time.DateTime
 
 @Composable
 fun PaymentWidget(
@@ -41,8 +38,6 @@ fun PaymentWidget(
     canDeletePayment: Boolean = false,
     onDeletePayment: (PaymentEntity) -> Unit = {},
 ) {
-    val startDate = DateTime(paymentEntity.startDateMillis)
-    val endDate = DateTime(paymentEntity.endDateMillis)
     var showDialog by remember { mutableStateOf(false) }
 
     Column(
@@ -61,7 +56,7 @@ fun PaymentWidget(
         ) {
             TextWidget(
                 modifier = Modifier.weight(1f),
-                text = endDate.toPaymentPlanDuration(),
+                text = paymentEntity.paymentPlanDuration,
                 color = AppTheme.colors.primary,
                 style = AppTheme.textStyles.regularBold,
             )
@@ -89,7 +84,7 @@ fun PaymentWidget(
                     style = AppTheme.textStyles.small,
                     color = AppTheme.colors.textSecondary,
                 )
-                TextWidget(text = startDate.toString(formatDayMonthYear))
+                TextWidget(text = paymentEntity.startDateDayMonthYear)
             }
             Column(
                 modifier = Modifier.weight(1f),
@@ -100,7 +95,7 @@ fun PaymentWidget(
                     style = AppTheme.textStyles.small,
                     color = AppTheme.colors.textSecondary,
                 )
-                TextWidget(text = endDate.toString(formatDayMonthYear))
+                TextWidget(text = paymentEntity.endDateDayMonthYear)
             }
             Column(
                 modifier = Modifier.weight(1f),

@@ -34,19 +34,17 @@ import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.theme.page_width
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
-import org.joda.time.DateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentAddDetailsScreen(
     inputData: PaymentAddScreenViewModel.InputData = PaymentAddScreenViewModel.InputData(),
     uiState: UiState = UiState.Ready,
-    onSetData: (DateTime, String, String, PaymentAddScreenInputType) -> Unit = { _, _, _, _ -> },
+    onSetData: (Long, String, String, PaymentAddScreenInputType) -> Unit = { _, _, _, _ -> },
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
     onPaymentAddTapped: () -> Unit = {},
 ) {
@@ -103,7 +101,7 @@ fun PaymentAddDetailsScreen(
                 isEnabled = false,
                 errorText = errorStartDate,
                 hint = stringResource(R.string.txt_payments_add_select_date),
-                textInput = inputData.startDate.toString(formatDayMonthYear).orEmpty(),
+                textInput = inputData.startDateFormatted,
             )
             ButtonWidget(
                 modifier = Modifier.weight(1f),
@@ -121,7 +119,7 @@ fun PaymentAddDetailsScreen(
             errorText = errorMonthDuration,
             keyboardType = KeyboardType.Number,
         ) {
-            onSetData.invoke(DateTime.now(), it, it, PaymentAddScreenInputType.MONTH_DURATION)
+            onSetData.invoke(0, it, it, PaymentAddScreenInputType.MONTH_DURATION)
         }
 
         EditTextWidget(
@@ -131,7 +129,7 @@ fun PaymentAddDetailsScreen(
             errorText = errorAmount,
             keyboardType = KeyboardType.Number,
         ) {
-            onSetData.invoke(DateTime.now(), it, it, PaymentAddScreenInputType.AMOUNT)
+            onSetData.invoke(0, it, it, PaymentAddScreenInputType.AMOUNT)
         }
 
         ButtonWidget(
@@ -162,7 +160,7 @@ fun PaymentAddDetailsScreen(
                             .clickable {
                                 datePickerVisibility = !datePickerVisibility
                                 state.selectedDateMillis?.let {
-                                    onSetData.invoke(DateTime(it), "", "", PaymentAddScreenInputType.START_DATE)
+                                    onSetData.invoke(it, "", "", PaymentAddScreenInputType.START_DATE)
                                 }
                             },
                 )

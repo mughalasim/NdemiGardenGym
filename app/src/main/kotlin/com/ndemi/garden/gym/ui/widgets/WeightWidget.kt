@@ -24,10 +24,8 @@ import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.DateConstants.formatDayMonthYear
 import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
 import cv.domain.entities.WeightEntity
-import org.joda.time.DateTime
 
 @Composable
 fun WeightWidget(
@@ -46,7 +44,7 @@ fun WeightWidget(
     ) {
         Row {
             TextWidget(
-                text = DateTime(weightEntity.dateMillis).toString(formatDayMonthYear),
+                text = weightEntity.dateDayMonthYear,
                 color = AppTheme.colors.primary,
             )
             TextWidget(

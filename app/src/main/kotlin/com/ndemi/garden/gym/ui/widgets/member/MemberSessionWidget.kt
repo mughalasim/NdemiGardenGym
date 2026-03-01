@@ -30,15 +30,13 @@ import com.ndemi.garden.gym.ui.theme.image_size_small
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.DateConstants
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
-import org.joda.time.DateTime
 
 @Composable
 fun MemberSessionWidget(
-    sessionStartTime: Long? = null,
+    sessionStartTime: String = "",
     countdown: String = "",
     onSessionTapped: () -> Unit = {},
 ) {
@@ -62,7 +60,7 @@ fun MemberSessionWidget(
                     Modifier
                         .clickable { onSessionTapped.invoke() },
                 title =
-                    if (sessionStartTime != null) {
+                    if (sessionStartTime.isNotEmpty()) {
                         stringResource(R.string.txt_stop)
                     } else {
                         stringResource(R.string.txt_start)
@@ -73,7 +71,7 @@ fun MemberSessionWidget(
             )
         }
 
-        if (sessionStartTime != null) {
+        if (sessionStartTime.isNotEmpty()) {
             Row(
                 modifier =
                     Modifier
@@ -93,7 +91,7 @@ fun MemberSessionWidget(
                         text =
                             stringResource(
                                 R.string.txt_started_at,
-                                DateTime(sessionStartTime).toString(DateConstants.formatTime),
+                                sessionStartTime,
                             ),
                     )
                     TextWidget(
@@ -153,8 +151,8 @@ private fun GifImage() {
 private fun MemberSessionWidgetPreview() {
     AppThemeComposable {
         Column {
-            MemberSessionWidget(sessionStartTime = 35435135151L)
-            MemberSessionWidget(sessionStartTime = null)
+            MemberSessionWidget(sessionStartTime = "1:20:90")
+            MemberSessionWidget(sessionStartTime = "")
         }
     }
 }

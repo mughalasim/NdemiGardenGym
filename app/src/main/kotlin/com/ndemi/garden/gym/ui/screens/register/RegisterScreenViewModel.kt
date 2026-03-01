@@ -14,13 +14,13 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.enums.MemberUpdateType
+import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.validator.MemberValidators
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.joda.time.DateTime
 import java.util.UUID
 
 class RegisterScreenViewModel(
@@ -30,6 +30,7 @@ class RegisterScreenViewModel(
     private val navigationService: NavigationService,
     private val hidePassword: Boolean,
     private val validators: MemberValidators,
+    private val dateProviderRepository: DateProviderRepository,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     data class InputData(
         val firstName: String = "",
@@ -198,7 +199,7 @@ class RegisterScreenViewModel(
                         email =
                             (inputData.value.email)
                                 .trim(),
-                        registrationDateMillis = DateTime.now().millis,
+                        registrationDateMillis = dateProviderRepository.getDate().time,
                         apartmentNumber =
                             (inputData.value.apartmentNumber)
                                 .replaceFirstChar(Char::uppercase),

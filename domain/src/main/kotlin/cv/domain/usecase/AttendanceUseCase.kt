@@ -7,6 +7,7 @@ import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.AttendanceMonthEntity
 import cv.domain.repositories.AnalyticsRepository
 import cv.domain.repositories.AttendanceRepository
+import cv.domain.repositories.DateProviderRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -16,6 +17,7 @@ import java.util.Date
 class AttendanceUseCase(
     private val attendanceRepository: AttendanceRepository,
     private val analyticsRepository: AnalyticsRepository,
+    private val dateProviderRepository: DateProviderRepository,
 ) {
     fun getMemberAttendancesForId(
         memberId: String = "",
@@ -34,7 +36,9 @@ class AttendanceUseCase(
                         result.add(
                             AttendanceMonthEntity(
                                 monthNumber = response.data.monthNumber,
+                                monthName = dateProviderRepository.getMonthName(response.data.monthNumber),
                                 totalMinutes = response.data.totalMinutes,
+                                activeDuration = dateProviderRepository.activeStatusDuration(response.data.totalMinutes),
                                 attendances = response.data.attendances,
                             ),
                         )

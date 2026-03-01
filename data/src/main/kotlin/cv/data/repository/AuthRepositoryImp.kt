@@ -3,7 +3,7 @@ package cv.data.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
-import cv.data.mappers.toMemberEntity
+import cv.data.mappers.MemberMapper
 import cv.data.models.AuthRepositoryUrls
 import cv.data.models.MemberModel
 import cv.data.models.VersionModel
@@ -22,9 +22,10 @@ import kotlinx.coroutines.flow.callbackFlow
 
 class AuthRepositoryImp(
     private val firebaseAuth: FirebaseAuth,
-    private val firebaseFirestore: FirebaseFirestore,
-    private val repositoryUrls: AuthRepositoryUrls,
+    private val memberMapper: MemberMapper,
     private val logger: AppLoggerRepository,
+    private val repositoryUrls: AuthRepositoryUrls,
+    private val firebaseFirestore: FirebaseFirestore,
 ) : AuthRepository {
     private val _memberEntity: MutableStateFlow<MemberEntity> = MutableStateFlow(MemberEntity())
     val memberEntity: StateFlow<MemberEntity> = _memberEntity
@@ -86,7 +87,11 @@ class AuthRepositoryImp(
                         logger.log("getLoggedInUser: $response")
                         val memberModel = response.toObject<MemberModel>()
                         memberModel?.let {
-                            _memberEntity.value = memberModel.toMemberEntity(firebaseAuth.currentUser?.isEmailVerified == true)
+                            _memberEntity.value =
+                                memberMapper.getEntity(
+                                    model = it,
+                                    emailVerified = firebaseAuth.currentUser?.isEmailVerified == true,
+                                )
                             trySend(DomainResult.Success(_memberEntity.value))
                         } ?: run {
                             trySend(DomainResult.Error(DomainErrorType.UNAUTHORISED))

@@ -1,6 +1,12 @@
 package com.ndemi.garden.gym.di
 
 import com.ndemi.garden.gym.BuildConfig
+import cv.data.mappers.AttendanceMapper
+import cv.data.mappers.AttendanceMapperImp
+import cv.data.mappers.MemberMapper
+import cv.data.mappers.MemberMapperImp
+import cv.data.mappers.PaymentMapper
+import cv.data.mappers.PaymentMapperImp
 import cv.data.models.AuthRepositoryUrls
 import cv.data.repository.AccessRepositoryImp
 import cv.data.repository.AttendanceRepositoryImp
@@ -20,6 +26,14 @@ import org.koin.dsl.module
 
 val repositoryModule =
     module {
+        single<DateProviderRepository> { DateProviderRepositoryImp(get()) }
+
+        single<AttendanceMapper> { AttendanceMapperImp(get()) }
+
+        single<MemberMapper> { MemberMapperImp(get()) }
+
+        single<PaymentMapper> { PaymentMapperImp(get()) }
+
         single<AuthRepository> {
             AuthRepositoryImp(
                 firebaseAuth = get(),
@@ -32,6 +46,7 @@ val repositoryModule =
                         currentAppVersion = BuildConfig.VERSION_CODE,
                     ),
                 logger = get(),
+                memberMapper = get(),
             )
         }
 
@@ -47,6 +62,7 @@ val repositoryModule =
                 firebaseFirestore = get(),
                 pathUser = BuildConfig.PATH_USER,
                 logger = get(),
+                memberMapper = get(),
             )
         }
 
@@ -56,6 +72,8 @@ val repositoryModule =
                 firebaseFirestore = get(),
                 pathAttendance = BuildConfig.PATH_ATTENDANCE,
                 logger = get(),
+                dateProviderRepository = get(),
+                attendanceMapper = get(),
             )
         }
 
@@ -66,6 +84,8 @@ val repositoryModule =
                 pathPayment = BuildConfig.PATH_PAYMENT,
                 pathPaymentPlan = BuildConfig.PATH_PAYMENT_PLAN,
                 logger = get(),
+                dateProviderRepository = get(),
+                paymentMapper = get(),
             )
         }
 
@@ -76,6 +96,4 @@ val repositoryModule =
                 logger = get(),
             )
         }
-
-        single<DateProviderRepository> { DateProviderRepositoryImp() }
     }
