@@ -1,5 +1,6 @@
 package cv.domain.repositories
 
+import cv.domain.enums.DateFormatType
 import java.util.Date
 
 @Suppress("detekt.TooManyFunctions")
@@ -14,8 +15,6 @@ interface DateProviderRepository {
 
     fun getYear(dateMillis: Long): Int
 
-    fun getMonth(): Int
-
     fun getMonth(date: Date): Int
 
     fun getMonth(dateMillis: Long): Int
@@ -24,15 +23,7 @@ interface DateProviderRepository {
 
     fun isAfterNow(): Boolean
 
-    fun isAfterNow(date: Date): Boolean
-
     fun isAfterNow(dateMillis: Long): Boolean
-
-    fun isBeforeNow(dateMillis: Long): Boolean
-
-    fun isBeforeNow(date: Date): Boolean
-
-    fun isBeforeNow(): Boolean
 
     fun isWithinCurrentMonth(
         startTime: Long,
@@ -65,11 +56,8 @@ interface DateProviderRepository {
 
     fun toPaymentPlanDuration(endDateMillis: Long): String
 
-    fun formatDayMonthYear(dateMillis: Long): String
-
-    fun formatMonthYear(dateMillis: Long): String
-
-    fun formatDateDay(dateMillis: Long): String
-
-    fun formatTime(dateMillis: Long): String
+    fun format(
+        dateMillis: Long,
+        format: DateFormatType,
+    ): String
 }

@@ -17,6 +17,7 @@ import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.Acti
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
+import cv.domain.enums.DateFormatType
 import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.PaymentUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +41,10 @@ class PaymentAddScreenViewModel(
 
     private val _inputData =
         MutableStateFlow(
-            InputData(startDateFormatted = dateProviderRepository.formatDayMonthYear(dateProviderRepository.getDate().time)),
+            InputData(
+                startDateFormatted =
+                    dateProviderRepository.format(dateProviderRepository.getDate().time, DateFormatType.DAY_MONTH_YEAR),
+            ),
         )
     val inputData: StateFlow<InputData> = _inputData
 
@@ -59,7 +63,7 @@ class PaymentAddScreenViewModel(
                 START_DATE -> {
                     _inputData.value.copy(
                         startDate = startDate,
-                        startDateFormatted = dateProviderRepository.formatDayMonthYear(startDate),
+                        startDateFormatted = dateProviderRepository.format(startDate, DateFormatType.DAY_MONTH_YEAR),
                     )
                 }
 

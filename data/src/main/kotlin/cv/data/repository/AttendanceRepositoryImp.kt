@@ -7,8 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.FirebaseFirestoreException.Code
 import com.google.firebase.firestore.toObjects
 import cv.data.handleError
-import cv.data.mappers.toAttendanceEntity
-import cv.data.mappers.toAttendanceModel
+import cv.data.mappers.AttendanceMapper
 import cv.data.models.AttendanceModel
 import cv.data.toDomainError
 import cv.domain.DomainResult
@@ -29,6 +28,7 @@ class AttendanceRepositoryImp(
     private val pathAttendance: String,
     private val firebaseAuth: FirebaseAuth,
     private val logger: AppLoggerRepository,
+    private val attendanceMapper: AttendanceMapper,
     private val firebaseFirestore: FirebaseFirestore,
     private val dateProviderRepository: DateProviderRepository,
 ) : AttendanceRepository {
@@ -49,7 +49,7 @@ class AttendanceRepositoryImp(
                         snapshot?.let {
                             val response = snapshot.toObjects<AttendanceModel>()
                             val list =
-                                response.map { it.toAttendanceEntity(dateProviderRepository = dateProviderRepository) }
+                                response.map { attendanceMapper.getEntity(it) }
 
                             var totalMinutes = 0
                             list.forEach {
@@ -105,7 +105,7 @@ class AttendanceRepositoryImp(
                             val response = snapshot.toObjects<AttendanceModel>()
                             val list =
                                 response
-                                    .map { it.toAttendanceEntity(dateProviderRepository = dateProviderRepository) }
+                                    .map { attendanceMapper.getEntity(it) }
                                     .sortedByDescending { it.startDateMillis }
 
                             var totalMinutes = 0
@@ -177,7 +177,7 @@ class AttendanceRepositoryImp(
                 .collection(pathAttendance)
                 .document(dateProviderRepository.getYear(attendanceEntity.startDateMillis).toString())
                 .collection(dateProviderRepository.getMonth(attendanceEntity.startDateMillis).toString())
-                .document(attendanceEntity.toAttendanceModel().getAttendanceId())
+                .document(attendanceMapper.getModel(attendanceEntity).getAttendanceId())
                 .delete()
                 .await()
         }.fold(

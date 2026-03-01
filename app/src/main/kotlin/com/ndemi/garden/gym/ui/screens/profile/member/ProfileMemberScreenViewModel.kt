@@ -13,6 +13,7 @@ import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewMod
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.enums.DateFormatType
 import cv.domain.enums.MemberUpdateType
 import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.AccessUseCase
@@ -57,7 +58,7 @@ class ProfileMemberScreenViewModel(
             viewModelScope.launch {
                 authUseCase.observeUser().collect { result ->
                     memberEntity.value = result
-                    _registrationDate.value = dateProviderRepository.formatMonthYear(result.registrationDateMillis)
+                    _registrationDate.value = dateProviderRepository.format(result.registrationDateMillis, DateFormatType.MONTH_YEAR)
                     _sessionStartTime.value = ""
                     if (result.activeNowDateMillis != null) {
                         startCounter()
@@ -77,13 +78,14 @@ class ProfileMemberScreenViewModel(
                     .onStart {
                         val startTime = memberEntity.value.activeNowDateMillis ?: 0
                         while (startTime > 0) {
-                            _sessionStartTime.value = dateProviderRepository.formatTime(startTime)
-                            emit(dateProviderRepository.toCountdownTimer(startTime))
+                            _sessionStartTime.value = dateProviderRepository.format(startTime, DateFormatType.TIME)
+                            val timer = dateProviderRepository.toCountdownTimer(startTime)
+                            emit(timer)
                             delay(COUNTDOWN_SECONDS)
                         }
                     }.onCompletion {
                         _sessionStartTime.value = ""
-                        _countdown.emit("")
+//                        _countdown.emit("")
                     }.collect { _countdown.emit(it) }
             }
     }

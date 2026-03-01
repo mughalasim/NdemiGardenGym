@@ -4,8 +4,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
 import cv.data.handleError
-import cv.data.mappers.toMemberEntity
-import cv.data.mappers.toMemberModel
+import cv.data.mappers.MemberMapper
 import cv.data.models.MemberModel
 import cv.data.toDomainError
 import cv.domain.DomainResult
@@ -15,7 +14,6 @@ import cv.domain.enums.DomainErrorType
 import cv.domain.enums.MemberFetchType
 import cv.domain.enums.MemberType
 import cv.domain.repositories.AppLoggerRepository
-import cv.domain.repositories.DateProviderRepository
 import cv.domain.repositories.MemberRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -23,10 +21,10 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class MemberRepositoryImp(
-    private val firebaseFirestore: FirebaseFirestore,
     private val pathUser: String,
+    private val memberMapper: MemberMapper,
     private val logger: AppLoggerRepository,
-    private val dateProviderRepository: DateProviderRepository,
+    private val firebaseFirestore: FirebaseFirestore,
 ) : MemberRepository {
     override suspend fun getMemberById(memberId: String): DomainResult<MemberEntity> =
         runCatching {
@@ -40,7 +38,7 @@ class MemberRepositoryImp(
                 logger.log("Member by ID: ${result.toObject<Any>()}")
                 val response = result.toObject<MemberModel>()
                 return response?.let {
-                    DomainResult.Success(it.toMemberEntity(dateProviderRepository = dateProviderRepository))
+                    DomainResult.Success(memberMapper.getEntity(it))
                 } ?: run {
                     DomainResult.Error(DomainErrorType.NO_DATA)
                 }
@@ -78,7 +76,7 @@ class MemberRepositoryImp(
                         val response =
                             querySnapshot
                                 .toObjects<MemberModel>()
-                                .map { it.toMemberEntity(dateProviderRepository = dateProviderRepository) }
+                                .map { memberMapper.getEntity(it) }
                         trySend(
                             DomainResult.Success(
                                 when (fetchType) {
@@ -116,7 +114,7 @@ class MemberRepositoryImp(
 
     override suspend fun updateMember(memberEntity: MemberEntity): DomainResult<Unit> =
         runCatching {
-            val memberModel = memberEntity.toMemberModel()
+            val memberModel = memberMapper.getModel(memberEntity)
             firebaseFirestore
                 .collection(pathUser)
                 .document(memberModel.id)
@@ -129,7 +127,7 @@ class MemberRepositoryImp(
 
     override suspend fun deleteMember(memberEntity: MemberEntity): DomainResult<Unit> =
         runCatching {
-            val memberModel = memberEntity.toMemberModel()
+            val memberModel = memberMapper.getModel(memberEntity)
             firebaseFirestore
                 .collection(pathUser)
                 .document(memberModel.id)

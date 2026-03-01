@@ -4,8 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
 import cv.data.handleError
-import cv.data.mappers.toPaymentEntity
-import cv.data.mappers.toPaymentModel
+import cv.data.mappers.PaymentMapper
 import cv.data.models.PaymentModel
 import cv.data.toDomainError
 import cv.domain.DomainResult
@@ -22,12 +21,13 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class PaymentRepositoryImp(
-    private val firebaseAuth: FirebaseAuth,
-    private val firebaseFirestore: FirebaseFirestore,
-    private val dateProviderRepository: DateProviderRepository,
     private val pathPayment: String,
     private val pathPaymentPlan: String,
+    private val firebaseAuth: FirebaseAuth,
     private val logger: AppLoggerRepository,
+    private val paymentMapper: PaymentMapper,
+    private val firebaseFirestore: FirebaseFirestore,
+    private val dateProviderRepository: DateProviderRepository,
 ) : PaymentRepository {
     override fun getAllPayments(year: Int): Flow<DomainResult<PaymentYearEntity>> =
         callbackFlow {
@@ -43,7 +43,7 @@ class PaymentRepositoryImp(
                         val response = document.toObjects<PaymentModel>()
                         val list =
                             response
-                                .map { it.toPaymentEntity(dateProviderRepository = dateProviderRepository) }
+                                .map { paymentMapper.getEntity(it) }
                                 .sortedByDescending { it.startDateMillis }
 
                         var totalAmount = 0.0
@@ -96,7 +96,7 @@ class PaymentRepositoryImp(
                         val response = document.toObjects<PaymentModel>()
                         val list =
                             response
-                                .map { it.toPaymentEntity(dateProviderRepository = dateProviderRepository) }
+                                .map { paymentMapper.getEntity(it) }
                                 .sortedByDescending { it.startDateMillis }
 
                         var canAddPayment = memberId.isNotEmpty() && dateProviderRepository.getYear() == year
@@ -128,7 +128,7 @@ class PaymentRepositoryImp(
 
     override suspend fun addPaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit> =
         runCatching {
-            val paymentModel = paymentEntity.toPaymentModel()
+            val paymentModel = paymentMapper.getModel(paymentEntity)
             firebaseFirestore
                 .collection(pathPayment)
                 .document(pathPaymentPlan)

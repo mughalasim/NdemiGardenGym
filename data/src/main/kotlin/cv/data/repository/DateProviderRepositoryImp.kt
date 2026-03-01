@@ -1,9 +1,9 @@
 package cv.data.repository
 
 import android.app.Application
-import android.content.res.Resources
 import androidx.core.os.ConfigurationCompat
 import cv.data.R
+import cv.domain.enums.DateFormatType
 import cv.domain.repositories.DateProviderRepository
 import org.joda.time.DateTime
 import org.joda.time.Days
@@ -20,50 +20,46 @@ import java.util.Locale
 class DateProviderRepositoryImp(
     private val context: Application,
 ) : DateProviderRepository {
-    private val dateTime = DateTime.now()
+    private fun dateTime() = DateTime.now()
+
     private val appLocale =
-        ConfigurationCompat.getLocales(Resources.getSystem().configuration).get(0)
-            ?: Locale(Locale.ENGLISH.language)
-    val formatDayMonthYear: DateTimeFormatter =
+        ConfigurationCompat.getLocales(context.resources.configuration).get(0)
+            ?: Locale.ENGLISH
+
+    private val formatDayMonthYear: DateTimeFormatter =
         DateTimeFormat.forPattern("dd MMM yyyy").withLocale(appLocale)
-    val formatMonthYear: DateTimeFormatter =
+
+    private val formatMonthYear: DateTimeFormatter =
         DateTimeFormat.forPattern("MMM yyyy").withLocale(appLocale)
-    val formatDateDay: DateTimeFormatter =
+
+    private val formatDateDay: DateTimeFormatter =
         DateTimeFormat.forPattern("d EEEE").withLocale(appLocale)
-    val formatTime: DateTimeFormatter =
+
+    private val formatTime: DateTimeFormatter =
         DateTimeFormat.shortTime().withLocale(appLocale)
-    val formatMonth: DateTimeFormatter =
+
+    private val formatMonth: DateTimeFormatter =
         DateTimeFormat.forPattern("MMMM").withLocale(appLocale)
 
-    override fun getDate(): Date = dateTime.toDate()
+    override fun getDate(): Date = dateTime().toDate()
 
     override fun getDate(dateMillis: Long): Date = DateTime(dateMillis).toDate()
 
-    override fun getYear() = dateTime.year
+    override fun getYear() = dateTime().year
 
     override fun getYear(date: Date) = DateTime(date).year
 
     override fun getYear(dateMillis: Long) = DateTime(dateMillis).year
 
-    override fun getMonth() = dateTime.monthOfYear
-
     override fun getMonth(date: Date) = DateTime(date).monthOfYear
 
     override fun getMonth(dateMillis: Long) = DateTime(dateMillis).monthOfYear
 
-    override fun getMonthName(month: Int): String = dateTime.withMonthOfYear(month).toString(formatMonth)
+    override fun getMonthName(month: Int): String = dateTime().withMonthOfYear(month).toString(formatMonth)
 
-    override fun isAfterNow() = dateTime.isAfterNow
-
-    override fun isAfterNow(date: Date) = DateTime(date).isAfterNow
+    override fun isAfterNow() = dateTime().isAfterNow
 
     override fun isAfterNow(dateMillis: Long) = DateTime(dateMillis).isAfterNow
-
-    override fun isBeforeNow() = dateTime.isBeforeNow
-
-    override fun isBeforeNow(date: Date) = DateTime(date).isBeforeNow
-
-    override fun isBeforeNow(dateMillis: Long) = DateTime(dateMillis).isBeforeNow
 
     override fun isWithinCurrentMonth(
         startTime: Long,
@@ -93,24 +89,25 @@ class DateProviderRepositoryImp(
     }
 
     override fun toCountdownTimer(startDateMillis: Long): String {
-        val startDate = DateTime(startDateMillis)
+        val startInstant = DateTime(startDateMillis).toInstant()
+        val currentInstant = dateTime().toInstant()
         val hours =
             Hours
                 .hoursBetween(
-                    startDate.toInstant(),
-                    dateTime.toInstant(),
+                    startInstant,
+                    currentInstant,
                 ).hours
         val minutes =
             Minutes
                 .minutesBetween(
-                    startDate.toInstant(),
-                    dateTime.toInstant(),
+                    startInstant,
+                    currentInstant,
                 ).minutes % MINUTES_IN_HOUR
         val seconds =
             Seconds
                 .secondsBetween(
-                    startDate.toInstant(),
-                    dateTime.toInstant(),
+                    startInstant,
+                    currentInstant,
                 ).seconds % SECONDS_IN_MINUTE
 
         return "${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}"
@@ -123,14 +120,6 @@ class DateProviderRepositoryImp(
         val startDate = DateTime(startDate).withTime(0, 0, 0, 0)
         return startDate.plusMonths(monthDuration).millis
     }
-
-    override fun formatDayMonthYear(dateMillis: Long): String = DateTime(dateMillis).toString(formatDayMonthYear)
-
-    override fun formatMonthYear(dateMillis: Long): String = DateTime(dateMillis).toString(formatMonthYear)
-
-    override fun formatDateDay(dateMillis: Long): String = DateTime(dateMillis).toString(formatDateDay)
-
-    override fun formatTime(dateMillis: Long): String = DateTime(dateMillis).toString(formatTime)
 
     override fun activeStatusDuration(
         startDateMillis: Long,
@@ -173,11 +162,11 @@ class DateProviderRepositoryImp(
     }
 
     override fun activeStatusDuration(totalMinutes: Int): String =
-        activeStatusDuration(dateTime.millis, dateTime.plusMinutes(totalMinutes).millis)
+        activeStatusDuration(dateTime().millis, dateTime().plusMinutes(totalMinutes).millis)
 
     override fun toPaymentPlanDuration(endDateMillis: Long): String {
         val endDate = DateTime(endDateMillis).toInstant()
-        val currentDate = dateTime.toInstant()
+        val currentDate = dateTime().toInstant()
 
         if (endDate.isBeforeNow) return ""
 
@@ -224,6 +213,28 @@ class DateProviderRepositoryImp(
             context.getString(R.string.txt_tomorrow)
         }
     }
+
+    override fun format(
+        dateMillis: Long,
+        format: DateFormatType,
+    ): String =
+        when (format) {
+            DateFormatType.DAY_MONTH_YEAR -> {
+                DateTime(dateMillis).toString(formatDayMonthYear)
+            }
+
+            DateFormatType.MONTH_YEAR -> {
+                DateTime(dateMillis).toString(formatMonthYear)
+            }
+
+            DateFormatType.DATE_DAY -> {
+                DateTime(dateMillis).toString(formatDateDay)
+            }
+
+            DateFormatType.TIME -> {
+                DateTime(dateMillis).toString(formatTime)
+            }
+        }
 }
 
 private const val DAYS_IN_MONTH = 30

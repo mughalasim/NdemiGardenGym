@@ -14,6 +14,7 @@ import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiSt
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.enums.DateFormatType
 import cv.domain.enums.MemberType
 import cv.domain.enums.MemberUpdateType
 import cv.domain.repositories.DateProviderRepository
@@ -57,7 +58,7 @@ class MemberEditScreenViewModel(
                         initialMemberEntity.value = result.data
                         _memberEntity.value = result.data
                         _registrationDate.value =
-                            dateProviderRepository.formatDayMonthYear(result.data.registrationDateMillis)
+                            dateProviderRepository.format(result.data.registrationDateMillis, DateFormatType.DAY_MONTH_YEAR)
                         sendAction(Action.SetWaiting)
                         if (showMessage) {
                             showSnackbar(SnackbarType.SUCCESS, "Update successful")
