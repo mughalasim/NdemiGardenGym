@@ -62,8 +62,11 @@ fun TrackedWeightComponent(viewModel: WeightViewModel = koinViewModel<WeightView
                 text = stringResource(R.string.txt_no_weight_recorded),
             )
         } else {
-            for (weight in memberEntity.trackedWeights) {
-                WeightWidget(weightEntity = weight, onDeleteWeight = viewModel::onDeleteWeightTapped)
+            for (weight in weightState.formattedWeights) {
+                WeightWidget(
+                    weight = weight,
+                    onDeleteWeight = viewModel::onDeleteWeightTapped,
+                )
             }
         }
     }
@@ -71,7 +74,7 @@ fun TrackedWeightComponent(viewModel: WeightViewModel = koinViewModel<WeightView
     if (showDialog) {
         InputDialogWidget(
             title = stringResource(R.string.txt_capture_weight),
-            message = stringResource(R.string.txt_capture_weight_desc),
+            message = stringResource(R.string.txt_capture_weight_desc, weightState.unit),
             onDismissed = { showDialog = !showDialog },
             positiveButton = stringResource(R.string.txt_update),
             positiveOnClick = {

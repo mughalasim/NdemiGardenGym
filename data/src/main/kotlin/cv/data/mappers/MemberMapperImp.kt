@@ -5,7 +5,6 @@ import cv.data.models.MemberModel
 import cv.data.models.WeightModel
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.WeightEntity
-import cv.domain.enums.DateFormatType
 import cv.domain.enums.MemberType
 import cv.domain.repositories.DateProviderRepository
 import java.util.Date
@@ -35,7 +34,7 @@ class MemberMapperImp(
             amountDue = amountDue,
             phoneNumber = phoneNumber,
             memberType = memberType.name,
-            height = if (height.isEmpty()) 0.0 else height.toDouble(),
+            height = height,
             trackedWeights = trackedWeights.toWeightModel(),
         )
 
@@ -59,9 +58,8 @@ class MemberMapperImp(
             phoneNumber = phoneNumber,
             memberType = memberType.toMemberType(),
             emailVerified = emailVerified,
-            height = if (height == 0.0) "" else height.toString(),
+            height = height,
             trackedWeights = sortedWeights.toWeightEntity(),
-            bmi = sortedWeights.getBMI(height),
         )
     }
 
@@ -73,30 +71,19 @@ class MemberMapperImp(
             else -> MemberType.MEMBER
         }
 
-    private fun List<WeightModel>.getBMI(height: Double): Double =
-        if (this.isEmpty() || height == 0.0) {
-            0.0
-        } else {
-            val heightMeters = height * 0.3048
-            val weight = this.first().weight
-            weight / (heightMeters * heightMeters)
-        }
-
     private fun List<WeightModel>.toWeightEntity(): List<WeightEntity> =
         this.map {
-            val dateTime = it.dateMillis.toDate().time
             WeightEntity(
-                weight = it.weight.toString(),
-                dateMillis = dateTime,
-                dateDayMonthYear = dateProviderRepository.format(dateTime, DateFormatType.DAY_MONTH_YEAR),
+                weight = it.weight,
+                dateMillis = it.dateMillis.toDate().time,
             )
         }
 
     private fun List<WeightEntity>.toWeightModel(): List<WeightModel> =
         this.map {
             WeightModel(
-                weight = if (it.weight.isEmpty()) 0.0 else it.weight.toDouble(),
-                dateMillis = Timestamp(Date(it.dateMillis)),
+                weight = it.weight,
+                dateMillis = Timestamp(dateProviderRepository.getDate(it.dateMillis)),
             )
         }
 }

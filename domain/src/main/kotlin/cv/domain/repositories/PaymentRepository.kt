@@ -9,12 +9,14 @@ interface PaymentRepository {
     fun getAllPayments(year: Int): Flow<DomainResult<PaymentYearEntity>>
 
     fun getPayments(
-        isMembersPayment: Boolean,
         memberId: String,
         year: Int,
     ): Flow<DomainResult<PaymentYearEntity>>
 
     suspend fun addPaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit>
 
-    suspend fun deletePaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit>
+    suspend fun deletePaymentPlan(
+        startYear: String,
+        paymentId: String,
+    ): DomainResult<Unit>
 }

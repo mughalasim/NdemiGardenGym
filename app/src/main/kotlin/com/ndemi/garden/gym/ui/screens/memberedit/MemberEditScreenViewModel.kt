@@ -13,12 +13,12 @@ import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.Acti
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
-import cv.domain.entities.MemberEntity
-import cv.domain.enums.DateFormatType
 import cv.domain.enums.MemberType
 import cv.domain.enums.MemberUpdateType
-import cv.domain.repositories.DateProviderRepository
+import cv.domain.mappers.MemberPresentationMapper
+import cv.domain.presentationModels.MemberEditPresentationModel
 import cv.domain.usecase.MemberUseCase
+import cv.domain.usecase.NumberFormatUseCase
 import cv.domain.usecase.PermissionsUseCase
 import cv.domain.usecase.StorageUseCase
 import cv.domain.validator.MemberValidators
@@ -27,25 +27,25 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MemberEditScreenViewModel(
-    private val converter: ErrorCodeConverter,
+    private val memberId: String,
     private val memberUseCase: MemberUseCase,
-    private val permissionsUseCase: PermissionsUseCase,
+    private val validators: MemberValidators,
+    private val converter: ErrorCodeConverter,
     private val storageUseCase: StorageUseCase,
     private val navigationService: NavigationService,
-    private val validators: MemberValidators,
-    private val dateProviderRepository: DateProviderRepository,
+    private val permissionsUseCase: PermissionsUseCase,
+    private val numberFormatUseCase: NumberFormatUseCase,
+    private val memberPresentationMapper: MemberPresentationMapper,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-    private val initialMemberEntity = MutableStateFlow(MemberEntity())
-    private val _memberEntity = MutableStateFlow(initialMemberEntity.value)
-    private val _registrationDate = MutableStateFlow("")
+    private val initialMemberModel = MutableStateFlow(MemberEditPresentationModel())
+    private val _memberModel = MutableStateFlow(initialMemberModel.value)
+    val memberModel: StateFlow<MemberEditPresentationModel> = _memberModel
 
-    val memberEntity: StateFlow<MemberEntity> = _memberEntity
-    val registrationDate: StateFlow<String> = _registrationDate
+    init {
+        getMemberForId()
+    }
 
-    fun getMemberForId(
-        memberId: String,
-        showMessage: Boolean = false,
-    ) {
+    fun getMemberForId() {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             memberUseCase.getMemberById(memberId).also { result ->
@@ -55,14 +55,9 @@ class MemberEditScreenViewModel(
                     }
 
                     is DomainResult.Success -> {
-                        initialMemberEntity.value = result.data
-                        _memberEntity.value = result.data
-                        _registrationDate.value =
-                            dateProviderRepository.format(result.data.registrationDateMillis, DateFormatType.DAY_MONTH_YEAR)
+                        initialMemberModel.value = memberPresentationMapper.getEditModel(result.data)
+                        _memberModel.value = initialMemberModel.value
                         sendAction(Action.SetWaiting)
-                        if (showMessage) {
-                            showSnackbar(SnackbarType.SUCCESS, "Update successful")
-                        }
                     }
                 }
             }
@@ -73,22 +68,42 @@ class MemberEditScreenViewModel(
         value: String,
         inPutType: MemberEditScreenInputType,
     ) {
-        _memberEntity.value =
+        _memberModel.value =
             when (inPutType) {
-                MemberEditScreenInputType.FIRST_NAME -> _memberEntity.value.copy(firstName = value)
-                MemberEditScreenInputType.LAST_NAME -> _memberEntity.value.copy(lastName = value)
-                MemberEditScreenInputType.APARTMENT_NUMBER -> _memberEntity.value.copy(apartmentNumber = value)
-                MemberEditScreenInputType.PHONE_NUMBER -> _memberEntity.value.copy(phoneNumber = value)
-                MemberEditScreenInputType.HAS_COACH -> _memberEntity.value.copy(hasCoach = value.toBoolean())
-                MemberEditScreenInputType.HEIGHT -> _memberEntity.value.copy(height = value)
-                MemberEditScreenInputType.NONE -> _memberEntity.value
+                MemberEditScreenInputType.FIRST_NAME -> {
+                    _memberModel.value.copy(firstName = value)
+                }
+
+                MemberEditScreenInputType.LAST_NAME -> {
+                    _memberModel.value.copy(lastName = value)
+                }
+
+                MemberEditScreenInputType.APARTMENT_NUMBER -> {
+                    _memberModel.value.copy(apartmentNumber = value)
+                }
+
+                MemberEditScreenInputType.PHONE_NUMBER -> {
+                    _memberModel.value.copy(phoneNumber = value)
+                }
+
+                MemberEditScreenInputType.HAS_COACH -> {
+                    _memberModel.value.copy(hasCoach = value.toBoolean())
+                }
+
+                MemberEditScreenInputType.HEIGHT -> {
+                    _memberModel.value.copy(height = value)
+                }
+
+                MemberEditScreenInputType.NONE -> {
+                    _memberModel.value
+                }
             }
         validateInput()
     }
 
     private fun validateInput() {
         when {
-            validators.name.isNotValid(_memberEntity.value.firstName) -> {
+            validators.name.isNotValid(_memberModel.value.firstName) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_FIRST_NAME),
@@ -97,7 +112,7 @@ class MemberEditScreenViewModel(
                 )
             }
 
-            validators.name.isNotValid(_memberEntity.value.lastName) -> {
+            validators.name.isNotValid(_memberModel.value.lastName) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_LAST_NAME),
@@ -106,7 +121,7 @@ class MemberEditScreenViewModel(
                 )
             }
 
-            validators.phone.isNotValid(_memberEntity.value.phoneNumber) -> {
+            validators.phone.isNotValid(_memberModel.value.phoneNumber) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_PHONE_NUMBER),
@@ -115,7 +130,7 @@ class MemberEditScreenViewModel(
                 )
             }
 
-            validators.height.isNotValid(_memberEntity.value.height) -> {
+            validators.height.isNotValid(_memberModel.value.height) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_HEIGHT),
@@ -124,7 +139,7 @@ class MemberEditScreenViewModel(
                 )
             }
 
-            validators.apartmentNumber.isNotValid(_memberEntity.value.apartmentNumber) -> {
+            validators.apartmentNumber.isNotValid(_memberModel.value.apartmentNumber) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_APARTMENT_NUMBER),
@@ -133,7 +148,7 @@ class MemberEditScreenViewModel(
                 )
             }
 
-            initialMemberEntity.value.isNotEqualTo(_memberEntity.value) -> {
+            initialMemberModel.value != _memberModel.value -> {
                 sendAction(Action.SetReadyToUpdate)
             }
 
@@ -146,20 +161,30 @@ class MemberEditScreenViewModel(
     fun deleteMemberImage() {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            memberUseCase
-                .updateMember(_memberEntity.value.copy(profileImageUrl = ""), MemberUpdateType.PHOTO_DELETE)
-                .also { getMemberForId(initialMemberEntity.value.id, showMessage = true) }
+            val result = memberUseCase.getMemberById(memberModel.value.id)
+            if (result is DomainResult.Success) {
+                memberUseCase
+                    .updateMember(result.data.copy(profileImageUrl = ""), MemberUpdateType.PHOTO_DELETE)
+                    .also {
+                        getMemberForId()
+                        showSnackbar(SnackbarType.SUCCESS, "Delete image successful")
+                    }
+            }
         }
     }
 
     fun updateMemberImage(byteArray: ByteArray) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            val success = storageUseCase.updateImageForMember(_memberEntity.value, byteArray)
-            if (success is DomainResult.Success) {
-                getMemberForId(initialMemberEntity.value.id, showMessage = true)
-            } else {
-                showSnackbar(SnackbarType.ERROR, converter.getMessage((success as DomainResult.Error).error))
+            val result = memberUseCase.getMemberById(memberModel.value.id)
+            if (result is DomainResult.Success) {
+                val success = storageUseCase.updateImageForMember(result.data, byteArray)
+                if (success is DomainResult.Success) {
+                    getMemberForId()
+                    showSnackbar(SnackbarType.SUCCESS, "Update Image successful")
+                } else {
+                    showSnackbar(SnackbarType.ERROR, converter.getMessage((success as DomainResult.Error).error))
+                }
             }
         }
     }
@@ -171,7 +196,7 @@ class MemberEditScreenViewModel(
     fun deleteMember() {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            memberUseCase.deleteMember(_memberEntity.value).also {
+            memberUseCase.deleteMember(_memberModel.value.id).also {
                 when (it) {
                     is DomainResult.Error -> {
                         showSnackbar(SnackbarType.ERROR, converter.getMessage(it.error))
@@ -190,20 +215,35 @@ class MemberEditScreenViewModel(
         if (uiStateFlow.value == UiState.ReadyToUpdate) {
             sendAction(Action.SetLoading)
             viewModelScope.launch {
-                memberUseCase
-                    .updateMember(
-                        memberEntity = _memberEntity.value,
-                        memberUpdateType = MemberUpdateType.DETAILS,
-                    ).also { getMemberForId(initialMemberEntity.value.id, showMessage = true) }
+                val result = memberUseCase.getMemberById(memberModel.value.id)
+                if (result is DomainResult.Success) {
+                    memberUseCase
+                        .updateMember(
+                            memberEntity =
+                                result.data.copy(
+                                    firstName = _memberModel.value.firstName,
+                                    lastName = _memberModel.value.lastName,
+                                    phoneNumber = _memberModel.value.phoneNumber,
+                                    apartmentNumber = _memberModel.value.apartmentNumber,
+                                    height = numberFormatUseCase.setHeight(_memberModel.value.height.toDouble()),
+                                    hasCoach = _memberModel.value.hasCoach,
+                                    memberType = MemberType.valueOf(_memberModel.value.memberType),
+                                ),
+                            memberUpdateType = MemberUpdateType.DETAILS,
+                        ).also {
+                            showSnackbar(SnackbarType.SUCCESS, "Successfully updated member")
+                            navigateBack()
+                        }
+                }
             }
         }
     }
 
-    fun getPermissions() = permissionsUseCase.getPermissions(_memberEntity.value.id)
+    fun getPermissions() = permissionsUseCase.getPermissions(_memberModel.value.id)
 
     fun setNewMemberType(memberType: String) {
-        _memberEntity.value = _memberEntity.value.copy(memberType = MemberType.valueOf(memberType))
-        if (initialMemberEntity.value.memberType != _memberEntity.value.memberType) {
+        _memberModel.value = _memberModel.value.copy(memberType = memberType)
+        if (initialMemberModel.value.memberType != _memberModel.value.memberType) {
             sendAction(Action.SetReadyToUpdate)
         }
     }

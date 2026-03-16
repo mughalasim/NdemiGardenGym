@@ -24,7 +24,7 @@ fun ProfileAdminScreen(
 
         is UiState.Success -> {
             ProfileAdminScreenDetails(
-                state = state.adminDashboard,
+                state = state.model,
                 listeners =
                     ProfileAdminScreenDetailsListeners(
                         onLogoutTapped = viewModel::onLogOutTapped,

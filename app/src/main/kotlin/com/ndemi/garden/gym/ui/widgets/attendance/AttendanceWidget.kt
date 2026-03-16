@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.mock.getMockAttendanceEntity
+import com.ndemi.garden.gym.ui.mock.getMockAttendancePresentationModel
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
@@ -26,14 +26,14 @@ import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
-import cv.domain.entities.AttendanceEntity
+import cv.domain.presentationModels.AttendancePresentationModel
 
 @Composable
 fun AttendanceWidget(
     modifier: Modifier = Modifier,
-    attendanceEntity: AttendanceEntity,
+    model: AttendancePresentationModel,
     canDeleteAttendance: Boolean = false,
-    onDeleteAttendance: (AttendanceEntity) -> Unit = {},
+    onDeleteAttendance: (AttendancePresentationModel) -> Unit = {},
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -50,7 +50,7 @@ fun AttendanceWidget(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             TextWidget(
-                text = attendanceEntity.startDateDay,
+                text = model.startDateDay,
                 style = AppTheme.textStyles.small,
                 color = AppTheme.colors.primary,
             )
@@ -72,11 +72,11 @@ fun AttendanceWidget(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             TextWidget(
-                text = attendanceEntity.startTime + " - " + attendanceEntity.endTime,
+                text = model.startTime + " - " + model.endTime,
             )
 
             TextWidget(
-                text = attendanceEntity.activeStatusDuration,
+                text = model.activeStatusDuration,
             )
 
             if (showDialog) {
@@ -87,7 +87,7 @@ fun AttendanceWidget(
                     positiveButton = stringResource(R.string.txt_delete),
                     positiveOnClick = {
                         showDialog = !showDialog
-                        onDeleteAttendance.invoke(attendanceEntity)
+                        onDeleteAttendance.invoke(model)
                     },
                     negativeButton = stringResource(R.string.txt_cancel),
                     negativeOnClick = {
@@ -104,7 +104,7 @@ fun AttendanceWidget(
 private fun AttendanceWidgetPreview() =
     AppThemeComposable {
         Column {
-            AttendanceWidget(attendanceEntity = getMockAttendanceEntity())
-            AttendanceWidget(attendanceEntity = getMockAttendanceEntity(), canDeleteAttendance = true)
+            AttendanceWidget(model = getMockAttendancePresentationModel())
+            AttendanceWidget(model = getMockAttendancePresentationModel(), canDeleteAttendance = true)
         }
     }

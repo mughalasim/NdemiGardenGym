@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
+import com.ndemi.garden.gym.ui.mock.getMockMemberDashboardPresentationModel
 import com.ndemi.garden.gym.ui.screens.profile.ProfileTopSection
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
@@ -31,7 +31,6 @@ import com.ndemi.garden.gym.ui.widgets.member.MemberSessionWidget
 fun ProfileMemberDetailsScreen(
     state: ProfileMemberScreenViewModel.UiState.Success,
     countdown: String = "",
-    registrationDate: String = "",
     sessionStartTime: String = "",
     listeners: ProfileMemberScreenListeners = ProfileMemberScreenListeners(),
 ) {
@@ -54,7 +53,7 @@ fun ProfileMemberDetailsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     MemberImageWidget(
-                        imageUrl = state.memberEntity.profileImageUrl,
+                        imageUrl = state.model.profileImageUrl,
                         onImageDelete = listeners.onImageDeleted,
                         onImageSelect = listeners.onImageSelected,
                     )
@@ -62,7 +61,7 @@ fun ProfileMemberDetailsScreen(
                         modifier = Modifier.padding(horizontal = padding_screen),
                     ) {
                         TextWidget(
-                            text = state.memberEntity.getFullName(),
+                            text = state.model.fullName,
                             style = AppTheme.textStyles.large,
                         )
                         TextWidget(
@@ -70,7 +69,7 @@ fun ProfileMemberDetailsScreen(
                             text =
                                 stringResource(
                                     R.string.txt_member_since,
-                                    registrationDate,
+                                    state.model.registrationDate,
                                 ),
                         )
                     }
@@ -83,21 +82,21 @@ fun ProfileMemberDetailsScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     StatsTextWidget(
-                        "${state.workouts}",
+                        state.model.workouts,
                         stringResource(R.string.txt_workouts),
                     )
                     StatsTextWidget(
-                        state.memberEntity.getDisplayWeight(),
-                        stringResource(R.string.txt_weight),
+                        state.model.weight,
+                        stringResource(R.string.txt_weight, state.model.weightUnit),
                     )
                     StatsTextWidget(
-                        state.memberEntity.getDisplayHeight(),
-                        stringResource(R.string.txt_height),
+                        state.model.height,
+                        stringResource(R.string.txt_height, state.model.heightUnit),
                     )
                     StatsTextWidget(
-                        state.memberEntity.getDisplayBMI(),
+                        state.model.bmiValue.toString(),
                         stringResource(R.string.txt_bmi),
-                        overrideColor = getBMIColor(state.memberEntity.bmi),
+                        overrideColor = getBMIColor(state.model.bmiValue),
                     )
                 }
             }
@@ -123,13 +122,12 @@ data class ProfileMemberScreenListeners(
 
 @AppPreview
 @Composable
-fun ProfileMemberDetailsScreenPreview() =
+private fun ProfileMemberDetailsScreenPreview() =
     AppThemeComposable {
         ProfileMemberDetailsScreen(
             state =
                 ProfileMemberScreenViewModel.UiState.Success(
-                    memberEntity = getMockActiveMemberEntity(),
-                    workouts = 240,
+                    model = getMockMemberDashboardPresentationModel(),
                 ),
         )
     }

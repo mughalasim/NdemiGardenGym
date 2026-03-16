@@ -70,7 +70,6 @@ class PaymentRepositoryImp(
         }
 
     override fun getPayments(
-        isMembersPayment: Boolean,
         memberId: String,
         year: Int,
     ): Flow<DomainResult<PaymentYearEntity>> =
@@ -141,13 +140,16 @@ class PaymentRepositoryImp(
             onFailure = { handleError(it, logger) },
         )
 
-    override suspend fun deletePaymentPlan(paymentEntity: PaymentEntity): DomainResult<Unit> =
+    override suspend fun deletePaymentPlan(
+        startYear: String,
+        paymentId: String,
+    ): DomainResult<Unit> =
         runCatching {
             firebaseFirestore
                 .collection(pathPayment)
                 .document(pathPaymentPlan)
-                .collection(dateProviderRepository.getYear(paymentEntity.startDateMillis).toString())
-                .document(paymentEntity.paymentId)
+                .collection(startYear)
+                .document(paymentId)
                 .delete()
                 .await()
         }.fold(

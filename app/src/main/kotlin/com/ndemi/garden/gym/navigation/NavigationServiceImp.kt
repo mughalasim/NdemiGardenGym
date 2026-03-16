@@ -35,22 +35,12 @@ class NavigationServiceImp(
                 }
             }
         }
-        analyticsRepository.logEvent(
-            EVENT_NAVIGATE,
-            listOf(
-                Pair(PARAM_SCREEN_NAME, route.javaClass.simpleName),
-            ),
-        )
+        analyticsRepository.logEvent(EVENT_NAVIGATE, PARAM_SCREEN_NAME, route.javaClass.simpleName)
     }
 
     override fun popBack() {
         navController.navigateUp()
-        analyticsRepository.logEvent(
-            EVENT_NAVIGATE,
-            listOf(
-                Pair(PARAM_SCREEN_NAME, getCurrentRoute().javaClass.simpleName),
-            ),
-        )
+        analyticsRepository.logEvent(EVENT_NAVIGATE, PARAM_SCREEN_NAME, getCurrentRoute().javaClass.simpleName)
     }
 
     override fun getCurrentRoute(): Route =

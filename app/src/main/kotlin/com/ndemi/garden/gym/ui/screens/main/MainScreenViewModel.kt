@@ -9,12 +9,13 @@ import com.ndemi.garden.gym.navigation.BottomNavItem
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
+import com.ndemi.garden.gym.ui.utils.OBSERVE_MEMBER_STATE
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.repositories.JobRepository
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.AuthUseCase
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -22,7 +23,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
 class MainScreenViewModel(
-    private val job: MutableList<Job>,
+    private val jobRepository: JobRepository,
     private val navigationService: NavigationService,
     private val authUseCase: AuthUseCase,
     private val accessUseCase: AccessUseCase,
@@ -123,7 +124,7 @@ class MainScreenViewModel(
                 when (it) {
                     is DomainResult.Success -> {
                         authState.value = AuthState.Authorised
-                        job += getMemberState()
+                        jobRepository.add(getMemberState(), OBSERVE_MEMBER_STATE)
                     }
 
                     is DomainResult.Error -> {

@@ -17,9 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
 import com.ndemi.garden.gym.ui.screens.profile.ProfileTopSection
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
@@ -31,11 +29,11 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
-import cv.domain.entities.AdminDashboard
+import cv.domain.presentationModels.AdminDashboardPresentationModel
 
 @Composable
 fun ProfileAdminScreenDetails(
-    state: AdminDashboard = AdminDashboard(),
+    state: AdminDashboardPresentationModel = AdminDashboardPresentationModel(),
     listeners: ProfileAdminScreenDetailsListeners = ProfileAdminScreenDetailsListeners(),
 ) {
     Column {
@@ -82,13 +80,13 @@ fun ProfileAdminScreenDetails(
             Row {
                 Tile(
                     modifier = Modifier.weight(1f),
-                    value = currencyFormater(state.totalRevenueYear),
+                    value = state.totalRevenueYear,
                     description = "Revenue for ${state.selectedYear}",
                 )
                 Spacer(modifier = Modifier.padding(start = padding_screen_small))
                 Tile(
                     modifier = Modifier.weight(1f),
-                    value = currencyFormater(state.totalRevenueMonth),
+                    value = state.totalRevenueMonth,
                     description = "Revenue for ${state.selectedMonth}",
                 )
             }
@@ -109,7 +107,7 @@ fun ProfileAdminScreenDetails(
                     )
                 } else {
                     for (member in state.topTenPayingMembers) {
-                        MemberInfoStat(member.first.getFullName(), currencyFormater(member.second))
+                        MemberInfoStat(member.fullName, member.amountFormatted)
                     }
                 }
             }
@@ -129,17 +127,12 @@ fun ProfileAdminScreenDetails(
                     )
                 } else {
                     for (member in state.topTenActiveMembers) {
-                        MemberInfoStat(member.first.getFullName(), "${member.second} visits")
+                        MemberInfoStat(member.fullName, "${member.visits} visits")
                     }
                 }
             }
         }
     }
-}
-
-private fun currencyFormater(value: Double): String {
-    val formattedAmount = String.format(locale = null, "%,.2f", value)
-    return "${BuildConfig.CURRENCY_CODE} $formattedAmount"
 }
 
 @Composable
@@ -208,21 +201,15 @@ private fun ProfileAdminScreenDetailsPreview() =
     AppThemeComposable {
         ProfileAdminScreenDetails(
             state =
-                AdminDashboard(
+                AdminDashboardPresentationModel(
+                    selectedYear = 2025,
+                    selectedMonth = "January",
                     totalRegisteredUsers = 82,
                     totalExpiredUsers = 20,
-                    totalRevenueMonth = 123658.0,
-                    totalRevenueYear = 1524435.54,
-                    topTenActiveMembers =
-                        listOf(
-                            Pair(getMockActiveMemberEntity(), 2),
-                            Pair(getMockActiveMemberEntity(), 1),
-                        ),
-                    topTenPayingMembers =
-                        listOf(
-                            Pair(getMockActiveMemberEntity(), 2000.0),
-                            Pair(getMockActiveMemberEntity(), 1000.0),
-                        ),
+                    totalRevenueMonth = "KES 123,658.0",
+                    totalRevenueYear = "KES 1,524,435.54",
+                    topTenActiveMembers = listOf(),
+                    topTenPayingMembers = listOf(),
                 ),
         )
     }

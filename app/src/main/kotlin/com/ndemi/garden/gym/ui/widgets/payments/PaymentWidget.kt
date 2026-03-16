@@ -18,25 +18,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.mock.getMockActivePaymentEntity
-import com.ndemi.garden.gym.ui.mock.getMockExpiredPaymentEntity
+import com.ndemi.garden.gym.ui.mock.getMockActivePaymentPresentationModel
+import com.ndemi.garden.gym.ui.mock.getMockExpiredPaymentPresentationModel
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
-import cv.domain.entities.PaymentEntity
+import cv.domain.presentationModels.PaymentPresentationModel
 
 @Composable
 fun PaymentWidget(
     modifier: Modifier = Modifier,
-    paymentEntity: PaymentEntity,
+    model: PaymentPresentationModel,
     canDeletePayment: Boolean = false,
-    onDeletePayment: (PaymentEntity) -> Unit = {},
+    onDeletePayment: (PaymentPresentationModel) -> Unit = {},
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -56,7 +55,7 @@ fun PaymentWidget(
         ) {
             TextWidget(
                 modifier = Modifier.weight(1f),
-                text = paymentEntity.paymentPlanDuration,
+                text = model.paymentPlanDuration,
                 color = AppTheme.colors.primary,
                 style = AppTheme.textStyles.regularBold,
             )
@@ -84,7 +83,7 @@ fun PaymentWidget(
                     style = AppTheme.textStyles.small,
                     color = AppTheme.colors.textSecondary,
                 )
-                TextWidget(text = paymentEntity.startDateDayMonthYear)
+                TextWidget(text = model.startDateDayMonthYear)
             }
             Column(
                 modifier = Modifier.weight(1f),
@@ -95,18 +94,18 @@ fun PaymentWidget(
                     style = AppTheme.textStyles.small,
                     color = AppTheme.colors.textSecondary,
                 )
-                TextWidget(text = paymentEntity.endDateDayMonthYear)
+                TextWidget(text = model.endDateDayMonthYear)
             }
             Column(
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.End,
             ) {
                 TextWidget(
-                    text = "Total",
+                    text = stringResource(R.string.txt_total),
                     style = AppTheme.textStyles.small,
                     color = AppTheme.colors.textSecondary,
                 )
-                TextWidget(text = paymentEntity.amount.toAmountString())
+                TextWidget(text = model.amount)
             }
         }
 
@@ -118,7 +117,7 @@ fun PaymentWidget(
                 positiveButton = stringResource(R.string.txt_delete),
                 positiveOnClick = {
                     showDialog = !showDialog
-                    onDeletePayment.invoke(paymentEntity)
+                    onDeletePayment.invoke(model)
                 },
                 negativeButton = stringResource(R.string.txt_cancel),
                 negativeOnClick = {
@@ -135,14 +134,14 @@ private fun PaymentWidgetPreview() =
     AppThemeComposable {
         Column {
             PaymentWidget(
-                paymentEntity = getMockActivePaymentEntity(),
+                model = getMockActivePaymentPresentationModel(),
             )
             PaymentWidget(
-                paymentEntity = getMockExpiredPaymentEntity(),
+                model = getMockExpiredPaymentPresentationModel(),
                 canDeletePayment = true,
             )
             PaymentWidget(
-                paymentEntity = getMockExpiredPaymentEntity(),
+                model = getMockExpiredPaymentPresentationModel(),
             )
         }
     }

@@ -18,19 +18,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.mock.getMockWeightEntity
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
-import cv.domain.entities.WeightEntity
+import cv.domain.presentationModels.WeightPresentationModel
 
 @Composable
 fun WeightWidget(
-    weightEntity: WeightEntity,
-    onDeleteWeight: (WeightEntity) -> Unit = {},
+    weight: WeightPresentationModel,
+    onDeleteWeight: (Long) -> Unit = {},
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -44,12 +43,12 @@ fun WeightWidget(
     ) {
         Row {
             TextWidget(
-                text = weightEntity.dateDayMonthYear,
+                text = weight.dateDayMonthYear,
                 color = AppTheme.colors.primary,
             )
             TextWidget(
                 modifier = Modifier.padding(horizontal = padding_screen_small),
-                text = weightEntity.weight,
+                text = weight.weight,
             )
         }
         Icon(
@@ -67,7 +66,7 @@ fun WeightWidget(
             positiveButton = stringResource(R.string.txt_delete),
             positiveOnClick = {
                 showDialog = !showDialog
-                onDeleteWeight.invoke(weightEntity)
+                onDeleteWeight.invoke(weight.dateMillis)
             },
             negativeButton = stringResource(R.string.txt_cancel),
             negativeOnClick = {
@@ -82,7 +81,19 @@ fun WeightWidget(
 private fun WeightWidgetPreview() =
     AppThemeComposable {
         Column {
-            WeightWidget(weightEntity = getMockWeightEntity())
-            WeightWidget(weightEntity = getMockWeightEntity())
+            WeightWidget(
+                weight =
+                    WeightPresentationModel(
+                        dateDayMonthYear = "Today",
+                        weight = "70 Kgs",
+                    ),
+            )
+            WeightWidget(
+                weight =
+                    WeightPresentationModel(
+                        dateDayMonthYear = "12 Dec 2023",
+                        weight = "80 Kgs",
+                    ),
+            )
         }
     }

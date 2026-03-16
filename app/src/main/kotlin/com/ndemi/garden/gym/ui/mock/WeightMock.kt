@@ -1,9 +1,10 @@
 package com.ndemi.garden.gym.ui.mock
 
-import cv.domain.entities.WeightEntity
+import cv.domain.presentationModels.WeightPresentationModel
 
 @Suppress("detekt.MagicNumber")
-fun getMockWeightEntity() =
-    WeightEntity(
-        weight = "55.0",
+fun getMockWeightPresentationModel() =
+    WeightPresentationModel(
+        weight = "55 Kgs",
+        dateDayMonthYear = "12/05/2023",
     )

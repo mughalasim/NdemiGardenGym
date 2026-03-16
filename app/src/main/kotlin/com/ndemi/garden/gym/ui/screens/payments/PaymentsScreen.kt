@@ -11,7 +11,6 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,13 +29,14 @@ import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentsScreen(
     memberId: String,
     memberName: String,
-    viewModel: PaymentsScreenViewModel = koinViewModel<PaymentsScreenViewModel>(),
+    viewModel: PaymentsScreenViewModel = koinViewModel<PaymentsScreenViewModel>(parameters = { parametersOf(memberId) }),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
     var showDialog by remember { mutableStateOf(false) }
@@ -45,10 +45,6 @@ fun PaymentsScreen(
     val selectedYear by viewModel.selectedYear.collectAsStateWithLifecycle()
     val canAddPayment by viewModel.canAddPayment.collectAsStateWithLifecycle()
     val permissionState by viewModel.getPermissions(memberId).collectAsStateWithLifecycle()
-
-    viewModel.setMemberId(memberId)
-
-    LaunchedEffect(Unit) { viewModel.getPaymentsForMember() }
 
     Column {
         ToolBarWidget(
@@ -100,7 +96,7 @@ fun PaymentsScreen(
                             )
                         } else {
                             PaymentsListScreen(
-                                payments = state.payments,
+                                models = state.payments,
                                 totalAmount = state.totalAmount,
                                 canDeletePayment = permissionState.canUpdatePayment,
                                 onDeletePayment = viewModel::deletePayment,

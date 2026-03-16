@@ -20,9 +20,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.enums.SnackbarType
-import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
-import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
-import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
+import com.ndemi.garden.gym.ui.mock.getMockActiveMemberPresentationModel
+import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberPresentationModel
+import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberPresentationModel
 import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
@@ -35,8 +35,8 @@ import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberStatusWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberStatusWidgetListener
-import cv.domain.entities.MemberEntity
 import cv.domain.entities.PermissionsEntity
+import cv.domain.presentationModels.MemberPresentationModel
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +48,7 @@ internal fun MembersSharedScreen(
     searchTerm: String = "",
     uiState: UiState = UiState.Loading,
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
-    members: List<MemberEntity> = listOf(),
+    members: List<MemberPresentationModel> = listOf(),
     listeners: MembersSharedScreenListeners = MembersSharedScreenListeners(),
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -92,7 +92,7 @@ internal fun MembersSharedScreen(
             ) {
                 items(members) {
                     MemberStatusWidget(
-                        memberEntity = it,
+                        model = it,
                         canViewMemberDetails = permissionState.canViewMemberDetails,
                         canViewMemberStats = permissionState.canViewMemberStats && screenType != MemberScreenType.NON_MEMBERS,
                         listener = listeners.memberStatusWidgetListener,
@@ -128,13 +128,13 @@ private fun MembersSharedScreenPreview() =
             uiState = UiState.Success,
             members =
                 listOf(
-                    getMockRegisteredMemberEntity(),
-                    getMockActiveMemberEntity(),
-                    getMockExpiredMemberEntity(),
-                    getMockRegisteredMemberEntity(),
-                    getMockExpiredMemberEntity(),
-                    getMockRegisteredMemberEntity(),
-                    getMockRegisteredMemberEntity(),
+                    getMockRegisteredMemberPresentationModel(),
+                    getMockActiveMemberPresentationModel(),
+                    getMockExpiredMemberPresentationModel(),
+                    getMockRegisteredMemberPresentationModel(),
+                    getMockExpiredMemberPresentationModel(),
+                    getMockRegisteredMemberPresentationModel(),
+                    getMockRegisteredMemberPresentationModel(),
                 ),
         )
     }

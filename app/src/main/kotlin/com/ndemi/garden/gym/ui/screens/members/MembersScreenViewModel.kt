@@ -11,21 +11,23 @@ import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
+import com.ndemi.garden.gym.ui.utils.OBSERVE_MEMBER_SCREEN
 import cv.domain.DomainResult
-import cv.domain.entities.MemberEntity
 import cv.domain.enums.DomainErrorType
 import cv.domain.enums.MemberUpdateType
+import cv.domain.mappers.MemberPresentationMapper
+import cv.domain.presentationModels.MemberPresentationModel
 import cv.domain.repositories.DateProviderRepository
+import cv.domain.repositories.JobRepository
 import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.PermissionsUseCase
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MembersScreenViewModel(
-    private val job: MutableList<Job>,
+    private val jobRepository: JobRepository,
     private val screenType: MemberScreenType,
     private val converter: ErrorCodeConverter,
     private val memberUseCase: MemberUseCase,
@@ -33,11 +35,12 @@ class MembersScreenViewModel(
     private val permissionsUseCase: PermissionsUseCase,
     private val navigationService: NavigationService,
     private val dateProviderRepository: DateProviderRepository,
+    private val memberPresentationMapper: MemberPresentationMapper,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-    private val membersUnfiltered = MutableStateFlow<MutableList<MemberEntity>>(mutableListOf())
+    private val membersUnfiltered = MutableStateFlow<MutableList<MemberPresentationModel>>(mutableListOf())
 
-    private val _members = mutableStateListOf<MemberEntity>()
-    val members: List<MemberEntity> = _members
+    private val _members = mutableStateListOf<MemberPresentationModel>()
+    val members: List<MemberPresentationModel> = _members
 
     private val _searchTerm = MutableStateFlow("")
     val searchTerm: StateFlow<String> = _searchTerm
@@ -48,7 +51,7 @@ class MembersScreenViewModel(
 
     fun getMembers() {
         sendAction(Action.SetLoading)
-        job +=
+        jobRepository.add(
             viewModelScope.launch {
                 val useCaseAction =
                     when (screenType) {
@@ -65,41 +68,43 @@ class MembersScreenViewModel(
 
                         is DomainResult.Success -> {
                             membersUnfiltered.value.clear()
-                            membersUnfiltered.value.addAll(result.data)
+                            membersUnfiltered.value.addAll(result.data.map { memberPresentationMapper.getModel(it) })
                             filterResults()
                             sendAction(Action.Success)
                         }
                     }
                 }
-            }
+            },
+            "$OBSERVE_MEMBER_SCREEN-$screenType",
+        )
     }
 
     fun getPermissions() = permissionsUseCase.getPermissions()
 
-    fun onMemberTapped(memberEntity: MemberEntity) {
-        navigationService.open(Route.MemberEditScreen(memberEntity.id))
+    fun onMemberTapped(model: MemberPresentationModel) {
+        navigationService.open(Route.MemberEditScreen(model.id))
     }
 
     fun onRegisterMember() {
         navigationService.open(Route.RegisterNewScreen)
     }
 
-    fun onPaymentsTapped(memberEntity: MemberEntity) {
-        navigationService.open(Route.PaymentsScreen(memberEntity.id, memberEntity.getFullName()))
+    fun onPaymentsTapped(model: MemberPresentationModel) {
+        navigationService.open(Route.PaymentsScreen(model.id, model.fullName))
     }
 
-    fun onAttendanceTapped(memberEntity: MemberEntity) {
-        navigationService.open(Route.MembersAttendancesScreen(memberEntity.id, memberEntity.getFullName()))
+    fun onAttendanceTapped(model: MemberPresentationModel) {
+        navigationService.open(Route.MembersAttendancesScreen(model.id, model.fullName))
     }
 
-    fun onSessionTapped(memberEntity: MemberEntity) {
+    fun onSessionTapped(model: MemberPresentationModel) {
         sendAction(Action.SetLoading)
         // Attempt to register an attendance
-        if (memberEntity.isActiveNow()) {
+        if (model.activeNowDateMillis != null) {
             viewModelScope.launch {
                 attendanceUseCase.addAttendanceForMember(
-                    memberEntity.id,
-                    dateProviderRepository.getDate(memberEntity.activeNowDateMillis!!),
+                    model.id,
+                    dateProviderRepository.getDate(model.activeNowDateMillis!!),
                     dateProviderRepository.getDate(),
                 )
             }
@@ -107,14 +112,18 @@ class MembersScreenViewModel(
 
         // Update the member model
         viewModelScope.launch {
-            memberUseCase
-                .updateMember(
-                    memberEntity.copy(
-                        activeNowDateMillis =
-                            if (memberEntity.isActiveNow()) null else dateProviderRepository.getDate().time,
-                    ),
-                    MemberUpdateType.ACTIVE_SESSION,
-                )
+            val result = memberUseCase.getMemberById(model.id)
+            if (result is DomainResult.Success) {
+                val memberEntity = result.data
+                memberUseCase
+                    .updateMember(
+                        memberEntity.copy(
+                            activeNowDateMillis =
+                                if (memberEntity.activeNowDateMillis != null) null else dateProviderRepository.getDate().time,
+                        ),
+                        MemberUpdateType.ACTIVE_SESSION,
+                    )
+            }
         }
     }
 
@@ -128,7 +137,7 @@ class MembersScreenViewModel(
         if (_searchTerm.value.isNotEmpty()) {
             _members.addAll(
                 membersUnfiltered.value.filter {
-                    it.getFullName().lowercase().contains(_searchTerm.value.lowercase())
+                    it.fullName.lowercase().contains(_searchTerm.value.lowercase())
                 },
             )
         } else {

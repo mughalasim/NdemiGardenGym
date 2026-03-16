@@ -43,7 +43,6 @@ android {
                 .toInt()
         versionName = libs.versions.appVersionName.get()
 
-        setConfigVariable(variableName = "CURRENCY_CODE", variableSource = "CURRENCY_CODE")
         setConfigVariable(variableName = "API_BASE_URL", variableSource = "API_BASE_URL")
         setConfigVariable(variableName = "PATH_PAYMENT", variableSource = "PATH_PAYMENT")
         setConfigVariable(variableName = "PATH_APP_VERSION", variableSource = "PATH_APP_VERSION")

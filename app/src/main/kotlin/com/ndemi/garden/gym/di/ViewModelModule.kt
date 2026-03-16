@@ -27,18 +27,13 @@ val viewModelModule =
 
         viewModelOf(::ProfileAdminScreenViewModel)
 
-        viewModelOf(::AttendanceScreenViewModel)
-
-        viewModelOf(::PaymentsScreenViewModel)
-
         viewModelOf(::PaymentAddScreenViewModel)
 
         viewModel { params ->
-            MembersScreenViewModel(
-                screenType = params.get(),
-                job = get(),
+            AttendanceScreenViewModel(
+                memberId = params.get(),
+                jobRepository = get(),
                 converter = get(),
-                memberUseCase = get(),
                 attendanceUseCase = get(),
                 permissionsUseCase = get(),
                 navigationService = get(),
@@ -46,7 +41,47 @@ val viewModelModule =
             )
         }
 
-        viewModelOf(::MemberEditScreenViewModel)
+        viewModel { params ->
+            PaymentsScreenViewModel(
+                memberId = params.get(),
+                jobRepository = get(),
+                converter = get(),
+                paymentUseCase = get(),
+                permissionsUseCase = get(),
+                navigationService = get(),
+                numberFormatUseCase = get(),
+                paymentPresentationMapper = get(),
+                dateProviderRepository = get(),
+            )
+        }
+
+        viewModel { params ->
+            MembersScreenViewModel(
+                screenType = params.get(),
+                jobRepository = get(),
+                converter = get(),
+                memberUseCase = get(),
+                attendanceUseCase = get(),
+                permissionsUseCase = get(),
+                navigationService = get(),
+                dateProviderRepository = get(),
+                memberPresentationMapper = get(),
+            )
+        }
+
+        viewModel { params ->
+            MemberEditScreenViewModel(
+                memberId = params.get(),
+                memberUseCase = get(),
+                validators = get(),
+                converter = get(),
+                storageUseCase = get(),
+                navigationService = get(),
+                permissionsUseCase = get(),
+                numberFormatUseCase = get(),
+                memberPresentationMapper = get(),
+            )
+        }
 
         viewModelOf(::ResetPasswordScreenViewModel)
 

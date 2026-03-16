@@ -18,25 +18,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEntity
-import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberEntity
-import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
+import com.ndemi.garden.gym.ui.mock.getMockActiveMemberPresentationModel
+import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberPresentationModel
+import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberPresentationModel
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
 import com.ndemi.garden.gym.ui.theme.image_size_medium
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.AsyncImageWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
-import cv.domain.entities.MemberEntity
+import cv.domain.presentationModels.MemberPresentationModel
 
 @Composable
 fun MemberStatusWidget(
     modifier: Modifier = Modifier,
-    memberEntity: MemberEntity,
+    model: MemberPresentationModel,
     canViewMemberDetails: Boolean = false,
     canViewMemberStats: Boolean = false,
     listener: MemberStatusWidgetListener = MemberStatusWidgetListener(),
@@ -44,7 +43,7 @@ fun MemberStatusWidget(
     Column(
         modifier =
             modifier
-                .clickable { if (canViewMemberDetails) listener.onMemberTapped.invoke(memberEntity) }
+                .clickable { if (canViewMemberDetails) listener.onMemberTapped.invoke(model) }
                 .toAppCardStyle(overridePadding = 0.dp),
     ) {
         AsyncImageWidget(
@@ -53,7 +52,7 @@ fun MemberStatusWidget(
                     .fillMaxWidth()
                     .height(image_size_medium)
                     .clip(RoundedCornerShape(topEnd = border_radius, topStart = border_radius)),
-            profileImageUrl = memberEntity.profileImageUrl,
+            profileImageUrl = model.profileImageUrl,
         )
 
         Column(
@@ -62,31 +61,28 @@ fun MemberStatusWidget(
                     .padding(padding_screen_small),
         ) {
             TextWidget(
-                text = memberEntity.getFullName(),
+                text = model.fullName,
                 style = AppTheme.textStyles.regularBold,
             )
-            if (memberEntity.isActiveNow()) {
-//                TextWidget(
-//                    style = AppTheme.textStyles.small,
-//                    text =
-//                        DateTime
-//                            .now()
-//                            .toActiveStatusDuration(DateTime(memberEntity.activeNowDateMillis)),
-//                )
+            if (model.isActive) {
+                TextWidget(
+                    style = AppTheme.textStyles.small,
+                    text = model.lastActive,
+                )
             } else if (canViewMemberDetails) {
                 TextWidget(
                     style = AppTheme.textStyles.small,
-                    text = memberEntity.getResidentialStatus(),
+                    text = model.residentialStatus,
                 )
-                if (memberEntity.hasPaidMembership()) {
-//                    TextWidget(
-//                        style = AppTheme.textStyles.small,
-//                        modifier = Modifier.fillMaxWidth(),
-//                        text = memberEntity.renewalFutureDateMillis.toMembershipStatusString(),
-//                    )
+                if (model.hasPaidMembership) {
+                    TextWidget(
+                        style = AppTheme.textStyles.small,
+                        modifier = Modifier.fillMaxWidth(),
+                        text = model.membershipRenewalDate,
+                    )
                     TextWidget(
                         style = AppTheme.textStyles.regularBold,
-                        text = memberEntity.amountDue.toAmountString(),
+                        text = model.amountDue,
                     )
                 }
             }
@@ -104,20 +100,20 @@ fun MemberStatusWidget(
             ) {
                 RoundedIconWidget(
                     icon = Icons.Rounded.AttachMoney,
-                    onClickListener = { listener.onPaymentsTapped.invoke(memberEntity) },
+                    onClickListener = { listener.onPaymentsTapped.invoke(model) },
                     tintColor = AppTheme.colors.primary,
                 )
 
                 RoundedIconWidget(
                     icon = Icons.Rounded.AccessTime,
-                    onClickListener = { listener.onAttendanceTapped.invoke(memberEntity) },
+                    onClickListener = { listener.onAttendanceTapped.invoke(model) },
                     tintColor = AppTheme.colors.primary,
                 )
 
                 RoundedIconWidget(
                     icon = Icons.AutoMirrored.Rounded.DirectionsRun,
-                    onClickListener = { listener.onSessionTapped.invoke(memberEntity) },
-                    tintColor = if (memberEntity.isActiveNow()) Color.Green else AppTheme.colors.primary,
+                    onClickListener = { listener.onSessionTapped.invoke(model) },
+                    tintColor = if (model.isActive) Color.Green else AppTheme.colors.primary,
                 )
             }
         }
@@ -125,10 +121,10 @@ fun MemberStatusWidget(
 }
 
 data class MemberStatusWidgetListener(
-    val onMemberTapped: (memberEntity: MemberEntity) -> Unit = {},
-    val onPaymentsTapped: (memberEntity: MemberEntity) -> Unit = {},
-    val onAttendanceTapped: (memberEntity: MemberEntity) -> Unit = {},
-    val onSessionTapped: (memberEntity: MemberEntity) -> Unit = {},
+    val onMemberTapped: (model: MemberPresentationModel) -> Unit = {},
+    val onPaymentsTapped: (model: MemberPresentationModel) -> Unit = {},
+    val onAttendanceTapped: (model: MemberPresentationModel) -> Unit = {},
+    val onSessionTapped: (model: MemberPresentationModel) -> Unit = {},
 )
 
 @AppPreview
@@ -137,21 +133,21 @@ private fun MemberWidgetPreview() {
     AppThemeComposable {
         Column {
             MemberStatusWidget(
-                memberEntity = getMockRegisteredMemberEntity(),
+                model = getMockRegisteredMemberPresentationModel(),
                 canViewMemberDetails = true,
             )
             MemberStatusWidget(
-                memberEntity = getMockActiveMemberEntity(),
-                canViewMemberDetails = true,
-                canViewMemberStats = true,
-            )
-            MemberStatusWidget(
-                memberEntity = getMockExpiredMemberEntity(),
+                model = getMockActiveMemberPresentationModel(),
                 canViewMemberDetails = true,
                 canViewMemberStats = true,
             )
             MemberStatusWidget(
-                memberEntity = getMockActiveMemberEntity(),
+                model = getMockExpiredMemberPresentationModel(),
+                canViewMemberDetails = true,
+                canViewMemberStats = true,
+            )
+            MemberStatusWidget(
+                model = getMockActiveMemberPresentationModel(),
             )
         }
     }

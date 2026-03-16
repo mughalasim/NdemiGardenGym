@@ -10,10 +10,14 @@ import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
+import com.ndemi.garden.gym.ui.utils.OBSERVE_MEMBER_PAYMENT_PLAN
 import cv.domain.DomainResult
-import cv.domain.entities.PaymentEntity
 import cv.domain.enums.DomainErrorType
+import cv.domain.mappers.PaymentPresentationMapper
+import cv.domain.presentationModels.PaymentPresentationModel
 import cv.domain.repositories.DateProviderRepository
+import cv.domain.repositories.JobRepository
+import cv.domain.usecase.NumberFormatUseCase
 import cv.domain.usecase.PaymentUseCase
 import cv.domain.usecase.PermissionsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,51 +25,56 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class PaymentsScreenViewModel(
+    private val memberId: String,
+    private val jobRepository: JobRepository,
     private val converter: ErrorCodeConverter,
     private val paymentUseCase: PaymentUseCase,
     private val permissionsUseCase: PermissionsUseCase,
     private val navigationService: NavigationService,
+    private val numberFormatUseCase: NumberFormatUseCase,
+    private val paymentPresentationMapper: PaymentPresentationMapper,
     dateProviderRepository: DateProviderRepository,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-    private lateinit var memberId: String
-
     private val _canAddPayment = MutableStateFlow(false)
     val canAddPayment: StateFlow<Boolean> = _canAddPayment
 
     private val _selectedYear: MutableStateFlow<Int> = MutableStateFlow(dateProviderRepository.getYear())
     val selectedYear: StateFlow<Int> = _selectedYear
 
-    fun setMemberId(memberId: String) {
-        this.memberId = memberId
+    init {
+        getPaymentsForMember()
     }
 
     fun getPaymentsForMember() {
         _canAddPayment.value = false
         sendAction(Action.SetLoading)
-        // TODO - Cancel previous job before starting a new one
-        viewModelScope.launch {
-            paymentUseCase
-                .getPaymentPlanForMember(
-                    year = _selectedYear.value,
-                    memberId = memberId,
-                ).collect { result ->
-                    when (result) {
-                        is DomainResult.Error -> {
-                            sendAction(Action.ShowDomainError(result.error, converter))
-                        }
 
-                        is DomainResult.Success -> {
-                            _canAddPayment.value = result.data.canAddNewPayment
-                            sendAction(
-                                Action.Success(
-                                    payments = result.data.payments,
-                                    totalAmount = result.data.totalAmount,
-                                ),
-                            )
+        jobRepository.add(
+            viewModelScope.launch {
+                paymentUseCase
+                    .getPaymentPlanForMember(
+                        memberId = memberId,
+                        year = _selectedYear.value,
+                    ).collect { result ->
+                        when (result) {
+                            is DomainResult.Error -> {
+                                sendAction(Action.ShowDomainError(result.error, converter))
+                            }
+
+                            is DomainResult.Success -> {
+                                _canAddPayment.value = result.data.canAddNewPayment
+                                sendAction(
+                                    Action.Success(
+                                        payments = result.data.payments.map { paymentPresentationMapper.getModel(it) },
+                                        totalAmount = numberFormatUseCase.getCurrencyFormatted(result.data.totalAmount),
+                                    ),
+                                )
+                            }
                         }
                     }
-                }
-        }
+            },
+            OBSERVE_MEMBER_PAYMENT_PLAN,
+        )
     }
 
     fun increaseYear() {
@@ -82,10 +91,10 @@ class PaymentsScreenViewModel(
         navigationService.popBack()
     }
 
-    fun deletePayment(paymentEntity: PaymentEntity) {
+    fun deletePayment(model: PaymentPresentationModel) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            paymentUseCase.deletePaymentPlanForMember(paymentEntity).also { result ->
+            paymentUseCase.deletePaymentPlanForMember(model).also { result ->
                 when (result) {
                     is DomainResult.Error -> {
                         sendAction(
@@ -119,8 +128,8 @@ class PaymentsScreenViewModel(
         ) : UiState
 
         data class Success(
-            val payments: List<PaymentEntity>,
-            val totalAmount: Double,
+            val payments: List<PaymentPresentationModel>,
+            val totalAmount: String,
         ) : UiState
     }
 
@@ -137,8 +146,8 @@ class PaymentsScreenViewModel(
         }
 
         data class Success(
-            val payments: List<PaymentEntity>,
-            val totalAmount: Double,
+            val payments: List<PaymentPresentationModel>,
+            val totalAmount: String,
         ) : Action {
             override fun reduce(state: UiState): UiState = UiState.Success(payments, totalAmount)
         }

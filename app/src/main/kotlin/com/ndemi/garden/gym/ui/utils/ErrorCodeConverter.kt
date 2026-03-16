@@ -19,10 +19,7 @@ class ErrorCodeConverterImp(
     private val analyticsRepository: AnalyticsRepository,
 ) : ErrorCodeConverter {
     override fun getMessage(domainErrorType: DomainErrorType): String {
-        analyticsRepository.logEvent(
-            EVENT_ERROR,
-            listOf(Pair(PARAM_DOMAIN, domainErrorType.name)),
-        )
+        analyticsRepository.logEvent(EVENT_ERROR, PARAM_DOMAIN, domainErrorType.name)
         return when (domainErrorType) {
             DomainErrorType.UNKNOWN -> application.resources.getString(R.string.error_unknown)
             DomainErrorType.SERVER -> application.resources.getString(R.string.error_server)
