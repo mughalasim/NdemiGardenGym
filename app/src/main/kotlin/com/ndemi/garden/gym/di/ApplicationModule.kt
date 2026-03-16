@@ -12,7 +12,6 @@ import cv.data.repository.AnalyticsRepositoryImp
 import cv.data.repository.AppLoggerRepositoryImp
 import cv.domain.repositories.AnalyticsRepository
 import cv.domain.repositories.AppLoggerRepository
-import kotlinx.coroutines.Job
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -51,9 +50,5 @@ val applicationModule =
                 androidContext().getString(R.string.app_name),
                 Context.MODE_PRIVATE,
             )
-        }
-
-        single<MutableList<Job>> {
-            mutableListOf()
         }
     }

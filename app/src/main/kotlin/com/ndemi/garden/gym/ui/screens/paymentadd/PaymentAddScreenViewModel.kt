@@ -19,6 +19,7 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.enums.DateFormatType
 import cv.domain.repositories.DateProviderRepository
+import cv.domain.usecase.NumberFormatUseCase
 import cv.domain.usecase.PaymentUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +30,7 @@ class PaymentAddScreenViewModel(
     private val paymentUseCase: PaymentUseCase,
     private val navigationService: NavigationService,
     private val dateProviderRepository: DateProviderRepository,
+    numberFormatUseCase: NumberFormatUseCase,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     private var memberId = ""
 
@@ -47,6 +49,8 @@ class PaymentAddScreenViewModel(
             ),
         )
     val inputData: StateFlow<InputData> = _inputData
+
+    val currencyUnit = numberFormatUseCase.getCurrencyUnit()
 
     fun setData(
         startDate: Long = _inputData.value.startDate,

@@ -1,7 +1,6 @@
 package cv.domain.repositories
 
 import cv.domain.DomainResult
-import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.AttendanceMonthEntity
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
@@ -19,7 +18,11 @@ interface AttendanceRepository {
         endDate: Date,
     ): DomainResult<Unit>
 
-    suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit>
+    suspend fun deleteAttendance(
+        startYear: String,
+        startMonth: String,
+        attendanceId: String,
+    ): DomainResult<Unit>
 
     fun getAllAttendances(
         year: Int,

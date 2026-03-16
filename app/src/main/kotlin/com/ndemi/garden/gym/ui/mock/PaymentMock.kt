@@ -1,19 +1,22 @@
 package com.ndemi.garden.gym.ui.mock
 
-import cv.domain.entities.PaymentEntity
+import cv.domain.presentationModels.PaymentPresentationModel
 
-@Suppress("detekt.MagicNumber")
-fun getMockActivePaymentEntity() =
-    PaymentEntity(
+fun getMockActivePaymentPresentationModel() =
+    PaymentPresentationModel(
         paymentId = "123456",
+        startDateDayMonthYear = "12/05/2023",
+        endDateDayMonthYear = "12/06/2023",
         memberId = "987654321",
-        amount = 1200.00,
+        amount = "Kes 1,200.00",
+        paymentPlanDuration = "10 days",
     )
 
-@Suppress("detekt.MagicNumber")
-fun getMockExpiredPaymentEntity() =
-    PaymentEntity(
+fun getMockExpiredPaymentPresentationModel() =
+    PaymentPresentationModel(
+        startDateDayMonthYear = "12/05/2023",
+        endDateDayMonthYear = "12/06/2023",
         paymentId = "123456789",
         memberId = "65435147",
-        amount = 3500.00,
+        amount = "USD 3,500.00",
     )

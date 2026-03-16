@@ -1,9 +1,9 @@
 package cv.domain.usecase
 
 import cv.domain.DomainResult
-import cv.domain.entities.AdminDashboard
-import cv.domain.entities.MemberEntity
 import cv.domain.enums.MemberFetchType
+import cv.domain.presentationModels.AdminDashboardPresentationModel
+import cv.domain.presentationModels.TopTenMemberPresentationModel
 import cv.domain.repositories.AttendanceRepository
 import cv.domain.repositories.AuthRepository
 import cv.domain.repositories.DateProviderRepository
@@ -21,6 +21,7 @@ class AdminDashboardUseCase(
     private val paymentRepository: PaymentRepository,
     private val attendanceRepository: AttendanceRepository,
     private val dateProviderRepository: DateProviderRepository,
+    private val numberFormatUseCase: NumberFormatUseCase,
 ) {
     fun invoke(currentDate: Date) =
         callbackFlow {
@@ -38,7 +39,7 @@ class AdminDashboardUseCase(
                     allPayments is DomainResult.Error ||
                     allMonthlyAttendances is DomainResult.Error -> {
                     trySend(
-                        AdminDashboard(
+                        AdminDashboardPresentationModel(
                             selectedYear = currentYear,
                             selectedMonth = dateProviderRepository.getMonthName(currentMonth),
                         ),
@@ -50,12 +51,12 @@ class AdminDashboardUseCase(
                     allMembers is DomainResult.Success &&
                     allPayments is DomainResult.Success &&
                     allMonthlyAttendances is DomainResult.Success -> {
-                    val topTenActiveMembers = mutableListOf<Pair<MemberEntity, Int>>()
-                    val topTenPayingMembers = mutableListOf<Pair<MemberEntity, Double>>()
-                    val memberAttendanceInfo = mutableListOf<Pair<MemberEntity, Int>>()
-                    val memberPaymentInfo = mutableListOf<Pair<MemberEntity, Double>>()
+                    val topTenActiveMembers = mutableListOf<TopTenMemberPresentationModel>()
+                    val topTenPayingMembers = mutableListOf<TopTenMemberPresentationModel>()
+                    val memberAttendanceInfo = mutableListOf<TopTenMemberPresentationModel>()
+                    val memberPaymentInfo = mutableListOf<TopTenMemberPresentationModel>()
                     val totalRegisteredUsers = allMembers.data.size
-                    val totalExpiredUsers = allMembers.data.filter { !it.hasPaidMembership() }.size
+                    val totalExpiredUsers = allMembers.data.filter { it.renewalFutureDateMillis == null }.size
                     val totalRevenueYear = allPayments.data.totalAmount
                     val totalRevenueMonth =
                         allPayments.data.payments
@@ -77,36 +78,46 @@ class AdminDashboardUseCase(
                             allPayments.data.payments.filter { payment -> payment.memberId == it.id && payment.amount != 0.0 }
                         val paymentTotal = memberPayments.sumOf { payment -> payment.amount }
                         if (memberAttendances > 0) {
-                            memberAttendanceInfo.add(Pair(it, memberAttendances))
+                            memberAttendanceInfo.add(
+                                TopTenMemberPresentationModel(
+                                    id = it.id,
+                                    fullName = "${it.firstName} ${it.lastName}",
+                                    visits = memberAttendances,
+                                ),
+                            )
                         }
                         if (paymentTotal != 0.0) {
-                            memberPaymentInfo.add(Pair(it, paymentTotal))
+                            memberPaymentInfo.add(
+                                TopTenMemberPresentationModel(
+                                    id = it.id,
+                                    fullName = "${it.firstName} ${it.lastName}",
+                                    amountValue = paymentTotal,
+                                    amountFormatted = numberFormatUseCase.getCurrencyFormatted(paymentTotal),
+                                ),
+                            )
                         }
                     }
                     topTenActiveMembers.clear()
                     topTenPayingMembers.clear()
                     topTenActiveMembers.addAll(
                         memberAttendanceInfo
-                            .sortedByDescending { it.second }
-                            .map { Pair(it.first, it.second) }
+                            .sortedByDescending { it.visits }
                             .take(TOP_10),
                     )
                     topTenPayingMembers.addAll(
                         memberPaymentInfo
-                            .sortedByDescending { it.second }
-                            .map { Pair(it.first, it.second) }
+                            .sortedByDescending { it.amountValue }
                             .take(TOP_10),
                     )
 
                     trySend(
-                        AdminDashboard(
+                        AdminDashboardPresentationModel(
                             selectedYear = currentYear,
                             selectedMonth = dateProviderRepository.getMonthName(currentMonth),
-                            memberEntity = loggedInUser.data,
                             totalRegisteredUsers = totalRegisteredUsers,
                             totalExpiredUsers = totalExpiredUsers,
-                            totalRevenueYear = totalRevenueYear,
-                            totalRevenueMonth = totalRevenueMonth,
+                            totalRevenueYear = numberFormatUseCase.getCurrencyFormatted(totalRevenueYear),
+                            totalRevenueMonth = numberFormatUseCase.getCurrencyFormatted(totalRevenueMonth),
                             topTenActiveMembers = topTenActiveMembers,
                             topTenPayingMembers = topTenPayingMembers,
                         ),

@@ -55,80 +55,40 @@ class MemberUseCase(
                         return DomainResult.Error(DomainErrorType.SERVER)
                     }
                 }
-                analyticsRepository.logEvent(
-                    eventName = EVENT_CREATE_MEMBER,
-                    params =
-                        listOf(
-                            Pair(PARAM_REGISTRATION_ADMIN, memberEntity.id),
-                        ),
-                )
+                analyticsRepository.logEvent(EVENT_CREATE_MEMBER, PARAM_REGISTRATION_ADMIN, memberEntity.id)
             }
 
             MemberUpdateType.REGISTRATION -> {
-                analyticsRepository.logEvent(
-                    eventName = EVENT_REGISTRATION,
-                    params =
-                        listOf(
-                            Pair(PARAM_REGISTRATION_SELF, memberEntity.id),
-                        ),
-                )
+                analyticsRepository.logEvent(EVENT_REGISTRATION, PARAM_REGISTRATION_SELF, memberEntity.id)
             }
 
             MemberUpdateType.MEMBERSHIP -> {
-                analyticsRepository.logEvent(
-                    eventName = EVENT_MEMBERSHIP,
-                    params =
-                        listOf(
-                            Pair(PARAM_MEMBERSHIP_ADDED, memberEntity.id),
-                        ),
-                )
+                analyticsRepository.logEvent(EVENT_MEMBERSHIP, PARAM_MEMBERSHIP_ADDED, memberEntity.id)
             }
 
             MemberUpdateType.PHOTO_DELETE -> {
-                analyticsRepository.logEvent(
-                    eventName = EVENT_PHOTO,
-                    params =
-                        listOf(
-                            Pair(PARAM_PHOTO_DELETE, memberEntity.id),
-                        ),
-                )
+                analyticsRepository.logEvent(EVENT_PHOTO, PARAM_PHOTO_DELETE, memberEntity.id)
             }
 
             MemberUpdateType.ACTIVE_SESSION -> {
                 val paramName =
-                    if (memberEntity.isActiveNow()) {
+                    if (memberEntity.activeNowDateMillis != null) {
                         PARAM_ACTIVE_SESSION_TRUE
                     } else {
                         PARAM_ACTIVE_SESSION_FALSE
                     }
-                analyticsRepository.logEvent(
-                    eventName = EVENT_ACTIVE,
-                    params = listOf(Pair(paramName, memberEntity.id)),
-                )
+                analyticsRepository.logEvent(EVENT_ACTIVE, paramName, memberEntity.id)
             }
 
             MemberUpdateType.DETAILS -> {
-                analyticsRepository.logEvent(
-                    eventName = EVENT_MEMBER_UPDATE,
-                    params = listOf(Pair(PARAM_MEMBER_UPDATE, memberEntity.id)),
-                )
+                analyticsRepository.logEvent(EVENT_MEMBER_UPDATE, PARAM_MEMBER_UPDATE, memberEntity.id)
             }
         }
         return memberRepository.updateMember(memberEntity)
     }
 
-    suspend fun deleteMember(memberEntity: MemberEntity): DomainResult<Unit> {
-        analyticsRepository.logEvent(
-            eventName = EVENT_MEMBER_DELETE,
-            params =
-                listOf(
-                    Pair(
-                        PARAM_MEMBER_DELETE,
-                        memberEntity.id +
-                            " - " + memberEntity.getFullName(),
-                    ),
-                ),
-        )
-        return memberRepository.deleteMember(memberEntity)
+    suspend fun deleteMember(memberId: String): DomainResult<Unit> {
+        analyticsRepository.logEvent(EVENT_MEMBER_DELETE, PARAM_MEMBER_DELETE, memberId)
+        return memberRepository.deleteMember(memberId)
     }
 }

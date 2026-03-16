@@ -12,12 +12,11 @@ class AnalyticsRepositoryImp(
 ) : AnalyticsRepository {
     override fun logEvent(
         eventName: String,
-        params: List<Pair<String, String>>,
+        paramName: String,
+        value: String,
     ) {
         val bundle = Bundle()
-        for (param in params) {
-            bundle.putString(param.first, param.second)
-        }
+        bundle.putString(paramName, value)
         firebaseAnalytics.logEvent(eventName, bundle)
         logger.log("Event: $eventName Params: $bundle", AppLogType.ANALYTICS)
     }

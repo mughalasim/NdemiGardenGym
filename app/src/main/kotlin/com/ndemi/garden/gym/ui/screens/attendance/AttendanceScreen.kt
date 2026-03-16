@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,12 +20,13 @@ import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun AttendanceScreen(
     memberId: String = "",
     memberName: String = "",
-    viewModel: AttendanceScreenViewModel = koinViewModel<AttendanceScreenViewModel>(),
+    viewModel: AttendanceScreenViewModel = koinViewModel<AttendanceScreenViewModel>(parameters = { parametersOf(memberId) }),
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
@@ -39,10 +39,6 @@ fun AttendanceScreen(
         } else {
             stringResource(R.string.txt_attendance_for, memberName)
         }
-
-    viewModel.setMemberId(memberId)
-
-    LaunchedEffect(Unit) { viewModel.getAttendances() }
 
     Column {
         ToolBarWidget(

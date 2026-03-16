@@ -3,7 +3,6 @@ package com.ndemi.garden.gym.ui.screens.memberedit
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,18 +17,18 @@ import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
 import cv.domain.enums.MemberType
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun MemberEditScreen(
     memberId: String,
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
-    viewModel: MemberEditScreenViewModel = koinViewModel<MemberEditScreenViewModel>(),
+    viewModel: MemberEditScreenViewModel = koinViewModel<MemberEditScreenViewModel>(parameters = { parametersOf(memberId) }),
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val permissionState by viewModel.getPermissions().collectAsStateWithLifecycle()
-    val memberEntity by viewModel.memberEntity.collectAsStateWithLifecycle()
-    val registrationDate by viewModel.registrationDate.collectAsStateWithLifecycle()
+    val model by viewModel.memberModel.collectAsStateWithLifecycle()
     var showDeleteUserDialog by remember { mutableStateOf(false) }
     var showMemberTypeSelectionDialog by remember { mutableStateOf(false) }
     val galleryLauncher =
@@ -42,8 +41,6 @@ fun MemberEditScreen(
             }
         }
     viewModel.snackbarState.ObserveAppSnackbar(snackbarHostState)
-
-    LaunchedEffect(Unit) { viewModel.getMemberForId(memberId) }
 
     if (showDeleteUserDialog) {
         AlertDialogWidget(
@@ -81,8 +78,7 @@ fun MemberEditScreen(
     MemberEditDetailsScreen(
         uiState = uiState,
         permissionState = permissionState,
-        memberEntity = memberEntity,
-        registrationDate = registrationDate,
+        model = model,
         toolbarTitle =
             if (memberId.isEmpty()) {
                 stringResource(R.string.txt_edit_your_details)

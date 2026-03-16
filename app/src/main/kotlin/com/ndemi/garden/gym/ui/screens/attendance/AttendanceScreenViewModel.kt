@@ -9,11 +9,13 @@ import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
+import com.ndemi.garden.gym.ui.utils.OBSERVE_MEMBER_ATTENDANCE
 import cv.domain.DomainResult
-import cv.domain.entities.AttendanceEntity
-import cv.domain.entities.AttendanceMonthEntity
 import cv.domain.enums.DomainErrorType
+import cv.domain.presentationModels.AttendanceMonthPresentationModel
+import cv.domain.presentationModels.AttendancePresentationModel
 import cv.domain.repositories.DateProviderRepository
+import cv.domain.repositories.JobRepository
 import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.PermissionsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,40 +23,43 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class AttendanceScreenViewModel(
+    private val memberId: String,
+    private val jobRepository: JobRepository,
     private val converter: ErrorCodeConverter,
     private val attendanceUseCase: AttendanceUseCase,
     private val permissionsUseCase: PermissionsUseCase,
     private val navigationService: NavigationService,
     dateProviderRepository: DateProviderRepository,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-    private var memberId: String = ""
-
     private val _selectedYear: MutableStateFlow<Int> = MutableStateFlow(dateProviderRepository.getYear())
     val selectedYear: StateFlow<Int> = _selectedYear
 
-    fun setMemberId(memberId: String) {
-        this.memberId = memberId
+    init {
+        getAttendances()
     }
 
     fun getAttendances() {
         sendAction(Action.SetLoading)
-        viewModelScope.launch {
-            attendanceUseCase
-                .getMemberAttendancesForId(
-                    memberId = memberId,
-                    year = selectedYear.value,
-                ).collect { result ->
-                    when (result) {
-                        is DomainResult.Error -> {
-                            sendAction(Action.ShowDomainError(result.error, converter))
-                        }
+        jobRepository.add(
+            viewModelScope.launch {
+                attendanceUseCase
+                    .getMemberAttendancesForId(
+                        memberId = memberId,
+                        year = selectedYear.value,
+                    ).collect { result ->
+                        when (result) {
+                            is DomainResult.Error -> {
+                                sendAction(Action.ShowDomainError(result.error, converter))
+                            }
 
-                        is DomainResult.Success -> {
-                            sendAction(Action.Success(result.data))
+                            is DomainResult.Success -> {
+                                sendAction(Action.Success(result.data))
+                            }
                         }
                     }
-                }
-        }
+            },
+            OBSERVE_MEMBER_ATTENDANCE,
+        )
     }
 
     fun increaseYear() {
@@ -67,25 +72,30 @@ class AttendanceScreenViewModel(
         getAttendances()
     }
 
-    fun deleteAttendance(attendanceEntity: AttendanceEntity) {
+    fun deleteAttendance(model: AttendancePresentationModel) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            attendanceUseCase.deleteAttendance(attendanceEntity).also { result ->
-                when (result) {
-                    is DomainResult.Error -> {
-                        sendAction(
-                            Action.ShowDomainError(
-                                result.error,
-                                converter,
-                            ),
-                        )
-                    }
+            attendanceUseCase
+                .deleteAttendance(
+                    attendanceId = model.attendanceId,
+                    startYear = model.startYear,
+                    startMonth = model.startMonth,
+                ).also { result ->
+                    when (result) {
+                        is DomainResult.Error -> {
+                            sendAction(
+                                Action.ShowDomainError(
+                                    result.error,
+                                    converter,
+                                ),
+                            )
+                        }
 
-                    is DomainResult.Success -> {
-                        getAttendances()
+                        is DomainResult.Success -> {
+                            getAttendances()
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -104,7 +114,7 @@ class AttendanceScreenViewModel(
         ) : UiState
 
         data class Success(
-            val attendancesMonthly: List<AttendanceMonthEntity>,
+            val attendancesMonthly: List<AttendanceMonthPresentationModel>,
         ) : UiState
     }
 
@@ -121,7 +131,7 @@ class AttendanceScreenViewModel(
         }
 
         data class Success(
-            val attendancesMonthly: List<AttendanceMonthEntity>,
+            val attendancesMonthly: List<AttendanceMonthPresentationModel>,
         ) : Action {
             override fun reduce(state: UiState): UiState = UiState.Success(attendancesMonthly)
         }

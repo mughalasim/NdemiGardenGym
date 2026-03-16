@@ -11,7 +11,6 @@ import cv.data.mappers.AttendanceMapper
 import cv.data.models.AttendanceModel
 import cv.data.toDomainError
 import cv.domain.DomainResult
-import cv.domain.entities.AttendanceEntity
 import cv.domain.entities.AttendanceMonthEntity
 import cv.domain.enums.AppLogType
 import cv.domain.enums.DomainErrorType
@@ -171,13 +170,17 @@ class AttendanceRepositoryImp(
             onFailure = { handleError(it, logger) },
         )
 
-    override suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit> =
+    override suspend fun deleteAttendance(
+        startYear: String,
+        startMonth: String,
+        attendanceId: String,
+    ): DomainResult<Unit> =
         runCatching {
             firebaseFirestore
                 .collection(pathAttendance)
-                .document(dateProviderRepository.getYear(attendanceEntity.startDateMillis).toString())
-                .collection(dateProviderRepository.getMonth(attendanceEntity.startDateMillis).toString())
-                .document(attendanceMapper.getModel(attendanceEntity).getAttendanceId())
+                .document(startYear)
+                .collection(startMonth)
+                .document(attendanceId)
                 .delete()
                 .await()
         }.fold(

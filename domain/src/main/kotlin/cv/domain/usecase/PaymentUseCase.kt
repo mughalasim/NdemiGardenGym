@@ -2,6 +2,7 @@ package cv.domain.usecase
 
 import cv.domain.DomainResult
 import cv.domain.entities.PaymentEntity
+import cv.domain.presentationModels.PaymentPresentationModel
 import cv.domain.repositories.DateProviderRepository
 import cv.domain.repositories.MemberRepository
 import cv.domain.repositories.PaymentRepository
@@ -16,7 +17,6 @@ class PaymentUseCase(
         memberId: String,
         year: Int,
     ) = paymentRepository.getPayments(
-        isMembersPayment = true,
         memberId = memberId,
         year = year,
     )
@@ -56,18 +56,18 @@ class PaymentUseCase(
         }
     }
 
-    suspend fun deletePaymentPlanForMember(paymentEntity: PaymentEntity): DomainResult<Unit> {
-        val paymentResult = paymentRepository.deletePaymentPlan(paymentEntity)
+    suspend fun deletePaymentPlanForMember(model: PaymentPresentationModel): DomainResult<Unit> {
+        val paymentResult = paymentRepository.deletePaymentPlan(model.startYear, model.paymentId)
 
         if (paymentResult is DomainResult.Error) return paymentResult
 
-        return when (val memberResult = memberRepository.getMemberById(paymentEntity.memberId)) {
+        return when (val memberResult = memberRepository.getMemberById(model.memberId)) {
             is DomainResult.Error -> {
                 DomainResult.Error(memberResult.error)
             }
 
             is DomainResult.Success -> {
-                if (memberResult.data.renewalFutureDateMillis == paymentEntity.endDateMillis) {
+                if (memberResult.data.renewalFutureDateMillis == model.endDateMillis) {
                     memberRepository.updateMember(
                         memberResult.data.copy(renewalFutureDateMillis = null, amountDue = 0.0),
                     )

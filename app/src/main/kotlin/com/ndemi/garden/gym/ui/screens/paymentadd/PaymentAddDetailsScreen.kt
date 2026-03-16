@@ -22,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.enums.PaymentAddScreenInputType
 import com.ndemi.garden.gym.ui.enums.SnackbarType
@@ -44,6 +43,7 @@ import com.ndemi.garden.gym.ui.widgets.TextWidget
 fun PaymentAddDetailsScreen(
     inputData: PaymentAddScreenViewModel.InputData = PaymentAddScreenViewModel.InputData(),
     uiState: UiState = UiState.Ready,
+    currencyUnit: String = "",
     onSetData: (Long, String, String, PaymentAddScreenInputType) -> Unit = { _, _, _, _ -> },
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
     onPaymentAddTapped: () -> Unit = {},
@@ -124,7 +124,7 @@ fun PaymentAddDetailsScreen(
 
         EditTextWidget(
             modifier = Modifier.padding(top = padding_screen),
-            hint = stringResource(R.string.txt_payments_add_amount_paid, BuildConfig.CURRENCY_CODE),
+            hint = stringResource(R.string.txt_payments_add_amount_paid, currencyUnit),
             textInput = (inputData.amount.takeIf { it != 0 } ?: "").toString(),
             errorText = errorAmount,
             keyboardType = KeyboardType.Number,

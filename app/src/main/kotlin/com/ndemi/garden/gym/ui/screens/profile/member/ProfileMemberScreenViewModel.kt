@@ -11,17 +11,22 @@ import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
+import com.ndemi.garden.gym.ui.utils.OBSERVE_MEMBER
+import com.ndemi.garden.gym.ui.utils.OBSERVE_MEMBER_ATTENDANCE_PROFILE
+import com.ndemi.garden.gym.ui.utils.OBSERVE_SESSION_COUNTDOWN
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.enums.DateFormatType
 import cv.domain.enums.MemberUpdateType
+import cv.domain.mappers.MemberPresentationMapper
+import cv.domain.presentationModels.MemberDashboardPresentationModel
 import cv.domain.repositories.DateProviderRepository
+import cv.domain.repositories.JobRepository
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.StorageUseCase
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,50 +34,48 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
+@Suppress("detekt.LongParameterList")
 class ProfileMemberScreenViewModel(
-    private val job: MutableList<Job>,
-    private val converter: ErrorCodeConverter,
+    private val jobRepository: JobRepository,
     private val authUseCase: AuthUseCase,
     private val accessUseCase: AccessUseCase,
     private val memberUseCase: MemberUseCase,
-    private val attendanceUseCase: AttendanceUseCase,
+    private val converter: ErrorCodeConverter,
     private val storageUseCase: StorageUseCase,
+    private val attendanceUseCase: AttendanceUseCase,
     private val navigationService: NavigationService,
     private val dateProviderRepository: DateProviderRepository,
+    private val memberPresentationMapper: MemberPresentationMapper,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
-    private var sessionCountdownJob: Job? = null
     private val memberEntity = MutableStateFlow(MemberEntity())
 
     private val _countdown = MutableStateFlow("")
     val countdown: StateFlow<String> = _countdown
-
-    private val _registrationDate = MutableStateFlow("")
-    val registrationDate: StateFlow<String> = _registrationDate
 
     private val _sessionStartTime = MutableStateFlow("")
     val sessionStartTime: StateFlow<String> = _sessionStartTime
 
     init {
         sendAction(Action.Loading)
-        job +=
+        jobRepository.add(
             viewModelScope.launch {
                 authUseCase.observeUser().collect { result ->
                     memberEntity.value = result
-                    _registrationDate.value = dateProviderRepository.format(result.registrationDateMillis, DateFormatType.MONTH_YEAR)
                     _sessionStartTime.value = ""
                     if (result.activeNowDateMillis != null) {
                         startCounter()
                     } else {
-                        sessionCountdownJob?.cancel()
+                        jobRepository.cancel(OBSERVE_SESSION_COUNTDOWN)
                     }
                     updateWorkoutInformation()
                 }
-            }
+            },
+            OBSERVE_MEMBER,
+        )
     }
 
     private fun startCounter() {
-        sessionCountdownJob?.cancel()
-        sessionCountdownJob =
+        jobRepository.add(
             viewModelScope.launch {
                 _countdown
                     .onStart {
@@ -85,26 +88,40 @@ class ProfileMemberScreenViewModel(
                         }
                     }.onCompletion {
                         _sessionStartTime.value = ""
-//                        _countdown.emit("")
                     }.collect { _countdown.emit(it) }
-            }
+            },
+            OBSERVE_SESSION_COUNTDOWN,
+        )
     }
 
     private fun updateWorkoutInformation() {
-        job +=
+        jobRepository.add(
             viewModelScope.launch {
                 attendanceUseCase.getMemberAttendancesForId(memberEntity.value.id, dateProviderRepository.getYear()).collect { result ->
                     when (result) {
                         is DomainResult.Error -> {
-                            sendAction(Action.Success(memberEntity.value))
+                            sendAction(
+                                Action.Success(
+                                    memberPresentationMapper.getDashboardModel(entity = memberEntity.value),
+                                ),
+                            )
                         }
 
                         is DomainResult.Success -> {
-                            sendAction(Action.Success(memberEntity.value, result.data.sumOf { it.attendances.size }))
+                            sendAction(
+                                Action.Success(
+                                    memberPresentationMapper.getDashboardModel(
+                                        entity = memberEntity.value,
+                                        workouts = result.data.sumOf { it.attendances.size },
+                                    ),
+                                ),
+                            )
                         }
                     }
                 }
-            }
+            },
+            OBSERVE_MEMBER_ATTENDANCE_PROFILE,
+        )
     }
 
     private fun updateMemberSession(now: Long?) {
@@ -175,8 +192,7 @@ class ProfileMemberScreenViewModel(
         data object Loading : UiState
 
         data class Success(
-            val memberEntity: MemberEntity,
-            val workouts: Int = 0,
+            val model: MemberDashboardPresentationModel,
         ) : UiState
     }
 
@@ -186,14 +202,9 @@ class ProfileMemberScreenViewModel(
         }
 
         data class Success(
-            val memberEntity: MemberEntity,
-            val workouts: Int = 0,
+            val model: MemberDashboardPresentationModel,
         ) : Action {
-            override fun reduce(state: UiState): UiState =
-                UiState.Success(
-                    memberEntity = memberEntity,
-                    workouts = workouts,
-                )
+            override fun reduce(state: UiState): UiState = UiState.Success(model = model)
         }
     }
 }

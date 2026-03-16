@@ -12,5 +12,5 @@ interface MemberRepository {
 
     suspend fun updateMember(memberEntity: MemberEntity): DomainResult<Unit>
 
-    suspend fun deleteMember(memberEntity: MemberEntity): DomainResult<Unit>
+    suspend fun deleteMember(memberId: String): DomainResult<Unit>
 }

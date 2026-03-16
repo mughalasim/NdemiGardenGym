@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.enums.MemberEditScreenInputType
-import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberEntity
+import com.ndemi.garden.gym.ui.mock.getMockActiveMemberEditPresentationModel
 import com.ndemi.garden.gym.ui.screens.memberedit.MemberEditScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
@@ -29,16 +29,15 @@ import com.ndemi.garden.gym.ui.widgets.EditTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberImageFullWidget
-import cv.domain.entities.MemberEntity
 import cv.domain.entities.PermissionsEntity
-import cv.domain.entities.getAdminPermissions
+import cv.domain.entities.getSuperAdminPermissions
+import cv.domain.presentationModels.MemberEditPresentationModel
 
 @Composable
 fun MemberEditDetailsScreen(
     uiState: UiState,
     permissionState: PermissionsEntity = PermissionsEntity(),
-    memberEntity: MemberEntity,
-    registrationDate: String,
+    model: MemberEditPresentationModel,
     toolbarTitle: String = "",
     listeners: MemberEditScreenListeners = MemberEditScreenListeners(),
 ) {
@@ -77,7 +76,7 @@ fun MemberEditDetailsScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             MemberImageFullWidget(
-                imageUrl = memberEntity.profileImageUrl,
+                imageUrl = model.profileImageUrl,
                 canEditImage = permissionState.canEditMember,
                 onImageSelect = listeners.onImageSelect,
                 onImageDelete = listeners.onImageDelete,
@@ -95,28 +94,28 @@ fun MemberEditDetailsScreen(
                             Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = padding_screen_small),
-                        title = stringResource(R.string.txt_member_type, memberEntity.memberType.name),
+                        title = stringResource(R.string.txt_member_type, model.memberType),
                         onButtonClicked = listeners.onMemberTypeTapped,
                     )
                 }
 
                 EditTextWidget(
                     hint = stringResource(R.string.txt_email),
-                    textInput = memberEntity.email,
+                    textInput = model.email,
                     isEnabled = false,
                 )
 
                 EditTextWidget(
                     modifier = Modifier.padding(top = padding_screen),
                     hint = stringResource(R.string.txt_registration_date),
-                    textInput = registrationDate,
+                    textInput = model.registrationDate,
                     isEnabled = false,
                 )
 
                 EditTextWidget(
                     modifier = Modifier.padding(top = padding_screen),
                     hint = stringResource(R.string.txt_first_name),
-                    textInput = memberEntity.firstName,
+                    textInput = model.firstName,
                     errorText = errorFirstName,
                     isEnabled = permissionState.canEditMember,
                 ) {
@@ -126,7 +125,7 @@ fun MemberEditDetailsScreen(
                 EditTextWidget(
                     modifier = Modifier.padding(top = padding_screen),
                     hint = stringResource(R.string.txt_last_name),
-                    textInput = memberEntity.lastName,
+                    textInput = model.lastName,
                     errorText = errorLastName,
                     isEnabled = permissionState.canEditMember,
                 ) {
@@ -136,7 +135,7 @@ fun MemberEditDetailsScreen(
                 EditTextWidget(
                     modifier = Modifier.padding(top = padding_screen),
                     hint = stringResource(R.string.txt_apartment_number),
-                    textInput = memberEntity.apartmentNumber,
+                    textInput = model.apartmentNumber,
                     errorText = errorApartmentNumber,
                     isEnabled = permissionState.canEditMember,
                 ) {
@@ -146,7 +145,7 @@ fun MemberEditDetailsScreen(
                 EditTextWidget(
                     modifier = Modifier.padding(top = padding_screen),
                     hint = stringResource(R.string.txt_phone_number),
-                    textInput = memberEntity.phoneNumber,
+                    textInput = model.phoneNumber,
                     errorText = errorPhoneNumber,
                     keyboardType = KeyboardType.Phone,
                     isEnabled = permissionState.canEditMember,
@@ -156,8 +155,8 @@ fun MemberEditDetailsScreen(
 
                 EditTextWidget(
                     modifier = Modifier.padding(top = padding_screen),
-                    hint = stringResource(R.string.txt_height),
-                    textInput = memberEntity.height,
+                    hint = stringResource(R.string.txt_height, model.heightUnit),
+                    textInput = model.height,
                     errorText = errorHeight,
                     keyboardType = KeyboardType.Number,
                     isEnabled = permissionState.canEditMember,
@@ -175,7 +174,7 @@ fun MemberEditDetailsScreen(
                 ) {
                     TextWidget(text = stringResource(id = R.string.txt_training_coach_assigned))
                     Switch(
-                        checked = memberEntity.hasCoach,
+                        checked = model.hasCoach,
                         enabled = permissionState.canAssignCoach,
                         onCheckedChange = {
                             listeners.onSetString.invoke(it.toString(), MemberEditScreenInputType.HAS_COACH)
@@ -207,10 +206,9 @@ private fun MemberEditDetailsScreenPreview() {
     AppThemeComposable {
         MemberEditDetailsScreen(
             uiState = UiState.ReadyToUpdate,
-            memberEntity = getMockRegisteredMemberEntity(),
-            permissionState = getAdminPermissions(),
+            model = getMockActiveMemberEditPresentationModel(),
+            permissionState = getSuperAdminPermissions(),
             toolbarTitle = "Edit your details",
-            registrationDate = "12/12/2022",
         )
     }
 }

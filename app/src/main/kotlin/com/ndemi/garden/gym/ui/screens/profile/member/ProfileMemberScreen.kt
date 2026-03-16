@@ -21,7 +21,6 @@ fun ProfileMemberScreen(
     val context = LocalContext.current
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val countdown by viewModel.countdown.collectAsStateWithLifecycle()
-    val registrationDate by viewModel.registrationDate.collectAsStateWithLifecycle()
     val sessionStartTime by viewModel.sessionStartTime.collectAsStateWithLifecycle()
     viewModel.snackbarState.ObserveAppSnackbar(snackbarHostState)
     val galleryLauncher =
@@ -40,7 +39,6 @@ fun ProfileMemberScreen(
                 ProfileMemberDetailsScreen(
                     state = state,
                     countdown = countdown,
-                    registrationDate = registrationDate,
                     sessionStartTime = sessionStartTime,
                     listeners =
                         ProfileMemberScreenListeners(

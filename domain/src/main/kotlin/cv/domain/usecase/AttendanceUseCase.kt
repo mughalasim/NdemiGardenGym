@@ -3,11 +3,10 @@ package cv.domain.usecase
 import cv.domain.DomainResult
 import cv.domain.Variables.EVENT_ATTENDANCE_DELETE
 import cv.domain.Variables.PARAM_ATTENDANCE_DELETE
-import cv.domain.entities.AttendanceEntity
-import cv.domain.entities.AttendanceMonthEntity
+import cv.domain.mappers.AttendancePresentationMapper
+import cv.domain.presentationModels.AttendanceMonthPresentationModel
 import cv.domain.repositories.AnalyticsRepository
 import cv.domain.repositories.AttendanceRepository
-import cv.domain.repositories.DateProviderRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -17,14 +16,14 @@ import java.util.Date
 class AttendanceUseCase(
     private val attendanceRepository: AttendanceRepository,
     private val analyticsRepository: AnalyticsRepository,
-    private val dateProviderRepository: DateProviderRepository,
+    private val attendancePresentationMapper: AttendancePresentationMapper,
 ) {
     fun getMemberAttendancesForId(
         memberId: String = "",
         year: Int,
-    ): Flow<DomainResult<List<AttendanceMonthEntity>>> =
+    ): Flow<DomainResult<List<AttendanceMonthPresentationModel>>> =
         callbackFlow {
-            val result: MutableList<AttendanceMonthEntity> = mutableListOf()
+            val result: MutableList<AttendanceMonthPresentationModel> = mutableListOf()
 
             (JANUARY..DECEMBER)
                 .map { month ->
@@ -34,13 +33,7 @@ class AttendanceUseCase(
                     if (response is DomainResult.Success && response.data.attendances.isNotEmpty()) {
                         result.removeIf { it.monthNumber == response.data.monthNumber }
                         result.add(
-                            AttendanceMonthEntity(
-                                monthNumber = response.data.monthNumber,
-                                monthName = dateProviderRepository.getMonthName(response.data.monthNumber),
-                                totalMinutes = response.data.totalMinutes,
-                                activeDuration = dateProviderRepository.activeStatusDuration(response.data.totalMinutes),
-                                attendances = response.data.attendances,
-                            ),
+                            attendancePresentationMapper.getModel(response.data),
                         )
                     }
                     trySend(DomainResult.Success(result.sortedByDescending { it.monthNumber }))
@@ -68,15 +61,17 @@ class AttendanceUseCase(
         endDate = endDate,
     )
 
-    suspend fun deleteAttendance(attendanceEntity: AttendanceEntity): DomainResult<Unit> {
-        analyticsRepository.logEvent(
-            eventName = EVENT_ATTENDANCE_DELETE,
-            params =
-                listOf(
-                    Pair(PARAM_ATTENDANCE_DELETE, attendanceEntity.memberId),
-                ),
+    suspend fun deleteAttendance(
+        startYear: String,
+        startMonth: String,
+        attendanceId: String,
+    ): DomainResult<Unit> {
+        analyticsRepository.logEvent(EVENT_ATTENDANCE_DELETE, PARAM_ATTENDANCE_DELETE, attendanceId)
+        return attendanceRepository.deleteAttendance(
+            startYear = startYear,
+            startMonth = startMonth,
+            attendanceId = attendanceId,
         )
-        return attendanceRepository.deleteAttendance(attendanceEntity)
     }
 }
 

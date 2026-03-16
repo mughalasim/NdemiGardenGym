@@ -125,12 +125,11 @@ class MemberRepositoryImp(
             onFailure = { handleError(it, logger) },
         )
 
-    override suspend fun deleteMember(memberEntity: MemberEntity): DomainResult<Unit> =
+    override suspend fun deleteMember(memberId: String): DomainResult<Unit> =
         runCatching {
-            val memberModel = memberMapper.getModel(memberEntity)
             firebaseFirestore
                 .collection(pathUser)
-                .document(memberModel.id)
+                .document(memberId)
                 .delete()
                 .await()
         }.fold(

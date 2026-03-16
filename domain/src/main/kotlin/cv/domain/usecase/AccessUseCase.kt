@@ -1,10 +1,10 @@
 package cv.domain.usecase
 
 import cv.domain.repositories.AccessRepository
-import kotlinx.coroutines.Job
+import cv.domain.repositories.JobRepository
 
 class AccessUseCase(
-    private val job: MutableList<Job>,
+    private val jobRepository: JobRepository,
     private val accessRepository: AccessRepository,
 ) {
     suspend fun login(
@@ -22,8 +22,7 @@ class AccessUseCase(
     suspend fun verifyEmail() = accessRepository.verifyEmail()
 
     fun logOut() {
-        job.forEach { it.cancel() }
-        job.clear()
+        jobRepository.cancelAll()
         accessRepository.logOut()
     }
 }

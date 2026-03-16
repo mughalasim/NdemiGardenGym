@@ -50,7 +50,7 @@ fun SearchMemberComponent(
 
 @AppPreview
 @Composable
-fun SearchMemberComponentPreview() =
+private fun SearchMemberComponentPreview() =
     AppThemeComposable {
         SearchMemberComponent(
             textInput = "",

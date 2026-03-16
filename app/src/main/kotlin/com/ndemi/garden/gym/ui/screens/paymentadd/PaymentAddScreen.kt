@@ -40,6 +40,7 @@ fun PaymentAddScreen(
         PaymentAddDetailsScreen(
             inputData = inputData,
             uiState = uiState,
+            currencyUnit = viewModel.currencyUnit,
             onSetData = viewModel::setData,
             snackbarHostState = snackbarHostState,
             onPaymentAddTapped = viewModel::onPaymentAddTapped,

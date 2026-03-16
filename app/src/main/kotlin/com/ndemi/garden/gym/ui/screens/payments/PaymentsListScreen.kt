@@ -9,23 +9,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.mock.getMockActivePaymentEntity
-import com.ndemi.garden.gym.ui.mock.getMockExpiredPaymentEntity
+import com.ndemi.garden.gym.ui.mock.getMockActivePaymentPresentationModel
+import com.ndemi.garden.gym.ui.mock.getMockExpiredPaymentPresentationModel
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.toAmountString
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.payments.PaymentWidget
-import cv.domain.entities.PaymentEntity
+import cv.domain.presentationModels.PaymentPresentationModel
 
 @Composable
 fun PaymentsListScreen(
-    payments: List<PaymentEntity>,
-    totalAmount: Double,
+    models: List<PaymentPresentationModel>,
+    totalAmount: String,
     canDeletePayment: Boolean,
-    onDeletePayment: (PaymentEntity) -> Unit = {},
+    onDeletePayment: (PaymentPresentationModel) -> Unit = {},
 ) {
     Column {
         Row {
@@ -38,14 +37,14 @@ fun PaymentsListScreen(
                 text =
                     stringResource(
                         R.string.txt_total_amount,
-                        totalAmount.toAmountString(),
+                        totalAmount,
                     ),
                 textAlign = TextAlign.End,
             )
         }
-        repeat(payments.size) {
+        repeat(models.size) {
             PaymentWidget(
-                paymentEntity = payments[it],
+                model = models[it],
                 canDeletePayment = canDeletePayment,
                 onDeletePayment = onDeletePayment,
             )
@@ -58,14 +57,14 @@ fun PaymentsListScreen(
 private fun PaymentPlanListScreenPreview() {
     AppThemeComposable {
         PaymentsListScreen(
-            payments =
+            models =
                 listOf(
-                    getMockActivePaymentEntity(),
-                    getMockActivePaymentEntity(),
-                    getMockExpiredPaymentEntity(),
+                    getMockActivePaymentPresentationModel(),
+                    getMockActivePaymentPresentationModel(),
+                    getMockExpiredPaymentPresentationModel(),
                 ),
-            totalAmount = 1200.0,
-            canDeletePayment = false,
+            totalAmount = "GBP 12,000.02",
+            canDeletePayment = true,
         )
     }
 }

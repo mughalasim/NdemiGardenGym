@@ -18,7 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.mock.getMockAttendanceEntity
+import com.ndemi.garden.gym.ui.mock.getMockAttendancePresentationModel
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.icon_size_large
@@ -28,14 +28,14 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.attendance.AttendanceWidget
-import cv.domain.entities.AttendanceEntity
-import cv.domain.entities.AttendanceMonthEntity
+import cv.domain.presentationModels.AttendanceMonthPresentationModel
+import cv.domain.presentationModels.AttendancePresentationModel
 
 @Composable
 fun AttendanceListScreen(
-    attendanceMonthly: AttendanceMonthEntity,
+    attendanceMonthly: AttendanceMonthPresentationModel,
     canDeleteAttendance: Boolean = false,
-    onDeleteAttendance: (AttendanceEntity) -> Unit = {},
+    onDeleteAttendance: (AttendancePresentationModel) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -85,7 +85,7 @@ fun AttendanceListScreen(
         if (collapsedState) {
             repeat(attendanceMonthly.attendances.size) {
                 AttendanceWidget(
-                    attendanceEntity = attendanceMonthly.attendances[it],
+                    model = attendanceMonthly.attendances[it],
                     canDeleteAttendance = canDeleteAttendance,
                     onDeleteAttendance = onDeleteAttendance,
                 )
@@ -101,24 +101,24 @@ private fun AttendanceScreenPreview() {
         Column {
             AttendanceListScreen(
                 attendanceMonthly =
-                    AttendanceMonthEntity(
+                    AttendanceMonthPresentationModel(
                         monthNumber = 1,
                         totalMinutes = 45,
                         monthName = "September",
                         activeDuration = "12 minutes",
                         attendances =
                             listOf(
-                                getMockAttendanceEntity(),
-                                getMockAttendanceEntity(),
-                                getMockAttendanceEntity(),
-                                getMockAttendanceEntity(),
+                                getMockAttendancePresentationModel(),
+                                getMockAttendancePresentationModel(),
+                                getMockAttendancePresentationModel(),
+                                getMockAttendancePresentationModel(),
                             ),
                     ),
                 canDeleteAttendance = true,
             )
             AttendanceListScreen(
                 attendanceMonthly =
-                    AttendanceMonthEntity(
+                    AttendanceMonthPresentationModel(
                         monthName = "October",
                         activeDuration = "12 minutes",
                     ),

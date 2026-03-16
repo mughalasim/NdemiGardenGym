@@ -1,7 +1,6 @@
 root = true
 
 [*.{kt,kts}]
-ktlint_code_style = ktlint_official
 end_of_line = lf
 insert_final_newline = true
 max_line_length = 140

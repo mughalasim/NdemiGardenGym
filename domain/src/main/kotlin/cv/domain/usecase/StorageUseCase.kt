@@ -18,13 +18,7 @@ class StorageUseCase(
         memberEntity: MemberEntity,
         byteArray: ByteArray,
     ): DomainResult<Unit> {
-        analyticsRepository.logEvent(
-            eventName = EVENT_PHOTO,
-            params =
-                listOf(
-                    Pair(PARAM_PHOTO_UPLOAD, memberEntity.id),
-                ),
-        )
+        analyticsRepository.logEvent(EVENT_PHOTO, PARAM_PHOTO_UPLOAD, memberEntity.id)
         return when (val responseUploadFile = storageRepository.updateImageForMember(memberEntity.id, byteArray)) {
             is DomainResult.Error -> {
                 DomainResult.Error(DomainErrorType.UPLOAD_FAILURE)
