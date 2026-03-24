@@ -2,9 +2,7 @@ package cv.data.mappers
 
 import com.google.firebase.Timestamp
 import cv.data.models.MemberModel
-import cv.data.models.WeightModel
 import cv.domain.entities.MemberEntity
-import cv.domain.entities.WeightEntity
 import cv.domain.enums.MemberType
 import cv.domain.repositories.DateProviderRepository
 import java.util.Date
@@ -35,12 +33,10 @@ class MemberMapperImp(
             phoneNumber = phoneNumber,
             memberType = memberType.name,
             height = height,
-            trackedWeights = trackedWeights.toWeightModel(),
         )
 
-    private fun MemberModel.toEntity(emailVerified: Boolean = false): MemberEntity {
-        val sortedWeights = trackedWeights.sortedByDescending { it.dateMillis }.take(10)
-        return MemberEntity(
+    private fun MemberModel.toEntity(emailVerified: Boolean = false): MemberEntity =
+        MemberEntity(
             id = id,
             firstName = firstName,
             lastName = lastName,
@@ -59,9 +55,7 @@ class MemberMapperImp(
             memberType = memberType.toMemberType(),
             emailVerified = emailVerified,
             height = height,
-            trackedWeights = sortedWeights.toWeightEntity(),
         )
-    }
 
     private fun String.toMemberType(): MemberType =
         when (this) {
@@ -69,21 +63,5 @@ class MemberMapperImp(
             "ADMIN" -> MemberType.ADMIN
             "SUPERVISOR" -> MemberType.SUPERVISOR
             else -> MemberType.MEMBER
-        }
-
-    private fun List<WeightModel>.toWeightEntity(): List<WeightEntity> =
-        this.map {
-            WeightEntity(
-                weight = it.weight,
-                dateMillis = it.dateMillis.toDate().time,
-            )
-        }
-
-    private fun List<WeightEntity>.toWeightModel(): List<WeightModel> =
-        this.map {
-            WeightModel(
-                weight = it.weight,
-                dateMillis = Timestamp(dateProviderRepository.getDate(it.dateMillis)),
-            )
         }
 }

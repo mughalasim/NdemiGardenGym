@@ -60,4 +60,6 @@ interface DateProviderRepository {
         dateMillis: Long,
         format: DateFormatType,
     ): String
+
+    fun getDayOfYear(dateMillis: Long): Int
 }

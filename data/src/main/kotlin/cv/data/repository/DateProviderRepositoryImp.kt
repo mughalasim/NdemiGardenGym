@@ -45,6 +45,8 @@ class DateProviderRepositoryImp(
 
     override fun getDate(dateMillis: Long): Date = DateTime(dateMillis).toDate()
 
+    override fun getDayOfYear(dateMillis: Long): Int = DateTime(dateMillis).dayOfYear
+
     override fun getYear() = dateTime().year
 
     override fun getYear(date: Date) = DateTime(date).year

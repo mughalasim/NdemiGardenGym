@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockMemberDashboardPresentationModel
 import com.ndemi.garden.gym.ui.screens.profile.ProfileTopSection
+import com.ndemi.garden.gym.ui.screens.weight.graph.WeightComponent
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
@@ -107,7 +108,7 @@ fun ProfileMemberDetailsScreen(
                 onSessionTapped = listeners.onSessionTapped,
             )
 
-            TrackedWeightComponent()
+            WeightComponent()
         }
     }
 }

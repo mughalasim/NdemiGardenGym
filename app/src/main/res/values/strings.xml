@@ -119,8 +119,10 @@
     <string name="txt_tracked_weight">Tracked weight</string>
     <string name="txt_no_weight_recorded">No weight recorded</string>
     <string name="txt_member_since">Member since %1$s</string>
-    <string name="txt_capture_weight">Capture weight</string>
-    <string name="txt_capture_weight_desc">What is your current weight (%1$s)</string>
+    <string name="txt_add_weight">Track new weight</string>
+    <string name="txt_edit_weight">Edit weight</string>
+    <string name="txt_capture_weight_desc">Set a weight (%1$s) for the selected date</string>
     <string name="txt_member_type">Member Type: %1$s</string>
+    <string name="txt_set_date">Set date</string>
 
 </resources>

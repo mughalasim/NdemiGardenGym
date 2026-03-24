@@ -9,9 +9,11 @@ import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel
 import com.ndemi.garden.gym.ui.screens.profile.admin.ProfileAdminScreenViewModel
 import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel
-import com.ndemi.garden.gym.ui.screens.profile.member.WeightViewModel
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel
+import com.ndemi.garden.gym.ui.screens.weight.edit.WeightEditScreenViewModel
+import com.ndemi.garden.gym.ui.screens.weight.graph.WeightGraphComponentViewModel
+import com.ndemi.garden.gym.ui.screens.weight.list.WeightListScreenViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
@@ -85,7 +87,23 @@ val viewModelModule =
 
         viewModelOf(::ResetPasswordScreenViewModel)
 
-        viewModelOf(::WeightViewModel)
+        viewModelOf(::WeightGraphComponentViewModel)
+
+        viewModel { params ->
+            WeightEditScreenViewModel(
+                weightId = params.get(),
+                weight = params.get(),
+                dateMillis = params.get(),
+                weightPresentationMapper = get(),
+                dateProviderRepository = get(),
+                navigationService = get(),
+                weightValidator = get(),
+                weightUseCase = get(),
+                converter = get(),
+            )
+        }
+
+        viewModelOf(::WeightListScreenViewModel)
 
         viewModel(named<CreateMember>()) {
             RegisterScreenViewModel(

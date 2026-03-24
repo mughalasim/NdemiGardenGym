@@ -76,6 +76,18 @@ sealed class Route {
         val memberId: String = "",
     ) : Route()
 
+    @Keep
+    @Serializable
+    data object WeightListScreen : Route()
+
+    @Keep
+    @Serializable
+    data class WeightEditScreen(
+        val weightId: String = "",
+        val weight: String = "",
+        val dateMillis: Long = 0L,
+    ) : Route()
+
     companion object {
         @Suppress("detekt.CyclomaticComplexMethod")
         fun String.toRoute(): Route =
@@ -90,10 +102,12 @@ sealed class Route {
                 this.contains(MembersActiveScreen.javaClass.simpleName) -> MembersActiveScreen
                 this.contains(MembersExpiredScreen.javaClass.simpleName) -> MembersExpiredScreen
                 this.contains(NonMembersScreen.javaClass.simpleName) -> NonMembersScreen
+                this.contains(WeightListScreen.javaClass.simpleName) -> WeightListScreen
                 this.contains("MembersAttendancesScreen") -> MembersAttendancesScreen()
                 this.contains("PaymentsScreen") -> PaymentsScreen()
                 this.contains("PaymentAddScreen") -> PaymentAddScreen()
                 this.contains("MemberEditScreen") -> MemberEditScreen()
+                this.contains("WeightEditScreen") -> WeightEditScreen()
                 else -> LoginScreen
             }
     }

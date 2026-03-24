@@ -1,8 +1,8 @@
 [versions]
 appName = "Ndemi Garden Gym"
 appNamespaceId = "com.ndemi.garden.gym"
-appVersionCode = "180"
-appVersionName = "18.0"
+appVersionCode = "181"
+appVersionName = "18.1"
 appCompileSdk = "36"
 appTargetSdk = "36"
 appMinSdk = "24"
@@ -20,6 +20,7 @@ junit = "4.13.2"
 koin-android = "4.1.1"
 lifecycle = "2.10.0"
 lifecycle-extensions = "2.2.0"
+mpandroidchart = "v3.1.0"
 navigation-compose = "2.8.9"
 okhttpBom = "5.3.2"
 retrofit = "3.0.0"
@@ -63,6 +64,7 @@ lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-com
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor" }
 material-icons-extended-android = { module = "androidx.compose.material:material-icons-extended-android", version.ref = "materialIconsExtendedAndroid" }
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
 okhttp-bom = { group = "com.squareup.okhttp3", name = "okhttp-bom", version.ref = "okhttpBom" }
 okhttp = { module = "com.squareup.okhttp3:okhttp" }

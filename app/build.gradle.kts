@@ -91,55 +91,44 @@ android {
     productFlavors {
         create("Live") {
             dimension = "version"
+
             resValue("string", "app_name", libs.versions.appName.get())
-            setConfigVariable(variableName = "PATH_USER", variableSource = "PATH_USER")
-            setConfigVariable(variableName = "PATH_ATTENDANCE", variableSource = "PATH_ATTENDANCE")
-            setConfigVariable(
-                variableName = "PATH_PAYMENT_PLAN",
-                variableSource = "PATH_PAYMENT_PLAN",
-            )
-            setConfigVariable(
-                variableName = "PATH_APP_VERSION_TYPE",
-                variableSource = "PATH_APP_VERSION_TYPE",
-            )
-            setConfigVariable(
-                variableName = "PATH_USER_IMAGES",
-                variableSource = "PATH_USER_IMAGES",
-            )
-            setConfigVariable(variableName = "EMAIL_ADMIN", variableSource = "EMAIL_ADMIN_LIVE")
-            setConfigVariable(variableName = "EMAIL_SUPER_ADMIN", variableSource = "EMAIL_SUPER_ADMIN_LIVE")
-            setConfigVariable(variableName = "EMAIL_SUPERVISOR", variableSource = "EMAIL_SUPERVISOR_LIVE")
-            setConfigVariable(variableName = "EMAIL_MEMBER", variableSource = "EMAIL_MEMBER_LIVE")
-            setConfigVariable(variableName = "TEST_PASS", variableSource = "TEST_PASS")
+
+            setConfigVariable("PATH_USER", "PATH_USER")
+            setConfigVariable("PATH_ATTENDANCE", "PATH_ATTENDANCE")
+            setConfigVariable("PATH_PAYMENT_PLAN", "PATH_PAYMENT_PLAN")
+            setConfigVariable("PATH_APP_VERSION_TYPE", "PATH_APP_VERSION_TYPE")
+            setConfigVariable("PATH_USER_IMAGES", "PATH_USER_IMAGES")
+            setConfigVariable("PATH_WEIGHT", "PATH_WEIGHT")
+            setConfigVariable("PATH_TRACKED", "PATH_TRACKED")
+
+            setConfigVariable("EMAIL_ADMIN", "EMAIL_ADMIN_LIVE")
+            setConfigVariable("EMAIL_SUPER_ADMIN", "EMAIL_SUPER_ADMIN_LIVE")
+            setConfigVariable("EMAIL_SUPERVISOR", "EMAIL_SUPERVISOR_LIVE")
+            setConfigVariable("EMAIL_MEMBER", "EMAIL_MEMBER_LIVE")
+            setConfigVariable("TEST_PASS", "EMPTY")
         }
 
         create("Staging") {
             isDefault = true
             dimension = "version"
             applicationIdSuffix = ".staging"
+
             resValue("string", "app_name", "${libs.versions.appName.get()} (Staging)")
-            setConfigVariable(variableName = "PATH_USER", variableSource = "DEBUG_PATH_USER")
-            setConfigVariable(
-                variableName = "PATH_ATTENDANCE",
-                variableSource = "DEBUG_PATH_ATTENDANCE",
-            )
-            setConfigVariable(
-                variableName = "PATH_PAYMENT_PLAN",
-                variableSource = "DEBUG_PATH_PAYMENT",
-            )
-            setConfigVariable(
-                variableName = "PATH_APP_VERSION_TYPE",
-                variableSource = "DEBUG_PATH_APP_VERSION_TYPE",
-            )
-            setConfigVariable(
-                variableName = "PATH_USER_IMAGES",
-                variableSource = "DEBUG_PATH_USER_IMAGES",
-            )
-            setConfigVariable(variableName = "EMAIL_ADMIN", variableSource = "EMAIL_ADMIN_STAGING")
-            setConfigVariable(variableName = "EMAIL_SUPER_ADMIN", variableSource = "EMAIL_SUPER_ADMIN_STAGING")
-            setConfigVariable(variableName = "EMAIL_SUPERVISOR", variableSource = "EMAIL_SUPERVISOR_STAGING")
-            setConfigVariable(variableName = "EMAIL_MEMBER", variableSource = "EMAIL_MEMBER_STAGING")
-            setConfigVariable(variableName = "TEST_PASS", variableSource = "TEST_PASS")
+
+            setConfigVariable("PATH_USER", "DEBUG_PATH_USER")
+            setConfigVariable("PATH_ATTENDANCE", "DEBUG_PATH_ATTENDANCE")
+            setConfigVariable("PATH_PAYMENT_PLAN", "DEBUG_PATH_PAYMENT")
+            setConfigVariable("PATH_APP_VERSION_TYPE", "DEBUG_PATH_APP_VERSION_TYPE")
+            setConfigVariable("PATH_USER_IMAGES", "DEBUG_PATH_USER_IMAGES")
+            setConfigVariable("PATH_WEIGHT", "PATH_WEIGHT")
+            setConfigVariable("PATH_TRACKED", "DEBUG_PATH_TRACKED")
+
+            setConfigVariable("EMAIL_ADMIN", "EMAIL_ADMIN_STAGING")
+            setConfigVariable("EMAIL_SUPER_ADMIN", "EMAIL_SUPER_ADMIN_STAGING")
+            setConfigVariable("EMAIL_SUPERVISOR", "EMAIL_SUPERVISOR_STAGING")
+            setConfigVariable("EMAIL_MEMBER", "EMAIL_MEMBER_STAGING")
+            setConfigVariable("TEST_PASS", "TEST_PASS")
         }
     }
 
@@ -218,6 +207,9 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.javax.inject)
+
+    // Charting library
+    implementation(libs.mpandroidchart)
 
     // TESTING -------------------------------------------------------------------------------------
     testImplementation(libs.junit)

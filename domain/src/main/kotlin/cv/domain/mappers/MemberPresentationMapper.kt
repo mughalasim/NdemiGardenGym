@@ -1,6 +1,7 @@
 package cv.domain.mappers
 
 import cv.domain.entities.MemberEntity
+import cv.domain.entities.WeightEntity
 import cv.domain.enums.DateFormatType
 import cv.domain.presentationModels.MemberDashboardPresentationModel
 import cv.domain.presentationModels.MemberEditPresentationModel
@@ -15,6 +16,7 @@ interface MemberPresentationMapper {
 
     fun getDashboardModel(
         entity: MemberEntity,
+        trackedWeights: List<WeightEntity>,
         workouts: Int = 0,
     ): MemberDashboardPresentationModel
 }
@@ -82,6 +84,7 @@ class MemberPresentationMapperImp(
 
     override fun getDashboardModel(
         entity: MemberEntity,
+        trackedWeights: List<WeightEntity>,
         workouts: Int,
     ) = MemberDashboardPresentationModel(
         id = entity.id,
@@ -102,11 +105,11 @@ class MemberPresentationMapperImp(
         amountDue = numberFormatUseCase.getCurrencyFormatted(entity.amountDue),
         hasPaidMembership = entity.renewalFutureDateMillis != null,
         registrationDate = dateProviderRepository.format(entity.registrationDateMillis, DateFormatType.DAY_MONTH_YEAR),
-        weight = numberFormatUseCase.getWeight(entity.trackedWeights).toString(),
+        weight = numberFormatUseCase.getWeight(trackedWeights).toString(),
         weightUnit = numberFormatUseCase.getWeightUnit(),
         height = numberFormatUseCase.getHeight(entity.height).toString(),
         heightUnit = numberFormatUseCase.getHeightUnit(),
-        bmiValue = numberFormatUseCase.getBMI(entity.trackedWeights, entity.height),
+        bmiValue = numberFormatUseCase.getBMI(trackedWeights, entity.height),
         workouts = workouts.toString(),
     )
 }

@@ -4,7 +4,6 @@ import cv.domain.presentationModels.MemberDashboardPresentationModel
 import cv.domain.presentationModels.MemberEditPresentationModel
 import cv.domain.presentationModels.MemberPresentationModel
 
-@Suppress("detekt.MagicNumber")
 fun getMockActiveMemberPresentationModel() =
     MemberPresentationModel(
         id = "1234567890",
@@ -15,7 +14,6 @@ fun getMockActiveMemberPresentationModel() =
         hasCoach = true,
     )
 
-@Suppress("detekt.MagicNumber")
 fun getMockRegisteredMemberPresentationModel() =
     MemberPresentationModel(
         id = "1234567890",
@@ -27,7 +25,6 @@ fun getMockRegisteredMemberPresentationModel() =
         phoneNumber = "0722123456",
     )
 
-@Suppress("detekt.MagicNumber")
 fun getMockExpiredMemberPresentationModel() =
     MemberPresentationModel(
         id = "1234567890",
