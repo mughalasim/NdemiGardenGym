@@ -17,6 +17,5 @@ data class MemberEntity(
     val phoneNumber: String = "",
     val memberType: MemberType = MemberType.MEMBER,
     val emailVerified: Boolean = false,
-    val trackedWeights: List<WeightEntity> = listOf(),
     val height: Double = 0.0,
 )

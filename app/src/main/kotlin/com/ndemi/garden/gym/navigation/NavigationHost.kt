@@ -19,6 +19,8 @@ import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreen
 import com.ndemi.garden.gym.ui.screens.register.RegisterNewScreen
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreen
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreen
+import com.ndemi.garden.gym.ui.screens.weight.edit.WeightEditScreen
+import com.ndemi.garden.gym.ui.screens.weight.list.WeightListScreen
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 
 @Composable
@@ -53,10 +55,22 @@ fun NavigationHost(
 
         composable<Route.NonMembersScreen> { NonMembersScreen(snackbarHostState = snackbarHostState) }
 
+        composable<Route.WeightListScreen> { WeightListScreen(snackbarHostState = snackbarHostState) }
+
         composable<Route.MemberEditScreen> {
             val args = it.toRoute<Route.MemberEditScreen>()
             MemberEditScreen(
                 memberId = args.memberId,
+                snackbarHostState = snackbarHostState,
+            )
+        }
+
+        composable<Route.WeightEditScreen> {
+            val args = it.toRoute<Route.WeightEditScreen>()
+            WeightEditScreen(
+                weightId = args.weightId,
+                weight = args.weight,
+                dateMillis = args.dateMillis,
                 snackbarHostState = snackbarHostState,
             )
         }

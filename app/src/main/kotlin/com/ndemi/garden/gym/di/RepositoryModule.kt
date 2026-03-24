@@ -7,6 +7,8 @@ import cv.data.mappers.MemberMapper
 import cv.data.mappers.MemberMapperImp
 import cv.data.mappers.PaymentMapper
 import cv.data.mappers.PaymentMapperImp
+import cv.data.mappers.WeightMapper
+import cv.data.mappers.WeightMapperImp
 import cv.data.models.AuthRepositoryUrls
 import cv.data.repository.AccessRepositoryImp
 import cv.data.repository.AttendanceRepositoryImp
@@ -17,6 +19,7 @@ import cv.data.repository.MemberRepositoryImp
 import cv.data.repository.PaymentRepositoryImp
 import cv.data.repository.StorageRepositoryImp
 import cv.data.repository.UnitProviderRepositoryImp
+import cv.data.repository.WeightRepositoryImp
 import cv.domain.repositories.AccessRepository
 import cv.domain.repositories.AttendanceRepository
 import cv.domain.repositories.AuthRepository
@@ -26,6 +29,7 @@ import cv.domain.repositories.MemberRepository
 import cv.domain.repositories.PaymentRepository
 import cv.domain.repositories.StorageRepository
 import cv.domain.repositories.UnitProviderRepository
+import cv.domain.repositories.WeightRepository
 import org.koin.dsl.module
 
 val repositoryModule =
@@ -41,6 +45,19 @@ val repositoryModule =
         single<MemberMapper> { MemberMapperImp(get()) }
 
         single<PaymentMapper> { PaymentMapperImp() }
+
+        single<WeightMapper> { WeightMapperImp(get()) }
+
+        single<WeightRepository> {
+            WeightRepositoryImp(
+                pathWeight = BuildConfig.PATH_WEIGHT,
+                pathTracked = BuildConfig.PATH_TRACKED,
+                firebaseAuth = get(),
+                logger = get(),
+                weightMapper = get(),
+                firebaseFirestore = get(),
+            )
+        }
 
         single<AuthRepository> {
             AuthRepositoryImp(

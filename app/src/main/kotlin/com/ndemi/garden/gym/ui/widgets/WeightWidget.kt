@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.ui.mock.getMockWeightPresentationModel
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
@@ -29,7 +31,8 @@ import cv.domain.presentationModels.WeightPresentationModel
 @Composable
 fun WeightWidget(
     weight: WeightPresentationModel,
-    onDeleteWeight: (Long) -> Unit = {},
+    onDeleteWeight: (String) -> Unit = {},
+    onEditWeight: (WeightPresentationModel) -> Unit = {},
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -41,14 +44,25 @@ fun WeightWidget(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Row {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                modifier =
+                    Modifier
+                        .padding(end = padding_screen_small)
+                        .clickable { onEditWeight.invoke(weight) },
+                imageVector = Icons.Default.Edit,
+                tint = AppTheme.colors.textPrimary,
+                contentDescription = stringResource(id = R.string.txt_edit_member),
+            )
             TextWidget(
-                text = weight.dateDayMonthYear,
+                text = weight.formattedDate,
                 color = AppTheme.colors.primary,
             )
             TextWidget(
                 modifier = Modifier.padding(horizontal = padding_screen_small),
-                text = weight.weight,
+                text = weight.formattedWeight,
             )
         }
         Icon(
@@ -66,7 +80,7 @@ fun WeightWidget(
             positiveButton = stringResource(R.string.txt_delete),
             positiveOnClick = {
                 showDialog = !showDialog
-                onDeleteWeight.invoke(weight.dateMillis)
+                onDeleteWeight.invoke(weight.id)
             },
             negativeButton = stringResource(R.string.txt_cancel),
             negativeOnClick = {
@@ -82,18 +96,10 @@ private fun WeightWidgetPreview() =
     AppThemeComposable {
         Column {
             WeightWidget(
-                weight =
-                    WeightPresentationModel(
-                        dateDayMonthYear = "Today",
-                        weight = "70 Kgs",
-                    ),
+                weight = getMockWeightPresentationModel(),
             )
             WeightWidget(
-                weight =
-                    WeightPresentationModel(
-                        dateDayMonthYear = "12 Dec 2023",
-                        weight = "80 Kgs",
-                    ),
+                weight = getMockWeightPresentationModel(),
             )
         }
     }

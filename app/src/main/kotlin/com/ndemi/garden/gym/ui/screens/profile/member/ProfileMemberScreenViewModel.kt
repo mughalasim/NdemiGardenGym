@@ -11,14 +11,17 @@ import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
-import com.ndemi.garden.gym.ui.utils.OBSERVE_MEMBER
-import com.ndemi.garden.gym.ui.utils.OBSERVE_MEMBER_ATTENDANCE_PROFILE
+import com.ndemi.garden.gym.ui.utils.OBSERVE_DASHBOARD_ATTENDANCE
+import com.ndemi.garden.gym.ui.utils.OBSERVE_DASHBOARD_MEMBER
+import com.ndemi.garden.gym.ui.utils.OBSERVE_DASHBOARD_WEIGHT
 import com.ndemi.garden.gym.ui.utils.OBSERVE_SESSION_COUNTDOWN
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
+import cv.domain.entities.WeightEntity
 import cv.domain.enums.DateFormatType
 import cv.domain.enums.MemberUpdateType
 import cv.domain.mappers.MemberPresentationMapper
+import cv.domain.presentationModels.AttendanceMonthPresentationModel
 import cv.domain.presentationModels.MemberDashboardPresentationModel
 import cv.domain.repositories.DateProviderRepository
 import cv.domain.repositories.JobRepository
@@ -27,9 +30,12 @@ import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.StorageUseCase
+import cv.domain.usecase.WeightUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -43,11 +49,14 @@ class ProfileMemberScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val storageUseCase: StorageUseCase,
     private val attendanceUseCase: AttendanceUseCase,
+    private val weightUseCase: WeightUseCase,
     private val navigationService: NavigationService,
     private val dateProviderRepository: DateProviderRepository,
     private val memberPresentationMapper: MemberPresentationMapper,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
     private val memberEntity = MutableStateFlow(MemberEntity())
+    private val attendanceList = MutableStateFlow(emptyList<AttendanceMonthPresentationModel>())
+    private val weightList = MutableStateFlow(emptyList<WeightEntity>())
 
     private val _countdown = MutableStateFlow("")
     val countdown: StateFlow<String> = _countdown
@@ -56,7 +65,24 @@ class ProfileMemberScreenViewModel(
     val sessionStartTime: StateFlow<String> = _sessionStartTime
 
     init {
+        combine(
+            memberEntity,
+            attendanceList,
+            weightList,
+        ) { member, attendance, weight ->
+            sendAction(
+                Action.Success(
+                    memberPresentationMapper.getDashboardModel(
+                        entity = member,
+                        trackedWeights = weight,
+                        workouts = attendance.sumOf { it.attendances.size },
+                    ),
+                ),
+            )
+        }.launchIn(viewModelScope)
+
         sendAction(Action.Loading)
+
         jobRepository.add(
             viewModelScope.launch {
                 authUseCase.observeUser().collect { result ->
@@ -67,10 +93,31 @@ class ProfileMemberScreenViewModel(
                     } else {
                         jobRepository.cancel(OBSERVE_SESSION_COUNTDOWN)
                     }
-                    updateWorkoutInformation()
                 }
             },
-            OBSERVE_MEMBER,
+            OBSERVE_DASHBOARD_MEMBER,
+        )
+
+        jobRepository.add(
+            viewModelScope.launch {
+                attendanceUseCase.getMemberAttendancesForId(memberEntity.value.id, dateProviderRepository.getYear()).collect { result ->
+                    if (result is DomainResult.Success) {
+                        attendanceList.value = result.data
+                    }
+                }
+            },
+            OBSERVE_DASHBOARD_ATTENDANCE,
+        )
+
+        jobRepository.add(
+            viewModelScope.launch {
+                weightUseCase.getWeightForYear(dateProviderRepository.getYear()).collect { result ->
+                    if (result is DomainResult.Success) {
+                        weightList.value = result.data
+                    }
+                }
+            },
+            OBSERVE_DASHBOARD_WEIGHT,
         )
     }
 
@@ -91,36 +138,6 @@ class ProfileMemberScreenViewModel(
                     }.collect { _countdown.emit(it) }
             },
             OBSERVE_SESSION_COUNTDOWN,
-        )
-    }
-
-    private fun updateWorkoutInformation() {
-        jobRepository.add(
-            viewModelScope.launch {
-                attendanceUseCase.getMemberAttendancesForId(memberEntity.value.id, dateProviderRepository.getYear()).collect { result ->
-                    when (result) {
-                        is DomainResult.Error -> {
-                            sendAction(
-                                Action.Success(
-                                    memberPresentationMapper.getDashboardModel(entity = memberEntity.value),
-                                ),
-                            )
-                        }
-
-                        is DomainResult.Success -> {
-                            sendAction(
-                                Action.Success(
-                                    memberPresentationMapper.getDashboardModel(
-                                        entity = memberEntity.value,
-                                        workouts = result.data.sumOf { it.attendances.size },
-                                    ),
-                                ),
-                            )
-                        }
-                    }
-                }
-            },
-            OBSERVE_MEMBER_ATTENDANCE_PROFILE,
         )
     }
 

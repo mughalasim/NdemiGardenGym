@@ -21,5 +21,4 @@ data class MemberModel(
     val memberType: String = "",
     val emailVerified: Boolean = false,
     val height: Double = 0.0,
-    val trackedWeights: List<WeightModel> = listOf(),
 )

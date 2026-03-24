@@ -8,6 +8,8 @@ import cv.domain.usecase.NumberFormatUseCase
 
 interface WeightPresentationMapper {
     fun getModel(entity: WeightEntity): WeightPresentationModel
+
+    fun getEntity(model: WeightPresentationModel): WeightEntity
 }
 
 class WeightPresentationMapperImp(
@@ -16,8 +18,18 @@ class WeightPresentationMapperImp(
 ) : WeightPresentationMapper {
     override fun getModel(entity: WeightEntity): WeightPresentationModel =
         WeightPresentationModel(
+            id = entity.id,
             dateMillis = entity.dateMillis,
-            weight = "${numberFormatUseCase.getWeight(listOf(entity))} ${numberFormatUseCase.getWeightUnit()}",
-            dateDayMonthYear = dateProviderRepository.format(entity.dateMillis, DateFormatType.DAY_MONTH_YEAR),
+            formattedWeight = "${numberFormatUseCase.getWeight(listOf(entity))} ${numberFormatUseCase.getWeightUnit()}",
+            formattedDate = dateProviderRepository.format(entity.dateMillis, DateFormatType.DAY_MONTH_YEAR),
+            weightValue = entity.weight.toString(),
+            weightUnit = numberFormatUseCase.getWeightUnit(),
+        )
+
+    override fun getEntity(model: WeightPresentationModel) =
+        WeightEntity(
+            id = model.id,
+            dateMillis = model.dateMillis,
+            weight = model.weightValue.toDouble(),
         )
 }
