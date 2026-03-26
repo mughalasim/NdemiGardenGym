@@ -9,4 +9,5 @@ data class PaymentPresentationModel(
     val endDateDayMonthYear: String = "",
     val amount: String = "",
     val paymentPlanDuration: String = "",
+    val paymentPlanWarningLevel: Int = 0,
 )

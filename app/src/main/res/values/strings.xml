@@ -27,6 +27,8 @@
     <string name="error_invalid_month_duration">The month duration is invalid</string>
     <string name="error_invalid_phone_number">The phone number is invalid, leave blank if not present</string>
     <string name="error_upload_failure">Failed to upload your file, please check your internet connection</string>
+    <string name="error_invalid_weight">Invalid weight</string>
+    <string name="error_invalid_future_date">Invalid date cannot be in the future</string>
 
     <!-- One-liners -->
     <string name="txt_ok">OK</string>
@@ -124,5 +126,10 @@
     <string name="txt_capture_weight_desc">Set a weight (%1$s) for the selected date</string>
     <string name="txt_member_type">Member Type: %1$s</string>
     <string name="txt_set_date">Set date</string>
+    <string name="txt_total_weight_change">Total weight change</string>
+    <string name="txt_successfully_updated">Successfully updated</string>
+    <string name="txt_weight_deleted">Weight deleted successfully</string>
+    <string name="txt_no_tracked_weight_this_year">No tracked weight this year</string>
+    <string name="txt_tracked_weight_this_year">Tracked weight this year</string>
 
 </resources>

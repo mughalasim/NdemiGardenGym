@@ -225,7 +225,12 @@ class MemberEditScreenViewModel(
                                     lastName = _memberModel.value.lastName,
                                     phoneNumber = _memberModel.value.phoneNumber,
                                     apartmentNumber = _memberModel.value.apartmentNumber,
-                                    height = numberFormatUseCase.setHeight(_memberModel.value.height.toDouble()),
+                                    height =
+                                        if (_memberModel.value.height.isEmpty()) {
+                                            0.0
+                                        } else {
+                                            numberFormatUseCase.setHeight(_memberModel.value.height.toDouble())
+                                        },
                                     hasCoach = _memberModel.value.hasCoach,
                                     memberType = MemberType.valueOf(_memberModel.value.memberType),
                                 ),

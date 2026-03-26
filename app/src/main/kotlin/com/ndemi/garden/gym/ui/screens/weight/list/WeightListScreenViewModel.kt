@@ -1,7 +1,9 @@
 package com.ndemi.garden.gym.ui.screens.weight.list
 
+import android.app.Application
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
@@ -15,6 +17,7 @@ import cv.domain.mappers.WeightPresentationMapper
 import cv.domain.presentationModels.WeightPresentationModel
 import cv.domain.repositories.DateProviderRepository
 import cv.domain.repositories.JobRepository
+import cv.domain.usecase.NumberFormatUseCase
 import cv.domain.usecase.WeightUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,18 +25,23 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class WeightListScreenViewModel(
+    private val application: Application,
     private val jobRepository: JobRepository,
     private val weightPresentationMapper: WeightPresentationMapper,
     dateProviderRepository: DateProviderRepository,
     private val navigationService: NavigationService,
     private val weightUseCase: WeightUseCase,
     private val converter: ErrorCodeConverter,
+    private val numberFormatUseCase: NumberFormatUseCase,
 ) : BaseViewModel<WeightListScreenViewModel.UiState, WeightListScreenViewModel.Action>(UiState.Waiting) {
     private val _selectedYear: MutableStateFlow<Int> = MutableStateFlow(dateProviderRepository.getYear())
     val selectedYear: StateFlow<Int> = _selectedYear
 
     private val _weightList = MutableStateFlow<List<WeightPresentationModel>>(emptyList())
     val weightList = _weightList.asStateFlow()
+
+    private val _weightChange = MutableStateFlow("")
+    val weightChange = _weightChange.asStateFlow()
 
     init {
         getWeightList()
@@ -46,10 +54,18 @@ class WeightListScreenViewModel(
                     when (result) {
                         is DomainResult.Error -> {
                             sendAction(Action.ShowDomainError(result.error, converter))
+                            _weightList.value = emptyList()
+                            _weightChange.value = ""
                         }
 
                         is DomainResult.Success -> {
                             _weightList.value = result.data.map { weightPresentationMapper.getModel(it) }
+                            if (result.data.isNotEmpty() && result.data.size > 1) {
+                                val change = result.data.first().weight - result.data.last().weight
+                                _weightChange.value = "${numberFormatUseCase.getWeight(change)} ${numberFormatUseCase.getWeightUnit()}"
+                            } else {
+                                _weightChange.value = ""
+                            }
                         }
                     }
                 }
@@ -81,7 +97,7 @@ class WeightListScreenViewModel(
                     }
 
                     is DomainResult.Success -> {
-                        sendAction(Action.Success("Weight deleted successfully"))
+                        sendAction(Action.Success(application.getString(R.string.txt_weight_deleted)))
                     }
                 }
             }
@@ -110,10 +126,6 @@ class WeightListScreenViewModel(
     }
 
     sealed interface Action : BaseAction<UiState> {
-        data object SetWaiting : Action {
-            override fun reduce(state: UiState): UiState = UiState.Waiting
-        }
-
         data class ShowDomainError(
             val domainErrorType: DomainErrorType,
             val errorCodeConverter: ErrorCodeConverter,

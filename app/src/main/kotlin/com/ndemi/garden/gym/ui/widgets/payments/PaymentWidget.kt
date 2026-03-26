@@ -28,6 +28,7 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
+import com.ndemi.garden.gym.ui.widgets.member.getWarningStatusColor
 import cv.domain.presentationModels.PaymentPresentationModel
 
 @Composable
@@ -56,7 +57,7 @@ fun PaymentWidget(
             TextWidget(
                 modifier = Modifier.weight(1f),
                 text = model.paymentPlanDuration,
-                color = AppTheme.colors.primary,
+                color = model.paymentPlanWarningLevel.getWarningStatusColor(),
                 style = AppTheme.textStyles.regularBold,
             )
             if (canDeletePayment) {

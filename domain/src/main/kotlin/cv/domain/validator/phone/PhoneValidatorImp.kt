@@ -14,5 +14,5 @@ class PhoneValidatorImp : Validator {
         }
 }
 
-private const val REGEX_PHONE = "^[+]?[0-9]{10,13}\$"
+private const val REGEX_PHONE = "^[+]?[0-9]{10,13}?$"
 private const val REGEX_PHONE_INTERNATIONAL = "[+]?[0-9.-]+"

@@ -60,17 +60,21 @@ fun WeightWidget(
                 text = weight.formattedDate,
                 color = AppTheme.colors.primary,
             )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             TextWidget(
                 modifier = Modifier.padding(horizontal = padding_screen_small),
                 text = weight.formattedWeight,
             )
+            Icon(
+                modifier = Modifier.clickable { showDialog = !showDialog },
+                imageVector = Icons.Default.Close,
+                tint = AppTheme.colors.error,
+                contentDescription = stringResource(id = R.string.txt_delete),
+            )
         }
-        Icon(
-            modifier = Modifier.clickable { showDialog = !showDialog },
-            imageVector = Icons.Default.Close,
-            tint = AppTheme.colors.error,
-            contentDescription = stringResource(id = R.string.txt_delete),
-        )
     }
     if (showDialog) {
         AlertDialogWidget(

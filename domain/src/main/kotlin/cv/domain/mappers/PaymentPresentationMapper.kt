@@ -24,7 +24,8 @@ class PaymentPresentationMapperImp(
             startDateDayMonthYear = dateProviderRepository.format(entity.startDateMillis, DateFormatType.DAY_MONTH_YEAR),
             endDateDayMonthYear = dateProviderRepository.format(entity.endDateMillis, DateFormatType.DAY_MONTH_YEAR),
             amount = numberFormatUseCase.getCurrencyFormatted(entity.amount),
-            paymentPlanDuration = if (planDuration.isEmpty()) "" else "Expires in $planDuration",
+            paymentPlanDuration = planDuration.first,
+            paymentPlanWarningLevel = planDuration.second,
         )
     }
 }

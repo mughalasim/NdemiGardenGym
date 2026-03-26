@@ -65,20 +65,25 @@ fun WeightGraphDetailsComponent(
                     alpha = 100,
                 )
             }
+        val label = stringResource(R.string.txt_tracked_weight_this_year)
 
         val lineDataWeight =
             remember(weightDataList) {
                 weightDataList.createDataSetWithColor(
-                    label = "Tracked weight",
+                    label = label,
                     chartColors = chartColors,
                 )
             }
 
         val chartModifier =
             if (weightDataList.isNotEmpty()) {
-                Modifier.fillMaxWidth().height(CHART_HEIGHT_EXPANDED)
+                Modifier
+                    .fillMaxWidth()
+                    .height(CHART_HEIGHT_EXPANDED)
             } else {
-                Modifier.fillMaxWidth().wrapContentHeight()
+                Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
             }
 
         AndroidView(
@@ -87,8 +92,8 @@ fun WeightGraphDetailsComponent(
                 LineChart(context).apply {
                     setupLineChart(
                         chartColors = chartColors,
-                        noDataText = "No tracked weight this year",
-                        descriptionText = "Tracked weight this year",
+                        noDataText = context.getString(R.string.txt_no_tracked_weight_this_year),
+                        descriptionText = context.getString(R.string.txt_tracked_weight_this_year),
                     )
                     if (weightDataList.isNotEmpty()) {
                         this.data = LineData(lineDataWeight)

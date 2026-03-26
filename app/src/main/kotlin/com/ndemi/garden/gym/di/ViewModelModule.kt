@@ -94,6 +94,7 @@ val viewModelModule =
                 weightId = params.get(),
                 weight = params.get(),
                 dateMillis = params.get(),
+                application = get(),
                 weightPresentationMapper = get(),
                 dateProviderRepository = get(),
                 navigationService = get(),

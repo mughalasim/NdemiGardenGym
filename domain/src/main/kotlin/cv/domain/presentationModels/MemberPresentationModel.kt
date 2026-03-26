@@ -16,5 +16,6 @@ data class MemberPresentationModel(
     val hasPaidMembership: Boolean = false,
     val residentialStatus: String = "",
     val membershipRenewalDate: String = "",
+    val membershipWarningLevel: Int = 0,
     val height: String = "",
 )

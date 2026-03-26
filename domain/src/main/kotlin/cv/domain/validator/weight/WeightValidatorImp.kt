@@ -25,7 +25,7 @@ class WeightValidatorImp(
 }
 
 // from 20 to 300
-private const val REGEX_WEIGHT_KILOS = "^(2[0-9][0-9]|300|[2-9][0-9]|[1-9])\$|^([2-9][0-9]|[1-9])\\.\\d+\$|^1[0-9][0-9](\\.\\d+)?\$"
+private const val REGEX_WEIGHT_KILOS = "^(2[0-9][0-9]|300|[2-9][0-9]|[1-9])\$|^([2-9][0-9]|[1-9])\\.\\d+\$|^1[0-9][0-9](\\.\\d+)??$"
 
 // from 50 to 999
-private const val REGEX_WEIGHT_POUNDS = "^(5[0-9]{1,2}|[6-9][0-9]{1,2}|[1-9][0-9]{2}(\\.\\d+)?|[5-9][0-9](\\.\\d+)?)\$"
+private const val REGEX_WEIGHT_POUNDS = "^(5[0-9]{1,2}|[6-9][0-9]{1,2}|[1-9][0-9]{2}(\\.\\d+)?|[5-9][0-9](\\.\\d+)?)?$"

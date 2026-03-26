@@ -16,6 +16,7 @@ fun WeightListScreen(
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val selectedYear by viewModel.selectedYear.collectAsStateWithLifecycle()
     val weightList by viewModel.weightList.collectAsStateWithLifecycle()
+    val weightChange by viewModel.weightChange.collectAsStateWithLifecycle()
 
     when (val state = uiState) {
         is UiState.Success -> {
@@ -40,6 +41,7 @@ fun WeightListScreen(
     WeightListDetailsScreen(
         selectedYear = selectedYear,
         weightList = weightList,
+        weightChange = weightChange,
         listeners =
             WeightListDetailsScreenListeners(
                 onBackTapped = viewModel::navigateBack,
