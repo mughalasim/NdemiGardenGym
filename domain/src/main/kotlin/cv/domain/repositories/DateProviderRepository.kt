@@ -54,7 +54,7 @@ interface DateProviderRepository {
 
     fun activeStatusDuration(totalMinutes: Int): String
 
-    fun toPaymentPlanDuration(endDateMillis: Long): String
+    fun toPaymentPlanDuration(endDateMillis: Long?): Pair<String, Int>
 
     fun format(
         dateMillis: Long,

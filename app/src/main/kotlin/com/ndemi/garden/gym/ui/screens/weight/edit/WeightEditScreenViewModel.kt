@@ -1,7 +1,9 @@
 package com.ndemi.garden.gym.ui.screens.weight.edit
 
+import android.app.Application
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.di.WeightValidator
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
@@ -13,7 +15,7 @@ import cv.domain.entities.WeightEntity
 import cv.domain.enums.DateFormatType
 import cv.domain.enums.DomainErrorType
 import cv.domain.mappers.WeightPresentationMapper
-import cv.domain.presentationModels.WeightPresentationModel
+import cv.domain.presentationModels.WeightEditPresentationModel
 import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.WeightUseCase
 import cv.domain.validator.Validator
@@ -22,14 +24,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class WeightEditScreenViewModel(
-    private val weightId: String = "",
+    weightId: String = "",
     private val weight: String = "",
     private val dateMillis: Long = 0L,
-    private val weightPresentationMapper: WeightPresentationMapper,
-    private val dateProviderRepository: DateProviderRepository,
-    private val navigationService: NavigationService,
+    private val application: Application,
     private val weightUseCase: WeightUseCase,
     private val converter: ErrorCodeConverter,
+    private val navigationService: NavigationService,
+    weightPresentationMapper: WeightPresentationMapper,
+    private val dateProviderRepository: DateProviderRepository,
     @param:WeightValidator private val weightValidator: Validator,
 ) : BaseViewModel<WeightEditScreenViewModel.UiState, WeightEditScreenViewModel.Action>(UiState.Loading) {
     private val _weightState: MutableStateFlow<WeightUiState> = MutableStateFlow(WeightUiState())
@@ -37,11 +40,11 @@ class WeightEditScreenViewModel(
 
     init {
         val date = if (dateMillis == 0L) dateProviderRepository.getDate().time else dateMillis
-        val presetWeight = if (weightValidator.isNotValid(weight)) 0.0 else weight.toDouble()
+        val presetWeight = if (weight.isEmpty()) 0.0 else weight.toDouble()
         _weightState.value =
             weightState.value.copy(
                 isEditMode = true,
-                model = weightPresentationMapper.getModel(WeightEntity(id = weightId, weight = presetWeight, dateMillis = date)),
+                model = weightPresentationMapper.getEditModel(WeightEntity(id = weightId, weight = presetWeight, dateMillis = date)),
             )
         validate()
     }
@@ -53,7 +56,7 @@ class WeightEditScreenViewModel(
     fun onWeightValueChanged(weight: String) {
         _weightState.value =
             _weightState.value.copy(
-                model = _weightState.value.model.copy(weightValue = weight),
+                model = _weightState.value.model.copy(formattedWeight = weight),
             )
         validate()
     }
@@ -71,11 +74,11 @@ class WeightEditScreenViewModel(
     }
 
     private fun validate() {
-        val isWeightError = weightValidator.isNotValid(weightState.value.model.weightValue)
+        val isWeightError = weightValidator.isNotValid(weightState.value.model.formattedWeight)
         val isDateError = dateProviderRepository.isAfterNow(weightState.value.model.dateMillis)
 
-        val weightError = if (isWeightError) "Invalid weight" else ""
-        val dateError = if (isDateError) "Invalid date cannot be in the future" else ""
+        val weightError = if (isWeightError) application.getString(R.string.error_invalid_weight) else ""
+        val dateError = if (isDateError) application.getString(R.string.error_invalid_future_date) else ""
 
         _weightState.value =
             _weightState.value.copy(
@@ -101,7 +104,7 @@ class WeightEditScreenViewModel(
         val errorWeight: String = "",
         val updateEnabled: Boolean = false,
         val isEditMode: Boolean = false,
-        val model: WeightPresentationModel = WeightPresentationModel(),
+        val model: WeightEditPresentationModel = WeightEditPresentationModel(),
     )
 
     @Immutable
@@ -118,10 +121,6 @@ class WeightEditScreenViewModel(
     }
 
     sealed interface Action : BaseAction<UiState> {
-        data object SetLoading : Action {
-            override fun reduce(state: UiState): UiState = UiState.Loading
-        }
-
         data class ShowDomainError(
             val domainErrorType: DomainErrorType,
             val errorCodeConverter: ErrorCodeConverter,

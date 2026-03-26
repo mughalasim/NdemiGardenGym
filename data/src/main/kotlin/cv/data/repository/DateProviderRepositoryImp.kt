@@ -166,11 +166,11 @@ class DateProviderRepositoryImp(
     override fun activeStatusDuration(totalMinutes: Int): String =
         activeStatusDuration(dateTime().millis, dateTime().plusMinutes(totalMinutes).millis)
 
-    override fun toPaymentPlanDuration(endDateMillis: Long): String {
+    override fun toPaymentPlanDuration(endDateMillis: Long?): Pair<String, Int> {
+        if (endDateMillis == null) return Pair("", 0)
         val endDate = DateTime(endDateMillis).toInstant()
         val currentDate = dateTime().toInstant()
-
-        if (endDate.isBeforeNow) return ""
+        if (endDate.isBeforeNow) return Pair("Expired", 1)
 
         val months =
             Months
@@ -207,13 +207,21 @@ class DateProviderRepositoryImp(
         val daysTotalString =
             String.format(context.resources.getQuantityString(R.plurals.plural_days, totalDays), totalDays)
 
-        return if (daysLeft == 0 && totalDays > 0) {
-            daysTotalString
-        } else if (months > 0 || hours <= HOUR_IN_DAY * 2 || daysLeft > 0) {
-            (if (months > 0) monthsString else "") + (if (daysLeft > 0) " $daysLeftString" else "")
-        } else {
-            context.getString(R.string.txt_tomorrow)
-        }
+        val text =
+            if (daysLeft == 0 && totalDays > 0) {
+                daysTotalString
+            } else if (months > 0 || hours <= HOUR_IN_DAY * 2 || daysLeft > 0) {
+                (if (months > 0) monthsString else "") + (if (daysLeft > 0) " $daysLeftString" else "")
+            } else {
+                context.getString(R.string.txt_tomorrow)
+            }
+        val warningLevel =
+            if (totalDays >= 11) {
+                0
+            } else {
+                1
+            }
+        return Pair("Expires in $text", warningLevel)
     }
 
     override fun format(

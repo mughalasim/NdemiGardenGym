@@ -6,7 +6,6 @@ import cv.domain.enums.unit.WeightUnit
 import cv.domain.repositories.UnitProviderRepository
 import java.math.RoundingMode
 import java.text.DecimalFormat
-import kotlin.collections.first
 
 /**
 The following are the base units on the server
@@ -19,9 +18,8 @@ class NumberFormatUseCase(
 ) {
     fun getWeightUnit(): String = unitProviderRepository.getWeightUnit().symbol
 
-    fun getWeight(trackedWeights: List<WeightEntity>): Double {
-        if (trackedWeights.isEmpty()) return 0.0
-        val weight = trackedWeights.first().weight
+    fun getWeight(weight: Double): Double {
+        if (weight == 0.0) return 0.0
         return when (unitProviderRepository.getWeightUnit()) {
             WeightUnit.KILOS -> {
                 weight
@@ -87,19 +85,18 @@ class NumberFormatUseCase(
     fun getCurrencyFormatted(input: Double): String = DecimalFormat("${unitProviderRepository.getCurrencyUnit()} #,###").format(input)
 
     fun getBMI(
-        weights: List<WeightEntity>,
+        entity: WeightEntity,
         height: Double,
     ): Double {
         // height is in cm, weight in KG's from server always
-        return if (weights.isEmpty() || height == 0.0) {
+        return if (entity.weight == 0.0 || height == 0.0) {
             0.0
         } else {
-            val weight = weights.first().weight
-            (weight / (height * height) * BMI_CONVERT).roundHalfUp()
+            (entity.weight / (height * height) * BMI_CONVERT).roundHalfUp()
         }
     }
 
-    private fun Double.roundHalfUp() = this.toBigDecimal().setScale(1, RoundingMode.HALF_UP).toDouble()
+    private fun Double.roundHalfUp() = this.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toDouble()
 }
 
 private const val POUND_CONVERT = 2.204623

@@ -79,10 +79,12 @@ fun MemberStatusWidget(
                         style = AppTheme.textStyles.small,
                         modifier = Modifier.fillMaxWidth(),
                         text = model.membershipRenewalDate,
+                        color = model.membershipWarningLevel.getWarningStatusColor(),
                     )
                     TextWidget(
                         style = AppTheme.textStyles.regularBold,
                         text = model.amountDue,
+                        color = model.membershipWarningLevel.getWarningStatusColor(),
                     )
                 }
             }
@@ -126,6 +128,13 @@ data class MemberStatusWidgetListener(
     val onAttendanceTapped: (model: MemberPresentationModel) -> Unit = {},
     val onSessionTapped: (model: MemberPresentationModel) -> Unit = {},
 )
+
+@Composable
+fun Int.getWarningStatusColor(): Color =
+    when (this) {
+        0 -> AppTheme.colors.textPrimary
+        else -> AppTheme.colors.error
+    }
 
 @AppPreview
 @Composable

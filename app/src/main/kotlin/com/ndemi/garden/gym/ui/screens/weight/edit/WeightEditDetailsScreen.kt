@@ -74,7 +74,7 @@ fun WeightEditDetailsScreen(
 
             EditTextWidget(
                 modifier = Modifier.padding(top = padding_screen),
-                textInput = uiState.model.weightValue,
+                textInput = uiState.model.formattedWeight,
                 hint = stringResource(R.string.txt_weight, uiState.model.weightUnit),
                 onValueChanged = listeners.onWeightValueChanged,
                 errorText = uiState.errorWeight,

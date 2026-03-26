@@ -25,8 +25,9 @@ class MemberPresentationMapperImp(
     private val dateProviderRepository: DateProviderRepository,
     private val numberFormatUseCase: NumberFormatUseCase,
 ) : MemberPresentationMapper {
-    override fun getModel(entity: MemberEntity) =
-        MemberPresentationModel(
+    override fun getModel(entity: MemberEntity): MemberPresentationModel {
+        val membershipRenewalPair = dateProviderRepository.toPaymentPlanDuration(entity.renewalFutureDateMillis)
+        return MemberPresentationModel(
             id = entity.id,
             fullName = "${entity.firstName} ${entity.lastName}",
             email = entity.email,
@@ -54,17 +55,10 @@ class MemberPresentationMapperImp(
                 } else {
                     "Apartment ${entity.apartmentNumber}"
                 },
-            membershipRenewalDate =
-                if (entity.renewalFutureDateMillis == null) {
-                    ""
-                } else {
-                    dateProviderRepository.activeStatusDuration(
-                        dateProviderRepository.getDate().time,
-                        entity.renewalFutureDateMillis,
-                    )
-                },
-            height = "${numberFormatUseCase.getHeight(entity.height)} ${numberFormatUseCase.getHeightUnit()}",
+            membershipRenewalDate = membershipRenewalPair.first,
+            membershipWarningLevel = membershipRenewalPair.second,
         )
+    }
 
     override fun getEditModel(entity: MemberEntity) =
         MemberEditPresentationModel(
@@ -78,7 +72,7 @@ class MemberPresentationMapperImp(
             memberType = entity.memberType.name,
             apartmentNumber = entity.apartmentNumber,
             registrationDate = dateProviderRepository.format(entity.registrationDateMillis, DateFormatType.DAY_MONTH_YEAR),
-            height = numberFormatUseCase.getHeight(entity.height).toString(),
+            height = if (entity.height == 0.0) "" else numberFormatUseCase.getHeight(entity.height).toString(),
             heightUnit = numberFormatUseCase.getHeightUnit(),
         )
 
@@ -105,11 +99,11 @@ class MemberPresentationMapperImp(
         amountDue = numberFormatUseCase.getCurrencyFormatted(entity.amountDue),
         hasPaidMembership = entity.renewalFutureDateMillis != null,
         registrationDate = dateProviderRepository.format(entity.registrationDateMillis, DateFormatType.DAY_MONTH_YEAR),
-        weight = numberFormatUseCase.getWeight(trackedWeights).toString(),
+        weight = if (trackedWeights.isEmpty()) "-" else numberFormatUseCase.getWeight(trackedWeights.first().weight).toString(),
         weightUnit = numberFormatUseCase.getWeightUnit(),
         height = numberFormatUseCase.getHeight(entity.height).toString(),
         heightUnit = numberFormatUseCase.getHeightUnit(),
-        bmiValue = numberFormatUseCase.getBMI(trackedWeights, entity.height),
+        bmiValue = if (trackedWeights.isEmpty()) 0.0 else numberFormatUseCase.getBMI(trackedWeights.first(), entity.height),
         workouts = workouts.toString(),
     )
 }

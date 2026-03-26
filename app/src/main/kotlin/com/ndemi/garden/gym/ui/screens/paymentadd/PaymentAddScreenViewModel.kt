@@ -44,6 +44,7 @@ class PaymentAddScreenViewModel(
     private val _inputData =
         MutableStateFlow(
             InputData(
+                startDate = dateProviderRepository.getDate().time,
                 startDateFormatted =
                     dateProviderRepository.format(dateProviderRepository.getDate().time, DateFormatType.DAY_MONTH_YEAR),
             ),

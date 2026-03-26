@@ -4,5 +4,5 @@ enum class WeightUnit(
     val symbol: String,
 ) {
     KILOS("Kgs"),
-    POUNDS("Lbs"),
+    POUNDS("Pounds"),
 }

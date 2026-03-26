@@ -1,7 +1,9 @@
 package com.ndemi.garden.gym.ui.screens.profile.member
 
+import android.app.Application
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.enums.SnackbarType
@@ -42,6 +44,7 @@ import kotlinx.coroutines.launch
 
 @Suppress("detekt.LongParameterList")
 class ProfileMemberScreenViewModel(
+    private val application: Application,
     private val jobRepository: JobRepository,
     private val authUseCase: AuthUseCase,
     private val accessUseCase: AccessUseCase,
@@ -158,7 +161,7 @@ class ProfileMemberScreenViewModel(
                     val snackbarState: Pair<SnackbarType, String> =
                         when (result) {
                             is DomainResult.Error -> Pair(SnackbarType.ERROR, converter.getMessage(result.error))
-                            else -> Pair(SnackbarType.SUCCESS, "Successfully added attendance")
+                            else -> Pair(SnackbarType.SUCCESS, application.getString(R.string.txt_successfully_updated))
                         }
                     showSnackbar(snackbarState.first, snackbarState.second)
                     updateMemberSession(now = null)
@@ -198,7 +201,7 @@ class ProfileMemberScreenViewModel(
             val snackbarState: Pair<SnackbarType, String> =
                 when (val result = storageUseCase.updateImageForMember(memberEntity.value, byteArray)) {
                     is DomainResult.Error -> Pair(SnackbarType.ERROR, converter.getMessage(result.error))
-                    else -> Pair(SnackbarType.SUCCESS, "Successfully updated")
+                    else -> Pair(SnackbarType.SUCCESS, application.getString(R.string.txt_successfully_updated))
                 }
             showSnackbar(snackbarState.first, snackbarState.second)
         }
