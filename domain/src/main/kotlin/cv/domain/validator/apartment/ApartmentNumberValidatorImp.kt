@@ -11,4 +11,4 @@ class ApartmentNumberValidatorImp : Validator {
         }
 }
 
-private const val REGEX_APARTMENT_NUMBER = "^[A-Da-d](?:[1-9][0-4][0-4][0-4]?|1404)\$"
+private const val REGEX_APARTMENT_NUMBER = "^[A-Da-d](?:[1-9][0-4][0-4][0-4]?|1404)?$"

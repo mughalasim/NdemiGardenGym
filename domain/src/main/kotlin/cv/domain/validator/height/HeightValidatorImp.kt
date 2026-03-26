@@ -26,10 +26,10 @@ class HeightValidatorImp(
 }
 
 // from 50 to 250
-private const val REGEX_HEIGHT_CENTIMETERS = "^(1[5-9][0-9]|2[0-4][0-9]|250|5[0-9]|6[0-9]|7[0-9]|8[0-9]|9[0-9])\$"
+private const val REGEX_HEIGHT_CENTIMETERS = "^(5[0-9]|[6-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|250)(\\.\\d+)?$"
 
 // from 1.0 to 2.5
-private const val REGEX_HEIGHT_METERS = "\"^(1\\.\\d{1,2}|2\\.[0-5]{1,2}|2)\$"
+private const val REGEX_HEIGHT_METERS = "^(0\\.[5-9]\\d*|1(\\.\\d*)?|2(\\.[0-5]\\d*)?|2)?$"
 
 // from 4 to 8
-private const val REGEX_HEIGHT_FEET = "^(4|5|6|7|8)(\\.\\d+)?\$"
+private const val REGEX_HEIGHT_FEET = "^([2-7](\\.\\d+)?|8(\\.[0-5]\\d*)?)?$"
