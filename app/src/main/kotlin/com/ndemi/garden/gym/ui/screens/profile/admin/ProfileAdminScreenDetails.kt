@@ -12,13 +12,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.screens.profile.ProfileTopSection
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.border_radius
@@ -29,6 +30,7 @@ import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
+import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import cv.domain.presentationModels.AdminDashboardPresentationModel
 
 @Composable
@@ -37,7 +39,11 @@ fun ProfileAdminScreenDetails(
     listeners: ProfileAdminScreenDetailsListeners = ProfileAdminScreenDetailsListeners(),
 ) {
     Column {
-        ProfileTopSection(onLogoutTapped = listeners.onLogoutTapped)
+        ToolBarWidget(
+            title = stringResource(R.string.txt_profile),
+            secondaryIcon = Icons.Default.Settings,
+            onSecondaryIconPressed = listeners.onSettingsTapped,
+        )
 
         Column(
             modifier =
@@ -153,7 +159,7 @@ private fun MemberInfoStat(
 }
 
 data class ProfileAdminScreenDetailsListeners(
-    val onLogoutTapped: () -> Unit = {},
+    val onSettingsTapped: () -> Unit = {},
     val onYearPlusTapped: () -> Unit = {},
     val onYearMinusTapped: () -> Unit = {},
     val onMonthPlusTapped: () -> Unit = {},

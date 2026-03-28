@@ -62,7 +62,8 @@ class WeightListScreenViewModel(
                             _weightList.value = result.data.map { weightPresentationMapper.getModel(it) }
                             if (result.data.isNotEmpty() && result.data.size > 1) {
                                 val change = result.data.first().weight - result.data.last().weight
-                                _weightChange.value = "${numberFormatUseCase.getWeight(change)} ${numberFormatUseCase.getWeightUnit()}"
+                                _weightChange.value =
+                                    "${numberFormatUseCase.getWeight(change)} ${numberFormatUseCase.getWeightUnit().symbol}"
                             } else {
                                 _weightChange.value = ""
                             }

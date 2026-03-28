@@ -8,13 +8,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockMemberDashboardPresentationModel
-import com.ndemi.garden.gym.ui.screens.profile.ProfileTopSection
 import com.ndemi.garden.gym.ui.screens.weight.graph.WeightComponent
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
@@ -25,6 +26,7 @@ import com.ndemi.garden.gym.ui.utils.getBMIColor
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.StatsTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
+import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberImageWidget
 import com.ndemi.garden.gym.ui.widgets.member.MemberSessionWidget
 
@@ -36,7 +38,11 @@ fun ProfileMemberDetailsScreen(
     listeners: ProfileMemberScreenListeners = ProfileMemberScreenListeners(),
 ) {
     Column {
-        ProfileTopSection(onLogoutTapped = listeners.onLogoutTapped)
+        ToolBarWidget(
+            title = stringResource(R.string.txt_profile),
+            secondaryIcon = Icons.Default.Settings,
+            onSecondaryIconPressed = listeners.onSettingsTapped,
+        )
 
         Column(
             Modifier
@@ -118,7 +124,7 @@ data class ProfileMemberScreenListeners(
     val onImageSelected: () -> Unit = {},
     val onSessionTapped: () -> Unit = {},
     val onEditDetailsTapped: () -> Unit = {},
-    val onLogoutTapped: () -> Unit = {},
+    val onSettingsTapped: () -> Unit = {},
 )
 
 @AppPreview

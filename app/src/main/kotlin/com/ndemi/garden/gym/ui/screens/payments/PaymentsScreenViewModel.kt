@@ -11,6 +11,7 @@ import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import com.ndemi.garden.gym.ui.utils.OBSERVE_MEMBER_PAYMENT_PLAN
+import com.ndemi.garden.gym.ui.utils.OBSERVE_SETTINGS
 import cv.domain.DomainResult
 import cv.domain.enums.DomainErrorType
 import cv.domain.mappers.PaymentPresentationMapper
@@ -20,10 +21,12 @@ import cv.domain.repositories.JobRepository
 import cv.domain.usecase.NumberFormatUseCase
 import cv.domain.usecase.PaymentUseCase
 import cv.domain.usecase.PermissionsUseCase
+import cv.domain.usecase.SettingsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+@Suppress("detekt.LongParameterList")
 class PaymentsScreenViewModel(
     private val memberId: String,
     private val jobRepository: JobRepository,
@@ -31,6 +34,7 @@ class PaymentsScreenViewModel(
     private val paymentUseCase: PaymentUseCase,
     private val permissionsUseCase: PermissionsUseCase,
     private val navigationService: NavigationService,
+    private val settingsUseCase: SettingsUseCase,
     private val numberFormatUseCase: NumberFormatUseCase,
     private val paymentPresentationMapper: PaymentPresentationMapper,
     dateProviderRepository: DateProviderRepository,
@@ -43,6 +47,14 @@ class PaymentsScreenViewModel(
 
     init {
         getPaymentsForMember()
+        jobRepository.add(
+            viewModelScope.launch {
+                settingsUseCase.observeSettingsChanged().collect {
+                    getPaymentsForMember()
+                }
+            },
+            OBSERVE_SETTINGS + javaClass.name,
+        )
     }
 
     fun getPaymentsForMember() {

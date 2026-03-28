@@ -16,6 +16,7 @@ import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.NumberFormatUseCase
 import cv.domain.usecase.PaymentUseCase
 import cv.domain.usecase.PermissionsUseCase
+import cv.domain.usecase.SettingsUseCase
 import cv.domain.usecase.StorageUseCase
 import cv.domain.usecase.WeightUseCase
 import cv.domain.validator.MemberValidators
@@ -49,6 +50,8 @@ val useCaseModule =
         singleOf(::NumberFormatUseCase)
 
         singleOf(::WeightUseCase)
+
+        singleOf(::SettingsUseCase)
 
         single<AttendancePresentationMapper> { AttendancePresentationMapperImp(get()) }
 

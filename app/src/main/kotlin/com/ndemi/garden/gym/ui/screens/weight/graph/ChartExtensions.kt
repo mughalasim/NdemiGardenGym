@@ -54,12 +54,15 @@ fun List<WeightData>.createDataSetWithColor(
         setCircleColor(chartColors.highlightColor)
         setDrawFilled(true)
         setDrawCircles(true)
+        valueTextSize = CHART_TEXT_SIZE
         valueTextColor = chartColors.textColor
         fillAlpha = chartColors.alpha
         fillColor = chartColors.highlightColor
         mode = LineDataSet.Mode.CUBIC_BEZIER
     }
 }
+
+private const val CHART_TEXT_SIZE = 14f
 
 data class ChartColors(
     val textColor: Int,

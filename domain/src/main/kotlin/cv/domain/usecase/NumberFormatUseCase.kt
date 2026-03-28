@@ -16,7 +16,7 @@ Be sure to convert back to these units when calling respective set functions
 class NumberFormatUseCase(
     private val unitProviderRepository: UnitProviderRepository,
 ) {
-    fun getWeightUnit(): String = unitProviderRepository.getWeightUnit().symbol
+    fun getWeightUnit() = unitProviderRepository.getWeightUnit()
 
     fun getWeight(weight: Double): Double {
         if (weight == 0.0) return 0.0
@@ -44,7 +44,7 @@ class NumberFormatUseCase(
         }.roundHalfUp()
     }
 
-    fun getHeightUnit(): String = unitProviderRepository.getHeightUnit().symbol
+    fun getHeightUnit() = unitProviderRepository.getHeightUnit()
 
     fun getHeight(height: Double): Double {
         if (height == 0.0) return height
@@ -80,9 +80,10 @@ class NumberFormatUseCase(
         }.roundHalfUp()
     }
 
-    fun getCurrencyUnit(): String = unitProviderRepository.getCurrencyUnit()
+    fun getCurrencyUnit() = unitProviderRepository.getCurrencyUnit()
 
-    fun getCurrencyFormatted(input: Double): String = DecimalFormat("${unitProviderRepository.getCurrencyUnit()} #,###").format(input)
+    fun getCurrencyFormatted(input: Double): String =
+        DecimalFormat("${unitProviderRepository.getCurrencyUnit().symbol} #,###").format(input)
 
     fun getBMI(
         entity: WeightEntity,

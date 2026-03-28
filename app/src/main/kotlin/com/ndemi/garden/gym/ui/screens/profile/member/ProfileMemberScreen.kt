@@ -42,7 +42,7 @@ fun ProfileMemberScreen(
                     sessionStartTime = sessionStartTime,
                     listeners =
                         ProfileMemberScreenListeners(
-                            onLogoutTapped = viewModel::onLogOutTapped,
+                            onSettingsTapped = viewModel::onSettingsTapped,
                             onEditDetailsTapped = viewModel::onEditDetailsTapped,
                             onSessionTapped = viewModel::onSessionTapped,
                             onImageDeleted = viewModel::onImageDeleted,
