@@ -27,7 +27,7 @@ fun ProfileAdminScreen(
                 state = state.model,
                 listeners =
                     ProfileAdminScreenDetailsListeners(
-                        onLogoutTapped = viewModel::onLogOutTapped,
+                        onSettingsTapped = viewModel::onSettingsTapped,
                         onYearPlusTapped = viewModel::onYearPlusTapped,
                         onYearMinusTapped = viewModel::onYearMinusTapped,
                         onMonthPlusTapped = viewModel::onMonthPlusTapped,

@@ -33,9 +33,7 @@ fun WeightListScreen(
             )
         }
 
-        else -> {
-            Unit
-        }
+        else -> {}
     }
 
     WeightListDetailsScreen(

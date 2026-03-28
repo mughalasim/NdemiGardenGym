@@ -55,12 +55,14 @@
     <string name="txt_add">Add</string>
     <string name="txt_workouts">Workouts</string>
     <string name="txt_bmi">BMI</string>
+    <string name="txt_admin">Admin</string>
+    <string name="txt_total">Total</string>
+    <string name="txt_settings">Settings</string>
 
     <!-- More than one word -->
     <string name="txt_register_new_member">Register a new member</string>
     <string name="txt_your_attendances">Your Attendances</string>
     <string name="txt_profile">My profile</string>
-    <string name="txt_admin">Admin</string>
     <string name="txt_all_members">All members</string>
     <string name="txt_active_members">Active Members</string>
     <string name="txt_non_members">Admins and Supervisors</string>
@@ -77,7 +79,6 @@
     <string name="txt_height">Height (%1$s)</string>
     <string name="txt_weight">Weight (%1$s)</string>
     <string name="txt_total_amount">Total: %1$s</string>
-    <string name="txt_total">Total</string>
     <string name="txt_total_time_spent">Total time spent: %1$s</string>
     <string name="txt_no_payments">No payments captured for the selected year</string>
     <string name="txt_no_attendances">No Attendances this year</string>
@@ -131,5 +132,15 @@
     <string name="txt_weight_deleted">Weight deleted successfully</string>
     <string name="txt_no_tracked_weight_this_year">No tracked weight this year</string>
     <string name="txt_tracked_weight_this_year">Tracked weight this year</string>
+    <string name="txt_settings_desc">General settings can be changed here customising your user experience</string>
+    <string name="txt_settings_weight">Weight can be set to metric or imperial</string>
+    <string name="txt_settings_height">Height can be set to metric or imperial</string>
+    <string name="txt_settings_currency">The currency used in the app can be set</string>
+    <string name="txt_settings_weight_unit">Weight unit</string>
+    <string name="txt_settings_height_unit">Height unit</string>
+    <string name="txt_settings_currency_unit">Currency unit</string>
+    <string name="txt_settings_dialog_title">%1$s selection</string>
+    <string name="txt_settings_dialog_message">Select a %1$s from the options below</string>
+    <string name="txt_settings_success_message">Successfully updated the %1$s setting to %2$s</string>
 
 </resources>

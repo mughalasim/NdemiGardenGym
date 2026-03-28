@@ -73,7 +73,7 @@ class MemberPresentationMapperImp(
             apartmentNumber = entity.apartmentNumber,
             registrationDate = dateProviderRepository.format(entity.registrationDateMillis, DateFormatType.DAY_MONTH_YEAR),
             height = if (entity.height == 0.0) "" else numberFormatUseCase.getHeight(entity.height).toString(),
-            heightUnit = numberFormatUseCase.getHeightUnit(),
+            heightUnit = numberFormatUseCase.getHeightUnit().description,
         )
 
     override fun getDashboardModel(
@@ -100,9 +100,9 @@ class MemberPresentationMapperImp(
         hasPaidMembership = entity.renewalFutureDateMillis != null,
         registrationDate = dateProviderRepository.format(entity.registrationDateMillis, DateFormatType.DAY_MONTH_YEAR),
         weight = if (trackedWeights.isEmpty()) "-" else numberFormatUseCase.getWeight(trackedWeights.first().weight).toString(),
-        weightUnit = numberFormatUseCase.getWeightUnit(),
+        weightUnit = numberFormatUseCase.getWeightUnit().symbol,
         height = numberFormatUseCase.getHeight(entity.height).toString(),
-        heightUnit = numberFormatUseCase.getHeightUnit(),
+        heightUnit = numberFormatUseCase.getHeightUnit().symbol,
         bmiValue = if (trackedWeights.isEmpty()) 0.0 else numberFormatUseCase.getBMI(trackedWeights.first(), entity.height),
         workouts = workouts.toString(),
     )

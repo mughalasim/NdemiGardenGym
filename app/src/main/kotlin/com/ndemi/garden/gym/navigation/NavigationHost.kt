@@ -19,6 +19,7 @@ import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreen
 import com.ndemi.garden.gym.ui.screens.register.RegisterNewScreen
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreen
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreen
+import com.ndemi.garden.gym.ui.screens.settings.SettingsScreen
 import com.ndemi.garden.gym.ui.screens.weight.edit.WeightEditScreen
 import com.ndemi.garden.gym.ui.screens.weight.list.WeightListScreen
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
@@ -54,6 +55,8 @@ fun NavigationHost(
         composable<Route.MembersExpiredScreen> { MembersExpiredScreen(snackbarHostState = snackbarHostState) }
 
         composable<Route.NonMembersScreen> { NonMembersScreen(snackbarHostState = snackbarHostState) }
+
+        composable<Route.SettingsScreen> { SettingsScreen(snackbarHostState = snackbarHostState) }
 
         composable<Route.WeightListScreen> { WeightListScreen(snackbarHostState = snackbarHostState) }
 

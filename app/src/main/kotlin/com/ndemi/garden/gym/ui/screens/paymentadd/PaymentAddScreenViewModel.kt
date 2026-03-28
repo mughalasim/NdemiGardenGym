@@ -51,7 +51,7 @@ class PaymentAddScreenViewModel(
         )
     val inputData: StateFlow<InputData> = _inputData
 
-    val currencyUnit = numberFormatUseCase.getCurrencyUnit()
+    val currencyUnit = numberFormatUseCase.getCurrencyUnit().description
 
     fun setData(
         startDate: Long = _inputData.value.startDate,

@@ -17,6 +17,7 @@ import com.ndemi.garden.gym.ui.utils.OBSERVE_DASHBOARD_ATTENDANCE
 import com.ndemi.garden.gym.ui.utils.OBSERVE_DASHBOARD_MEMBER
 import com.ndemi.garden.gym.ui.utils.OBSERVE_DASHBOARD_WEIGHT
 import com.ndemi.garden.gym.ui.utils.OBSERVE_SESSION_COUNTDOWN
+import com.ndemi.garden.gym.ui.utils.OBSERVE_SETTINGS
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.entities.WeightEntity
@@ -27,10 +28,10 @@ import cv.domain.presentationModels.AttendanceMonthPresentationModel
 import cv.domain.presentationModels.MemberDashboardPresentationModel
 import cv.domain.repositories.DateProviderRepository
 import cv.domain.repositories.JobRepository
-import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.AttendanceUseCase
 import cv.domain.usecase.AuthUseCase
 import cv.domain.usecase.MemberUseCase
+import cv.domain.usecase.SettingsUseCase
 import cv.domain.usecase.StorageUseCase
 import cv.domain.usecase.WeightUseCase
 import kotlinx.coroutines.delay
@@ -47,12 +48,12 @@ class ProfileMemberScreenViewModel(
     private val application: Application,
     private val jobRepository: JobRepository,
     private val authUseCase: AuthUseCase,
-    private val accessUseCase: AccessUseCase,
     private val memberUseCase: MemberUseCase,
     private val converter: ErrorCodeConverter,
     private val storageUseCase: StorageUseCase,
     private val attendanceUseCase: AttendanceUseCase,
     private val weightUseCase: WeightUseCase,
+    private val settingsUseCase: SettingsUseCase,
     private val navigationService: NavigationService,
     private val dateProviderRepository: DateProviderRepository,
     private val memberPresentationMapper: MemberPresentationMapper,
@@ -84,6 +85,19 @@ class ProfileMemberScreenViewModel(
             )
         }.launchIn(viewModelScope)
 
+        fetchData()
+
+        jobRepository.add(
+            viewModelScope.launch {
+                settingsUseCase.observeSettingsChanged().collect {
+                    fetchData()
+                }
+            },
+            OBSERVE_SETTINGS + javaClass.name,
+        )
+    }
+
+    private fun fetchData() {
         sendAction(Action.Loading)
 
         jobRepository.add(
@@ -182,8 +196,8 @@ class ProfileMemberScreenViewModel(
         }
     }
 
-    fun onLogOutTapped() {
-        accessUseCase.logOut()
+    fun onSettingsTapped() {
+        navigationService.open(Route.SettingsScreen)
     }
 
     fun onImageDeleted() {

@@ -25,3 +25,7 @@ object Variables {
     const val PARAM_MEMBER_DELETE = "member_deleted"
     const val PARAM_ATTENDANCE_DELETE = "attendance_deleted"
 }
+
+const val PREF_SETTING_WEIGHT = "weightSetting"
+const val PREF_SETTING_HEIGHT = "heightSetting"
+const val PREF_SETTING_CURRENCY = "currencySetting"

@@ -11,6 +11,7 @@ import com.ndemi.garden.gym.ui.screens.profile.admin.ProfileAdminScreenViewModel
 import com.ndemi.garden.gym.ui.screens.profile.member.ProfileMemberScreenViewModel
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel
+import com.ndemi.garden.gym.ui.screens.settings.SettingsScreenViewModel
 import com.ndemi.garden.gym.ui.screens.weight.edit.WeightEditScreenViewModel
 import com.ndemi.garden.gym.ui.screens.weight.graph.WeightGraphComponentViewModel
 import com.ndemi.garden.gym.ui.screens.weight.list.WeightListScreenViewModel
@@ -30,6 +31,8 @@ val viewModelModule =
         viewModelOf(::ProfileAdminScreenViewModel)
 
         viewModelOf(::PaymentAddScreenViewModel)
+
+        viewModelOf(::SettingsScreenViewModel)
 
         viewModel { params ->
             AttendanceScreenViewModel(
@@ -54,6 +57,7 @@ val viewModelModule =
                 numberFormatUseCase = get(),
                 paymentPresentationMapper = get(),
                 dateProviderRepository = get(),
+                settingsUseCase = get(),
             )
         }
 

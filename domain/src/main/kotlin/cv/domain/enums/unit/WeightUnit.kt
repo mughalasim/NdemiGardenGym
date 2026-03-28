@@ -2,7 +2,8 @@ package cv.domain.enums.unit
 
 enum class WeightUnit(
     val symbol: String,
+    val description: String,
 ) {
-    KILOS("Kgs"),
-    POUNDS("Pounds"),
+    KILOS("Kgs", "Kilograms"),
+    POUNDS("Lbs", "Pounds"),
 }

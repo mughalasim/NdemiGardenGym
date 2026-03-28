@@ -23,10 +23,10 @@ class WeightPresentationMapperImp(
         WeightPresentationModel(
             id = entity.id,
             dateMillis = entity.dateMillis,
-            formattedWeight = "${numberFormatUseCase.getWeight(entity.weight)} ${numberFormatUseCase.getWeightUnit()}",
+            formattedWeight = "${numberFormatUseCase.getWeight(entity.weight)} ${numberFormatUseCase.getWeightUnit().symbol}",
             formattedDate = dateProviderRepository.format(entity.dateMillis, DateFormatType.DAY_MONTH_YEAR),
             weightValue = entity.weight.toString(),
-            weightUnit = numberFormatUseCase.getWeightUnit(),
+            weightUnit = numberFormatUseCase.getWeightUnit().symbol,
         )
 
     override fun getEditModel(entity: WeightEntity) =
@@ -34,7 +34,7 @@ class WeightPresentationMapperImp(
             id = entity.id,
             formattedDate = dateProviderRepository.format(entity.dateMillis, DateFormatType.DAY_MONTH_YEAR),
             formattedWeight = numberFormatUseCase.getWeight(entity.weight).toString(),
-            weightUnit = numberFormatUseCase.getWeightUnit(),
+            weightUnit = numberFormatUseCase.getWeightUnit().description,
             dateMillis = entity.dateMillis,
         )
 

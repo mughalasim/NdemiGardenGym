@@ -15,6 +15,7 @@ import cv.data.repository.AttendanceRepositoryImp
 import cv.data.repository.AuthRepositoryImp
 import cv.data.repository.DateProviderRepositoryImp
 import cv.data.repository.JobRepositoryImp
+import cv.data.repository.LocalStorageRepositoryImp
 import cv.data.repository.MemberRepositoryImp
 import cv.data.repository.PaymentRepositoryImp
 import cv.data.repository.StorageRepositoryImp
@@ -25,6 +26,7 @@ import cv.domain.repositories.AttendanceRepository
 import cv.domain.repositories.AuthRepository
 import cv.domain.repositories.DateProviderRepository
 import cv.domain.repositories.JobRepository
+import cv.domain.repositories.LocalStorageRepository
 import cv.domain.repositories.MemberRepository
 import cv.domain.repositories.PaymentRepository
 import cv.domain.repositories.StorageRepository
@@ -36,7 +38,7 @@ val repositoryModule =
     module {
         single<JobRepository> { JobRepositoryImp() }
 
-        single<UnitProviderRepository> { UnitProviderRepositoryImp() }
+        single<UnitProviderRepository> { UnitProviderRepositoryImp(get()) }
 
         single<DateProviderRepository> { DateProviderRepositoryImp(get()) }
 
@@ -47,6 +49,8 @@ val repositoryModule =
         single<PaymentMapper> { PaymentMapperImp() }
 
         single<WeightMapper> { WeightMapperImp(get()) }
+
+        single<LocalStorageRepository> { LocalStorageRepositoryImp(get()) }
 
         single<WeightRepository> {
             WeightRepositoryImp(
