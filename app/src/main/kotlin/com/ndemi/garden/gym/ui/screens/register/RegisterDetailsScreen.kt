@@ -44,46 +44,11 @@ fun RegisterDetailScreen(
     onRegisterTapped: () -> Unit = {},
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    var errorFirstName = ""
-    var errorLastName = ""
-    var errorEmail = ""
-    var errorApartmentNumber = ""
-    var errorPassword = ""
-    var errorConfirmPassword = ""
-
-    if (uiState is UiState.Error) {
-        when (uiState.inputType) {
-            RegisterScreenInputType.FIRST_NAME -> {
-                errorFirstName = uiState.message
-            }
-
-            RegisterScreenInputType.LAST_NAME -> {
-                errorLastName = uiState.message
-            }
-
-            RegisterScreenInputType.EMAIL -> {
-                errorEmail = uiState.message
-            }
-
-            RegisterScreenInputType.APARTMENT_NUMBER -> {
-                errorApartmentNumber = uiState.message
-            }
-
-            RegisterScreenInputType.PASSWORD -> {
-                errorPassword = uiState.message
-            }
-
-            RegisterScreenInputType.CONFIRM_PASSWORD -> {
-                errorConfirmPassword = uiState.message
-            }
-
-            RegisterScreenInputType.NONE -> {
-                snackbarHostState.Show(
-                    type = SnackbarType.ERROR,
-                    message = uiState.message,
-                )
-            }
-        }
+    if (uiState is UiState.Error && uiState.inputType == RegisterScreenInputType.NONE) {
+        snackbarHostState.Show(
+            type = SnackbarType.ERROR,
+            message = uiState.message,
+        )
     }
 
     Column(
@@ -124,7 +89,7 @@ fun RegisterDetailScreen(
                     .padding(top = padding_screen_large),
             hint = stringResource(R.string.txt_first_name),
             textInput = inputData.firstName,
-            errorText = errorFirstName,
+            errorText = getErrorMessage(uiState, RegisterScreenInputType.FIRST_NAME),
         ) {
             onSetString.invoke(it, RegisterScreenInputType.FIRST_NAME)
         }
@@ -135,7 +100,7 @@ fun RegisterDetailScreen(
                     .padding(top = padding_screen),
             hint = stringResource(R.string.txt_last_name),
             textInput = inputData.lastName,
-            errorText = errorLastName,
+            errorText = getErrorMessage(uiState, RegisterScreenInputType.LAST_NAME),
         ) {
             onSetString.invoke(it, RegisterScreenInputType.LAST_NAME)
         }
@@ -146,7 +111,7 @@ fun RegisterDetailScreen(
                     .padding(top = padding_screen),
             hint = stringResource(R.string.txt_email),
             textInput = inputData.email,
-            errorText = errorEmail,
+            errorText = getErrorMessage(uiState, RegisterScreenInputType.EMAIL),
             keyboardType = KeyboardType.Email,
         ) {
             onSetString.invoke(it, RegisterScreenInputType.EMAIL)
@@ -158,7 +123,7 @@ fun RegisterDetailScreen(
                     .padding(top = padding_screen),
             hint = stringResource(R.string.txt_apartment_number),
             textInput = inputData.apartmentNumber,
-            errorText = errorApartmentNumber,
+            errorText = getErrorMessage(uiState, RegisterScreenInputType.APARTMENT_NUMBER),
         ) {
             onSetString.invoke(it, RegisterScreenInputType.APARTMENT_NUMBER)
         }
@@ -170,7 +135,7 @@ fun RegisterDetailScreen(
                         .padding(top = padding_screen),
                 hint = stringResource(id = R.string.txt_password),
                 textInput = inputData.password,
-                errorText = errorPassword,
+                errorText = getErrorMessage(uiState, RegisterScreenInputType.PASSWORD),
                 isPasswordEditText = true,
             ) {
                 onSetString.invoke(it, RegisterScreenInputType.PASSWORD)
@@ -182,7 +147,7 @@ fun RegisterDetailScreen(
                         .padding(top = padding_screen),
                 hint = stringResource(R.string.txt_confirm_password),
                 textInput = inputData.confirmPassword,
-                errorText = errorConfirmPassword,
+                errorText = getErrorMessage(uiState, RegisterScreenInputType.CONFIRM_PASSWORD),
                 isPasswordEditText = true,
             ) {
                 onSetString.invoke(it, RegisterScreenInputType.CONFIRM_PASSWORD)
@@ -201,6 +166,23 @@ fun RegisterDetailScreen(
         ) {
             onRegisterTapped.invoke()
         }
+    }
+}
+
+private fun getErrorMessage(
+    uiState: UiState,
+    inputType: RegisterScreenInputType,
+) = when (uiState) {
+    is UiState.Error -> {
+        if (uiState.inputType == inputType) {
+            uiState.message
+        } else {
+            ""
+        }
+    }
+
+    else -> {
+        ""
     }
 }
 

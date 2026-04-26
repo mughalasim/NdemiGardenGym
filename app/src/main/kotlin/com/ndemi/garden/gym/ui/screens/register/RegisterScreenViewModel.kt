@@ -17,7 +17,7 @@ import cv.domain.enums.MemberUpdateType
 import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.MemberUseCase
-import cv.domain.validator.MemberValidators
+import cv.domain.validator.RegisterScreenValidators
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -29,7 +29,7 @@ class RegisterScreenViewModel(
     private val memberUseCase: MemberUseCase,
     private val navigationService: NavigationService,
     private val hidePassword: Boolean,
-    private val validators: MemberValidators,
+    private val validators: RegisterScreenValidators,
     private val dateProviderRepository: DateProviderRepository,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     data class InputData(
@@ -64,7 +64,6 @@ class RegisterScreenViewModel(
     }
 
     private fun validateInput() {
-        val email = _inputData.value.email
         when {
             validators.name.isNotValid(_inputData.value.firstName) -> {
                 sendAction(
@@ -84,11 +83,7 @@ class RegisterScreenViewModel(
                 )
             }
 
-            email.isEmpty() ||
-                !android.util.Patterns.EMAIL_ADDRESS
-                    .matcher(email)
-                    .matches()
-            -> {
+            validators.email.isNotValid(_inputData.value.email) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_EMAIL),
@@ -106,7 +101,7 @@ class RegisterScreenViewModel(
                 )
             }
 
-            shouldValidatePassword -> {
+            !hidePassword -> {
                 passwordCheck()
             }
 
@@ -116,29 +111,13 @@ class RegisterScreenViewModel(
         }
     }
 
-    private val shouldValidatePassword =
-        !hidePassword && (
-            _inputData.value.password.isEmpty() ||
-                _inputData.value.confirmPassword.isEmpty() ||
-                _inputData.value.password != _inputData.value.confirmPassword
-        )
-
     private fun passwordCheck() {
         when {
-            _inputData.value.password.isEmpty() -> {
+            validators.password.isNotValid(_inputData.value.password) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_PASSWORD),
                         RegisterScreenInputType.PASSWORD,
-                    ),
-                )
-            }
-
-            _inputData.value.confirmPassword.isEmpty() -> {
-                sendAction(
-                    Action.ShowError(
-                        converter.getMessage(UiErrorType.INVALID_PASSWORD_CONFIRM),
-                        RegisterScreenInputType.CONFIRM_PASSWORD,
                     ),
                 )
             }

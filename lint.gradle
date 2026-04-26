@@ -5,7 +5,7 @@ spotless {
         .setEditorConfigPath("${rootProject.projectDir}/.editorconfig")
 
         trimTrailingWhitespace()
-        indentWithSpaces()
+        leadingTabsToSpaces()
         endWithNewline()
     }
 }

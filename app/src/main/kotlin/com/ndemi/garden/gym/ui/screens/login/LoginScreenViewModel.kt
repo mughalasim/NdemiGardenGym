@@ -15,6 +15,7 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.enums.MemberType
 import cv.domain.usecase.AccessUseCase
+import cv.domain.validator.Validator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -22,6 +23,8 @@ import kotlinx.coroutines.launch
 class LoginScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val accessUseCase: AccessUseCase,
+    private val emailValidator: Validator,
+    private val passwordValidator: Validator,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     data class InputData(
         val email: String,
@@ -51,19 +54,28 @@ class LoginScreenViewModel(
     }
 
     private fun validateInput() {
-        val email = _inputData.value.email
-        val password = _inputData.value.password
+        when {
+            emailValidator.isNotValid(_inputData.value.email) -> {
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiErrorType.INVALID_EMAIL),
+                        LoginScreenInputType.EMAIL,
+                    ),
+                )
+            }
 
-        if (email.isEmpty() ||
-            !android.util.Patterns.EMAIL_ADDRESS
-                .matcher(email)
-                .matches()
-        ) {
-            sendAction(Action.ShowError(converter.getMessage(UiErrorType.INVALID_EMAIL), LoginScreenInputType.EMAIL))
-        } else if (password.isEmpty()) {
-            sendAction(Action.ShowError(converter.getMessage(UiErrorType.INVALID_PASSWORD), LoginScreenInputType.PASSWORD))
-        } else {
-            sendAction(Action.SetReady)
+            passwordValidator.isNotValid(_inputData.value.password) -> {
+                sendAction(
+                    Action.ShowError(
+                        converter.getMessage(UiErrorType.INVALID_PASSWORD),
+                        LoginScreenInputType.PASSWORD,
+                    ),
+                )
+            }
+
+            else -> {
+                sendAction(Action.SetReady)
+            }
         }
     }
 

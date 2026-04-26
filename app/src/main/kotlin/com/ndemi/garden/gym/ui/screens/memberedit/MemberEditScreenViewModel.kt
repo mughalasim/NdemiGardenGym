@@ -21,7 +21,7 @@ import cv.domain.usecase.MemberUseCase
 import cv.domain.usecase.NumberFormatUseCase
 import cv.domain.usecase.PermissionsUseCase
 import cv.domain.usecase.StorageUseCase
-import cv.domain.validator.MemberValidators
+import cv.domain.validator.RegisterScreenValidators
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 class MemberEditScreenViewModel(
     private val memberId: String,
     private val memberUseCase: MemberUseCase,
-    private val validators: MemberValidators,
+    private val validators: RegisterScreenValidators,
     private val converter: ErrorCodeConverter,
     private val storageUseCase: StorageUseCase,
     private val navigationService: NavigationService,
@@ -121,7 +121,7 @@ class MemberEditScreenViewModel(
                 )
             }
 
-            validators.phone.isNotValid(_memberModel.value.phoneNumber) -> {
+            validators.phoneNumber.isNotValid(_memberModel.value.phoneNumber) -> {
                 sendAction(
                     Action.ShowError(
                         converter.getMessage(UiErrorType.INVALID_PHONE_NUMBER),

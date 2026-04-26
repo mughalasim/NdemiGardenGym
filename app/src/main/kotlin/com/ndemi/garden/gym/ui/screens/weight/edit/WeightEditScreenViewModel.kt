@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.di.WeightValidator
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
@@ -33,7 +32,7 @@ class WeightEditScreenViewModel(
     private val navigationService: NavigationService,
     weightPresentationMapper: WeightPresentationMapper,
     private val dateProviderRepository: DateProviderRepository,
-    @param:WeightValidator private val weightValidator: Validator,
+    private val weightValidator: Validator,
 ) : BaseViewModel<WeightEditScreenViewModel.UiState, WeightEditScreenViewModel.Action>(UiState.Loading) {
     private val _weightState: MutableStateFlow<WeightUiState> = MutableStateFlow(WeightUiState())
     val weightState: StateFlow<WeightUiState> = _weightState

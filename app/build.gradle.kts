@@ -132,11 +132,6 @@ android {
         }
     }
 
-    firebaseCrashlytics {
-        mappingFileUploadEnabled = false
-        nativeSymbolUploadEnabled = false
-    }
-
     packaging {
         resources.excludes.add("META-INF/LICENSE.txt")
         resources.excludes.add("META-INF/NOTICE.txt")

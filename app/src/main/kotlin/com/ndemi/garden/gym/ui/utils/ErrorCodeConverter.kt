@@ -40,7 +40,6 @@ class ErrorCodeConverterImp(
         when (uiErrorType) {
             UiErrorType.INVALID_EMAIL -> application.resources.getString(R.string.error_email)
             UiErrorType.INVALID_PASSWORD -> application.resources.getString(R.string.error_password)
-            UiErrorType.INVALID_PASSWORD_CONFIRM -> application.resources.getString(R.string.error_password_confirm)
             UiErrorType.INVALID_PASSWORD_MATCH -> application.resources.getString(R.string.error_password_match)
             UiErrorType.INVALID_FIRST_NAME -> application.resources.getString(R.string.error_first_name)
             UiErrorType.INVALID_LAST_NAME -> application.resources.getString(R.string.error_last_name)

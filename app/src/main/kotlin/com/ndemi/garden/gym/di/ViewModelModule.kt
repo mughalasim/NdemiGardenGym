@@ -24,7 +24,22 @@ val viewModelModule =
     module {
         viewModelOf(::MainScreenViewModel)
 
-        viewModelOf(::LoginScreenViewModel)
+        viewModel {
+            LoginScreenViewModel(
+                converter = get(),
+                accessUseCase = get(),
+                emailValidator = get(named<ValidatorEmail>()),
+                passwordValidator = get(named<ValidatorPassword>()),
+            )
+        }
+
+        viewModel {
+            ResetPasswordScreenViewModel(
+                converter = get(),
+                accessUseCase = get(),
+                emailValidator = get(named<ValidatorEmail>()),
+            )
+        }
 
         viewModelOf(::ProfileMemberScreenViewModel)
 
@@ -89,8 +104,6 @@ val viewModelModule =
             )
         }
 
-        viewModelOf(::ResetPasswordScreenViewModel)
-
         viewModelOf(::WeightGraphComponentViewModel)
 
         viewModel { params ->
@@ -102,7 +115,7 @@ val viewModelModule =
                 weightPresentationMapper = get(),
                 dateProviderRepository = get(),
                 navigationService = get(),
-                weightValidator = get(),
+                weightValidator = get((named<ValidatorWeight>())),
                 weightUseCase = get(),
                 converter = get(),
             )
@@ -121,6 +134,7 @@ val viewModelModule =
                 dateProviderRepository = get(),
             )
         }
+
         viewModel(named<RegisterMember>()) {
             RegisterScreenViewModel(
                 converter = get(),

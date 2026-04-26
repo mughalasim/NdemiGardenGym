@@ -1,14 +1,17 @@
 package com.ndemi.garden.gym.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.DirectionsRun
 import androidx.compose.material.icons.rounded.ContactMail
-import androidx.compose.material.icons.rounded.FormatListNumbered
+import androidx.compose.material.icons.rounded.Dashboard
 import androidx.compose.material.icons.rounded.Group
 import androidx.compose.material.icons.rounded.InsertChartOutlined
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.MonetizationOn
+import androidx.compose.material.icons.rounded.NoAccounts
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Security
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.ndemi.garden.gym.R
 
@@ -37,8 +40,8 @@ sealed class BottomNavItem(
 
     data object ProfileAdminScreen : BottomNavItem(
         Route.ProfileAdminScreen,
-        Icons.Rounded.Person,
-        R.string.txt_admin,
+        Icons.Rounded.Dashboard,
+        R.string.txt_dashboard,
     )
 
     data object ProfileMemberScreen : BottomNavItem(
@@ -67,19 +70,19 @@ sealed class BottomNavItem(
 
     data object NonMembersScreen : BottomNavItem(
         Route.NonMembersScreen,
-        Icons.Rounded.FormatListNumbered,
-        R.string.txt_non_members,
+        Icons.Rounded.Security,
+        R.string.txt_management,
     )
 
     data object MembersExpiredScreen : BottomNavItem(
         Route.MembersExpiredScreen,
-        Icons.Rounded.Group,
+        Icons.Rounded.NoAccounts,
         R.string.txt_inactive,
     )
 
     data object MembersActiveScreen : BottomNavItem(
         Route.MembersActiveScreen,
-        Icons.Rounded.Group,
+        Icons.AutoMirrored.Rounded.DirectionsRun,
         R.string.txt_in_the_gym,
     )
 }

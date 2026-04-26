@@ -30,7 +30,7 @@ fun MainDetailsScreen(
 
     AppThemeComposable(
         bottomBar = {
-            BottomNavigationWidget(navController, bottomNavItems)
+            BottomNavigationWidget(navHostController = navController, navBottomItems = bottomNavItems)
         },
         snackbarHost = {
             SnackbarHost(hostState = viewModel.snackbarHostState.hostState) {

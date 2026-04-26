@@ -12,6 +12,7 @@ import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiStat
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.usecase.AccessUseCase
+import cv.domain.validator.Validator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 class ResetPasswordScreenViewModel(
     private val converter: ErrorCodeConverter,
     private val accessUseCase: AccessUseCase,
+    private val emailValidator: Validator,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     private val _inputData: MutableStateFlow<String> = MutableStateFlow("")
     val inputData: StateFlow<String> = _inputData
@@ -29,11 +31,7 @@ class ResetPasswordScreenViewModel(
     }
 
     private fun validateInput() {
-        if (_inputData.value.isEmpty() ||
-            !android.util.Patterns.EMAIL_ADDRESS
-                .matcher(_inputData.value)
-                .matches()
-        ) {
+        if (emailValidator.isNotValid(_inputData.value)) {
             sendAction(
                 Action.ShowError(
                     converter.getMessage(UiErrorType.INVALID_EMAIL),

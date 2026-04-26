@@ -8,8 +8,7 @@
     <string name="error_no_data">No records found</string>
     <string name="error_unknown">An unknown error has occurred, please try again later</string>
     <string name="error_email">Invalid email address</string>
-    <string name="error_password">Invalid password</string>
-    <string name="error_password_confirm">Invalid confirm password</string>
+    <string name="error_password">Invalid password, must be at least 6 characters in length with one letter and one number</string>
     <string name="error_password_match">Your password and confirm password do not match</string>
     <string name="error_first_name">First name is invalid</string>
     <string name="error_last_name">Last name is invalid</string>
@@ -58,6 +57,8 @@
     <string name="txt_admin">Admin</string>
     <string name="txt_total">Total</string>
     <string name="txt_settings">Settings</string>
+    <string name="txt_dashboard">Dashboard</string>
+    <string name="txt_management">Management</string>
 
     <!-- More than one word -->
     <string name="txt_register_new_member">Register a new member</string>

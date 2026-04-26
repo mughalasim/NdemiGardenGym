@@ -19,13 +19,6 @@ import cv.domain.usecase.PermissionsUseCase
 import cv.domain.usecase.SettingsUseCase
 import cv.domain.usecase.StorageUseCase
 import cv.domain.usecase.WeightUseCase
-import cv.domain.validator.MemberValidators
-import cv.domain.validator.Validator
-import cv.domain.validator.apartment.ApartmentNumberValidatorImp
-import cv.domain.validator.height.HeightValidatorImp
-import cv.domain.validator.name.NameValidatorImp
-import cv.domain.validator.phone.PhoneValidatorImp
-import cv.domain.validator.weight.WeightValidatorImp
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -60,18 +53,4 @@ val useCaseModule =
         single<PaymentPresentationMapper> { PaymentPresentationMapperImp(get(), get()) }
 
         single<WeightPresentationMapper> { WeightPresentationMapperImp(get(), get()) }
-
-        @WeightValidator
-        single<Validator> {
-            WeightValidatorImp(get())
-        }
-
-        single<MemberValidators> {
-            MemberValidators(
-                name = @NameValidator NameValidatorImp(),
-                phone = @PhoneValidator PhoneValidatorImp(),
-                apartmentNumber = @ApartmentNumberValidator ApartmentNumberValidatorImp(),
-                height = @HeightValidator HeightValidatorImp(get()),
-            )
-        }
     }

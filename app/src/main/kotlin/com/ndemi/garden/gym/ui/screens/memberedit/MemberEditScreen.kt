@@ -1,7 +1,5 @@
 package com.ndemi.garden.gym.ui.screens.memberedit
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.enums.MemberEditScreenInputType
+import com.ndemi.garden.gym.ui.screens.ImageSelector
 import com.ndemi.garden.gym.ui.utils.ObserveAppSnackbar
 import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
@@ -23,23 +22,17 @@ import org.koin.core.parameter.parametersOf
 fun MemberEditScreen(
     memberId: String,
     snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
+    imageSelector: ImageSelector = ImageSelector(),
     viewModel: MemberEditScreenViewModel = koinViewModel<MemberEditScreenViewModel>(parameters = { parametersOf(memberId) }),
 ) {
-    val context = LocalContext.current
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val permissionState by viewModel.getPermissions().collectAsStateWithLifecycle()
     val model by viewModel.memberModel.collectAsStateWithLifecycle()
     var showDeleteUserDialog by remember { mutableStateOf(false) }
     var showMemberTypeSelectionDialog by remember { mutableStateOf(false) }
-    val galleryLauncher =
-        rememberLauncherForActivityResult(GetContent()) { imageUri ->
-            imageUri?.let {
-                context.contentResolver
-                    .openInputStream(imageUri)
-                    ?.use { inputStream -> inputStream.buffered().readBytes() }
-                    ?.let { byteArray -> viewModel.updateMemberImage(byteArray) }
-            }
-        }
+    imageSelector.SetUpResult(LocalContext.current) {
+        viewModel.updateMemberImage(it)
+    }
     viewModel.snackbarState.ObserveAppSnackbar(snackbarHostState)
 
     if (showDeleteUserDialog) {
@@ -87,7 +80,7 @@ fun MemberEditScreen(
             },
         listeners =
             MemberEditScreenListeners(
-                onImageSelect = { galleryLauncher.launch("image/*") },
+                onImageSelect = imageSelector::openImages,
                 onImageDelete = viewModel::deleteMemberImage,
                 onSetString = viewModel::setString,
                 onUpdateTapped = viewModel::onUpdateTapped,

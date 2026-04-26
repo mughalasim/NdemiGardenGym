@@ -91,29 +91,4 @@ sealed class Route {
         val weight: String = "",
         val dateMillis: Long = 0L,
     ) : Route()
-
-    companion object {
-        @Suppress("detekt.CyclomaticComplexMethod")
-        fun String.toRoute(): Route =
-            when {
-                this.contains(ResetPasswordScreen.javaClass.simpleName) -> ResetPasswordScreen
-                this.contains(RegisterScreen.javaClass.simpleName) -> RegisterScreen
-                this.contains(RegisterNewScreen.javaClass.simpleName) -> RegisterNewScreen
-                this.contains(ProfileAdminScreen.javaClass.simpleName) -> ProfileAdminScreen
-                this.contains(ProfileMemberScreen.javaClass.simpleName) -> ProfileMemberScreen
-                this.contains(AttendanceScreen.javaClass.simpleName) -> AttendanceScreen
-                this.contains(AllMembersScreen.javaClass.simpleName) -> AllMembersScreen
-                this.contains(MembersActiveScreen.javaClass.simpleName) -> MembersActiveScreen
-                this.contains(MembersExpiredScreen.javaClass.simpleName) -> MembersExpiredScreen
-                this.contains(NonMembersScreen.javaClass.simpleName) -> NonMembersScreen
-                this.contains(WeightListScreen.javaClass.simpleName) -> WeightListScreen
-                this.contains(SettingsScreen.javaClass.simpleName) -> SettingsScreen
-                this.contains("MembersAttendancesScreen") -> MembersAttendancesScreen()
-                this.contains("PaymentsScreen") -> PaymentsScreen()
-                this.contains("PaymentAddScreen") -> PaymentAddScreen()
-                this.contains("MemberEditScreen") -> MemberEditScreen()
-                this.contains("WeightEditScreen") -> WeightEditScreen()
-                else -> LoginScreen
-            }
-    }
 }

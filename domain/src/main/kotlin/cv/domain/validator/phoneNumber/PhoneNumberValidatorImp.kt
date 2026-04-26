@@ -1,8 +1,8 @@
-package cv.domain.validator.phone
+package cv.domain.validator.phoneNumber
 
 import cv.domain.validator.Validator
 
-class PhoneValidatorImp : Validator {
+class PhoneNumberValidatorImp : Validator {
     override fun isNotValid(value: String): Boolean =
         when {
             value.isEmpty() -> false

@@ -1,7 +1,8 @@
 package com.ndemi.garden.gym.navigation
 
 import androidx.navigation.NavController
-import com.ndemi.garden.gym.navigation.Route.Companion.toRoute
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.toRoute
 import cv.domain.Variables.EVENT_NAVIGATE
 import cv.domain.Variables.PARAM_SCREEN_NAME
 import cv.domain.enums.MemberType
@@ -17,24 +18,14 @@ class NavigationServiceImp(
 
     override fun setNavController(navController: NavController) {
         this.navController = navController
-        val initialRoute = processInitialRoute()
-        this.initialRoute = initialRoute
+        this.initialRoute = getInitialRoute()
     }
 
-    override fun open(
-        route: Route,
-        removeCurrentFromStack: Boolean,
-    ) {
+    override fun open(route: Route) {
         if (route == getCurrentRoute()) {
             return
         }
-        navController.navigate(route) {
-            if (removeCurrentFromStack) {
-                popUpTo(getCurrentRoute()) {
-                    inclusive = true
-                }
-            }
-        }
+        navController.navigate(route)
         analyticsRepository.logEvent(EVENT_NAVIGATE, PARAM_SCREEN_NAME, route.javaClass.simpleName)
     }
 
@@ -43,61 +34,30 @@ class NavigationServiceImp(
         analyticsRepository.logEvent(EVENT_NAVIGATE, PARAM_SCREEN_NAME, getCurrentRoute().javaClass.simpleName)
     }
 
-    override fun getCurrentRoute(): Route =
-        navController.currentDestination?.route?.toRoute()
-            ?: processInitialRoute()
+    override fun getCurrentRoute(): Route {
+        val entry = navController.currentBackStackEntry ?: return getInitialRoute()
+        val destination = entry.destination
 
-    override fun getInitialRoute(): Route = processInitialRoute()
+        return appRoutes
+            .find { destination.hasRoute(it::class) }
+            ?.let { entry.toRoute(it::class) }
+            ?: getInitialRoute()
+    }
 
-    private fun processInitialRoute(): Route =
-        if (!permissionsUseCase.isAuthenticated()) {
-            Route.LoginScreen
-        } else {
-            when (permissionsUseCase.getMemberType()) {
-                MemberType.MEMBER -> {
-                    Route.ProfileMemberScreen
-                }
-
-                else -> {
-                    Route.ProfileAdminScreen
-                }
-            }
+    override fun getInitialRoute(): Route =
+        when {
+            !permissionsUseCase.isAuthenticated() -> Route.LoginScreen
+            permissionsUseCase.getMemberType() == MemberType.MEMBER -> Route.ProfileMemberScreen
+            else -> Route.ProfileAdminScreen
         }
 
     override fun getBottomNavItems(): List<BottomNavItem> =
-        if (!permissionsUseCase.isAuthenticated()) {
-            listOf(
-                BottomNavItem.LoginScreen,
-                BottomNavItem.RegisterScreen,
-                BottomNavItem.ResetPasswordScreen,
-            )
-        } else {
-            when (permissionsUseCase.getMemberType()) {
-                MemberType.MEMBER -> {
-                    listOf(
-                        BottomNavItem.ProfileMemberScreen,
-                        BottomNavItem.AttendanceScreen,
-                        BottomNavItem.PaymentsScreen,
-                        BottomNavItem.MembersActiveScreen,
-                    )
-                }
-
-                MemberType.ADMIN, MemberType.SUPERVISOR -> {
-                    listOf(
-                        BottomNavItem.ProfileAdminScreen,
-                        BottomNavItem.AllMembersScreen,
-                        BottomNavItem.MembersExpiredScreen,
-                        BottomNavItem.MembersActiveScreen,
-                    )
-                }
-
-                MemberType.SUPER_ADMIN -> {
-                    listOf(
-                        BottomNavItem.ProfileAdminScreen,
-                        BottomNavItem.NonMembersScreen,
-                        BottomNavItem.AllMembersScreen,
-                    )
-                }
-            }
+        when {
+            !permissionsUseCase.isAuthenticated() -> getUnauthenticatedBottomNavItems()
+            permissionsUseCase.getMemberType() == MemberType.MEMBER -> getMemberBottomNavItems()
+            permissionsUseCase.getMemberType() == MemberType.ADMIN -> getAdminBottomNavItems()
+            permissionsUseCase.getMemberType() == MemberType.SUPERVISOR -> getAdminBottomNavItems()
+            permissionsUseCase.getMemberType() == MemberType.SUPER_ADMIN -> getSuperAdminBottomNavItems()
+            else -> getUnauthenticatedBottomNavItems()
         }
 }
