@@ -11,19 +11,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.enums.MemberEditScreenInputType
 import com.ndemi.garden.gym.ui.screens.ImageSelector
-import com.ndemi.garden.gym.ui.utils.ObserveAppSnackbar
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
 import cv.domain.enums.MemberType
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun MemberEditScreen(
     memberId: String,
-    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
+    viewModel: MemberEditScreenViewModel,
     imageSelector: ImageSelector = ImageSelector(),
-    viewModel: MemberEditScreenViewModel = koinViewModel<MemberEditScreenViewModel>(parameters = { parametersOf(memberId) }),
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val permissionState by viewModel.getPermissions().collectAsStateWithLifecycle()
@@ -33,7 +28,6 @@ fun MemberEditScreen(
     imageSelector.SetUpResult(LocalContext.current) {
         viewModel.updateMemberImage(it)
     }
-    viewModel.snackbarState.ObserveAppSnackbar(snackbarHostState)
 
     if (showDeleteUserDialog) {
         AlertDialogWidget(

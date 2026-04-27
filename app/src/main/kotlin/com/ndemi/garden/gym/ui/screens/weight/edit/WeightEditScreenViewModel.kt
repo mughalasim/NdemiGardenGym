@@ -5,6 +5,9 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
+import com.ndemi.garden.gym.ui.appSnackbar.buildErrorSnackbar
+import com.ndemi.garden.gym.ui.appSnackbar.buildSuccessSnackbar
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
@@ -12,7 +15,6 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
 import cv.domain.entities.WeightEntity
 import cv.domain.enums.DateFormatType
-import cv.domain.enums.DomainErrorType
 import cv.domain.mappers.WeightPresentationMapper
 import cv.domain.presentationModels.WeightEditPresentationModel
 import cv.domain.repositories.DateProviderRepository
@@ -26,6 +28,7 @@ class WeightEditScreenViewModel(
     weightId: String = "",
     private val weight: String = "",
     private val dateMillis: Long = 0L,
+    private val showSnackbar: (AppSnackbarData) -> Unit,
     private val application: Application,
     private val weightUseCase: WeightUseCase,
     private val converter: ErrorCodeConverter,
@@ -90,9 +93,16 @@ class WeightEditScreenViewModel(
     fun onAddTapped() {
         viewModelScope.launch {
             weightUseCase.setWeight(_weightState.value.model).also {
+                sendAction(Action.SetWaiting)
                 when (it) {
-                    is DomainResult.Error -> sendAction(Action.ShowDomainError(it.error, converter))
-                    is DomainResult.Success -> navigationService.popBack()
+                    is DomainResult.Error -> {
+                        showSnackbar(buildErrorSnackbar(converter.getMessage(it.error)))
+                    }
+
+                    is DomainResult.Success -> {
+                        showSnackbar(buildSuccessSnackbar("Successfully tracked weight"))
+                        navigationService.popBack()
+                    }
                 }
             }
         }
@@ -110,27 +120,12 @@ class WeightEditScreenViewModel(
     sealed interface UiState : BaseState {
         data object Loading : UiState
 
-        data class Error(
-            val message: String,
-        ) : UiState
-
-        data class Success(
-            val message: String,
-        ) : UiState
+        data object Waiting : UiState
     }
 
     sealed interface Action : BaseAction<UiState> {
-        data class ShowDomainError(
-            val domainErrorType: DomainErrorType,
-            val errorCodeConverter: ErrorCodeConverter,
-        ) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainErrorType))
-        }
-
-        data class Success(
-            val message: String = "",
-        ) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Success(message)
+        data object SetWaiting : Action {
+            override fun reduce(state: UiState): UiState = UiState.Waiting
         }
     }
 }

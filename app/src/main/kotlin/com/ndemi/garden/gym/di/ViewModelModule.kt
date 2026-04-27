@@ -1,5 +1,6 @@
 package com.ndemi.garden.gym.di
 
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarViewModel
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel
 import com.ndemi.garden.gym.ui.screens.main.MainScreenViewModel
@@ -22,10 +23,24 @@ import org.koin.dsl.module
 
 val viewModelModule =
     module {
-        viewModelOf(::MainScreenViewModel)
+        viewModelOf(::AppSnackbarViewModel)
 
-        viewModel {
+        viewModelOf(::WeightGraphComponentViewModel)
+
+        viewModel { params ->
+            MainScreenViewModel(
+                showSnackbar = params.get(),
+                jobRepository = get(),
+                navigationService = get(),
+                authUseCase = get(),
+                accessUseCase = get(),
+                converter = get(),
+            )
+        }
+
+        viewModel { params ->
             LoginScreenViewModel(
+                showSnackbar = params.get(),
                 converter = get(),
                 accessUseCase = get(),
                 emailValidator = get(named<ValidatorEmail>()),
@@ -33,25 +48,50 @@ val viewModelModule =
             )
         }
 
-        viewModel {
+        viewModel { params ->
             ResetPasswordScreenViewModel(
+                showSnackbar = params.get(),
                 converter = get(),
                 accessUseCase = get(),
                 emailValidator = get(named<ValidatorEmail>()),
             )
         }
 
-        viewModelOf(::ProfileMemberScreenViewModel)
+        viewModel(named<RegisterMember>()) { params ->
+            RegisterScreenViewModel(
+                converter = get(),
+                accessUseCase = get(),
+                memberUseCase = get(),
+                navigationService = get(),
+                validators = get(),
+                hidePassword = false,
+                dateProviderRepository = get(),
+                showSnackbar = params.get(),
+            )
+        }
 
-        viewModelOf(::ProfileAdminScreenViewModel)
-
-        viewModelOf(::PaymentAddScreenViewModel)
-
-        viewModelOf(::SettingsScreenViewModel)
+        viewModel { params ->
+            ProfileMemberScreenViewModel(
+                showSnackbar = params.get(),
+                application = get(),
+                jobRepository = get(),
+                converter = get(),
+                memberUseCase = get(),
+                attendanceUseCase = get(),
+                navigationService = get(),
+                dateProviderRepository = get(),
+                memberPresentationMapper = get(),
+                weightUseCase = get(),
+                settingsUseCase = get(),
+                authUseCase = get(),
+                storageUseCase = get(),
+            )
+        }
 
         viewModel { params ->
             AttendanceScreenViewModel(
-                memberId = params.get(),
+                memberId = params[0],
+                showSnackbar = params[1],
                 jobRepository = get(),
                 converter = get(),
                 attendanceUseCase = get(),
@@ -61,9 +101,72 @@ val viewModelModule =
             )
         }
 
+        viewModel(named<CreateMember>()) { params ->
+            RegisterScreenViewModel(
+                converter = get(),
+                accessUseCase = get(),
+                memberUseCase = get(),
+                navigationService = get(),
+                validators = get(),
+                hidePassword = true,
+                dateProviderRepository = get(),
+                showSnackbar = params.get(),
+            )
+        }
+
+        viewModel { params ->
+            ProfileAdminScreenViewModel(
+                showSnackbar = params.get(),
+                jobRepository = get(),
+                adminDashboardUseCase = get(),
+                navigationService = get(),
+                settingsUseCase = get(),
+                dateProviderRepository = get(),
+            )
+        }
+
+        viewModel { params ->
+            MembersScreenViewModel(
+                screenType = params[0],
+                showSnackbar = params[1],
+                jobRepository = get(),
+                converter = get(),
+                memberUseCase = get(),
+                attendanceUseCase = get(),
+                permissionsUseCase = get(),
+                navigationService = get(),
+                dateProviderRepository = get(),
+                memberPresentationMapper = get(),
+            )
+        }
+
+        viewModel { params ->
+            PaymentAddScreenViewModel(
+                memberId = params[0],
+                showSnackbar = params[1],
+                converter = get(),
+                paymentUseCase = get(),
+                navigationService = get(),
+                dateProviderRepository = get(),
+                numberFormatUseCase = get(),
+            )
+        }
+
+        viewModel { params ->
+            SettingsScreenViewModel(
+                showSnackbar = params.get(),
+                app = get(),
+                numberFormatUseCase = get(),
+                navigationService = get(),
+                accessUseCase = get(),
+                settingsUseCase = get(),
+            )
+        }
+
         viewModel { params ->
             PaymentsScreenViewModel(
-                memberId = params.get(),
+                memberId = params[0],
+                showSnackbar = params[1],
                 jobRepository = get(),
                 converter = get(),
                 paymentUseCase = get(),
@@ -77,22 +180,9 @@ val viewModelModule =
         }
 
         viewModel { params ->
-            MembersScreenViewModel(
-                screenType = params.get(),
-                jobRepository = get(),
-                converter = get(),
-                memberUseCase = get(),
-                attendanceUseCase = get(),
-                permissionsUseCase = get(),
-                navigationService = get(),
-                dateProviderRepository = get(),
-                memberPresentationMapper = get(),
-            )
-        }
-
-        viewModel { params ->
             MemberEditScreenViewModel(
-                memberId = params.get(),
+                memberId = params[0],
+                showSnackbar = params[1],
                 memberUseCase = get(),
                 validators = get(),
                 converter = get(),
@@ -104,13 +194,12 @@ val viewModelModule =
             )
         }
 
-        viewModelOf(::WeightGraphComponentViewModel)
-
         viewModel { params ->
             WeightEditScreenViewModel(
-                weightId = params.get(),
-                weight = params.get(),
-                dateMillis = params.get(),
+                weightId = params[0],
+                weight = params[1],
+                dateMillis = params[2],
+                showSnackbar = params[3],
                 application = get(),
                 weightPresentationMapper = get(),
                 dateProviderRepository = get(),
@@ -121,29 +210,16 @@ val viewModelModule =
             )
         }
 
-        viewModelOf(::WeightListScreenViewModel)
-
-        viewModel(named<CreateMember>()) {
-            RegisterScreenViewModel(
-                converter = get(),
-                accessUseCase = get(),
-                memberUseCase = get(),
-                navigationService = get(),
-                validators = get(),
-                hidePassword = true,
+        viewModel { params ->
+            WeightListScreenViewModel(
+                showSnackbar = params.get(),
+                jobRepository = get(),
+                weightPresentationMapper = get(),
                 dateProviderRepository = get(),
-            )
-        }
-
-        viewModel(named<RegisterMember>()) {
-            RegisterScreenViewModel(
-                converter = get(),
-                accessUseCase = get(),
-                memberUseCase = get(),
                 navigationService = get(),
-                validators = get(),
-                hidePassword = false,
-                dateProviderRepository = get(),
+                weightUseCase = get(),
+                converter = get(),
+                numberFormatUseCase = get(),
             )
         }
     }

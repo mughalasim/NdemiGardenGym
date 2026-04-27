@@ -8,12 +8,22 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarViewModel
 import com.ndemi.garden.gym.ui.screens.main.MainScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.widgets.LoadingScreenWidget
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
-fun MainScreen(viewModel: MainScreenViewModel = koinViewModel<MainScreenViewModel>()) {
+fun MainScreen(
+    snackbarViewModel: AppSnackbarViewModel = koinViewModel<AppSnackbarViewModel>(),
+    showSnackbar: (AppSnackbarData) -> Unit = snackbarViewModel::showSnackbar,
+    viewModel: MainScreenViewModel =
+        koinViewModel<MainScreenViewModel>(
+            parameters = { parametersOf(showSnackbar) },
+        ),
+) {
     val navController = rememberNavController()
     viewModel.setNavController(navController)
 
@@ -49,6 +59,8 @@ fun MainScreen(viewModel: MainScreenViewModel = koinViewModel<MainScreenViewMode
 
         is UiState.Ready -> {
             MainDetailsScreen(
+                viewModel = viewModel,
+                snackbarViewModel = snackbarViewModel,
                 navController = navController,
                 initialRoute = state.initialRoute,
                 bottomNavItems = state.bottomNavItems,

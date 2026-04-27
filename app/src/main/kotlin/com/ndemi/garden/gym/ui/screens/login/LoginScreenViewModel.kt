@@ -3,7 +3,11 @@ package com.ndemi.garden.gym.ui.screens.login
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.BuildConfig
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.autoFillInformation
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
+import com.ndemi.garden.gym.ui.appSnackbar.buildErrorSnackbar
+import com.ndemi.garden.gym.ui.appSnackbar.buildSuccessSnackbar
 import com.ndemi.garden.gym.ui.enums.LoginScreenInputType
 import com.ndemi.garden.gym.ui.enums.UiErrorType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
@@ -21,6 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class LoginScreenViewModel(
+    private val showSnackbar: (AppSnackbarData) -> Unit,
     private val converter: ErrorCodeConverter,
     private val accessUseCase: AccessUseCase,
     private val emailValidator: Validator,
@@ -57,7 +62,7 @@ class LoginScreenViewModel(
         when {
             emailValidator.isNotValid(_inputData.value.email) -> {
                 sendAction(
-                    Action.ShowError(
+                    Action.ShowInputError(
                         converter.getMessage(UiErrorType.INVALID_EMAIL),
                         LoginScreenInputType.EMAIL,
                     ),
@@ -66,7 +71,7 @@ class LoginScreenViewModel(
 
             passwordValidator.isNotValid(_inputData.value.password) -> {
                 sendAction(
-                    Action.ShowError(
+                    Action.ShowInputError(
                         converter.getMessage(UiErrorType.INVALID_PASSWORD),
                         LoginScreenInputType.PASSWORD,
                     ),
@@ -85,11 +90,13 @@ class LoginScreenViewModel(
             accessUseCase.login(_inputData.value.email, _inputData.value.password).also {
                 when (it) {
                     is DomainResult.Success -> {
+                        showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_successfully_logged_in)))
                         sendAction(Action.Success)
                     }
 
                     is DomainResult.Error -> {
-                        sendAction(Action.ShowError(converter.getMessage(it.error)))
+                        showSnackbar(buildErrorSnackbar(converter.getMessage(it.error)))
+                        sendAction(Action.SetReady)
                     }
                 }
             }
@@ -128,7 +135,7 @@ class LoginScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowError(
+        data class ShowInputError(
             val message: String,
             val inputType: LoginScreenInputType = LoginScreenInputType.NONE,
         ) : Action {

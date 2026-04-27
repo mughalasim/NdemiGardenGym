@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.enums.PaymentAddScreenInputType
-import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.paymentadd.PaymentAddScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
@@ -33,7 +32,6 @@ import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.theme.page_width
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
@@ -45,38 +43,10 @@ fun PaymentAddDetailsScreen(
     uiState: UiState = UiState.Ready,
     currencyUnit: String = "",
     onSetData: (Long, String, String, PaymentAddScreenInputType) -> Unit = { _, _, _, _ -> },
-    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
     onPaymentAddTapped: () -> Unit = {},
 ) {
     val state = rememberDatePickerState(initialDisplayMode = DisplayMode.Picker)
     var datePickerVisibility by remember { mutableStateOf(false) }
-    var errorMonthDuration = ""
-    var errorAmount = ""
-    var errorStartDate = ""
-
-    if (uiState is UiState.Error) {
-        when (uiState.inputType) {
-            PaymentAddScreenInputType.START_DATE -> {
-                errorStartDate = uiState.message
-            }
-
-            PaymentAddScreenInputType.MONTH_DURATION -> {
-                errorMonthDuration = uiState.message
-            }
-
-            PaymentAddScreenInputType.AMOUNT -> {
-                errorAmount = uiState.message
-            }
-
-            PaymentAddScreenInputType.NONE -> {
-                snackbarHostState.Show(
-                    type = SnackbarType.ERROR,
-                    message = uiState.message,
-                )
-            }
-        }
-    }
-
     Column(
         modifier =
             Modifier
@@ -99,7 +69,7 @@ fun PaymentAddDetailsScreen(
                         .padding(end = padding_screen_small),
                 canClear = false,
                 isEnabled = false,
-                errorText = errorStartDate,
+                errorText = getErrorMessage(uiState, PaymentAddScreenInputType.START_DATE),
                 hint = stringResource(R.string.txt_payments_add_select_date),
                 textInput = inputData.startDateFormatted,
             )
@@ -116,7 +86,7 @@ fun PaymentAddDetailsScreen(
             modifier = Modifier.padding(top = padding_screen),
             hint = stringResource(R.string.txt_payments_add_select_duration),
             textInput = (inputData.monthDuration.takeIf { it != 0 } ?: "").toString(),
-            errorText = errorMonthDuration,
+            errorText = getErrorMessage(uiState, PaymentAddScreenInputType.MONTH_DURATION),
             keyboardType = KeyboardType.Number,
         ) {
             onSetData.invoke(0, it, it, PaymentAddScreenInputType.MONTH_DURATION)
@@ -126,7 +96,7 @@ fun PaymentAddDetailsScreen(
             modifier = Modifier.padding(top = padding_screen),
             hint = stringResource(R.string.txt_payments_add_amount_paid, currencyUnit),
             textInput = (inputData.amount.takeIf { it != 0 } ?: "").toString(),
-            errorText = errorAmount,
+            errorText = getErrorMessage(uiState, PaymentAddScreenInputType.AMOUNT),
             keyboardType = KeyboardType.Number,
         ) {
             onSetData.invoke(0, it, it, PaymentAddScreenInputType.AMOUNT)
@@ -182,6 +152,20 @@ fun PaymentAddDetailsScreen(
         }
     }
 }
+
+private fun getErrorMessage(
+    uiState: UiState,
+    inputType: PaymentAddScreenInputType,
+): String =
+    if (uiState is UiState.Error) {
+        if (uiState.inputType == inputType) {
+            uiState.message
+        } else {
+            ""
+        }
+    } else {
+        ""
+    }
 
 private const val DATE_WEIGHT = 3f
 

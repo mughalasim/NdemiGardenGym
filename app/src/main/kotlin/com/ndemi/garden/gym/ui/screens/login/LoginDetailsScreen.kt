@@ -21,7 +21,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.ndemi.garden.gym.BuildConfig
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.enums.LoginScreenInputType
-import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
@@ -32,7 +31,6 @@ import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.theme.page_width
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
@@ -44,31 +42,8 @@ fun LoginScreenDetails(
     listeners: LoginScreenListeners = LoginScreenListeners(),
     email: String = "",
     password: String = "",
-    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        var emailError = ""
-        var passwordError = ""
-
-        if (uiState is UiState.Error) {
-            when (uiState.inputType) {
-                LoginScreenInputType.NONE -> {
-                    snackbarHostState.Show(
-                        type = SnackbarType.ERROR,
-                        message = uiState.message,
-                    )
-                }
-
-                LoginScreenInputType.EMAIL -> {
-                    emailError = uiState.message
-                }
-
-                LoginScreenInputType.PASSWORD -> {
-                    passwordError = uiState.message
-                }
-            }
-        }
-
         Column(
             modifier =
                 Modifier
@@ -102,7 +77,7 @@ fun LoginScreenDetails(
                 modifier = Modifier.padding(top = padding_screen),
                 hint = stringResource(R.string.txt_email),
                 textInput = email,
-                errorText = emailError,
+                errorText = getErrorMessage(uiState, LoginScreenInputType.EMAIL),
                 keyboardType = KeyboardType.Email,
             ) {
                 listeners.onValueChanged(it, LoginScreenInputType.EMAIL)
@@ -112,7 +87,7 @@ fun LoginScreenDetails(
                 modifier = Modifier.padding(top = padding_screen),
                 hint = stringResource(R.string.txt_password),
                 textInput = password,
-                errorText = passwordError,
+                errorText = getErrorMessage(uiState, LoginScreenInputType.PASSWORD),
                 isPasswordEditText = true,
             ) {
                 listeners.onValueChanged(it, LoginScreenInputType.PASSWORD)
@@ -154,6 +129,24 @@ fun LoginScreenDetails(
         }
     }
 }
+
+private fun getErrorMessage(
+    uiState: UiState,
+    inputType: LoginScreenInputType,
+): String =
+    when (uiState) {
+        is UiState.Error -> {
+            if (uiState.inputType == inputType) {
+                uiState.message
+            } else {
+                ""
+            }
+        }
+
+        else -> {
+            ""
+        }
+    }
 
 @AppPreview
 @Composable

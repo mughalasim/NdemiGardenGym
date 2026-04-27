@@ -2,7 +2,10 @@ package com.ndemi.garden.gym.ui.screens.reset
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
-import com.ndemi.garden.gym.ui.enums.ResetScreenInputType
+import com.ndemi.garden.gym.R
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
+import com.ndemi.garden.gym.ui.appSnackbar.buildErrorSnackbar
+import com.ndemi.garden.gym.ui.appSnackbar.buildSuccessSnackbar
 import com.ndemi.garden.gym.ui.enums.UiErrorType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
@@ -18,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class ResetPasswordScreenViewModel(
+    private val showSnackbar: (AppSnackbarData) -> Unit,
     private val converter: ErrorCodeConverter,
     private val accessUseCase: AccessUseCase,
     private val emailValidator: Validator,
@@ -33,10 +37,7 @@ class ResetPasswordScreenViewModel(
     private fun validateInput() {
         if (emailValidator.isNotValid(_inputData.value)) {
             sendAction(
-                Action.ShowError(
-                    converter.getMessage(UiErrorType.INVALID_EMAIL),
-                    ResetScreenInputType.EMAIL,
-                ),
+                Action.ShowInputError(converter.getMessage(UiErrorType.INVALID_EMAIL)),
             )
         } else {
             sendAction(Action.SetReady)
@@ -48,8 +49,15 @@ class ResetPasswordScreenViewModel(
         viewModelScope.launch {
             accessUseCase.resetPasswordForEmail(_inputData.value).also {
                 when (it) {
-                    is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
-                    is DomainResult.Success -> sendAction(Action.Success(_inputData.value))
+                    is DomainResult.Error -> {
+                        showSnackbar(buildErrorSnackbar(converter.getMessage(it.error)))
+                        sendAction(Action.SetReady)
+                    }
+
+                    is DomainResult.Success -> {
+                        showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_email_successfully_sent)))
+                        sendAction(Action.Success(_inputData.value))
+                    }
                 }
             }
         }
@@ -65,7 +73,6 @@ class ResetPasswordScreenViewModel(
 
         data class Error(
             val message: String,
-            val inputType: ResetScreenInputType,
         ) : UiState
 
         data class Success(
@@ -82,11 +89,10 @@ class ResetPasswordScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowError(
+        data class ShowInputError(
             val message: String,
-            val inputType: ResetScreenInputType = ResetScreenInputType.NONE,
         ) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
+            override fun reduce(state: UiState): UiState = UiState.Error(message)
         }
 
         data class Success(

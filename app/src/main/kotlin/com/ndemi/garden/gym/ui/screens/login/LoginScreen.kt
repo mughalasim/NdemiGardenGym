@@ -4,15 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.ui.enums.LoginScreenInputType
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import cv.domain.enums.MemberType
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun LoginScreen(
-    viewModel: LoginScreenViewModel = koinViewModel<LoginScreenViewModel>(),
-    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
-) {
+fun LoginScreen(viewModel: LoginScreenViewModel) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val inputData by viewModel.inputData.collectAsStateWithLifecycle()
 
@@ -26,7 +21,6 @@ fun LoginScreen(
             ),
         email = inputData.email,
         password = inputData.password,
-        snackbarHostState = snackbarHostState,
     )
 }
 

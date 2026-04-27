@@ -20,7 +20,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.enums.RegisterScreenInputType
-import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.InputData
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
@@ -30,7 +29,6 @@ import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.theme.page_width
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
@@ -42,15 +40,7 @@ fun RegisterDetailScreen(
     hidePassword: Boolean = false,
     onSetString: (String, RegisterScreenInputType) -> Unit = { _, _ -> },
     onRegisterTapped: () -> Unit = {},
-    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    if (uiState is UiState.Error && uiState.inputType == RegisterScreenInputType.NONE) {
-        snackbarHostState.Show(
-            type = SnackbarType.ERROR,
-            message = uiState.message,
-        )
-    }
-
     Column(
         modifier =
             Modifier

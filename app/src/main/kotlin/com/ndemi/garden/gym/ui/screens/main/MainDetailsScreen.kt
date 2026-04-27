@@ -6,26 +6,25 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.BottomNavItem
 import com.ndemi.garden.gym.navigation.NavigationHost
 import com.ndemi.garden.gym.navigation.Route
-import com.ndemi.garden.gym.ui.enums.SnackbarType
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarViewModel
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.widgets.BottomNavigationWidget
 import com.ndemi.garden.gym.ui.widgets.VerifyEmailWidget
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MainDetailsScreen(
-    viewModel: MainScreenViewModel = koinViewModel<MainScreenViewModel>(),
+    viewModel: MainScreenViewModel,
+    snackbarViewModel: AppSnackbarViewModel,
     navController: NavHostController,
     initialRoute: Route,
     bottomNavItems: List<BottomNavItem>,
 ) {
+    snackbarViewModel.ObserveAppSnackbar()
     val emailVerifyState by viewModel.emailVerifiedState.collectAsStateWithLifecycle()
 
     AppThemeComposable(
@@ -33,8 +32,8 @@ fun MainDetailsScreen(
             BottomNavigationWidget(navHostController = navController, navBottomItems = bottomNavItems)
         },
         snackbarHost = {
-            SnackbarHost(hostState = viewModel.snackbarHostState.hostState) {
-                viewModel.snackbarHostState.SnackbarContent(snackbarData = it)
+            SnackbarHost(hostState = snackbarViewModel.hostState) {
+                snackbarViewModel.appSnackbar.SetContent(it)
             }
         },
     ) { innerPadding ->
@@ -45,15 +44,8 @@ fun MainDetailsScreen(
             NavigationHost(
                 navController = navController,
                 initialRoute = initialRoute,
-                snackbarHostState = viewModel.snackbarHostState,
+                showSnackbar = snackbarViewModel::showSnackbar,
             )
         }
-    }
-
-    if (emailVerifyState is MainScreenViewModel.EmailVerifiedState.Success) {
-        viewModel.snackbarHostState.Show(
-            type = SnackbarType.SUCCESS,
-            message = stringResource(R.string.txt_email_successfully_sent),
-        )
     }
 }

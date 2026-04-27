@@ -12,6 +12,8 @@ interface ErrorCodeConverter {
     fun getMessage(domainErrorType: DomainErrorType): String
 
     fun getMessage(uiErrorType: UiErrorType): String
+
+    fun getString(id: Int): String
 }
 
 class ErrorCodeConverterImp(
@@ -51,4 +53,6 @@ class ErrorCodeConverterImp(
             UiErrorType.INVALID_MONTH_DURATION -> application.resources.getString(R.string.error_invalid_month_duration)
             UiErrorType.INVALID_PHONE_NUMBER -> application.resources.getString(R.string.error_invalid_phone_number)
         }
+
+    override fun getString(id: Int): String = application.resources.getString(id)
 }

@@ -3,8 +3,10 @@ package com.ndemi.garden.gym.ui.screens.memberedit
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
+import com.ndemi.garden.gym.ui.appSnackbar.buildErrorSnackbar
+import com.ndemi.garden.gym.ui.appSnackbar.buildSuccessSnackbar
 import com.ndemi.garden.gym.ui.enums.MemberEditScreenInputType
-import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.enums.UiErrorType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
@@ -26,7 +28,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+@Suppress("detekt.LongParameterList")
 class MemberEditScreenViewModel(
+    private val showSnackbar: (AppSnackbarData) -> Unit,
     private val memberId: String,
     private val memberUseCase: MemberUseCase,
     private val validators: RegisterScreenValidators,
@@ -44,20 +48,21 @@ class MemberEditScreenViewModel(
     init {
         getMemberForId()
     }
+    // TODO - extract all the string from here
 
     fun getMemberForId() {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
             memberUseCase.getMemberById(memberId).also { result ->
+                sendAction(Action.SetWaiting)
                 when (result) {
                     is DomainResult.Error -> {
-                        showSnackbar(SnackbarType.ERROR, converter.getMessage(result.error))
+                        showSnackbar(buildErrorSnackbar(converter.getMessage(result.error)))
                     }
 
                     is DomainResult.Success -> {
                         initialMemberModel.value = memberPresentationMapper.getEditModel(result.data)
                         _memberModel.value = initialMemberModel.value
-                        sendAction(Action.SetWaiting)
                     }
                 }
             }
@@ -105,7 +110,7 @@ class MemberEditScreenViewModel(
         when {
             validators.name.isNotValid(_memberModel.value.firstName) -> {
                 sendAction(
-                    Action.ShowError(
+                    Action.ShowInputError(
                         converter.getMessage(UiErrorType.INVALID_FIRST_NAME),
                         MemberEditScreenInputType.FIRST_NAME,
                     ),
@@ -114,7 +119,7 @@ class MemberEditScreenViewModel(
 
             validators.name.isNotValid(_memberModel.value.lastName) -> {
                 sendAction(
-                    Action.ShowError(
+                    Action.ShowInputError(
                         converter.getMessage(UiErrorType.INVALID_LAST_NAME),
                         MemberEditScreenInputType.LAST_NAME,
                     ),
@@ -123,7 +128,7 @@ class MemberEditScreenViewModel(
 
             validators.phoneNumber.isNotValid(_memberModel.value.phoneNumber) -> {
                 sendAction(
-                    Action.ShowError(
+                    Action.ShowInputError(
                         converter.getMessage(UiErrorType.INVALID_PHONE_NUMBER),
                         MemberEditScreenInputType.PHONE_NUMBER,
                     ),
@@ -132,7 +137,7 @@ class MemberEditScreenViewModel(
 
             validators.height.isNotValid(_memberModel.value.height) -> {
                 sendAction(
-                    Action.ShowError(
+                    Action.ShowInputError(
                         converter.getMessage(UiErrorType.INVALID_HEIGHT),
                         MemberEditScreenInputType.HEIGHT,
                     ),
@@ -141,7 +146,7 @@ class MemberEditScreenViewModel(
 
             validators.apartmentNumber.isNotValid(_memberModel.value.apartmentNumber) -> {
                 sendAction(
-                    Action.ShowError(
+                    Action.ShowInputError(
                         converter.getMessage(UiErrorType.INVALID_APARTMENT_NUMBER),
                         MemberEditScreenInputType.APARTMENT_NUMBER,
                     ),
@@ -167,7 +172,7 @@ class MemberEditScreenViewModel(
                     .updateMember(result.data.copy(profileImageUrl = ""), MemberUpdateType.PHOTO_DELETE)
                     .also {
                         getMemberForId()
-                        showSnackbar(SnackbarType.SUCCESS, "Delete image successful")
+                        showSnackbar(buildSuccessSnackbar("Delete image successful"))
                     }
             }
         }
@@ -176,14 +181,21 @@ class MemberEditScreenViewModel(
     fun updateMemberImage(byteArray: ByteArray) {
         sendAction(Action.SetLoading)
         viewModelScope.launch {
-            val result = memberUseCase.getMemberById(memberModel.value.id)
-            if (result is DomainResult.Success) {
-                val success = storageUseCase.updateImageForMember(result.data, byteArray)
-                if (success is DomainResult.Success) {
-                    getMemberForId()
-                    showSnackbar(SnackbarType.SUCCESS, "Update Image successful")
-                } else {
-                    showSnackbar(SnackbarType.ERROR, converter.getMessage((success as DomainResult.Error).error))
+            when (val result = memberUseCase.getMemberById(memberModel.value.id)) {
+                is DomainResult.Error -> {
+                    showSnackbar(buildErrorSnackbar(converter.getMessage(result.error)))
+                    sendAction(Action.SetWaiting)
+                }
+
+                is DomainResult.Success -> {
+                    val success = storageUseCase.updateImageForMember(result.data, byteArray)
+                    sendAction(Action.SetWaiting)
+                    if (success is DomainResult.Success) {
+                        getMemberForId()
+                        showSnackbar(buildSuccessSnackbar("Update Image successful"))
+                    } else {
+                        showSnackbar(buildErrorSnackbar(converter.getMessage((success as DomainResult.Error).error)))
+                    }
                 }
             }
         }
@@ -199,11 +211,11 @@ class MemberEditScreenViewModel(
             memberUseCase.deleteMember(_memberModel.value.id).also {
                 when (it) {
                     is DomainResult.Error -> {
-                        showSnackbar(SnackbarType.ERROR, converter.getMessage(it.error))
+                        showSnackbar(buildErrorSnackbar(converter.getMessage(it.error)))
                     }
 
                     is DomainResult.Success -> {
-                        showSnackbar(SnackbarType.SUCCESS, "Successfully deleted member")
+                        showSnackbar(buildSuccessSnackbar("Successfully deleted member"))
                         navigateBack()
                     }
                 }
@@ -236,7 +248,7 @@ class MemberEditScreenViewModel(
                                 ),
                             memberUpdateType = MemberUpdateType.DETAILS,
                         ).also {
-                            showSnackbar(SnackbarType.SUCCESS, "Successfully updated member")
+                            showSnackbar(buildSuccessSnackbar("Successfully updated member"))
                             navigateBack()
                         }
                 }
@@ -280,7 +292,7 @@ class MemberEditScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Waiting
         }
 
-        data class ShowError(
+        data class ShowInputError(
             val message: String,
             val inputType: MemberEditScreenInputType = MemberEditScreenInputType.NONE,
         ) : Action {

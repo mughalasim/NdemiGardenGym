@@ -4,6 +4,8 @@ import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
+import com.ndemi.garden.gym.ui.appSnackbar.buildInfoSnackbar
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
@@ -18,6 +20,7 @@ import kotlinx.coroutines.launch
 
 @Suppress("DEPRECATION")
 class ProfileAdminScreenViewModel(
+    private val showSnackbar: (AppSnackbarData) -> Unit,
     private val jobRepository: JobRepository,
     private val adminDashboardUseCase: AdminDashboardUseCase,
     private val navigationService: NavigationService,
@@ -53,21 +56,25 @@ class ProfileAdminScreenViewModel(
     fun onYearPlusTapped() {
         currentDate.year += 1
         fetchAdminDashboard()
+        showSnackbar(buildInfoSnackbar("Increased year"))
     }
 
     fun onYearMinusTapped() {
         currentDate.year -= 1
         fetchAdminDashboard()
+        showSnackbar(buildInfoSnackbar("Decreased year"))
     }
 
     fun onMonthPlusTapped() {
         currentDate.month += 1
         fetchAdminDashboard()
+        showSnackbar(buildInfoSnackbar("Increased month"))
     }
 
     fun onMonthMinusTapped() {
         currentDate.month -= 1
         fetchAdminDashboard()
+        showSnackbar(buildInfoSnackbar("Decreased month"))
     }
 
     fun onSettingsTapped() {

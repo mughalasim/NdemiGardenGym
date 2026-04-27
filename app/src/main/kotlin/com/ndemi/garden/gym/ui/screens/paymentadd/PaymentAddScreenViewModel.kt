@@ -4,6 +4,9 @@ import androidx.compose.runtime.Immutable
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.navigation.NavigationService
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
+import com.ndemi.garden.gym.ui.appSnackbar.buildErrorSnackbar
+import com.ndemi.garden.gym.ui.appSnackbar.buildSuccessSnackbar
 import com.ndemi.garden.gym.ui.enums.PaymentAddScreenInputType
 import com.ndemi.garden.gym.ui.enums.PaymentAddScreenInputType.AMOUNT
 import com.ndemi.garden.gym.ui.enums.PaymentAddScreenInputType.MONTH_DURATION
@@ -26,14 +29,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class PaymentAddScreenViewModel(
+    private val memberId: String,
+    private val showSnackbar: (AppSnackbarData) -> Unit,
     private val converter: ErrorCodeConverter,
     private val paymentUseCase: PaymentUseCase,
     private val navigationService: NavigationService,
     private val dateProviderRepository: DateProviderRepository,
     numberFormatUseCase: NumberFormatUseCase,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
-    private var memberId = ""
-
     data class InputData(
         val startDate: Long = 0,
         val startDateFormatted: String = "",
@@ -101,10 +104,10 @@ class PaymentAddScreenViewModel(
 
         if (monthDuration !in 1..MAX_MONTH_DURATION) {
             sendAction(
-                Action.ShowError(converter.getMessage(UiErrorType.INVALID_MONTH_DURATION), MONTH_DURATION),
+                Action.ShowInputError(converter.getMessage(UiErrorType.INVALID_MONTH_DURATION), MONTH_DURATION),
             )
         } else if (amount !in 1..MAX_PAYMENT_AMOUNT) {
-            sendAction(Action.ShowError(converter.getMessage(UiErrorType.INVALID_AMOUNT), AMOUNT))
+            sendAction(Action.ShowInputError(converter.getMessage(UiErrorType.INVALID_AMOUNT), AMOUNT))
         } else {
             sendAction(Action.SetReady)
         }
@@ -127,19 +130,16 @@ class PaymentAddScreenViewModel(
                 ).also {
                     when (it) {
                         is DomainResult.Error -> {
-                            sendAction(Action.ShowError(converter.getMessage(it.error), AMOUNT))
+                            showSnackbar(buildErrorSnackbar(converter.getMessage(it.error)))
                         }
 
                         is DomainResult.Success -> {
+                            showSnackbar(buildSuccessSnackbar("Successfully added"))
                             navigationService.popBack()
                         }
                     }
                 }
         }
-    }
-
-    fun setMemberId(memberId: String) {
-        this.memberId = memberId
     }
 
     @Immutable
@@ -165,7 +165,7 @@ class PaymentAddScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowError(
+        data class ShowInputError(
             val message: String,
             val inputType: PaymentAddScreenInputType,
         ) : Action {

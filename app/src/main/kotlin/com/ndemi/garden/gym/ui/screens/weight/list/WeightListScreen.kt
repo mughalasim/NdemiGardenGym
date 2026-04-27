@@ -3,38 +3,12 @@ package com.ndemi.garden.gym.ui.screens.weight.list
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ndemi.garden.gym.ui.enums.SnackbarType
-import com.ndemi.garden.gym.ui.screens.weight.list.WeightListScreenViewModel.UiState
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun WeightListScreen(
-    viewModel: WeightListScreenViewModel = koinViewModel<WeightListScreenViewModel>(),
-    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
-) {
-    val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
+fun WeightListScreen(viewModel: WeightListScreenViewModel) {
     val selectedYear by viewModel.selectedYear.collectAsStateWithLifecycle()
     val weightList by viewModel.weightList.collectAsStateWithLifecycle()
     val weightChange by viewModel.weightChange.collectAsStateWithLifecycle()
-
-    when (val state = uiState) {
-        is UiState.Success -> {
-            snackbarHostState.Show(
-                type = SnackbarType.SUCCESS,
-                message = state.message,
-            )
-        }
-
-        is UiState.Error -> {
-            snackbarHostState.Show(
-                type = SnackbarType.ERROR,
-                message = state.message,
-            )
-        }
-
-        else -> {}
-    }
 
     WeightListDetailsScreen(
         selectedYear = selectedYear,
