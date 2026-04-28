@@ -130,6 +130,8 @@
     <string name="txt_set_date">Set date</string>
     <string name="txt_total_weight_change">Total weight change</string>
     <string name="txt_successfully_updated">Successfully updated</string>
+    <string name="txt_successfully_added">Successfully added</string>
+    <string name="txt_successfully_deleted">Successfully deleted</string>
     <string name="txt_successfully_registered">Successfully registered</string>
     <string name="txt_successfully_logged_in">Successfully logged in</string>
     <string name="txt_weight_deleted">Weight deleted successfully</string>

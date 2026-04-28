@@ -3,6 +3,7 @@ package com.ndemi.garden.gym.ui.screens.members
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
 import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
@@ -129,7 +130,7 @@ class MembersScreenViewModel(
                         ),
                         MemberUpdateType.ACTIVE_SESSION,
                     )
-                showSnackbar(buildSuccessSnackbar("Successfully updated active status"))
+                showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_successfully_updated)))
             }
         }
     }

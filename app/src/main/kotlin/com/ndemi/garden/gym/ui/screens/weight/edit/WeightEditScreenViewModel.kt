@@ -100,7 +100,7 @@ class WeightEditScreenViewModel(
                     }
 
                     is DomainResult.Success -> {
-                        showSnackbar(buildSuccessSnackbar("Successfully tracked weight"))
+                        showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_successfully_added)))
                         navigationService.popBack()
                     }
                 }

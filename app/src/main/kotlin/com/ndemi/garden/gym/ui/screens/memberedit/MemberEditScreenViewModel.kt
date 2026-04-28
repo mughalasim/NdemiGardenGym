@@ -2,6 +2,7 @@ package com.ndemi.garden.gym.ui.screens.memberedit
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
 import com.ndemi.garden.gym.ui.appSnackbar.buildErrorSnackbar
@@ -215,7 +216,7 @@ class MemberEditScreenViewModel(
                     }
 
                     is DomainResult.Success -> {
-                        showSnackbar(buildSuccessSnackbar("Successfully deleted member"))
+                        showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_successfully_deleted)))
                         navigateBack()
                     }
                 }
@@ -248,7 +249,7 @@ class MemberEditScreenViewModel(
                                 ),
                             memberUpdateType = MemberUpdateType.DETAILS,
                         ).also {
-                            showSnackbar(buildSuccessSnackbar("Successfully updated member"))
+                            showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_successfully_updated)))
                             navigateBack()
                         }
                 }

@@ -2,6 +2,7 @@ package com.ndemi.garden.gym.ui.screens.attendance
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
 import com.ndemi.garden.gym.ui.appSnackbar.buildErrorSnackbar
@@ -92,7 +93,7 @@ class AttendanceScreenViewModel(
                         }
 
                         is DomainResult.Success -> {
-                            showSnackbar(buildSuccessSnackbar("Successfully deleted"))
+                            showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_successfully_deleted)))
                             getAttendances()
                         }
                     }

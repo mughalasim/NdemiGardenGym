@@ -3,6 +3,7 @@ package com.ndemi.garden.gym.ui.screens.paymentadd
 import androidx.compose.runtime.Immutable
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
 import com.ndemi.garden.gym.ui.appSnackbar.buildErrorSnackbar
@@ -134,7 +135,7 @@ class PaymentAddScreenViewModel(
                         }
 
                         is DomainResult.Success -> {
-                            showSnackbar(buildSuccessSnackbar("Successfully added"))
+                            showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_successfully_added)))
                             navigationService.popBack()
                         }
                     }

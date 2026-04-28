@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockMemberDashboardPresentationModel
@@ -22,7 +23,6 @@ import com.ndemi.garden.gym.ui.theme.AppThemeComposable
 import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_small
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.utils.getBMIColor
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
 import com.ndemi.garden.gym.ui.widgets.StatsTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
@@ -118,6 +118,16 @@ fun ProfileMemberDetailsScreen(
         }
     }
 }
+
+@Composable
+@Suppress("detekt:MagicNumber")
+private fun getBMIColor(bmi: Double) =
+    when {
+        bmi > 40 -> AppTheme.colors.error
+        bmi > 35 -> Color.Red
+        bmi !in 18.5..25.0 -> Color.Magenta
+        else -> AppTheme.colors.success
+    }
 
 data class ProfileMemberScreenListeners(
     val onImageDeleted: () -> Unit = {},
