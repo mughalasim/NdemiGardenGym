@@ -14,7 +14,7 @@ data class MemberPresentationModel(
     val memberType: String = "",
     val emailVerified: Boolean = false,
     val hasPaidMembership: Boolean = false,
-    val residentialStatus: String = "",
+    val apartmentNumber: String = "",
     val membershipRenewalDate: String = "",
     val membershipWarningLevel: Int = 0,
     val height: String = "",

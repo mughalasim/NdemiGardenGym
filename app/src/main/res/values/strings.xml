@@ -59,6 +59,7 @@
     <string name="txt_settings">Settings</string>
     <string name="txt_dashboard">Dashboard</string>
     <string name="txt_management">Management</string>
+    <string name="txt_guest">Guest</string>
 
     <!-- More than one word -->
     <string name="txt_register_new_member">Register a new member</string>
@@ -147,5 +148,6 @@
     <string name="txt_settings_dialog_title">%1$s selection</string>
     <string name="txt_settings_dialog_message">Select a %1$s from the options below</string>
     <string name="txt_settings_success_message">Successfully updated the %1$s setting to %2$s</string>
+    <string name="txt_apartment">Apartment %1$s</string>
 
 </resources>

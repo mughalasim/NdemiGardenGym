@@ -22,20 +22,22 @@ import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.validator.RegisterScreenValidators
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 class RegisterScreenViewModel(
+    private val hidePassword: Boolean,
+    private val showSnackbar: (AppSnackbarData) -> Unit,
+    private val externalScope: CoroutineScope,
     private val converter: ErrorCodeConverter,
     private val accessUseCase: AccessUseCase,
     private val memberUseCase: MemberUseCase,
     private val navigationService: NavigationService,
-    private val hidePassword: Boolean,
     private val validators: RegisterScreenValidators,
     private val dateProviderRepository: DateProviderRepository,
-    private val showSnackbar: (AppSnackbarData) -> Unit,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     data class InputData(
         val firstName: String = "",
@@ -172,7 +174,7 @@ class RegisterScreenViewModel(
         memberUpdateType: MemberUpdateType,
     ) {
         sendAction(Action.SetLoading)
-        viewModelScope.launch {
+        externalScope.launch {
             memberUseCase
                 .updateMember(
                     MemberEntity(
@@ -203,8 +205,6 @@ class RegisterScreenViewModel(
                         }
 
                         is DomainResult.Success -> {
-                            // TODO - fix race condition where a registration triggers login before member data is updated
-                            //  or think about moving this update member function to a place where it is independent of this viewmodelScope
                             showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_successfully_registered)))
                             sendAction(Action.Success)
                         }

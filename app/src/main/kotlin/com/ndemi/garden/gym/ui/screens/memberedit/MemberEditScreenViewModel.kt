@@ -49,7 +49,6 @@ class MemberEditScreenViewModel(
     init {
         getMemberForId()
     }
-    // TODO - extract all the string from here
 
     fun getMemberForId() {
         sendAction(Action.SetLoading)
@@ -173,7 +172,7 @@ class MemberEditScreenViewModel(
                     .updateMember(result.data.copy(profileImageUrl = ""), MemberUpdateType.PHOTO_DELETE)
                     .also {
                         getMemberForId()
-                        showSnackbar(buildSuccessSnackbar("Delete image successful"))
+                        showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_successfully_deleted)))
                     }
             }
         }
@@ -193,7 +192,7 @@ class MemberEditScreenViewModel(
                     sendAction(Action.SetWaiting)
                     if (success is DomainResult.Success) {
                         getMemberForId()
-                        showSnackbar(buildSuccessSnackbar("Update Image successful"))
+                        showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_successfully_updated)))
                     } else {
                         showSnackbar(buildErrorSnackbar(converter.getMessage((success as DomainResult.Error).error)))
                     }

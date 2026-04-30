@@ -59,14 +59,15 @@ val viewModelModule =
 
         viewModel(named<RegisterMember>()) { params ->
             RegisterScreenViewModel(
+                hidePassword = false,
+                showSnackbar = params.get(),
+                externalScope = get(),
                 converter = get(),
                 accessUseCase = get(),
                 memberUseCase = get(),
                 navigationService = get(),
                 validators = get(),
-                hidePassword = false,
                 dateProviderRepository = get(),
-                showSnackbar = params.get(),
             )
         }
 
@@ -103,14 +104,15 @@ val viewModelModule =
 
         viewModel(named<CreateMember>()) { params ->
             RegisterScreenViewModel(
+                hidePassword = true,
+                showSnackbar = params.get(),
+                externalScope = get(),
                 converter = get(),
                 accessUseCase = get(),
                 memberUseCase = get(),
                 navigationService = get(),
                 validators = get(),
-                hidePassword = true,
                 dateProviderRepository = get(),
-                showSnackbar = params.get(),
             )
         }
 

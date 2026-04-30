@@ -49,12 +49,7 @@ class MemberPresentationMapperImp(
             memberType = entity.memberType.name,
             emailVerified = entity.emailVerified,
             hasPaidMembership = entity.renewalFutureDateMillis != null,
-            residentialStatus =
-                if (entity.apartmentNumber.isEmpty()) {
-                    "Guest"
-                } else {
-                    "Apartment ${entity.apartmentNumber}"
-                },
+            apartmentNumber = entity.apartmentNumber,
             membershipRenewalDate = membershipRenewalPair.first,
             membershipWarningLevel = membershipRenewalPair.second,
         )
