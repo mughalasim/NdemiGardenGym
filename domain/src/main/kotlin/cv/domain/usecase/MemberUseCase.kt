@@ -16,6 +16,7 @@ import cv.domain.Variables.PARAM_MEMBER_UPDATE
 import cv.domain.Variables.PARAM_PHOTO_DELETE
 import cv.domain.Variables.PARAM_REGISTRATION_ADMIN
 import cv.domain.Variables.PARAM_REGISTRATION_SELF
+import cv.domain.dispatchers.ScopeProvider
 import cv.domain.entities.MemberEntity
 import cv.domain.enums.DomainErrorType
 import cv.domain.enums.MemberFetchType
@@ -23,12 +24,14 @@ import cv.domain.enums.MemberUpdateType
 import cv.domain.repositories.AnalyticsRepository
 import cv.domain.repositories.MemberRepository
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.withContext
 
 class MemberUseCase(
+    private val scope: ScopeProvider,
     private val memberRepository: MemberRepository,
     private val analyticsRepository: AnalyticsRepository,
 ) {
-    suspend fun getMemberById(memberId: String) = memberRepository.getMemberById(memberId = memberId)
+    suspend fun getMemberById(memberId: String) = withContext(scope.ioDispatcher()) { memberRepository.getMemberById(memberId = memberId) }
 
     fun getAllMembers() = memberRepository.getMembers(fetchType = MemberFetchType.MEMBERS)
 
@@ -41,54 +44,56 @@ class MemberUseCase(
     suspend fun updateMember(
         memberEntity: MemberEntity,
         memberUpdateType: MemberUpdateType,
-    ): DomainResult<Unit> {
-        when (memberUpdateType) {
-            MemberUpdateType.CREATE -> {
-                when (val result = memberRepository.getMembers(fetchType = MemberFetchType.ALL).firstOrNull()) {
-                    is DomainResult.Success -> {
-                        if (result.data.find { it.email == memberEntity.email } != null) {
-                            return DomainResult.Error(DomainErrorType.EMAIL_ALREADY_EXISTS)
+    ): DomainResult<Unit> =
+        withContext(scope.ioDispatcher()) {
+            when (memberUpdateType) {
+                MemberUpdateType.CREATE -> {
+                    when (val result = memberRepository.getMembers(fetchType = MemberFetchType.ALL).firstOrNull()) {
+                        is DomainResult.Success -> {
+                            if (result.data.find { it.email == memberEntity.email } != null) {
+                                return@withContext DomainResult.Error(DomainErrorType.EMAIL_ALREADY_EXISTS)
+                            }
+                        }
+
+                        else -> {
+                            return@withContext DomainResult.Error(DomainErrorType.SERVER)
                         }
                     }
-
-                    else -> {
-                        return DomainResult.Error(DomainErrorType.SERVER)
-                    }
+                    analyticsRepository.logEvent(EVENT_CREATE_MEMBER, PARAM_REGISTRATION_ADMIN, memberEntity.id)
                 }
-                analyticsRepository.logEvent(EVENT_CREATE_MEMBER, PARAM_REGISTRATION_ADMIN, memberEntity.id)
-            }
 
-            MemberUpdateType.REGISTRATION -> {
-                analyticsRepository.logEvent(EVENT_REGISTRATION, PARAM_REGISTRATION_SELF, memberEntity.id)
-            }
+                MemberUpdateType.REGISTRATION -> {
+                    analyticsRepository.logEvent(EVENT_REGISTRATION, PARAM_REGISTRATION_SELF, memberEntity.id)
+                }
 
-            MemberUpdateType.MEMBERSHIP -> {
-                analyticsRepository.logEvent(EVENT_MEMBERSHIP, PARAM_MEMBERSHIP_ADDED, memberEntity.id)
-            }
+                MemberUpdateType.MEMBERSHIP -> {
+                    analyticsRepository.logEvent(EVENT_MEMBERSHIP, PARAM_MEMBERSHIP_ADDED, memberEntity.id)
+                }
 
-            MemberUpdateType.PHOTO_DELETE -> {
-                analyticsRepository.logEvent(EVENT_PHOTO, PARAM_PHOTO_DELETE, memberEntity.id)
-            }
+                MemberUpdateType.PHOTO_DELETE -> {
+                    analyticsRepository.logEvent(EVENT_PHOTO, PARAM_PHOTO_DELETE, memberEntity.id)
+                }
 
-            MemberUpdateType.ACTIVE_SESSION -> {
-                val paramName =
-                    if (memberEntity.activeNowDateMillis != null) {
-                        PARAM_ACTIVE_SESSION_TRUE
-                    } else {
-                        PARAM_ACTIVE_SESSION_FALSE
-                    }
-                analyticsRepository.logEvent(EVENT_ACTIVE, paramName, memberEntity.id)
-            }
+                MemberUpdateType.ACTIVE_SESSION -> {
+                    val paramName =
+                        if (memberEntity.activeNowDateMillis != null) {
+                            PARAM_ACTIVE_SESSION_TRUE
+                        } else {
+                            PARAM_ACTIVE_SESSION_FALSE
+                        }
+                    analyticsRepository.logEvent(EVENT_ACTIVE, paramName, memberEntity.id)
+                }
 
-            MemberUpdateType.DETAILS -> {
-                analyticsRepository.logEvent(EVENT_MEMBER_UPDATE, PARAM_MEMBER_UPDATE, memberEntity.id)
+                MemberUpdateType.DETAILS -> {
+                    analyticsRepository.logEvent(EVENT_MEMBER_UPDATE, PARAM_MEMBER_UPDATE, memberEntity.id)
+                }
             }
+            return@withContext memberRepository.updateMember(memberEntity)
         }
-        return memberRepository.updateMember(memberEntity)
-    }
 
-    suspend fun deleteMember(memberId: String): DomainResult<Unit> {
-        analyticsRepository.logEvent(EVENT_MEMBER_DELETE, PARAM_MEMBER_DELETE, memberId)
-        return memberRepository.deleteMember(memberId)
-    }
+    suspend fun deleteMember(memberId: String): DomainResult<Unit> =
+        withContext(scope.ioDispatcher()) {
+            analyticsRepository.logEvent(EVENT_MEMBER_DELETE, PARAM_MEMBER_DELETE, memberId)
+            return@withContext memberRepository.deleteMember(memberId)
+        }
 }

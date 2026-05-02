@@ -8,27 +8,23 @@ annotation class RegisterMember
 @Named
 annotation class CreateMember
 
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.EXPRESSION)
-@Retention(AnnotationRetention.SOURCE)
 @Named
-annotation class NameValidator
+annotation class ValidatorEmail
 
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.EXPRESSION)
-@Retention(AnnotationRetention.SOURCE)
 @Named
-annotation class PhoneValidator
+annotation class ValidatorPassword
 
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.EXPRESSION)
-@Retention(AnnotationRetention.SOURCE)
 @Named
-annotation class WeightValidator
+annotation class ValidatorName
 
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.EXPRESSION)
-@Retention(AnnotationRetention.SOURCE)
 @Named
-annotation class HeightValidator
+annotation class ValidatorPhoneNumber
 
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.EXPRESSION)
-@Retention(AnnotationRetention.SOURCE)
 @Named
-annotation class ApartmentNumberValidator
+annotation class ValidatorWeight
+
+@Named
+annotation class ValidatorHeight
+
+@Named
+annotation class ValidatorApartmentNumber

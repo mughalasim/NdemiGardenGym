@@ -11,6 +11,7 @@ import cv.data.mappers.AttendanceMapper
 import cv.data.models.AttendanceModel
 import cv.data.toDomainError
 import cv.domain.DomainResult
+import cv.domain.dispatchers.ScopeProvider
 import cv.domain.entities.AttendanceMonthEntity
 import cv.domain.enums.AppLogType
 import cv.domain.enums.DomainErrorType
@@ -20,10 +21,12 @@ import cv.domain.repositories.DateProviderRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 
 class AttendanceRepositoryImp(
+    private val scope: ScopeProvider,
     private val pathAttendance: String,
     private val firebaseAuth: FirebaseAuth,
     private val logger: AppLoggerRepository,
@@ -47,27 +50,28 @@ class AttendanceRepositoryImp(
                     .addSnapshotListener { snapshot, error ->
                         snapshot?.let {
                             val response = snapshot.toObjects<AttendanceModel>()
-                            val list =
-                                response.map { attendanceMapper.getEntity(it) }
-
-                            var totalMinutes = 0
-                            list.forEach {
-                                totalMinutes +=
-                                    dateProviderRepository.minutesBetween(
-                                        startDateMillis = it.startDateMillis,
-                                        endDateMillis = it.endDateMillis,
-                                    )
-                                logger.log("Attendance received: $it")
-                            }
-                            trySend(
-                                DomainResult.Success(
-                                    AttendanceMonthEntity(
-                                        monthNumber = month,
-                                        totalMinutes = totalMinutes,
-                                        attendances = list,
+                            scope.default().launch {
+                                val list =
+                                    response.map { attendanceMapper.getEntity(it) }
+                                var totalMinutes = 0
+                                list.forEach {
+                                    totalMinutes +=
+                                        dateProviderRepository.minutesBetween(
+                                            startDateMillis = it.startDateMillis,
+                                            endDateMillis = it.endDateMillis,
+                                        )
+                                    logger.log("Attendance received: $it")
+                                }
+                                trySend(
+                                    DomainResult.Success(
+                                        AttendanceMonthEntity(
+                                            monthNumber = month,
+                                            totalMinutes = totalMinutes,
+                                            attendances = list,
+                                        ),
                                     ),
-                                ),
-                            )
+                                )
+                            }
                         }
                         error?.let {
                             logger.log("Exception attendance: $it", AppLogType.ERROR)
@@ -102,29 +106,30 @@ class AttendanceRepositoryImp(
                     .addSnapshotListener { snapshot, error ->
                         snapshot?.let {
                             val response = snapshot.toObjects<AttendanceModel>()
-                            val list =
-                                response
-                                    .map { attendanceMapper.getEntity(it) }
-                                    .sortedByDescending { it.startDateMillis }
-
-                            var totalMinutes = 0
-                            list.forEach {
-                                totalMinutes +=
-                                    dateProviderRepository.minutesBetween(
-                                        startDateMillis = it.startDateMillis,
-                                        endDateMillis = it.endDateMillis,
-                                    )
-                                logger.log("Attendance received: $it")
-                            }
-                            trySend(
-                                DomainResult.Success(
-                                    AttendanceMonthEntity(
-                                        monthNumber = month,
-                                        totalMinutes = totalMinutes,
-                                        attendances = list,
+                            scope.default().launch {
+                                val list =
+                                    response
+                                        .map { attendanceMapper.getEntity(it) }
+                                        .sortedByDescending { it.startDateMillis }
+                                var totalMinutes = 0
+                                list.forEach {
+                                    totalMinutes +=
+                                        dateProviderRepository.minutesBetween(
+                                            startDateMillis = it.startDateMillis,
+                                            endDateMillis = it.endDateMillis,
+                                        )
+                                    logger.log("Attendance received: $it")
+                                }
+                                trySend(
+                                    DomainResult.Success(
+                                        AttendanceMonthEntity(
+                                            monthNumber = month,
+                                            totalMinutes = totalMinutes,
+                                            attendances = list,
+                                        ),
                                     ),
-                                ),
-                            )
+                                )
+                            }
                         }
                         error?.let {
                             logger.log("Exception attendance: $it", AppLogType.ERROR)

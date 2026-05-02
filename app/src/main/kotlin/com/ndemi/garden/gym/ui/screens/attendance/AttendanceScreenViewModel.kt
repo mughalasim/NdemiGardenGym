@@ -2,7 +2,11 @@ package com.ndemi.garden.gym.ui.screens.attendance
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
+import com.ndemi.garden.gym.ui.appSnackbar.buildErrorSnackbar
+import com.ndemi.garden.gym.ui.appSnackbar.buildSuccessSnackbar
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
@@ -11,7 +15,6 @@ import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import com.ndemi.garden.gym.ui.utils.OBSERVE_MEMBER_ATTENDANCE
 import cv.domain.DomainResult
-import cv.domain.enums.DomainErrorType
 import cv.domain.presentationModels.AttendanceMonthPresentationModel
 import cv.domain.presentationModels.AttendancePresentationModel
 import cv.domain.repositories.DateProviderRepository
@@ -24,6 +27,7 @@ import kotlinx.coroutines.launch
 
 class AttendanceScreenViewModel(
     private val memberId: String,
+    private val showSnackbar: (AppSnackbarData) -> Unit,
     private val jobRepository: JobRepository,
     private val converter: ErrorCodeConverter,
     private val attendanceUseCase: AttendanceUseCase,
@@ -49,7 +53,8 @@ class AttendanceScreenViewModel(
                     ).collect { result ->
                         when (result) {
                             is DomainResult.Error -> {
-                                sendAction(Action.ShowDomainError(result.error, converter))
+                                showSnackbar(buildErrorSnackbar(converter.getMessage(result.error)))
+                                sendAction(Action.ShowInputError)
                             }
 
                             is DomainResult.Success -> {
@@ -83,15 +88,12 @@ class AttendanceScreenViewModel(
                 ).also { result ->
                     when (result) {
                         is DomainResult.Error -> {
-                            sendAction(
-                                Action.ShowDomainError(
-                                    result.error,
-                                    converter,
-                                ),
-                            )
+                            showSnackbar(buildErrorSnackbar(converter.getMessage(result.error)))
+                            sendAction(Action.ShowInputError)
                         }
 
                         is DomainResult.Success -> {
+                            showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_successfully_deleted)))
                             getAttendances()
                         }
                     }
@@ -109,9 +111,7 @@ class AttendanceScreenViewModel(
     sealed interface UiState : BaseState {
         data object Loading : UiState
 
-        data class Error(
-            val message: String,
-        ) : UiState
+        data object Error : UiState
 
         data class Success(
             val attendancesMonthly: List<AttendanceMonthPresentationModel>,
@@ -123,11 +123,8 @@ class AttendanceScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowDomainError(
-            val domainErrorType: DomainErrorType,
-            val errorCodeConverter: ErrorCodeConverter,
-        ) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainErrorType))
+        data object ShowInputError : Action {
+            override fun reduce(state: UiState): UiState = UiState.Error
         }
 
         data class Success(

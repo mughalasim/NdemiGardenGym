@@ -4,16 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.member.MemberStatusWidgetListener
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
-fun MembersActiveScreen(
-    viewModel: MembersScreenViewModel = koinViewModel<MembersScreenViewModel>(parameters = { parametersOf(MemberScreenType.LIVE_MEMBERS) }),
-    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
-) {
+fun MembersActiveScreen(viewModel: MembersScreenViewModel) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val members = viewModel.members
     val searchTerm by viewModel.searchTerm.collectAsStateWithLifecycle()
@@ -24,7 +18,6 @@ fun MembersActiveScreen(
         screenType = MemberScreenType.LIVE_MEMBERS,
         searchTerm = searchTerm,
         uiState = uiState,
-        snackbarHostState = snackbarHostState,
         members = members,
         listeners =
             MembersSharedScreenListeners(

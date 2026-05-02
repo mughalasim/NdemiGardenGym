@@ -9,7 +9,7 @@ fun getMockActiveMemberPresentationModel() =
         id = "1234567890",
         fullName = "Asim Active",
         email = "asim@test.com",
-        residentialStatus = "B903",
+        apartmentNumber = "B903",
         profileImageUrl = "",
         hasCoach = true,
     )

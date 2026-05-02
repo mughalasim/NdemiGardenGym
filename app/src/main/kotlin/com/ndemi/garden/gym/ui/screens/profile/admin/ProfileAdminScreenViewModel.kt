@@ -2,11 +2,15 @@ package com.ndemi.garden.gym.ui.screens.profile.admin
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
+import com.ndemi.garden.gym.ui.appSnackbar.buildInfoSnackbar
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
+import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import com.ndemi.garden.gym.ui.utils.OBSERVE_ADMIN
 import com.ndemi.garden.gym.ui.utils.OBSERVE_SETTINGS
 import cv.domain.presentationModels.AdminDashboardPresentationModel
@@ -16,12 +20,13 @@ import cv.domain.usecase.AdminDashboardUseCase
 import cv.domain.usecase.SettingsUseCase
 import kotlinx.coroutines.launch
 
-@Suppress("DEPRECATION")
 class ProfileAdminScreenViewModel(
+    private val showSnackbar: (AppSnackbarData) -> Unit,
     private val jobRepository: JobRepository,
     private val adminDashboardUseCase: AdminDashboardUseCase,
     private val navigationService: NavigationService,
     private val settingsUseCase: SettingsUseCase,
+    private val converter: ErrorCodeConverter,
     dateProviderRepository: DateProviderRepository,
 ) : BaseViewModel<ProfileAdminScreenViewModel.UiState, ProfileAdminScreenViewModel.Action>(UiState.Loading) {
     private var currentDate = dateProviderRepository.getDate()
@@ -50,24 +55,32 @@ class ProfileAdminScreenViewModel(
         )
     }
 
+    @Suppress("DEPRECATION")
     fun onYearPlusTapped() {
         currentDate.year += 1
         fetchAdminDashboard()
+        showSnackbar(buildInfoSnackbar(converter.getString(R.string.txt_increased_year)))
     }
 
+    @Suppress("DEPRECATION")
     fun onYearMinusTapped() {
         currentDate.year -= 1
         fetchAdminDashboard()
+        showSnackbar(buildInfoSnackbar(converter.getString(R.string.txt_decreased_year)))
     }
 
+    @Suppress("DEPRECATION")
     fun onMonthPlusTapped() {
         currentDate.month += 1
         fetchAdminDashboard()
+        showSnackbar(buildInfoSnackbar(converter.getString(R.string.txt_increased_month)))
     }
 
+    @Suppress("DEPRECATION")
     fun onMonthMinusTapped() {
         currentDate.month -= 1
         fetchAdminDashboard()
+        showSnackbar(buildInfoSnackbar(converter.getString(R.string.txt_decreased_month)))
     }
 
     fun onSettingsTapped() {

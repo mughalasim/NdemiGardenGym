@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.compose.runtime.Immutable
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
+import com.ndemi.garden.gym.ui.appSnackbar.buildInfoSnackbar
 import com.ndemi.garden.gym.ui.enums.SettingType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class SettingsScreenViewModel(
+    private val showSnackbar: (AppSnackbarData) -> Unit,
     private val app: Application,
     private val numberFormatUseCase: NumberFormatUseCase,
     private val navigationService: NavigationService,
@@ -98,8 +101,8 @@ class SettingsScreenViewModel(
                 settingsUseCase.getWeightUnitList().find { it.description == selectedOptionDescription }?.let {
                     if (numberFormatUseCase.getWeightUnit() == it) return@let
                     settingsUseCase.saveWeightSetting(it)
-                    sendAction(
-                        Action.ShowMessage(
+                    showSnackbar(
+                        buildInfoSnackbar(
                             app.getString(
                                 R.string.txt_settings_success_message,
                                 app.getString(R.string.txt_settings_weight_unit),
@@ -114,8 +117,8 @@ class SettingsScreenViewModel(
                 settingsUseCase.getHeightUnitList().find { it.description == selectedOptionDescription }?.let {
                     if (numberFormatUseCase.getHeightUnit() == it) return@let
                     settingsUseCase.saveHeightSetting(it)
-                    sendAction(
-                        Action.ShowMessage(
+                    showSnackbar(
+                        buildInfoSnackbar(
                             app.getString(
                                 R.string.txt_settings_success_message,
                                 app.getString(R.string.txt_settings_height_unit),
@@ -130,8 +133,8 @@ class SettingsScreenViewModel(
                 settingsUseCase.getCurrencyUnitList().find { it.description == selectedOptionDescription }?.let {
                     if (numberFormatUseCase.getCurrencyUnit() == it) return@let
                     settingsUseCase.saveCurrencySetting(it)
-                    sendAction(
-                        Action.ShowMessage(
+                    showSnackbar(
+                        buildInfoSnackbar(
                             app.getString(
                                 R.string.txt_settings_success_message,
                                 app.getString(R.string.txt_settings_currency_unit),
@@ -164,10 +167,6 @@ class SettingsScreenViewModel(
         data object Loading : UiState
 
         data object Ready : UiState
-
-        data class Message(
-            val message: String,
-        ) : UiState
     }
 
     sealed interface Action : BaseAction<UiState> {
@@ -177,12 +176,6 @@ class SettingsScreenViewModel(
 
         data object SetLoading : Action {
             override fun reduce(state: UiState): UiState = UiState.Loading
-        }
-
-        data class ShowMessage(
-            val message: String,
-        ) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Message(message)
         }
     }
 }

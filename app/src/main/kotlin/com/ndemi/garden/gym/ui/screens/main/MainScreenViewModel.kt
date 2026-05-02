@@ -5,12 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.ndemi.garden.gym.BuildConfig
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.BottomNavItem
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
+import com.ndemi.garden.gym.ui.appSnackbar.buildErrorSnackbar
+import com.ndemi.garden.gym.ui.appSnackbar.buildSuccessSnackbar
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import com.ndemi.garden.gym.ui.utils.OBSERVE_MEMBER_STATE
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import cv.domain.DomainResult
 import cv.domain.entities.MemberEntity
 import cv.domain.repositories.JobRepository
@@ -23,6 +26,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
 class MainScreenViewModel(
+    private val showSnackbar: (AppSnackbarData) -> Unit,
     private val jobRepository: JobRepository,
     private val navigationService: NavigationService,
     private val authUseCase: AuthUseCase,
@@ -37,8 +41,6 @@ class MainScreenViewModel(
 
     private val _emailVerifiedState: MutableStateFlow<EmailVerifiedState> = MutableStateFlow(EmailVerifiedState.Hidden)
     val emailVerifiedState: StateFlow<EmailVerifiedState> = _emailVerifiedState
-
-    val snackbarHostState: AppSnackbarHostState = AppSnackbarHostState()
 
     init {
         combine(
@@ -92,11 +94,11 @@ class MainScreenViewModel(
             accessUseCase.verifyEmail().also { result ->
                 when (result) {
                     is DomainResult.Success -> {
-                        _emailVerifiedState.value = EmailVerifiedState.Success
+                        showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_email_has_been_sent)))
                     }
 
                     is DomainResult.Error -> {
-                        _emailVerifiedState.value = EmailVerifiedState.Error(converter.getMessage(result.error))
+                        showSnackbar(buildErrorSnackbar(converter.getMessage(result.error)))
                     }
                 }
             }
@@ -187,12 +189,6 @@ class MainScreenViewModel(
         data object Visible : EmailVerifiedState
 
         data object Hidden : EmailVerifiedState
-
-        data object Success : EmailVerifiedState
-
-        data class Error(
-            val message: String,
-        ) : EmailVerifiedState
     }
 
     @Immutable

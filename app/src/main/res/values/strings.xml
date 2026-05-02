@@ -8,8 +8,7 @@
     <string name="error_no_data">No records found</string>
     <string name="error_unknown">An unknown error has occurred, please try again later</string>
     <string name="error_email">Invalid email address</string>
-    <string name="error_password">Invalid password</string>
-    <string name="error_password_confirm">Invalid confirm password</string>
+    <string name="error_password">Invalid password, must be at least 6 characters in length with one letter and one number</string>
     <string name="error_password_match">Your password and confirm password do not match</string>
     <string name="error_first_name">First name is invalid</string>
     <string name="error_last_name">Last name is invalid</string>
@@ -55,9 +54,11 @@
     <string name="txt_add">Add</string>
     <string name="txt_workouts">Workouts</string>
     <string name="txt_bmi">BMI</string>
-    <string name="txt_admin">Admin</string>
     <string name="txt_total">Total</string>
     <string name="txt_settings">Settings</string>
+    <string name="txt_dashboard">Dashboard</string>
+    <string name="txt_management">Management</string>
+    <string name="txt_guest">Guest</string>
 
     <!-- More than one word -->
     <string name="txt_register_new_member">Register a new member</string>
@@ -90,7 +91,7 @@
     <string name="txt_attendance_for">Attendance for %1$s</string>
     <string name="txt_register_info">Register with us by filling in the details below, Contact the Gym Coach in order to activate your account</string>
     <string name="txt_reset_desc">Oh no! Did you forget your password? Worry not! Enter the email address you used to register with us, and we shall send you a reset password link</string>
-    <string name="txt_email_has_been_sent">Email has been sent to %1$s</string>
+    <string name="txt_email_has_been_sent">Email has been sent, please check your inbox</string>
     <string name="txt_selected_year">Selected year</string>
     <string name="txt_selected_month">Selected month</string>
     <string name="txt_are_you_sure">Are you sure</string>
@@ -129,6 +130,10 @@
     <string name="txt_set_date">Set date</string>
     <string name="txt_total_weight_change">Total weight change</string>
     <string name="txt_successfully_updated">Successfully updated</string>
+    <string name="txt_successfully_added">Successfully added</string>
+    <string name="txt_successfully_deleted">Successfully deleted</string>
+    <string name="txt_successfully_registered">Successfully registered</string>
+    <string name="txt_successfully_logged_in">Successfully logged in</string>
     <string name="txt_weight_deleted">Weight deleted successfully</string>
     <string name="txt_no_tracked_weight_this_year">No tracked weight this year</string>
     <string name="txt_tracked_weight_this_year">Tracked weight this year</string>
@@ -142,5 +147,10 @@
     <string name="txt_settings_dialog_title">%1$s selection</string>
     <string name="txt_settings_dialog_message">Select a %1$s from the options below</string>
     <string name="txt_settings_success_message">Successfully updated the %1$s setting to %2$s</string>
+    <string name="txt_apartment">Apartment %1$s</string>
+    <string name="txt_increased_year">Increased year</string>
+    <string name="txt_increased_month">Increased month</string>
+    <string name="txt_decreased_year">Decreased year</string>
+    <string name="txt_decreased_month">Decreased month</string>
 
 </resources>

@@ -92,6 +92,7 @@ val repositoryModule =
                 pathUser = BuildConfig.PATH_USER,
                 logger = get(),
                 memberMapper = get(),
+                scope = get(),
             )
         }
 
@@ -103,6 +104,7 @@ val repositoryModule =
                 logger = get(),
                 dateProviderRepository = get(),
                 attendanceMapper = get(),
+                scope = get(),
             )
         }
 

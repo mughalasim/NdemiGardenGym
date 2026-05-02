@@ -3,8 +3,12 @@ package com.ndemi.garden.gym.ui.screens.members
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
 import com.ndemi.garden.gym.navigation.Route
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
+import com.ndemi.garden.gym.ui.appSnackbar.buildErrorSnackbar
+import com.ndemi.garden.gym.ui.appSnackbar.buildSuccessSnackbar
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
 import com.ndemi.garden.gym.ui.screens.base.BaseState
 import com.ndemi.garden.gym.ui.screens.base.BaseViewModel
@@ -13,7 +17,6 @@ import com.ndemi.garden.gym.ui.screens.members.MembersScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import com.ndemi.garden.gym.ui.utils.OBSERVE_MEMBER_SCREEN
 import cv.domain.DomainResult
-import cv.domain.enums.DomainErrorType
 import cv.domain.enums.MemberUpdateType
 import cv.domain.mappers.MemberPresentationMapper
 import cv.domain.presentationModels.MemberPresentationModel
@@ -26,7 +29,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+@Suppress("detekt.LongParameterList")
 class MembersScreenViewModel(
+    private val showSnackbar: (AppSnackbarData) -> Unit,
     private val jobRepository: JobRepository,
     private val screenType: MemberScreenType,
     private val converter: ErrorCodeConverter,
@@ -63,7 +68,8 @@ class MembersScreenViewModel(
                 useCaseAction.collect { result ->
                     when (result) {
                         is DomainResult.Error -> {
-                            sendAction(Action.ShowDomainError(result.error, converter))
+                            sendAction(Action.SetWaiting)
+                            showSnackbar(buildErrorSnackbar(converter.getMessage(result.error)))
                         }
 
                         is DomainResult.Success -> {
@@ -113,6 +119,7 @@ class MembersScreenViewModel(
         // Update the member model
         viewModelScope.launch {
             val result = memberUseCase.getMemberById(model.id)
+            sendAction(Action.SetWaiting)
             if (result is DomainResult.Success) {
                 val memberEntity = result.data
                 memberUseCase
@@ -123,6 +130,7 @@ class MembersScreenViewModel(
                         ),
                         MemberUpdateType.ACTIVE_SESSION,
                     )
+                showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_successfully_updated)))
             }
         }
     }
@@ -149,9 +157,7 @@ class MembersScreenViewModel(
     sealed interface UiState : BaseState {
         data object Loading : UiState
 
-        data class Error(
-            val message: String,
-        ) : UiState
+        data object Waiting : UiState
 
         data object Success : UiState
     }
@@ -161,11 +167,8 @@ class MembersScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowDomainError(
-            val domainErrorType: DomainErrorType,
-            val errorCodeConverter: ErrorCodeConverter,
-        ) : Action {
-            override fun reduce(state: UiState): UiState = UiState.Error(errorCodeConverter.getMessage(domainErrorType))
+        data object SetWaiting : Action {
+            override fun reduce(state: UiState): UiState = UiState.Waiting
         }
 
         data object Success : Action {

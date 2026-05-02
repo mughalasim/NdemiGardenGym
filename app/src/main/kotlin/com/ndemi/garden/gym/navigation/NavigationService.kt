@@ -5,10 +5,7 @@ import androidx.navigation.NavController
 interface NavigationService {
     fun setNavController(navController: NavController)
 
-    fun open(
-        route: Route,
-        removeCurrentFromStack: Boolean = false,
-    )
+    fun open(route: Route)
 
     fun popBack()
 

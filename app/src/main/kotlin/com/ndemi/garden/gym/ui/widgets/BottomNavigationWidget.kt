@@ -2,6 +2,8 @@ package com.ndemi.garden.gym.ui.widgets
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -12,33 +14,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ndemi.garden.gym.navigation.BottomNavItem
-import com.ndemi.garden.gym.navigation.BottomNavItem.AllMembersScreen
-import com.ndemi.garden.gym.navigation.BottomNavItem.AttendanceScreen
-import com.ndemi.garden.gym.navigation.BottomNavItem.LoginScreen
-import com.ndemi.garden.gym.navigation.BottomNavItem.MembersActiveScreen
-import com.ndemi.garden.gym.navigation.BottomNavItem.MembersExpiredScreen
-import com.ndemi.garden.gym.navigation.BottomNavItem.NonMembersScreen
-import com.ndemi.garden.gym.navigation.BottomNavItem.PaymentsScreen
-import com.ndemi.garden.gym.navigation.BottomNavItem.ProfileAdminScreen
-import com.ndemi.garden.gym.navigation.BottomNavItem.ProfileMemberScreen
-import com.ndemi.garden.gym.navigation.BottomNavItem.RegisterScreen
-import com.ndemi.garden.gym.navigation.BottomNavItem.ResetPasswordScreen
-import com.ndemi.garden.gym.navigation.Route.Companion.toRoute
+import com.ndemi.garden.gym.navigation.getAdminBottomNavItems
+import com.ndemi.garden.gym.navigation.getMemberBottomNavItems
+import com.ndemi.garden.gym.navigation.getSuperAdminBottomNavItems
+import com.ndemi.garden.gym.navigation.getUnauthenticatedBottomNavItems
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
+import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.utils.AppPreview
 
 @Composable
 fun BottomNavigationWidget(
-    navHostController: NavHostController,
+    navHostController: NavHostController = rememberNavController(),
     navBottomItems: List<BottomNavItem> = listOf(),
 ) {
+    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    if (navBottomItems.all { currentDestination?.hasRoute(it.route::class) == false }) {
+        return
+    }
+
     NavigationBar(
         modifier =
             Modifier
@@ -48,12 +50,8 @@ fun BottomNavigationWidget(
                 ),
         containerColor = Color.Transparent,
     ) {
-        val navStackBackEntry by navHostController.currentBackStackEntryAsState()
-        val currentDestination = navStackBackEntry?.destination
-
         navBottomItems.forEach { item ->
-            val isCurrentSelection =
-                currentDestination?.hierarchy?.any { it.route?.toRoute() == item.route } == true
+            val isCurrentSelection = currentDestination?.hasRoute(item.route::class) == true
             NavigationBarItem(
                 selected = isCurrentSelection,
                 onClick = {
@@ -96,54 +94,23 @@ fun BottomNavigationWidget(
 
 @AppPreview
 @Composable
-private fun BottomNavigationWidgetPreview() {
-    val getMemberBottomItems =
-        listOf(
-            ProfileMemberScreen,
-            AttendanceScreen,
-            PaymentsScreen,
-            MembersActiveScreen,
-        )
-
-    val getLoginBottomItems =
-        listOf(
-            LoginScreen,
-            RegisterScreen,
-            ResetPasswordScreen,
-        )
-
-    val getAdminBottomItems =
-        listOf(
-            ProfileAdminScreen,
-            AllMembersScreen,
-            MembersExpiredScreen,
-            MembersActiveScreen,
-        )
-    val getSuperAdminBottomItems =
-        listOf(
-            ProfileAdminScreen,
-            NonMembersScreen,
-            AllMembersScreen,
-        )
-
+private fun BottomNavigationWidgetPreview() =
     AppThemeComposable {
         Column {
             BottomNavigationWidget(
-                navHostController = rememberNavController(),
-                getLoginBottomItems,
+                navBottomItems = getUnauthenticatedBottomNavItems(),
             )
+            Spacer(modifier = Modifier.padding(padding_screen))
             BottomNavigationWidget(
-                navHostController = rememberNavController(),
-                getMemberBottomItems,
+                navBottomItems = getMemberBottomNavItems(),
             )
+            Spacer(modifier = Modifier.padding(padding_screen))
             BottomNavigationWidget(
-                navHostController = rememberNavController(),
-                getAdminBottomItems,
+                navBottomItems = getAdminBottomNavItems(),
             )
+            Spacer(modifier = Modifier.padding(padding_screen))
             BottomNavigationWidget(
-                navHostController = rememberNavController(),
-                getSuperAdminBottomItems,
+                navBottomItems = getSuperAdminBottomNavItems(),
             )
         }
     }
-}

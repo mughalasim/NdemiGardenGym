@@ -17,7 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.ui.mock.getMockActiveMemberPresentationModel
 import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberPresentationModel
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberPresentationModel
@@ -72,7 +74,12 @@ fun MemberStatusWidget(
             } else if (canViewMemberDetails) {
                 TextWidget(
                     style = AppTheme.textStyles.small,
-                    text = model.residentialStatus,
+                    text =
+                        if (model.apartmentNumber.isEmpty()) {
+                            stringResource(R.string.txt_guest)
+                        } else {
+                            stringResource(R.string.txt_apartment, model.apartmentNumber)
+                        },
                 )
                 if (model.hasPaidMembership) {
                     TextWidget(

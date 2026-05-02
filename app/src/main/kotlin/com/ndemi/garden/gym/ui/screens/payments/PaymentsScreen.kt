@@ -20,24 +20,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.payments.PaymentsScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
 import com.ndemi.garden.gym.ui.widgets.dialog.AlertDialogWidget
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentsScreen(
     memberId: String,
     memberName: String,
-    viewModel: PaymentsScreenViewModel = koinViewModel<PaymentsScreenViewModel>(parameters = { parametersOf(memberId) }),
-    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
+    viewModel: PaymentsScreenViewModel,
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -102,13 +97,6 @@ fun PaymentsScreen(
                                 onDeletePayment = viewModel::deletePayment,
                             )
                         }
-                    }
-
-                    is UiState.Error -> {
-                        snackbarHostState.Show(
-                            type = SnackbarType.ERROR,
-                            message = state.message,
-                        )
                     }
 
                     else -> {}

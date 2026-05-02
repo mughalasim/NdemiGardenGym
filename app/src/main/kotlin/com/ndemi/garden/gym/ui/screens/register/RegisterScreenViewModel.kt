@@ -2,7 +2,11 @@ package com.ndemi.garden.gym.ui.screens.register
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
+import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarData
+import com.ndemi.garden.gym.ui.appSnackbar.buildErrorSnackbar
+import com.ndemi.garden.gym.ui.appSnackbar.buildSuccessSnackbar
 import com.ndemi.garden.gym.ui.enums.RegisterScreenInputType
 import com.ndemi.garden.gym.ui.enums.UiErrorType
 import com.ndemi.garden.gym.ui.screens.base.BaseAction
@@ -12,24 +16,27 @@ import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
+import cv.domain.dispatchers.ScopeProvider
 import cv.domain.entities.MemberEntity
 import cv.domain.enums.MemberUpdateType
 import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.MemberUseCase
-import cv.domain.validator.MemberValidators
+import cv.domain.validator.RegisterScreenValidators
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 class RegisterScreenViewModel(
+    private val hidePassword: Boolean,
+    private val showSnackbar: (AppSnackbarData) -> Unit,
+    private val scope: ScopeProvider,
     private val converter: ErrorCodeConverter,
     private val accessUseCase: AccessUseCase,
     private val memberUseCase: MemberUseCase,
     private val navigationService: NavigationService,
-    private val hidePassword: Boolean,
-    private val validators: MemberValidators,
+    private val validators: RegisterScreenValidators,
     private val dateProviderRepository: DateProviderRepository,
 ) : BaseViewModel<UiState, Action>(UiState.Waiting) {
     data class InputData(
@@ -58,17 +65,15 @@ class RegisterScreenViewModel(
                 RegisterScreenInputType.APARTMENT_NUMBER -> _inputData.value.copy(apartmentNumber = value)
                 RegisterScreenInputType.PASSWORD -> _inputData.value.copy(password = value)
                 RegisterScreenInputType.CONFIRM_PASSWORD -> _inputData.value.copy(confirmPassword = value)
-                RegisterScreenInputType.NONE -> _inputData.value
             }
         validateInput()
     }
 
     private fun validateInput() {
-        val email = _inputData.value.email
         when {
             validators.name.isNotValid(_inputData.value.firstName) -> {
                 sendAction(
-                    Action.ShowError(
+                    Action.ShowInputError(
                         converter.getMessage(UiErrorType.INVALID_FIRST_NAME),
                         RegisterScreenInputType.FIRST_NAME,
                     ),
@@ -77,20 +82,16 @@ class RegisterScreenViewModel(
 
             validators.name.isNotValid(_inputData.value.lastName) -> {
                 sendAction(
-                    Action.ShowError(
+                    Action.ShowInputError(
                         converter.getMessage(UiErrorType.INVALID_LAST_NAME),
                         RegisterScreenInputType.LAST_NAME,
                     ),
                 )
             }
 
-            email.isEmpty() ||
-                !android.util.Patterns.EMAIL_ADDRESS
-                    .matcher(email)
-                    .matches()
-            -> {
+            validators.email.isNotValid(_inputData.value.email) -> {
                 sendAction(
-                    Action.ShowError(
+                    Action.ShowInputError(
                         converter.getMessage(UiErrorType.INVALID_EMAIL),
                         RegisterScreenInputType.EMAIL,
                     ),
@@ -99,14 +100,14 @@ class RegisterScreenViewModel(
 
             validators.apartmentNumber.isNotValid(_inputData.value.apartmentNumber) -> {
                 sendAction(
-                    Action.ShowError(
+                    Action.ShowInputError(
                         converter.getMessage(UiErrorType.INVALID_APARTMENT_NUMBER),
                         RegisterScreenInputType.APARTMENT_NUMBER,
                     ),
                 )
             }
 
-            shouldValidatePassword -> {
+            !hidePassword -> {
                 passwordCheck()
             }
 
@@ -116,36 +117,20 @@ class RegisterScreenViewModel(
         }
     }
 
-    private val shouldValidatePassword =
-        !hidePassword && (
-            _inputData.value.password.isEmpty() ||
-                _inputData.value.confirmPassword.isEmpty() ||
-                _inputData.value.password != _inputData.value.confirmPassword
-        )
-
     private fun passwordCheck() {
         when {
-            _inputData.value.password.isEmpty() -> {
+            validators.password.isNotValid(_inputData.value.password) -> {
                 sendAction(
-                    Action.ShowError(
+                    Action.ShowInputError(
                         converter.getMessage(UiErrorType.INVALID_PASSWORD),
                         RegisterScreenInputType.PASSWORD,
                     ),
                 )
             }
 
-            _inputData.value.confirmPassword.isEmpty() -> {
-                sendAction(
-                    Action.ShowError(
-                        converter.getMessage(UiErrorType.INVALID_PASSWORD_CONFIRM),
-                        RegisterScreenInputType.CONFIRM_PASSWORD,
-                    ),
-                )
-            }
-
             _inputData.value.password != _inputData.value.confirmPassword -> {
                 sendAction(
-                    Action.ShowError(
+                    Action.ShowInputError(
                         converter.getMessage(UiErrorType.INVALID_PASSWORD_MATCH),
                         RegisterScreenInputType.CONFIRM_PASSWORD,
                     ),
@@ -167,8 +152,14 @@ class RegisterScreenViewModel(
                     inputData.value.password,
                 ).also {
                     when (it) {
-                        is DomainResult.Error -> sendAction(Action.ShowError(converter.getMessage(it.error)))
-                        is DomainResult.Success -> updateMember(it.data, MemberUpdateType.REGISTRATION)
+                        is DomainResult.Error -> {
+                            showSnackbar(buildErrorSnackbar(converter.getMessage(it.error)))
+                            sendAction(Action.SetReady)
+                        }
+
+                        is DomainResult.Success -> {
+                            updateMember(it.data, MemberUpdateType.REGISTRATION)
+                        }
                     }
                 }
         }
@@ -183,7 +174,7 @@ class RegisterScreenViewModel(
         memberUpdateType: MemberUpdateType,
     ) {
         sendAction(Action.SetLoading)
-        viewModelScope.launch {
+        scope.io().launch {
             memberUseCase
                 .updateMember(
                     MemberEntity(
@@ -209,10 +200,12 @@ class RegisterScreenViewModel(
                 ).also {
                     when (it) {
                         is DomainResult.Error -> {
-                            sendAction(Action.ShowError(converter.getMessage(it.error)))
+                            showSnackbar(buildErrorSnackbar(converter.getMessage(it.error)))
+                            sendAction(Action.SetReady)
                         }
 
                         is DomainResult.Success -> {
+                            showSnackbar(buildSuccessSnackbar(converter.getString(R.string.txt_successfully_registered)))
                             sendAction(Action.Success)
                         }
                     }
@@ -249,9 +242,9 @@ class RegisterScreenViewModel(
             override fun reduce(state: UiState): UiState = UiState.Loading
         }
 
-        data class ShowError(
+        data class ShowInputError(
             val message: String,
-            val inputType: RegisterScreenInputType = RegisterScreenInputType.NONE,
+            val inputType: RegisterScreenInputType,
         ) : Action {
             override fun reduce(state: UiState): UiState = UiState.Error(message, inputType)
         }

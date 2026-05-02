@@ -19,8 +19,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.enums.ResetScreenInputType
-import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.reset.ResetPasswordScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.AppTheme
 import com.ndemi.garden.gym.ui.theme.AppThemeComposable
@@ -28,7 +26,6 @@ import com.ndemi.garden.gym.ui.theme.image_size_large
 import com.ndemi.garden.gym.ui.theme.padding_screen_large
 import com.ndemi.garden.gym.ui.theme.page_width
 import com.ndemi.garden.gym.ui.utils.AppPreview
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ButtonWidget
 import com.ndemi.garden.gym.ui.widgets.EditTextWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
@@ -39,10 +36,7 @@ fun ResetPasswordDetailsScreen(
     email: String = "",
     setEmail: (String) -> Unit = {},
     onResetPasswordTapped: () -> Unit = {},
-    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
 ) {
-    var errorEmail = ""
-
     Column(
         modifier =
             Modifier
@@ -51,28 +45,6 @@ fun ResetPasswordDetailsScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        if (uiState is UiState.Success) {
-            snackbarHostState.Show(
-                type = SnackbarType.SUCCESS,
-                message = stringResource(R.string.txt_email_has_been_sent, uiState.email),
-            )
-        }
-
-        if (uiState is UiState.Error) {
-            when (uiState.inputType) {
-                ResetScreenInputType.NONE -> {
-                    snackbarHostState.Show(
-                        type = SnackbarType.ERROR,
-                        message = uiState.message,
-                    )
-                }
-
-                ResetScreenInputType.EMAIL -> {
-                    errorEmail = uiState.message
-                }
-            }
-        }
-
         Column(
             modifier =
                 Modifier
@@ -106,7 +78,7 @@ fun ResetPasswordDetailsScreen(
                         .padding(top = padding_screen_large),
                 textInput = email,
                 hint = stringResource(id = R.string.txt_email),
-                errorText = errorEmail,
+                errorText = if (uiState is UiState.Error) uiState.message else "",
                 keyboardType = KeyboardType.Email,
                 onValueChanged = setEmail,
             )

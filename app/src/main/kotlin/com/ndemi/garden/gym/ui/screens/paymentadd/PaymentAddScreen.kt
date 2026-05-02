@@ -10,17 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun PaymentAddScreen(
-    memberId: String,
-    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
-    viewModel: PaymentAddScreenViewModel = koinViewModel<PaymentAddScreenViewModel>(),
-) {
-    viewModel.setMemberId(memberId)
+fun PaymentAddScreen(viewModel: PaymentAddScreenViewModel) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val inputData by viewModel.inputData.collectAsStateWithLifecycle()
 
@@ -42,7 +35,6 @@ fun PaymentAddScreen(
             uiState = uiState,
             currencyUnit = viewModel.currencyUnit,
             onSetData = viewModel::setData,
-            snackbarHostState = snackbarHostState,
             onPaymentAddTapped = viewModel::onPaymentAddTapped,
         )
     }

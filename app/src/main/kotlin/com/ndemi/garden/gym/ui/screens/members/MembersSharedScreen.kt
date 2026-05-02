@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.mock.getMockActiveMemberPresentationModel
 import com.ndemi.garden.gym.ui.mock.getMockExpiredMemberPresentationModel
 import com.ndemi.garden.gym.ui.mock.getMockRegisteredMemberPresentationModel
@@ -29,7 +28,6 @@ import com.ndemi.garden.gym.ui.theme.padding_screen
 import com.ndemi.garden.gym.ui.theme.padding_screen_tiny
 import com.ndemi.garden.gym.ui.utils.AppPreview
 import com.ndemi.garden.gym.ui.utils.toAppCardStyle
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.LoadingScreenWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
@@ -47,7 +45,6 @@ internal fun MembersSharedScreen(
     permissionState: PermissionsEntity = PermissionsEntity(),
     searchTerm: String = "",
     uiState: UiState = UiState.Loading,
-    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
     members: List<MemberPresentationModel> = listOf(),
     listeners: MembersSharedScreenListeners = MembersSharedScreenListeners(),
 ) {
@@ -58,13 +55,6 @@ internal fun MembersSharedScreen(
                 secondaryIcon = if (permissionState.canAddMember) Icons.Default.PersonAdd else null,
                 onSecondaryIconPressed = listeners.onRegisterMemberTapped,
             )
-
-            if (uiState is UiState.Error) {
-                snackbarHostState.Show(
-                    type = SnackbarType.ERROR,
-                    message = uiState.message,
-                )
-            }
 
             SearchMemberComponent(
                 textInput = searchTerm,

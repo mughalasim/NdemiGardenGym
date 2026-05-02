@@ -12,6 +12,8 @@ interface ErrorCodeConverter {
     fun getMessage(domainErrorType: DomainErrorType): String
 
     fun getMessage(uiErrorType: UiErrorType): String
+
+    fun getString(id: Int): String
 }
 
 class ErrorCodeConverterImp(
@@ -40,7 +42,6 @@ class ErrorCodeConverterImp(
         when (uiErrorType) {
             UiErrorType.INVALID_EMAIL -> application.resources.getString(R.string.error_email)
             UiErrorType.INVALID_PASSWORD -> application.resources.getString(R.string.error_password)
-            UiErrorType.INVALID_PASSWORD_CONFIRM -> application.resources.getString(R.string.error_password_confirm)
             UiErrorType.INVALID_PASSWORD_MATCH -> application.resources.getString(R.string.error_password_match)
             UiErrorType.INVALID_FIRST_NAME -> application.resources.getString(R.string.error_first_name)
             UiErrorType.INVALID_LAST_NAME -> application.resources.getString(R.string.error_last_name)
@@ -52,4 +53,6 @@ class ErrorCodeConverterImp(
             UiErrorType.INVALID_MONTH_DURATION -> application.resources.getString(R.string.error_invalid_month_duration)
             UiErrorType.INVALID_PHONE_NUMBER -> application.resources.getString(R.string.error_invalid_phone_number)
         }
+
+    override fun getString(id: Int): String = application.resources.getString(id)
 }

@@ -3,7 +3,6 @@ package com.ndemi.garden.gym.ui.enums
 enum class UiErrorType {
     INVALID_EMAIL,
     INVALID_PASSWORD,
-    INVALID_PASSWORD_CONFIRM,
     INVALID_PASSWORD_MATCH,
     INVALID_FIRST_NAME,
     INVALID_LAST_NAME,

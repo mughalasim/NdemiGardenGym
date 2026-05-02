@@ -12,22 +12,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ndemi.garden.gym.R
-import com.ndemi.garden.gym.ui.enums.SnackbarType
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.theme.padding_screen
-import com.ndemi.garden.gym.ui.widgets.AppSnackbarHostState
 import com.ndemi.garden.gym.ui.widgets.DateSelectionWidget
 import com.ndemi.garden.gym.ui.widgets.TextWidget
 import com.ndemi.garden.gym.ui.widgets.ToolBarWidget
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun AttendanceScreen(
-    memberId: String = "",
     memberName: String = "",
-    viewModel: AttendanceScreenViewModel = koinViewModel<AttendanceScreenViewModel>(parameters = { parametersOf(memberId) }),
-    snackbarHostState: AppSnackbarHostState = AppSnackbarHostState(),
+    viewModel: AttendanceScreenViewModel,
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val selectedYear by viewModel.selectedYear.collectAsStateWithLifecycle()
@@ -80,13 +74,6 @@ fun AttendanceScreen(
                             viewModel.deleteAttendance(it)
                         }
                     }
-                }
-
-                is UiState.Error -> {
-                    snackbarHostState.Show(
-                        type = SnackbarType.ERROR,
-                        message = state.message,
-                    )
                 }
 
                 else -> {}

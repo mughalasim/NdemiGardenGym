@@ -1,5 +1,6 @@
 package com.ndemi.garden.gym.di
 
+import com.ndemi.garden.gym.ui.appSnackbar.AppSnackbarViewModel
 import com.ndemi.garden.gym.ui.screens.attendance.AttendanceScreenViewModel
 import com.ndemi.garden.gym.ui.screens.login.LoginScreenViewModel
 import com.ndemi.garden.gym.ui.screens.main.MainScreenViewModel
@@ -22,21 +23,76 @@ import org.koin.dsl.module
 
 val viewModelModule =
     module {
-        viewModelOf(::MainScreenViewModel)
+        viewModelOf(::AppSnackbarViewModel)
 
-        viewModelOf(::LoginScreenViewModel)
+        viewModelOf(::WeightGraphComponentViewModel)
 
-        viewModelOf(::ProfileMemberScreenViewModel)
+        viewModel { params ->
+            MainScreenViewModel(
+                showSnackbar = params.get(),
+                jobRepository = get(),
+                navigationService = get(),
+                authUseCase = get(),
+                accessUseCase = get(),
+                converter = get(),
+            )
+        }
 
-        viewModelOf(::ProfileAdminScreenViewModel)
+        viewModel { params ->
+            LoginScreenViewModel(
+                showSnackbar = params.get(),
+                converter = get(),
+                accessUseCase = get(),
+                emailValidator = get(named<ValidatorEmail>()),
+                passwordValidator = get(named<ValidatorPassword>()),
+            )
+        }
 
-        viewModelOf(::PaymentAddScreenViewModel)
+        viewModel { params ->
+            ResetPasswordScreenViewModel(
+                showSnackbar = params.get(),
+                converter = get(),
+                accessUseCase = get(),
+                emailValidator = get(named<ValidatorEmail>()),
+            )
+        }
 
-        viewModelOf(::SettingsScreenViewModel)
+        viewModel(named<RegisterMember>()) { params ->
+            RegisterScreenViewModel(
+                hidePassword = false,
+                showSnackbar = params.get(),
+                scope = get(),
+                converter = get(),
+                accessUseCase = get(),
+                memberUseCase = get(),
+                navigationService = get(),
+                validators = get(),
+                dateProviderRepository = get(),
+            )
+        }
+
+        viewModel { params ->
+            ProfileMemberScreenViewModel(
+                showSnackbar = params.get(),
+                application = get(),
+                jobRepository = get(),
+                converter = get(),
+                memberUseCase = get(),
+                attendanceUseCase = get(),
+                navigationService = get(),
+                dateProviderRepository = get(),
+                memberPresentationMapper = get(),
+                weightUseCase = get(),
+                settingsUseCase = get(),
+                authUseCase = get(),
+                storageUseCase = get(),
+            )
+        }
 
         viewModel { params ->
             AttendanceScreenViewModel(
-                memberId = params.get(),
+                memberId = params[0],
+                showSnackbar = params[1],
                 jobRepository = get(),
                 converter = get(),
                 attendanceUseCase = get(),
@@ -46,9 +102,74 @@ val viewModelModule =
             )
         }
 
+        viewModel(named<CreateMember>()) { params ->
+            RegisterScreenViewModel(
+                hidePassword = true,
+                showSnackbar = params.get(),
+                scope = get(),
+                converter = get(),
+                accessUseCase = get(),
+                memberUseCase = get(),
+                navigationService = get(),
+                validators = get(),
+                dateProviderRepository = get(),
+            )
+        }
+
+        viewModel { params ->
+            ProfileAdminScreenViewModel(
+                showSnackbar = params.get(),
+                jobRepository = get(),
+                adminDashboardUseCase = get(),
+                navigationService = get(),
+                settingsUseCase = get(),
+                dateProviderRepository = get(),
+                converter = get(),
+            )
+        }
+
+        viewModel { params ->
+            MembersScreenViewModel(
+                screenType = params[0],
+                showSnackbar = params[1],
+                jobRepository = get(),
+                converter = get(),
+                memberUseCase = get(),
+                attendanceUseCase = get(),
+                permissionsUseCase = get(),
+                navigationService = get(),
+                dateProviderRepository = get(),
+                memberPresentationMapper = get(),
+            )
+        }
+
+        viewModel { params ->
+            PaymentAddScreenViewModel(
+                memberId = params[0],
+                showSnackbar = params[1],
+                converter = get(),
+                paymentUseCase = get(),
+                navigationService = get(),
+                dateProviderRepository = get(),
+                numberFormatUseCase = get(),
+            )
+        }
+
+        viewModel { params ->
+            SettingsScreenViewModel(
+                showSnackbar = params.get(),
+                app = get(),
+                numberFormatUseCase = get(),
+                navigationService = get(),
+                accessUseCase = get(),
+                settingsUseCase = get(),
+            )
+        }
+
         viewModel { params ->
             PaymentsScreenViewModel(
-                memberId = params.get(),
+                memberId = params[0],
+                showSnackbar = params[1],
                 jobRepository = get(),
                 converter = get(),
                 paymentUseCase = get(),
@@ -62,22 +183,9 @@ val viewModelModule =
         }
 
         viewModel { params ->
-            MembersScreenViewModel(
-                screenType = params.get(),
-                jobRepository = get(),
-                converter = get(),
-                memberUseCase = get(),
-                attendanceUseCase = get(),
-                permissionsUseCase = get(),
-                navigationService = get(),
-                dateProviderRepository = get(),
-                memberPresentationMapper = get(),
-            )
-        }
-
-        viewModel { params ->
             MemberEditScreenViewModel(
-                memberId = params.get(),
+                memberId = params[0],
+                showSnackbar = params[1],
                 memberUseCase = get(),
                 validators = get(),
                 converter = get(),
@@ -89,47 +197,32 @@ val viewModelModule =
             )
         }
 
-        viewModelOf(::ResetPasswordScreenViewModel)
-
-        viewModelOf(::WeightGraphComponentViewModel)
-
         viewModel { params ->
             WeightEditScreenViewModel(
-                weightId = params.get(),
-                weight = params.get(),
-                dateMillis = params.get(),
+                weightId = params[0],
+                weight = params[1],
+                dateMillis = params[2],
+                showSnackbar = params[3],
                 application = get(),
                 weightPresentationMapper = get(),
                 dateProviderRepository = get(),
                 navigationService = get(),
-                weightValidator = get(),
+                weightValidator = get((named<ValidatorWeight>())),
                 weightUseCase = get(),
                 converter = get(),
             )
         }
 
-        viewModelOf(::WeightListScreenViewModel)
-
-        viewModel(named<CreateMember>()) {
-            RegisterScreenViewModel(
-                converter = get(),
-                accessUseCase = get(),
-                memberUseCase = get(),
-                navigationService = get(),
-                validators = get(),
-                hidePassword = true,
+        viewModel { params ->
+            WeightListScreenViewModel(
+                showSnackbar = params.get(),
+                jobRepository = get(),
+                weightPresentationMapper = get(),
                 dateProviderRepository = get(),
-            )
-        }
-        viewModel(named<RegisterMember>()) {
-            RegisterScreenViewModel(
-                converter = get(),
-                accessUseCase = get(),
-                memberUseCase = get(),
                 navigationService = get(),
-                validators = get(),
-                hidePassword = false,
-                dateProviderRepository = get(),
+                weightUseCase = get(),
+                converter = get(),
+                numberFormatUseCase = get(),
             )
         }
     }
