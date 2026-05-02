@@ -14,7 +14,7 @@ class AppSnackbarImp : AppSnackbar {
         data: AppSnackbarData,
     ) {
         this.type = data.type
-        LaunchedEffect(type) {
+        LaunchedEffect(data.message) {
             hostState.showSnackbar(
                 message =
                     if (data.title.isNotEmpty()) {

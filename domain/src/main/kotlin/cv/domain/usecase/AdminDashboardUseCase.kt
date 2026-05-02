@@ -1,6 +1,7 @@
 package cv.domain.usecase
 
 import cv.domain.DomainResult
+import cv.domain.dispatchers.ScopeProvider
 import cv.domain.enums.MemberFetchType
 import cv.domain.presentationModels.AdminDashboardPresentationModel
 import cv.domain.presentationModels.TopTenMemberPresentationModel
@@ -11,11 +12,15 @@ import cv.domain.repositories.MemberRepository
 import cv.domain.repositories.PaymentRepository
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 import java.util.Date
 
 class AdminDashboardUseCase(
+    private val scope: ScopeProvider,
     private val authRepository: AuthRepository,
     private val memberRepository: MemberRepository,
     private val paymentRepository: PaymentRepository,
@@ -23,7 +28,10 @@ class AdminDashboardUseCase(
     private val dateProviderRepository: DateProviderRepository,
     private val numberFormatUseCase: NumberFormatUseCase,
 ) {
-    fun invoke(currentDate: Date) =
+    // TODO - Separate the usecase into different components, User info, yearly info and monthly info
+    //  also update the UI to reflect the same, make user name clickable
+    //  navigate to either payment screen for selected year OR attendance screen for selected year
+    fun invoke(currentDate: Date): Flow<AdminDashboardPresentationModel> =
         callbackFlow {
             val currentYear = dateProviderRepository.getYear(currentDate)
             val currentMonth = dateProviderRepository.getMonth(currentDate)
@@ -69,34 +77,38 @@ class AdminDashboardUseCase(
 
                     memberAttendanceInfo.clear()
                     memberPaymentInfo.clear()
-                    allMembers.data.forEach {
-                        val memberAttendances =
-                            allMonthlyAttendances.data.attendances
-                                .filter { attendance -> attendance.memberId == it.id }
-                                .size
-                        val memberPayments =
-                            allPayments.data.payments.filter { payment -> payment.memberId == it.id && payment.amount != 0.0 }
-                        val paymentTotal = memberPayments.sumOf { payment -> payment.amount }
-                        if (memberAttendances > 0) {
-                            memberAttendanceInfo.add(
-                                TopTenMemberPresentationModel(
-                                    id = it.id,
-                                    fullName = "${it.firstName} ${it.lastName}",
-                                    visits = memberAttendances,
-                                ),
-                            )
-                        }
-                        if (paymentTotal != 0.0) {
-                            memberPaymentInfo.add(
-                                TopTenMemberPresentationModel(
-                                    id = it.id,
-                                    fullName = "${it.firstName} ${it.lastName}",
-                                    amountValue = paymentTotal,
-                                    amountFormatted = numberFormatUseCase.getCurrencyFormatted(paymentTotal),
-                                ),
-                            )
-                        }
-                    }
+                    scope
+                        .default()
+                        .launch {
+                            allMembers.data.forEach {
+                                val memberAttendances =
+                                    allMonthlyAttendances.data.attendances
+                                        .filter { attendance -> attendance.memberId == it.id }
+                                        .size
+                                val memberPayments =
+                                    allPayments.data.payments.filter { payment -> payment.memberId == it.id && payment.amount != 0.0 }
+                                val paymentTotal = memberPayments.sumOf { payment -> payment.amount }
+                                if (memberAttendances > 0) {
+                                    memberAttendanceInfo.add(
+                                        TopTenMemberPresentationModel(
+                                            id = it.id,
+                                            fullName = "${it.firstName} ${it.lastName}",
+                                            visits = memberAttendances,
+                                        ),
+                                    )
+                                }
+                                if (paymentTotal != 0.0) {
+                                    memberPaymentInfo.add(
+                                        TopTenMemberPresentationModel(
+                                            id = it.id,
+                                            fullName = "${it.firstName} ${it.lastName}",
+                                            amountValue = paymentTotal,
+                                            amountFormatted = numberFormatUseCase.getCurrencyFormatted(paymentTotal),
+                                        ),
+                                    )
+                                }
+                            }
+                        }.join()
                     topTenActiveMembers.clear()
                     topTenPayingMembers.clear()
                     topTenActiveMembers.addAll(
@@ -126,7 +138,7 @@ class AdminDashboardUseCase(
             }
 
             awaitClose()
-        }
+        }.flowOn(scope.ioDispatcher())
 }
 
 private const val TOP_10 = 10

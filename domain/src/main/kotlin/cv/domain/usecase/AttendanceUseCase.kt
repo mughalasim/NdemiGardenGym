@@ -3,6 +3,7 @@ package cv.domain.usecase
 import cv.domain.DomainResult
 import cv.domain.Variables.EVENT_ATTENDANCE_DELETE
 import cv.domain.Variables.PARAM_ATTENDANCE_DELETE
+import cv.domain.dispatchers.ScopeProvider
 import cv.domain.mappers.AttendancePresentationMapper
 import cv.domain.presentationModels.AttendanceMonthPresentationModel
 import cv.domain.repositories.AnalyticsRepository
@@ -10,10 +11,13 @@ import cv.domain.repositories.AttendanceRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.withContext
 import java.util.Date
 
 class AttendanceUseCase(
+    private val scope: ScopeProvider,
     private val attendanceRepository: AttendanceRepository,
     private val analyticsRepository: AnalyticsRepository,
     private val attendancePresentationMapper: AttendancePresentationMapper,
@@ -40,39 +44,44 @@ class AttendanceUseCase(
                 }
 
             awaitClose()
-        }
+        }.flowOn(scope.ioDispatcher())
 
     suspend fun addAttendance(
         startDate: Date,
         endDate: Date,
-    ) = attendanceRepository.addAttendance(
-        memberId = "",
-        startDate = startDate,
-        endDate = endDate,
-    )
+    ) = withContext(scope.ioDispatcher()) {
+        attendanceRepository.addAttendance(
+            memberId = "",
+            startDate = startDate,
+            endDate = endDate,
+        )
+    }
 
     suspend fun addAttendanceForMember(
         memberId: String,
         startDate: Date,
         endDate: Date,
-    ) = attendanceRepository.addAttendance(
-        memberId = memberId,
-        startDate = startDate,
-        endDate = endDate,
-    )
+    ) = withContext(scope.ioDispatcher()) {
+        attendanceRepository.addAttendance(
+            memberId = memberId,
+            startDate = startDate,
+            endDate = endDate,
+        )
+    }
 
     suspend fun deleteAttendance(
         startYear: String,
         startMonth: String,
         attendanceId: String,
-    ): DomainResult<Unit> {
-        analyticsRepository.logEvent(EVENT_ATTENDANCE_DELETE, PARAM_ATTENDANCE_DELETE, attendanceId)
-        return attendanceRepository.deleteAttendance(
-            startYear = startYear,
-            startMonth = startMonth,
-            attendanceId = attendanceId,
-        )
-    }
+    ): DomainResult<Unit> =
+        withContext(scope.ioDispatcher()) {
+            analyticsRepository.logEvent(EVENT_ATTENDANCE_DELETE, PARAM_ATTENDANCE_DELETE, attendanceId)
+            return@withContext attendanceRepository.deleteAttendance(
+                startYear = startYear,
+                startMonth = startMonth,
+                attendanceId = attendanceId,
+            )
+        }
 }
 
 private const val DECEMBER = 12

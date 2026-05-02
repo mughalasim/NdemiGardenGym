@@ -8,6 +8,7 @@ import cv.data.mappers.MemberMapper
 import cv.data.models.MemberModel
 import cv.data.toDomainError
 import cv.domain.DomainResult
+import cv.domain.dispatchers.ScopeProvider
 import cv.domain.entities.MemberEntity
 import cv.domain.enums.AppLogType
 import cv.domain.enums.DomainErrorType
@@ -18,12 +19,14 @@ import cv.domain.repositories.MemberRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class MemberRepositoryImp(
     private val pathUser: String,
     private val memberMapper: MemberMapper,
     private val logger: AppLoggerRepository,
+    private val scope: ScopeProvider,
     private val firebaseFirestore: FirebaseFirestore,
 ) : MemberRepository {
     override suspend fun getMemberById(memberId: String): DomainResult<MemberEntity> =
@@ -77,32 +80,34 @@ class MemberRepositoryImp(
                             querySnapshot
                                 .toObjects<MemberModel>()
                                 .map { memberMapper.getEntity(it) }
-                        trySend(
-                            DomainResult.Success(
-                                when (fetchType) {
-                                    MemberFetchType.ALL, MemberFetchType.NON_MEMBERS -> {
-                                        response.sortedByDescending { it.registrationDateMillis }
-                                    }
+                        scope.default().launch {
+                            trySend(
+                                DomainResult.Success(
+                                    when (fetchType) {
+                                        MemberFetchType.ALL, MemberFetchType.NON_MEMBERS -> {
+                                            response.sortedByDescending { it.registrationDateMillis }
+                                        }
 
-                                    MemberFetchType.MEMBERS -> {
-                                        response
-                                            .sortedBy { it.renewalFutureDateMillis }
-                                    }
+                                        MemberFetchType.MEMBERS -> {
+                                            response
+                                                .sortedBy { it.renewalFutureDateMillis }
+                                        }
 
-                                    MemberFetchType.ACTIVE -> {
-                                        response
-                                            .filter { it.activeNowDateMillis != null }
-                                            .sortedBy { it.activeNowDateMillis }
-                                    }
+                                        MemberFetchType.ACTIVE -> {
+                                            response
+                                                .filter { it.activeNowDateMillis != null }
+                                                .sortedBy { it.activeNowDateMillis }
+                                        }
 
-                                    MemberFetchType.EXPIRED_REGISTRATIONS -> {
-                                        response
-                                            .filter { it.renewalFutureDateMillis == null }
-                                            .sortedByDescending { it.registrationDateMillis }
-                                    }
-                                },
-                            ),
-                        )
+                                        MemberFetchType.EXPIRED_REGISTRATIONS -> {
+                                            response
+                                                .filter { it.renewalFutureDateMillis == null }
+                                                .sortedByDescending { it.registrationDateMillis }
+                                        }
+                                    },
+                                ),
+                            )
+                        }
                     }
                     error?.let {
                         logger.log("Exception members list: $it", AppLogType.ERROR)

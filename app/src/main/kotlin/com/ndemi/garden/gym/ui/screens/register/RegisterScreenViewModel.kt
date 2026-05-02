@@ -16,13 +16,13 @@ import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.Action
 import com.ndemi.garden.gym.ui.screens.register.RegisterScreenViewModel.UiState
 import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import cv.domain.DomainResult
+import cv.domain.dispatchers.ScopeProvider
 import cv.domain.entities.MemberEntity
 import cv.domain.enums.MemberUpdateType
 import cv.domain.repositories.DateProviderRepository
 import cv.domain.usecase.AccessUseCase
 import cv.domain.usecase.MemberUseCase
 import cv.domain.validator.RegisterScreenValidators
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -31,7 +31,7 @@ import java.util.UUID
 class RegisterScreenViewModel(
     private val hidePassword: Boolean,
     private val showSnackbar: (AppSnackbarData) -> Unit,
-    private val externalScope: CoroutineScope,
+    private val scope: ScopeProvider,
     private val converter: ErrorCodeConverter,
     private val accessUseCase: AccessUseCase,
     private val memberUseCase: MemberUseCase,
@@ -174,7 +174,7 @@ class RegisterScreenViewModel(
         memberUpdateType: MemberUpdateType,
     ) {
         sendAction(Action.SetLoading)
-        externalScope.launch {
+        scope.io().launch {
             memberUseCase
                 .updateMember(
                     MemberEntity(

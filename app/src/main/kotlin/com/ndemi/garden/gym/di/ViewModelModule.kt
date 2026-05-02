@@ -61,7 +61,7 @@ val viewModelModule =
             RegisterScreenViewModel(
                 hidePassword = false,
                 showSnackbar = params.get(),
-                externalScope = get(),
+                scope = get(),
                 converter = get(),
                 accessUseCase = get(),
                 memberUseCase = get(),
@@ -106,7 +106,7 @@ val viewModelModule =
             RegisterScreenViewModel(
                 hidePassword = true,
                 showSnackbar = params.get(),
-                externalScope = get(),
+                scope = get(),
                 converter = get(),
                 accessUseCase = get(),
                 memberUseCase = get(),
@@ -124,6 +124,7 @@ val viewModelModule =
                 navigationService = get(),
                 settingsUseCase = get(),
                 dateProviderRepository = get(),
+                converter = get(),
             )
         }
 

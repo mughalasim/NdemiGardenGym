@@ -148,5 +148,9 @@
     <string name="txt_settings_dialog_message">Select a %1$s from the options below</string>
     <string name="txt_settings_success_message">Successfully updated the %1$s setting to %2$s</string>
     <string name="txt_apartment">Apartment %1$s</string>
+    <string name="txt_increased_year">Increased year</string>
+    <string name="txt_increased_month">Increased month</string>
+    <string name="txt_decreased_year">Decreased year</string>
+    <string name="txt_decreased_month">Decreased month</string>
 
 </resources>
