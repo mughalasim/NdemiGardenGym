@@ -14,6 +14,8 @@ import com.ndemi.garden.gym.ui.utils.ErrorCodeConverter
 import com.ndemi.garden.gym.ui.utils.OBSERVE_ADMIN
 import com.ndemi.garden.gym.ui.utils.OBSERVE_SETTINGS
 import cv.domain.presentationModels.AdminDashboardPresentationModel
+import cv.domain.presentationModels.ProfileAdminMemberNavigationType
+import cv.domain.presentationModels.TopTenMemberPresentationModel
 import cv.domain.repositories.DateProviderRepository
 import cv.domain.repositories.JobRepository
 import cv.domain.usecase.AdminDashboardUseCase
@@ -81,6 +83,21 @@ class ProfileAdminScreenViewModel(
         currentDate.month -= 1
         fetchAdminDashboard()
         showSnackbar(buildInfoSnackbar(converter.getString(R.string.txt_decreased_month)))
+    }
+
+    fun onMemberTapped(
+        model: TopTenMemberPresentationModel,
+        navType: ProfileAdminMemberNavigationType,
+    ) {
+        when (navType) {
+            ProfileAdminMemberNavigationType.PAYMENT -> {
+                navigationService.open(Route.PaymentsScreen(memberId = model.id, memberName = model.fullName))
+            }
+
+            ProfileAdminMemberNavigationType.ATTENDANCE -> {
+                navigationService.open(Route.MembersAttendancesScreen(memberId = model.id, memberName = model.fullName))
+            }
+        }
     }
 
     fun onSettingsTapped() {

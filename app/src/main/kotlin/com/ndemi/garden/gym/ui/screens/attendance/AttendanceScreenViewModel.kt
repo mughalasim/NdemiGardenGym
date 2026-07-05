@@ -35,6 +35,7 @@ class AttendanceScreenViewModel(
     private val navigationService: NavigationService,
     dateProviderRepository: DateProviderRepository,
 ) : BaseViewModel<UiState, Action>(UiState.Loading) {
+    // TODO - make year selectable on init
     private val _selectedYear: MutableStateFlow<Int> = MutableStateFlow(dateProviderRepository.getYear())
     val selectedYear: StateFlow<Int> = _selectedYear
 

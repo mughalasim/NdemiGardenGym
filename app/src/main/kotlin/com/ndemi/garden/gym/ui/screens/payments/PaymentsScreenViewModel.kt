@@ -46,6 +46,7 @@ class PaymentsScreenViewModel(
     private val _canAddPayment = MutableStateFlow(false)
     val canAddPayment: StateFlow<Boolean> = _canAddPayment
 
+    // TODO - make year selectable on init
     private val _selectedYear: MutableStateFlow<Int> = MutableStateFlow(dateProviderRepository.getYear())
     val selectedYear: StateFlow<Int> = _selectedYear
 
