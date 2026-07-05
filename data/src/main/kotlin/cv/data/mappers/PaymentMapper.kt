@@ -1,10 +1,39 @@
 package cv.data.mappers
 
+import com.google.firebase.Timestamp
 import cv.data.models.PaymentModel
 import cv.domain.entities.PaymentEntity
+import java.util.Date
 
 interface PaymentMapper {
     fun getModel(entity: PaymentEntity): PaymentModel
 
     fun getEntity(model: PaymentModel): PaymentEntity
+}
+
+class PaymentMapperImp : PaymentMapper {
+    override fun getModel(entity: PaymentEntity): PaymentModel = entity.toModel()
+
+    override fun getEntity(model: PaymentModel): PaymentEntity = model.toEntity()
+
+    private fun PaymentEntity.toModel() =
+        PaymentModel(
+            paymentId = paymentId,
+            memberId = memberId,
+            startDate = Timestamp(Date(startDateMillis)),
+            endDate = Timestamp(Date(endDateMillis)),
+            amount = amount,
+        )
+
+    private fun PaymentModel.toEntity(): PaymentEntity {
+        val startTime = startDate.toDate().time
+        val endTime = endDate.toDate().time
+        return PaymentEntity(
+            paymentId = paymentId,
+            memberId = memberId,
+            startDateMillis = startTime,
+            endDateMillis = endTime,
+            amount = amount,
+        )
+    }
 }

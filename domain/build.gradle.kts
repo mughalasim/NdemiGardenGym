@@ -15,4 +15,8 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
+
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
 }
