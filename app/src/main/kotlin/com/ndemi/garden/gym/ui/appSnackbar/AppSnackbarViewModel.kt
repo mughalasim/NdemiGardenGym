@@ -17,7 +17,7 @@ class AppSnackbarViewModel(
     val appSnackbar: AppSnackbar,
 ) : ViewModel() {
     private var appSnackbarJob: Job? = null
-    private val appSnackbarState: MutableStateFlow<AppSnackbarState> = MutableStateFlow(AppSnackbarState.Gone)
+    val appSnackbarState: MutableStateFlow<AppSnackbarState> = MutableStateFlow(AppSnackbarState.Gone)
 
     fun showSnackbar(data: AppSnackbarData) {
         appSnackbarJob?.let {

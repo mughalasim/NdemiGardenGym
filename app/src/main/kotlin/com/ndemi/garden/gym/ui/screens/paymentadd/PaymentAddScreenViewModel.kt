@@ -1,7 +1,6 @@
 package com.ndemi.garden.gym.ui.screens.paymentadd
 
 import androidx.compose.runtime.Immutable
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
 import com.ndemi.garden.gym.R
 import com.ndemi.garden.gym.navigation.NavigationService
@@ -77,7 +76,7 @@ class PaymentAddScreenViewModel(
                 }
 
                 MONTH_DURATION -> {
-                    if (monthDuration.isNotEmpty() && monthDuration.isDigitsOnly()) {
+                    if (monthDuration.isNotEmpty() && monthDuration.all { it.isDigit() }) {
                         _inputData.value.copy(monthDuration = monthDuration.toInt())
                     } else {
                         _inputData.value.copy(monthDuration = 0)
@@ -85,7 +84,7 @@ class PaymentAddScreenViewModel(
                 }
 
                 AMOUNT -> {
-                    if (amount.isNotEmpty() && amount.isDigitsOnly()) {
+                    if (amount.isNotEmpty() && amount.all { it.isDigit() }) {
                         _inputData.value.copy(amount = amount.toInt())
                     } else {
                         _inputData.value.copy(amount = 0)
