@@ -94,7 +94,7 @@ fun NavigationHost(
             AttendanceScreen(
                 viewModel =
                     koinViewModel<AttendanceScreenViewModel>(
-                        parameters = { parametersOf("", showSnackbar) },
+                        parameters = { parametersOf("", 0, showSnackbar) },
                     ),
             )
         }
@@ -198,7 +198,9 @@ fun NavigationHost(
             AttendanceScreen(
                 memberName = args.memberName,
                 viewModel =
-                    koinViewModel<AttendanceScreenViewModel>(parameters = { parametersOf(args.memberId, showSnackbar) }),
+                    koinViewModel<AttendanceScreenViewModel>(
+                        parameters = { parametersOf(args.memberId, args.initYear, showSnackbar) },
+                    ),
             )
         }
 
@@ -208,7 +210,9 @@ fun NavigationHost(
                 memberId = args.memberId,
                 memberName = args.memberName,
                 viewModel =
-                    koinViewModel<PaymentsScreenViewModel>(parameters = { parametersOf(args.memberId, showSnackbar) }),
+                    koinViewModel<PaymentsScreenViewModel>(
+                        parameters = { parametersOf(args.memberId, args.initYear, showSnackbar) },
+                    ),
             )
         }
 

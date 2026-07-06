@@ -92,7 +92,8 @@ val viewModelModule =
         viewModel { params ->
             AttendanceScreenViewModel(
                 memberId = params[0],
-                showSnackbar = params[1],
+                initYear = params[1],
+                showSnackbar = params[2],
                 jobRepository = get(),
                 converter = get(),
                 attendanceUseCase = get(),
@@ -169,7 +170,8 @@ val viewModelModule =
         viewModel { params ->
             PaymentsScreenViewModel(
                 memberId = params[0],
-                showSnackbar = params[1],
+                initYear = params[1],
+                showSnackbar = params[2],
                 jobRepository = get(),
                 converter = get(),
                 paymentUseCase = get(),

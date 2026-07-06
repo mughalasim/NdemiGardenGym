@@ -1,10 +1,10 @@
 [versions]
 appName = "Ndemi Garden Gym"
 appNamespaceId = "com.ndemi.garden.gym"
-appVersionCode = "200"
-appVersionName = "20.0"
-appCompileSdk = "36"
-appTargetSdk = "36"
+appVersionCode = "210"
+appVersionName = "21.0"
+appCompileSdk = "37"
+appTargetSdk = "37"
 appMinSdk = "24"
 materialIconsExtendedAndroid = "1.7.8"
 coilCompose = "2.7.0"
@@ -30,7 +30,7 @@ retrofit = "3.0.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
 spotless = "8.8.0"
 detekt = "1.23.8"
-kotlin = "2.3.21"
+kotlin = "2.4.0"
 androidGradlePlugin = "9.2.1"
 google = "4.5.0"
 crashlytics = "3.0.7"
@@ -91,6 +91,5 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization",  version.ref = "kotlin"  }
-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin"}
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

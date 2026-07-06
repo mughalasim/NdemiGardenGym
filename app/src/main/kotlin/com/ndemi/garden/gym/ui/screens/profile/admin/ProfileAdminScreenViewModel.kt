@@ -87,15 +87,20 @@ class ProfileAdminScreenViewModel(
 
     fun onMemberTapped(
         model: TopTenMemberPresentationModel,
+        initYear: Int,
         navType: ProfileAdminMemberNavigationType,
     ) {
         when (navType) {
             ProfileAdminMemberNavigationType.PAYMENT -> {
-                navigationService.open(Route.PaymentsScreen(memberId = model.id, memberName = model.fullName))
+                navigationService.open(
+                    Route.PaymentsScreen(memberId = model.id, memberName = model.fullName, initYear = initYear),
+                )
             }
 
             ProfileAdminMemberNavigationType.ATTENDANCE -> {
-                navigationService.open(Route.MembersAttendancesScreen(memberId = model.id, memberName = model.fullName))
+                navigationService.open(
+                    Route.MembersAttendancesScreen(memberId = model.id, memberName = model.fullName, initYear = initYear),
+                )
             }
         }
     }

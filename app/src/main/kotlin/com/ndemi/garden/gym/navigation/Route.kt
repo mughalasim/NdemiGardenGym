@@ -59,6 +59,7 @@ sealed class Route {
     data class MembersAttendancesScreen(
         val memberId: String = "",
         val memberName: String = "",
+        val initYear: Int = 0,
     ) : Route()
 
     @Keep
@@ -66,6 +67,7 @@ sealed class Route {
     data class PaymentsScreen(
         val memberId: String = "",
         val memberName: String = "",
+        val initYear: Int = 0,
     ) : Route()
 
     @Keep

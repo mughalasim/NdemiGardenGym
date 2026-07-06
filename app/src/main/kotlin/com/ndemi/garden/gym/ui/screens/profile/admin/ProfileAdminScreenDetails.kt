@@ -134,7 +134,11 @@ fun ProfileAdminScreenDetails(
                                     name = member.fullName,
                                     value = member.amountFormatted,
                                     onClick = {
-                                        listeners.onMemberTapped(member, ProfileAdminMemberNavigationType.PAYMENT)
+                                        listeners.onMemberTapped(
+                                            member,
+                                            uiState.model.selectedYear,
+                                            ProfileAdminMemberNavigationType.PAYMENT,
+                                        )
                                     },
                                 )
                             }
@@ -162,7 +166,11 @@ fun ProfileAdminScreenDetails(
                                     name = member.fullName,
                                     value = "${member.visits} visits",
                                     onClick = {
-                                        listeners.onMemberTapped(member, ProfileAdminMemberNavigationType.ATTENDANCE)
+                                        listeners.onMemberTapped(
+                                            member,
+                                            uiState.model.selectedYear,
+                                            ProfileAdminMemberNavigationType.ATTENDANCE,
+                                        )
                                     },
                                 )
                             }
@@ -214,7 +222,7 @@ data class ProfileAdminScreenDetailsListeners(
     val onYearMinusTapped: () -> Unit = {},
     val onMonthPlusTapped: () -> Unit = {},
     val onMonthMinusTapped: () -> Unit = {},
-    val onMemberTapped: (TopTenMemberPresentationModel, ProfileAdminMemberNavigationType) -> Unit = { _, _ -> },
+    val onMemberTapped: (TopTenMemberPresentationModel, Int, ProfileAdminMemberNavigationType) -> Unit = { _, _, _ -> },
 )
 
 @Composable
