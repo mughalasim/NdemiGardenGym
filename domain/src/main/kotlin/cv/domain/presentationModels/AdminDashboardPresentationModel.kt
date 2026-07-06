@@ -13,8 +13,14 @@ data class AdminDashboardPresentationModel(
 
 data class TopTenMemberPresentationModel(
     val id: String = "",
+    val image: String = "",
     val fullName: String = "",
     val visits: Int = 0,
     val amountFormatted: String = "",
     val amountValue: Double = 0.0,
 )
+
+enum class ProfileAdminMemberNavigationType {
+    PAYMENT,
+    ATTENDANCE,
+}

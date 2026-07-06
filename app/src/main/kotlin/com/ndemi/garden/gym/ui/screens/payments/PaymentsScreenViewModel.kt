@@ -32,6 +32,7 @@ import kotlinx.coroutines.launch
 @Suppress("detekt.LongParameterList")
 class PaymentsScreenViewModel(
     private val memberId: String,
+    initYear: Int,
     private val showSnackbar: (AppSnackbarData) -> Unit,
     private val jobRepository: JobRepository,
     private val converter: ErrorCodeConverter,
@@ -46,7 +47,7 @@ class PaymentsScreenViewModel(
     private val _canAddPayment = MutableStateFlow(false)
     val canAddPayment: StateFlow<Boolean> = _canAddPayment
 
-    private val _selectedYear: MutableStateFlow<Int> = MutableStateFlow(dateProviderRepository.getYear())
+    private val _selectedYear: MutableStateFlow<Int> = MutableStateFlow(if (initYear == 0) dateProviderRepository.getYear() else initYear)
     val selectedYear: StateFlow<Int> = _selectedYear
 
     init {

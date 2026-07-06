@@ -71,7 +71,6 @@ android {
 
         getByName("debug") {
             isMinifyEnabled = false
-            isShrinkResources = false
             isDebuggable = true
         }
     }
@@ -208,4 +207,7 @@ dependencies {
 
     // TESTING -------------------------------------------------------------------------------------
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.arch.core.testing)
 }
