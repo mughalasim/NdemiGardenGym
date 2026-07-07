@@ -62,7 +62,7 @@ class MembersScreenViewModelTest {
 
     @Test
     fun `initial state should load members`() {
-        verify { memberUseCase.getAllMembers() }
+        verify { checkNotNull(memberUseCase.getAllMembers()) }
     }
 
     @Test

@@ -2,13 +2,12 @@ package cv.data.models
 
 import com.google.errorprone.annotations.Keep
 import com.google.firebase.Timestamp
-import java.util.Date
 
 @Keep
 data class AttendanceModel(
     val memberId: String = "",
-    val startDate: Timestamp = Timestamp(Date()),
-    val endDate: Timestamp = Timestamp(Date()),
+    val startDate: Timestamp = Timestamp(0, 0),
+    val endDate: Timestamp = Timestamp(0, 0),
 ) {
     fun getAttendanceId(): String = "$memberId-$startDate"
 
