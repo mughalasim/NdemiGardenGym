@@ -208,6 +208,7 @@ dependencies {
     // TESTING -------------------------------------------------------------------------------------
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.konsist)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.arch.core.testing)
 }

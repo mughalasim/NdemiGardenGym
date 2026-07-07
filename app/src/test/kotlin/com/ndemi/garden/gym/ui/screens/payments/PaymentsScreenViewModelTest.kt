@@ -60,6 +60,7 @@ class PaymentsScreenViewModelTest {
         viewModel =
             PaymentsScreenViewModel(
                 memberId,
+                0,
                 showSnackbar,
                 jobRepository,
                 converter,
@@ -75,7 +76,7 @@ class PaymentsScreenViewModelTest {
 
     @Test
     fun `initial state should load payments`() {
-        verify { paymentUseCase.getPaymentPlanForMember(memberId, 2023) }
+        verify { checkNotNull(paymentUseCase.getPaymentPlanForMember(memberId, 2023)) }
     }
 
     @Test
@@ -91,7 +92,7 @@ class PaymentsScreenViewModelTest {
 
         // Then
         assertEquals(2024, viewModel.selectedYear.value)
-        verify { paymentUseCase.getPaymentPlanForMember(memberId, 2024) }
+        verify { checkNotNull(paymentUseCase.getPaymentPlanForMember(memberId, 2024)) }
     }
 
     @Test
@@ -111,6 +112,6 @@ class PaymentsScreenViewModelTest {
 
             // Then
             verify { showSnackbar(any()) }
-            verify { paymentUseCase.getPaymentPlanForMember(memberId, 2023) }
+            verify { checkNotNull(paymentUseCase.getPaymentPlanForMember(memberId, 2023)) }
         }
 }

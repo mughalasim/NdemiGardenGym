@@ -63,7 +63,7 @@ class WeightListScreenViewModelTest {
     @Test
     fun `initial state should load weight list for current year`() {
         assertEquals(2023, viewModel.selectedYear.value)
-        verify { weightUseCase.getWeightForYear(2023) }
+        verify { checkNotNull(weightUseCase.getWeightForYear(2023)) }
     }
 
     @Test
@@ -76,7 +76,7 @@ class WeightListScreenViewModelTest {
 
         // Then
         assertEquals(2024, viewModel.selectedYear.value)
-        verify { weightUseCase.getWeightForYear(2024) }
+        verify { checkNotNull(weightUseCase.getWeightForYear(2024)) }
     }
 
     @Test
@@ -89,7 +89,7 @@ class WeightListScreenViewModelTest {
 
         // Then
         assertEquals(2022, viewModel.selectedYear.value)
-        verify { weightUseCase.getWeightForYear(2022) }
+        verify { checkNotNull(weightUseCase.getWeightForYear(2022)) }
     }
 
     @Test

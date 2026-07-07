@@ -2,7 +2,6 @@ package cv.data.models
 
 import androidx.annotation.Keep
 import com.google.firebase.Timestamp
-import java.util.Date
 
 @Keep
 data class MemberModel(
@@ -10,7 +9,7 @@ data class MemberModel(
     val firstName: String = "",
     val lastName: String = "",
     val email: String = "",
-    val registrationDate: Timestamp = Timestamp(Date()),
+    val registrationDate: Timestamp = Timestamp(0, 0),
     val renewalFutureDate: Timestamp? = null,
     val activeNowDate: Timestamp? = null,
     val apartmentNumber: String = "",

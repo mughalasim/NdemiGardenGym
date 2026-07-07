@@ -47,6 +47,7 @@ class AttendanceScreenViewModelTest {
         viewModel =
             AttendanceScreenViewModel(
                 memberId,
+                0,
                 showSnackbar,
                 jobRepository,
                 converter,
@@ -59,7 +60,7 @@ class AttendanceScreenViewModelTest {
 
     @Test
     fun `initial state should load attendances`() {
-        verify { attendanceUseCase.getMemberAttendancesForId(memberId, 2023) }
+        verify { checkNotNull(attendanceUseCase.getMemberAttendancesForId(memberId, 2023)) }
     }
 
     @Test
@@ -72,7 +73,7 @@ class AttendanceScreenViewModelTest {
 
         // Then
         assertEquals(2024, viewModel.selectedYear.value)
-        verify { attendanceUseCase.getMemberAttendancesForId(memberId, 2024) }
+        verify { checkNotNull(attendanceUseCase.getMemberAttendancesForId(memberId, 2024)) }
     }
 
     @Test
@@ -89,6 +90,6 @@ class AttendanceScreenViewModelTest {
 
             // Then
             verify { showSnackbar(any()) }
-            verify { attendanceUseCase.getMemberAttendancesForId(memberId, 2023) }
+            verify { checkNotNull(attendanceUseCase.getMemberAttendancesForId(memberId, 2023)) }
         }
 }

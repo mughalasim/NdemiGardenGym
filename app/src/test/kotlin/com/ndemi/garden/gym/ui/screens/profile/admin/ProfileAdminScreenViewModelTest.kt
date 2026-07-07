@@ -73,7 +73,7 @@ class ProfileAdminScreenViewModelTest {
         viewModel.onYearPlusTapped()
 
         // Then
-        verify { adminDashboardUseCase.invoke(any()) }
+        verify { checkNotNull(adminDashboardUseCase.invoke(any())) }
         verify { showSnackbar(any()) }
     }
 }
