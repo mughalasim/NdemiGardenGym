@@ -18,6 +18,8 @@ jobs:
   build-and-test:
     name: Build & Test
     runs-on: ubuntu-latest
+    # LOCAL_PROPERTIES and GOOGLE_SERVICES_JSON are stored as secrets on the "App" environment
+    environment: App
     timeout-minutes: 45
 
     steps:
@@ -43,7 +45,7 @@ jobs:
         run: chmod +x ./gradlew
 
       # The files below are git-ignored, so they are recreated from repository secrets.
-      # Required secrets (Settings -> Secrets and variables -> Actions):
+      # Required secrets (Settings -> Environments -> App -> Environment secrets):
       #   LOCAL_PROPERTIES      - full contents of local.properties (sdk.dir is appended automatically)
       #   GOOGLE_SERVICES_JSON  - base64 of app/google-services.json  (base64 -i app/google-services.json)
       - name: Check required secrets
