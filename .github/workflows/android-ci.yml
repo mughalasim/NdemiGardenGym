@@ -9,16 +9,22 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Never cancel runs on master, so a release is not interrupted by the next merge
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 permissions:
   contents: read
+
+# All secrets live on the "App" environment (Settings -> Environments -> App -> Environment secrets):
+#   LOCAL_PROPERTIES      - full contents of local.properties (sdk.dir is set automatically)
+#   GOOGLE_SERVICES_JSON  - base64 of app/google-services.json   (base64 -i app/google-services.json)
+#   KEYSTORE_BASE64       - base64 of app_signing_key.jks          (base64 -i app_signing_key.jks)
+#   KEY_ALIAS, KEY_PASSWORD, STORE_PASSWORD - values from keystore.properties
 
 jobs:
   build-and-test:
     name: Build & Test
     runs-on: ubuntu-latest
-    # LOCAL_PROPERTIES and GOOGLE_SERVICES_JSON are stored as secrets on the "App" environment
     environment: App
     timeout-minutes: 45
 
@@ -26,60 +32,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v6
+      - name: Set up build
+        uses: ./.github/actions/setup-build
         with:
-          distribution: temurin
-          java-version: '21'
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v4
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
-        with:
-          # Open-source cache backed by actions/cache (the v6 default is a commercial service)
-          cache-provider: basic
-
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
-      # The files below are git-ignored, so they are recreated from repository secrets.
-      # Required secrets (Settings -> Environments -> App -> Environment secrets):
-      #   LOCAL_PROPERTIES      - full contents of local.properties (sdk.dir is appended automatically)
-      #   GOOGLE_SERVICES_JSON  - base64 of app/google-services.json  (base64 -i app/google-services.json)
-      - name: Check required secrets
-        env:
-          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: |
-          missing=0
-          [ -z "$LOCAL_PROPERTIES" ] && echo "::error::Missing secret LOCAL_PROPERTIES" && missing=1
-          [ -z "$GOOGLE_SERVICES_JSON" ] && echo "::error::Missing secret GOOGLE_SERVICES_JSON" && missing=1
-          exit $missing
-
-      - name: Create local.properties
-        env:
-          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
-        run: |
-          printf '%s\n' "$LOCAL_PROPERTIES" | grep -v '^sdk.dir=' > local.properties
-          echo "sdk.dir=$ANDROID_SDK_ROOT" >> local.properties
-
-      - name: Create google-services.json
-        env:
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo "$GOOGLE_SERVICES_JSON" | base64 --decode > app/google-services.json
-
-      # Debug builds don't sign with the release key, but the build script loads
-      # keystore.properties at configuration time, so a placeholder is enough.
-      - name: Create placeholder keystore.properties
-        run: |
-          cat > keystore.properties <<'PROPS'
-          keyAlias=ci
-          keyPassword=ci
-          storePassword=ci
-          storeFile=ci.jks
-          PROPS
+          local-properties: ${{ secrets.LOCAL_PROPERTIES }}
+          google-services-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
 
       - name: Build debug APKs (Live + Staging)
         run: ./gradlew assembleDebug --stacktrace
@@ -104,3 +61,95 @@ jobs:
           name: debug-apks
           path: app/build/outputs/apk/**/*.apk
           retention-days: 14
+
+  release:
+    name: Publish Release
+    needs: build-and-test
+    # Only after the build and tests pass on a push to master (which is what merging a PR produces)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    environment: App
+    timeout-minutes: 45
+    permissions:
+      contents: write        # create the tag and release
+      pull-requests: read    # check the commit came from a merged PR
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Check commit came from a merged PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          merged=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" \
+            --jq '[.[] | select(.merged_at != null and .base.ref == "master")] | length')
+          if [ "$merged" -gt 0 ]; then
+            echo "merged=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "merged=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Commit $GITHUB_SHA was pushed directly, not merged from a PR - skipping release."
+          fi
+
+      - name: Read app version
+        id: version
+        if: steps.pr.outputs.merged == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          name=$(sed -nE 's/^appVersionName *= *"([^"]+)".*/\1/p' gradle/libs.versions.toml)
+          if [ -z "$name" ]; then
+            echo "::error::Could not read appVersionName from gradle/libs.versions.toml"
+            exit 1
+          fi
+          tag="v$name"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          if gh release view "$tag" > /dev/null 2>&1 || git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::$tag already exists - bump appVersionName to publish a new release."
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up build (with release signing)
+        if: steps.version.outputs.publish == 'true'
+        uses: ./.github/actions/setup-build
+        with:
+          local-properties: ${{ secrets.LOCAL_PROPERTIES }}
+          google-services-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          keystore-base64: ${{ secrets.KEYSTORE_BASE64 }}
+          key-alias: ${{ secrets.KEY_ALIAS }}
+          key-password: ${{ secrets.KEY_PASSWORD }}
+          store-password: ${{ secrets.STORE_PASSWORD }}
+
+      - name: Check signing secrets
+        if: steps.version.outputs.publish == 'true'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          [ -n "$KEYSTORE_BASE64" ] || { echo "::error::Missing secret KEYSTORE_BASE64"; exit 1; }
+
+      - name: Build signed release APKs (Live + Staging)
+        if: steps.version.outputs.publish == 'true'
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Create GitHub release
+        if: steps.version.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          mkdir -p release-assets
+          find app/build/outputs/apk -path '*/release/*.apk' | while read -r apk; do
+            cp "$apk" "release-assets/NdemiGardenGym-$TAG-$(basename "$apk" .apk | sed 's/^app-//').apk"
+          done
+          ls release-assets/*.apk > /dev/null || { echo "::error::No release APKs were built"; exit 1; }
+          gh release create "$TAG" release-assets/*.apk \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
+            --generate-notes
+
+      - name: Remove signing files
+        if: always()
+        run: rm -f app_signing_key.jks keystore.properties
