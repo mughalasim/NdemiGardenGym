@@ -1,0 +1,101 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      # The files below are git-ignored, so they are recreated from repository secrets.
+      # Required secrets (Settings -> Secrets and variables -> Actions):
+      #   LOCAL_PROPERTIES      - full contents of local.properties (sdk.dir is appended automatically)
+      #   GOOGLE_SERVICES_JSON  - base64 of app/google-services.json  (base64 -i app/google-services.json)
+      - name: Check required secrets
+        env:
+          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          missing=0
+          [ -z "$LOCAL_PROPERTIES" ] && echo "::error::Missing secret LOCAL_PROPERTIES" && missing=1
+          [ -z "$GOOGLE_SERVICES_JSON" ] && echo "::error::Missing secret GOOGLE_SERVICES_JSON" && missing=1
+          exit $missing
+
+      - name: Create local.properties
+        env:
+          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
+        run: |
+          printf '%s\n' "$LOCAL_PROPERTIES" | grep -v '^sdk.dir=' > local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" >> local.properties
+
+      - name: Create google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo "$GOOGLE_SERVICES_JSON" | base64 --decode > app/google-services.json
+
+      # Debug builds don't sign with the release key, but the build script loads
+      # keystore.properties at configuration time, so a placeholder is enough.
+      - name: Create placeholder keystore.properties
+        run: |
+          cat > keystore.properties <<'PROPS'
+          keyAlias=ci
+          keyPassword=ci
+          storePassword=ci
+          storeFile=ci.jks
+          PROPS
+
+      - name: Build debug APKs (Live + Staging)
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Run all unit tests
+        run: ./gradlew test --continue --stacktrace
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            **/build/reports/tests/
+            **/build/test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload debug APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apks
+          path: app/build/outputs/apk/**/*.apk
+          retention-days: 14
